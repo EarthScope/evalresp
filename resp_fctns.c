@@ -498,4 +498,125 @@ void check_sym(struct blkt *f, struct channel *chan) {
   }
 }
 
+/* IGD 08/03/02 Added support for B55 interpolation */
 
+/*********** function free for freeing of double arrays *******************************************/
+
+void sscdns_free_double (double *array)
+{
+  if (array != NULL)
+  {
+    free (array);
+    array = NULL;
+  }
+}
+
+#ifdef B55_INTRPL
+/* functions for reading and interpolation of 55 blockette  */
+/**************************************************************************************************/
+double do_interpolation (double value, double x1, double x2,
+double y1, double y2)
+{
+  double a, c;
+  double b;
+  a = (y1 - y2)/(x1-x2);
+  b = (x1*y2 - y1*x2)/(x1 - x2);
+  c = a*value+b;
+  return c;
+}
+/**********************************************************************************************************/
+/* This functions reads in the data from frequency/amplitude/spectra and
+ * the parameters of resampling. It then does a linear interpolation of the
+ * three input arrays using the new sampling paramters and saves the output
+ * into the input array (reallocating memory if needed).
+ * Functions returns the number of samples in the newly created array or
+ * negative value indicating the error.
+ */
+/*************************************************************************************************/
+int sscdns_interpolate_spectra(double **frequency_ptr,
+double **amplitude_ptr,				 double **phase_ptr,
+                               int number_responses,
+															 double frequency_start,
+															 double frequency_step,
+															 double frequency_end)
+{
+  int         frequencyCounter;
+  int         i;
+  int         i_start = 0;
+  int         number_samples;
+  double      frequency_value;
+  double      *spare_frequency;
+  double      *spare_amplitude;
+  double      *spare_phase;
+  double      *frequency;
+  double      *amplitude;
+  double      *phase;
+
+  frequency = *frequency_ptr;
+  amplitude = *amplitude_ptr;
+  phase = *phase_ptr;
+  number_samples = (frequency_end-frequency_start)/frequency_step+1;
+  spare_frequency = (double *) calloc (1, (number_samples) * sizeof (double));
+  spare_amplitude = (double *) calloc (1, (number_samples) * sizeof (double));
+  spare_phase = (double *) calloc (1, (number_samples) * sizeof (double));
+
+  for (frequencyCounter = 0; frequencyCounter <= number_samples-1; frequencyCounter++)
+  {
+    frequency_value = frequency_start + frequencyCounter * frequency_step;
+    if (frequency_value < frequency[0])
+    {
+     spare_amplitude [frequencyCounter] = 0.00;
+     spare_phase [frequencyCounter] = 1.00;
+     spare_frequency[frequencyCounter] = frequency_value;
+    }
+    else
+    {
+      for (i = i_start; i <= number_responses-1; i++)
+      {
+       if (frequency_value>= frequency [i] && frequency_value <= frequency [i+1])
+       {
+          spare_amplitude [frequencyCounter] = do_interpolation (frequency_value, frequency[i+1], frequency[i],
+          amplitude [i+1], amplitude [i]);
+          spare_phase [frequencyCounter]=do_interpolation (frequency_value, frequency[i+1], frequency[i],
+          phase [i+1], phase [i]);
+          spare_frequency[frequencyCounter] = frequency_value;
+
+          i_start = i;
+          break;
+        }
+        else
+        {
+          if (frequency_value >= frequency[number_responses-1])
+          {
+            spare_amplitude [frequencyCounter]= 0.00;
+            spare_frequency[frequencyCounter] = frequency_value;
+            spare_phase [frequencyCounter] = phase[number_responses-1];
+            break;
+           }
+         }
+        }
+       }
+    }
+    sscdns_free_double (frequency);
+    sscdns_free_double (amplitude);
+    sscdns_free_double (phase);
+
+    frequency = (double *) calloc (number_samples, sizeof (double));
+    amplitude = (double *) calloc(number_samples, sizeof (double));
+    phase = (double *) calloc(number_samples, sizeof (double));
+
+    *frequency_ptr = frequency;
+    *amplitude_ptr = amplitude;
+    *phase_ptr = phase;
+
+    memcpy(frequency, spare_frequency, number_samples * sizeof(double));
+    memcpy(amplitude, spare_amplitude, number_samples * sizeof(double));
+    memcpy(phase, spare_phase, number_samples * sizeof(double));
+
+    sscdns_free_double (spare_frequency);
+    sscdns_free_double (spare_amplitude);
+    sscdns_free_double (spare_phase);
+    return number_samples;
+}
+/**********************************************************************************************************/
+#endif

@@ -17,7 +17,7 @@
 #include <setjmp.h>
 #include <stdarg.h>
 
-#define REVNUM "3.2.21"
+#define REVNUM VERSION 
 #define TRUE 1
 #define FALSE 0
 #define STALEN 64
@@ -419,6 +419,27 @@ void print_resp(double *, int, struct response *, char *, int);
 struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
                         double *, int, char *, char *, int, int, int);
 
+#ifdef B55_INTRPL
+/*     functions for interpolation of 55 blockette ***************************/
+double
+do_interpolation (double value,  double x1, double x2,
+double y1, double y2);
+
+
+int
+sscdns_interpolate_spectra(double **freq,
+															 double **amp,
+															 double **phase,
+                               int number_responses,
+															 double start_freq,
+															 double end_freq,
+															 double step_freq);
+
+
+void
+sscdns_free_double (double *array);
+
+#endif
 /* and a global string variable showing the same information */
 
 extern char SEEDUNITS[][UNITS_STR_LEN];
