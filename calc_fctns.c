@@ -1,3 +1,23 @@
+/*------------------------------------------------------------------------------------*/
+/* LOG:                                                                               */                  
+/* Version 3.2.20:  iir_pz_trans()   modified IGD 09/20/01                            */
+/* Starting with version 3.2.17, evalresp supports IIR type blockettes 54             */
+/* Starting with version 3.2.17, evalresp supports blockette 55 of SEED               */
+/* which is Response List Blockette (LIST). List contains the frequency,              */
+/* amplitude and phase of the filter for a selected set of frequencies ONLY           */
+/* The current suggestion of DMC IRIS is not to do any interpolation of the           */
+/* and just leave as many frequencies in the output file as it used to be in          */
+/* the blockette 55. This suggestion leads to the obvious fact that the               */
+/* frequencies sampling requested by the user cannot be served if bl. 55 is used      */
+/* and the frequency vector should be overritten by what we actually do have in       */
+/* the blockette 55. Below we check if we use blockette 55 and if we do, we change    */
+/* the frequency vector                                                               */
+/* Note that we assume that blockette 55 can occur only as a single filtering stage   */
+/* in the filter, cannot be mixed with the other types of the filters, therefore,     */
+/* blockette 55 should be the first stage only                                        */
+/* I. Dricker, ISTI, 06/22/00 for version 2.3.17 of evalresp                          */
+/*------------------------------------------------------------------------------------*/
+
 /* Notice: this version is modified by I.Dricker, ISTI i.dricker@isti.com 06/22/00 */
 #include "./evresp.h"
 #include <stdlib.h>
@@ -20,25 +40,6 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs, struct complex *o
     error_return(NO_STAGE_MATCHED, "calc_resp: %s start_stage=%d, highest stage found=%d)",
                  "No Matching Stages Found (requested",start_stage, chan->nstages);
   } */
-
-/* Starting with version 3.2.17, evalresp supports IIR type blockettes 54 */
-
-/* Starting with version 3.2.17, evalresp supports blockette 55 of SEED */
-/* which is Response List Blockette (LIST). List contains the frequency, */
-/* amplitude and phase of the filter for a selected set of frequencies ONLY */
-/* The current suggestion of DMC IRIS is not to do any interpolation of the */
-/* and just leave as many frequencies in the output file as it used to be in */
-/* the blockette 55. This suggestion leads to the obvious fact that the  */ 
-/* frequencies sampling requested by the user cannot be served if bl. 55 is used */
-/* and the frequency vector should be overritten by what we actually do have in  */
-/* the blockette 55. Below we check if we use blockette 55 and if we do, we change */
-/* the frequency vector */
-/* Note that we assume that blockette 55 can occur only as a single filtering stage */
-/* in the filter, cannot be mixed with the other types of the filters, therefore, */
-/* blockette 55 should be the first stage only */
-
-/* I. Dricker, ISTI, 06/22/00 for version 2.3.17 of evalresp                    */
-
 
   /* for each frequency */
 
@@ -205,22 +206,22 @@ void convert_to_units(int inp, char *out_units, struct complex *data, double w) 
 
 /*==================================================================
  *                Response of a digital IIR filter
- * This code is modified fom the FORTRAN subroutine written and tested by 
+ * This code is modified fom the FORTRAN subroutine written and tested by
  * Bob Hutt (ASL USGS). Evaluates phase directly from imaginary and real
  *    parts of IIR filter coefficients.
- * C translation from FORTRAN function: Ilya Dricker (ISTI), i.dricker@isti.com 
+ * C translation from FORTRAN function: Ilya Dricker (ISTI), i.dricker@isti.com
  * Version 0.2 07/12/00
  *================================================================*/
 void iir_trans(struct blkt *blkt_ptr, double wint, struct complex *out) {
- 
 
-	 double h0; 
+
+	 double h0;
          double  xre, xim, phase;
          double  amp;
 	 double t, w;
 	 double *cn, *cd; /* numerators and denominators */
-	 int nn, nd, in, id; 
- 
+	 int nn, nd, in, id;
+
    	  struct blkt *next_ptr;
 
 
@@ -246,18 +247,18 @@ void iir_trans(struct blkt *blkt_ptr, double wint, struct complex *out) {
 /* Handle numerator */
   xre= cn[0];
   xim = 0.0;
-  
+
   if (nn != 1)	{
 	 for (in=1; in<nn; in++)	{
 		xre+=cn[in]*cos(-(in*w));
 		xim+=cn[in]*sin(-(in*w));
  	}
- } 
-  amp=sqrt(xre*xre + xim*xim);   
+ }
+  amp=sqrt(xre*xre + xim*xim);
   phase=atan2(xim,xre);
 
 
- 
+
 /* handle denominator */
 
   xre= cd[0];
@@ -272,20 +273,20 @@ void iir_trans(struct blkt *blkt_ptr, double wint, struct complex *out) {
 
    amp /= (sqrt(xre*xre+xim*xim));
    phase = (phase - atan2(xim,xre)) ;
-  
 
-   
- 
+
+
+
   out->real = amp * cos(phase) * h0;
   out->imag = amp * sin(phase) * h0;
 
  }
 
- 
+
 /*================================================================
  *	Response of blockette 55 (Response List Blockette)
  * Function introduced in version 3.2.17 of evalresp
- * Ilya Dricker ISTI (.dricker@isti.com) 06/22/00	
+ * Ilya Dricker ISTI (.dricker@isti.com) 06/22/00
  *===============================================================*/
 void calc_list (struct blkt *blkt_ptr, int i, struct complex *out)	{
   double  amp, phase;
@@ -413,7 +414,7 @@ void fir_asym_trans(struct blkt *blkt_ptr, double w, struct complex *out) {
     R += a[k] * cos(y);
     I += a[k] * -sin(y);
   }
-    
+
   mod = sqrt(R*R + I*I);
   pha = atan2(I,R) + (w*(double)((na-1)/2.0)*sint);
   R = mod * cos(pha);
@@ -445,17 +446,17 @@ void iir_pz_trans(struct blkt *blkt_ptr, double w, struct complex *out) {
   wsint = w * sint;
 
   c = cos(wsint);
-  s = sin(wsint);
+  s = - sin(wsint);  /* IGD 09/20/01 instead of + */
   for (i = 0; i < nz; i++) {
-    R = c + ze[i].real;
-    I = s + ze[i].imag;
+    R = c - ze[i].real;    /* IGD 09/20/01 instead of + */
+    I = s - ze[i].imag;    /* IGD 09/20/01 instead of + */
     mod *= sqrt(R*R + I*I);
     if (R == 0.0 && I == 0.0) pha += 0.0;
     else                      pha += atan2(I, R);
   }
   for (i = 0; i < np; i++) {
-    R = c + po[i].real;
-    I = s + po[i].imag;
+    R = c - po[i].real;    /* IGD 09/20/01 instead of + */
+    I = s - po[i].imag;    /* IGD 09/20/01 instead of + */
     mod /= sqrt(R*R +I*I);
     if (R == 0.0 && I == 0.0) pha += 0.0;
     else                      pha -= atan2(I, R);

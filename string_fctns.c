@@ -167,7 +167,7 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
   if((lcl_ptr = strstr(line,sep)) == (char *)NULL) {
     error_return(UNDEF_SEPSTR, "get_line; seperator string not found"); 
   }
-  else if((lcl_ptr - line) > (strlen(line)-1)) {
+  else if((lcl_ptr - line) > (int)(strlen(line)-1)) {
     error_return(UNDEF_SEPSTR, "get_line; nothing to parse after seperator string"); 
   }
 
@@ -176,7 +176,7 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
     lcl_ptr++;
   }
 
-  if((lcl_ptr - line) > strlen(line)) {
+  if((lcl_ptr - line) > (int)strlen(line)) {
     error_return(UNDEF_SEPSTR, "get_line; no non-white space after seperator string"); 
   }
 
@@ -220,7 +220,7 @@ int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *se
   if((lcl_ptr = strstr(line,sep)) == (char *)NULL) {
     error_return(UNDEF_SEPSTR, "get_field; seperator string not found"); 
   }
-  else if((lcl_ptr - line) > (strlen(line)-1)) {
+  else if((lcl_ptr - line) > (int)(strlen(line)-1)) {
     error_return(UNDEF_SEPSTR, "get_field; nothing to parse after seperator string"); 
   }
 
@@ -242,7 +242,7 @@ int count_fields(char *line) {
   int nfields = 0, test;
 
   lcl_ptr = line;
-  while(*lcl_ptr && (test = sscanf(lcl_ptr,"%s",lcl_field))) {
+  while(*lcl_ptr && (test = sscanf(lcl_ptr,"%s",lcl_field)) != 0) {
     new_ptr = strstr(lcl_ptr,lcl_field);
     lcl_ptr = new_ptr + strlen(lcl_field); 
     nfields++;
@@ -413,7 +413,7 @@ int check_units(char *line) {
     return(DEFAULT);
   }
 
-  for(i = 0; i < strlen(line); i++)
+  for(i = 0; i < (int)strlen(line); i++)
     line[i] = toupper(line[i]);
 
 /* IGD 02/03/01 a restricted case of pessure data is added

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>          /* for 'exit()'; added 8/28/2001 -- [ET] */
 
 void
 regerror(s)

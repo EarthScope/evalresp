@@ -1,3 +1,9 @@
+/* parse_fctns.c
+ *
+ *  8/28/2001 -- [ET]  Added "!= 0" to several conditionals to squelch
+ *                     "possibly incorrect assignment" warnings.
+ */
+
 #include <malloc.h>
 #include <string.h>
 #include <stdlib.h>
@@ -1023,7 +1029,7 @@ int parse_channel(FILE *fptr, struct channel* chan) {
   int blkt_no, read_blkt = 0, fld_no, no_units;
   int curr_seq_no, last_seq_no;
 
-  struct blkt *blkt_ptr, *last_blkt;
+  struct blkt *blkt_ptr, *last_blkt = (struct blkt *)NULL;
   struct stage *this_stage, *last_stage, *tmp_stage, *tmp_stage2;
 
   /* initialize the channel's sequence of stages */
@@ -1037,7 +1043,7 @@ int parse_channel(FILE *fptr, struct channel* chan) {
 
   /* start processing the response information */
 
-  while((FirstField = next_line(fptr, FirstLine, &blkt_no, &fld_no, ":")) && blkt_no != 50) {
+  while((FirstField = next_line(fptr, FirstLine, &blkt_no, &fld_no, ":")) != 0 && blkt_no != 50) {
     switch (blkt_no) {
     case 53:
       blkt_ptr = alloc_pz();
@@ -1389,7 +1395,7 @@ int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
   struct scn *scn;
 
   len_time = strlen(datime);
-  while((test = get_channel(fptr, this_channel))) {
+  while((test = get_channel(fptr, this_channel)) != 0) {
     for(i = 0; i < scn_lst->nscn; i++) {
       scn = scn_lst->scn_vec[i];
       if(string_match(this_channel->staname,scn->station,"-g") &&
@@ -1426,7 +1432,7 @@ int get_resp(FILE *fptr, struct scn *scn, char *datime,
   int test, len_time;
 
   len_time = strlen(datime);
-  while((test = get_channel(fptr, this_channel))) {
+  while((test = get_channel(fptr, this_channel)) != 0) {
     if(string_match(this_channel->staname,scn->station,"-g") &&
        ((!strlen(scn->network) && !strlen(this_channel->network)) ||
         string_match(this_channel->network,scn->network,"-g")) &&
@@ -1457,7 +1463,7 @@ int next_resp(FILE *fptr) {
   int blkt_no, fld_no, test;
   char tmp_line[MAXLINELEN];
 
-  while((test = check_line(fptr, &blkt_no, &fld_no, tmp_line)) && blkt_no != 50)
+  while((test = check_line(fptr, &blkt_no, &fld_no, tmp_line)) != 0 && blkt_no != 50)
     ;
 
   if(test && blkt_no == 50) {

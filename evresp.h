@@ -2,6 +2,12 @@
  *                    evresp.h
  *=================================================================*/
 
+/*
+ *  8/28/2001 -- [ET]  Added 'WIN32' directives for Windows compiler
+ *                     compatibility; added 'extern' to variable
+ *                     declarations at end of file.
+ */
+
 #ifndef EVRESP_H
 #define EVRESP_H
 
@@ -11,7 +17,7 @@
 #include <setjmp.h>
 #include <stdarg.h>
 
-#define REVNUM "3.2.19"
+#define REVNUM "3.2.20"
 #define TRUE 1
 #define FALSE 0
 #define STALEN 64
@@ -64,6 +70,15 @@ enum error_codes { NON_EXIST_FLD = -2, ILLEGAL_RESP_FORMAT = -5,
 };
 
 /* define structures for the compound data types used in evalesp */
+
+/* if Windows compiler then redefine 'complex' to */
+/*  differentiate it from the existing struct:    */
+#ifdef WIN32
+#ifdef complex
+#undef complex
+#endif
+#define complex evr_complex
+#endif
 
 struct complex {
   double real;
@@ -296,25 +311,25 @@ int start_child(char *, FILE **, FILE **, FILE **);
 struct complex *alloc_complex(int);
 struct response *alloc_response(int);
 struct string_array *alloc_string_array(int);
-struct scn *alloc_scn();
+struct scn *alloc_scn(void);
 struct scn_list *alloc_scn_list(int);
-struct file_list *alloc_file_list();
-struct matched_files *alloc_matched_files();
+struct file_list *alloc_file_list(void);
+struct matched_files *alloc_matched_files(void);
 double *alloc_double(int);
 char *alloc_char(int);
 char **alloc_char_ptr(int);
 
 /* allocation routines for the various types of filters */
 
-struct blkt *alloc_pz();
-struct blkt *alloc_coeff();
-struct blkt *alloc_fir();
-struct blkt *alloc_ref();
-struct blkt *alloc_gain();
-struct blkt *alloc_list();
-struct blkt *alloc_generic();
-struct blkt *alloc_deci();
-struct stage *alloc_stage();
+struct blkt *alloc_pz(void);
+struct blkt *alloc_coeff(void);
+struct blkt *alloc_fir(void);
+struct blkt *alloc_ref(void);
+struct blkt *alloc_gain(void);
+struct blkt *alloc_list(void);
+struct blkt *alloc_generic(void);
+struct blkt *alloc_deci(void);
+struct stage *alloc_stage(void);
 
 /* routines to free up space associated with dynamically allocated
    structure members */
@@ -425,22 +440,22 @@ extern double twoPi;
 
 /* define a global flag to use if using "default" units */
 
-int def_units_flag;
+extern int def_units_flag;
 
 /* define a pointer to a channel structure to use in determining the input and
    output units if using "default" units and for use in error output*/
 
-struct channel *GblChanPtr;
-float unitScaleFact;
+extern struct channel *GblChanPtr;
+extern float unitScaleFact;
 
 /* define global variables for use in printing error messages */
 
-char *curr_file;
-int curr_seq_no;
+extern char *curr_file;
+extern int curr_seq_no;
 
 /* and set a global variable to contain the environment for the setjmp/longjmp
    combination for error handling */
 
-jmp_buf jump_buffer;
+extern jmp_buf jump_buffer;
 
 #endif

@@ -1,11 +1,25 @@
+/* file_ops.c
+ *
+ *  8/28/2001 -- [ET]  Added 'WIN32' directives for Windows compiler
+ *                     compatibility; added code to use 'findfirst()' and
+ *                     'findnext()' (instead of 'ls') when using a Windows
+ *                     compiler.
+ */
 #include <sys/types.h>
-#include <sys/param.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#ifndef WIN32                /* if not Windows compiler then */
+#include <sys/param.h>       /* include header files */
 #include <unistd.h>
+#include <sys/time.h>
+#else                        /* if Windows compiler then */
+#include <time.h>            /* 'time.h' is not in 'sys/' */
+#endif
 #include <string.h>
 #include <signal.h>
 #include "evresp.h"
+
+#ifndef WIN32      /* if not Windows compiler then include 'sig_child()' */
 
 /*
  * This is a 4.3BSD SIGCLD signal handler that can be used by a
@@ -15,10 +29,10 @@
  * Beware that the calling process may get an interrupted system call
  * when we return, so they had better handle that.
  */
- 
+
 #include        <sys/wait.h>
 #include        <signal.h>
- 
+
 void sig_child(int sig) {
   /*
   * Use the wait3() system call with the WNOHANG option.
@@ -30,6 +44,16 @@ void sig_child(int sig) {
   while((pid = wait3(&status, WNOHANG, (struct rusage *) 0)) > 0)
                 ;
 }
+
+#else                   /* if Windows compiler then */
+#if __BORLANDC__        /* if Borland compiler then */
+#include <dir.h>        /* include header file for directory functions */
+#else                   /* if non-Borland (MS) compiler then */
+#include <io.h>         /* include header files for directory functions */
+#include <direct.h>          /* define macro used below: */
+#define S_ISDIR(m) ((m) & S_IFDIR)
+#endif
+#endif
 
 /* find_files:
 
@@ -181,13 +205,10 @@ struct matched_files *find_files(char *file, struct scn_list *scn_lst, int *mode
 
 }
 
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/time.h>
+#ifndef WIN32      /* if not Windows then use original 'get_names()' */
 
-/* get_name:  uses a child process to get the first filename matching
-              the expression in 'in_file' using the 'ls' command.  The
-              first match is returned as the argument 'out_file' */
+/* get_names:  uses a child process to get filenames matching the
+               expression in 'in_file' using the 'ls' command. */
 
 int get_names(char *in_file, struct matched_files *files) {
   FILE *read_from, *write_to, *err_stream;
@@ -285,3 +306,54 @@ int start_child(char *cmd, FILE **readpipe, FILE
      return childpid;
   }
 }
+
+#else              /* if Windows compiler then use new 'get_names()' */
+
+/* get_names:  uses 'findfirst()' and 'findnext()' to get filenames
+               matching the expression in 'in_file'. */
+
+int get_names(char *in_file, struct matched_files *files)
+{
+  struct file_list *lst_ptr, *tmp_ptr;
+#if __BORLANDC__             /* if Borland compiler then */
+  struct ffblk fblk;         /* define block for 'findfirst()' fn */
+#else                        /* if non-Borland (MS) compiler then */
+  struct _finddata_t fblk;   /* define block for 'findfirst()' fn */
+         /* setup things for Microsoft compiler compatibility: */
+#define ff_name name
+#define findfirst(name,blk,attrib) _findfirst(name,blk)
+#define findnext(blk) _findnext(0,blk)
+#endif
+
+  if(findfirst(in_file,&fblk,0) < 0)
+    return 0;
+
+  files->first_list = alloc_file_list();
+  lst_ptr = files->first_list;
+
+  /* retrieve the files and build up a linked
+     list of matching files */
+  do
+  {
+    files->nfiles++;
+    lst_ptr->name = alloc_char(strlen(fblk.ff_name)+1);
+    strcpy(lst_ptr->name,fblk.ff_name);
+    lst_ptr->next_file = alloc_file_list();
+    tmp_ptr = lst_ptr;
+    lst_ptr = lst_ptr->next_file;
+  }
+  while(findnext(&fblk) >= 0);
+
+  /* allocated one too many files in the linked list */
+  if(lst_ptr != (struct file_list *)NULL) {
+    free_file_list(lst_ptr);
+    free(lst_ptr);
+    if(tmp_ptr != lst_ptr)
+      tmp_ptr->next_file = (struct file_list *)NULL;
+  }
+
+  return(files->nfiles);
+}
+
+#endif
+

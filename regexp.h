@@ -4,6 +4,9 @@
  * Caveat:  this is V8 regexp(3) [actually, a reimplementation thereof],
  * not the System V one.
  */
+/*
+ *   8/28/2001 -- [ET]  Added parameter lists to function declarations.
+ */
 #define NSUBEXP  10
 typedef struct regexp {
 	char *startp[NSUBEXP];
@@ -15,7 +18,7 @@ typedef struct regexp {
 	char program[1];	/* Unwarranted chumminess with compiler. */
 } regexp;
 
-extern regexp *regcomp();
-extern int regexec();
-extern void regsub();
-extern void regerror();
+regexp *regcomp(char *exp);
+int regexec(regexp *prog,char *string);
+void regsub(regexp *prog,char *source,char *dest);
+void regerror(char *s);

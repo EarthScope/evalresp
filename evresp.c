@@ -31,10 +31,31 @@ Notes:
         match is found, a value of 0 is returned to the calling routine
 
  *=================================================================*/
+/*
+ *  8/28/2001 -- [ET]  Moved several variable definitions from 'evresp.h'
+ *                     into this file.
+ */
 
 #include "./evresp.h"
 #include <stdlib.h>
 #include <string.h>
+
+/* define a global flag to use if using "default" units */
+int def_units_flag;
+
+/* define a pointer to a channel structure to use in determining the input and
+   output units if using "default" units and for use in error output*/
+struct channel *GblChanPtr;
+float unitScaleFact;
+
+/* define global variables for use in printing error messages */
+char *curr_file;
+int curr_seq_no;
+
+/* and set a global variable to contain the environment for the setjmp/longjmp
+   combination for error handling */
+jmp_buf jump_buffer;
+
 
 int evresp_(char *sta, char *cha, char *net, char *locid, char *datime, 
 	    char *units, char *file, float *freqs, int *nfreqs_in, float *resp,
@@ -231,7 +252,7 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
 
   /* parse the "stalst" string to form a list of stations */
 
-  for(i = 0; i < strlen(stalst); i++) {
+  for(i = 0; i < (int)strlen(stalst); i++) {
     if(stalst[i] == ',')
       stalst[i] = ' ';
   }
@@ -252,7 +273,7 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
 
   /* parse the "chalst" string to form a list of channels */
 
-  for(i = 0; i < strlen(chalst); i++) {
+  for(i = 0; i < (int)strlen(chalst); i++) {
     if(chalst[i] == ',')
       chalst[i] = ' ';
   }

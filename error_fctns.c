@@ -75,14 +75,18 @@ void error_return(int cond, char *msg, ...) {
   if(curr_file == (char *)NULL)
     curr_file = "<stdin>";
 
-  if(curr_seq_no >= 0)
-    fprintf(stderr,"EVRESP ERROR (%s.%s.%s.%s [File: %s; Start date: %s; Stage: %d]):\n\t",
+  if(GblChanPtr != NULL) {
+    if(curr_seq_no >= 0)
+      fprintf(stderr,"EVRESP ERROR (%s.%s.%s.%s [File: %s; Start date: %s; Stage: %d]):\n\t",
 	    GblChanPtr->staname, GblChanPtr->network, GblChanPtr->locid, GblChanPtr->chaname,
 	    curr_file, GblChanPtr->beg_t, curr_seq_no);
-  else if(strlen(GblChanPtr->staname))
-    fprintf(stderr,"EVRESP ERROR (%s.%s.%s.%s [File: %s; Start date: %s]):\n\t",
+    else if(strlen(GblChanPtr->staname))
+      fprintf(stderr,"EVRESP ERROR (%s.%s.%s.%s [File: %s; Start date: %s]):\n\t",
 	    GblChanPtr->staname, GblChanPtr->network, GblChanPtr->locid, GblChanPtr->chaname,
 	    curr_file,GblChanPtr->beg_t);
+    else
+      fprintf(stderr,"EVRESP ERROR [File: %s]):\n\t", curr_file);
+  }
   else
     fprintf(stderr,"EVRESP ERROR [File: %s]):\n\t", curr_file);
   va_start(ap, msg);
@@ -132,3 +136,4 @@ void error_return(int cond, char *msg, ...) {
   fflush(stderr);
   longjmp(jump_buffer,cond);
 }
+

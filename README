@@ -1,4 +1,4 @@
-This directory contains the distribution of evalresp v3.2.19
+This directory contains the distribution of evalresp v3.2.20
 The historical release notes follow the info on installation.
 
 Since the code is written as ANSI standard C, the standard
@@ -11,16 +11,17 @@ Intel machines (under both LINUX and FreeBSD Unix)
 HP-UX workstations
 SGI workstations
 
-Any ANSI standard C compiler should work with the code. Some
-problems may exist with non-UNIX OS's (specifically with the way
-that evalresp searches for matching files), but a version has been
-ported to a DOS machine by Peter Zwick at RPI.
+As of v3.2.20, the code will compile under Microsoft Windows 95/98/NT
+using Borland C++ 5.02 or Microsoft Visual C++ 6.0.
+
+Any ANSI standard C compiler should work with the code.
 
 This distribution is fairly self contained.  Because of the variety
 of machines that the code is distrubuted on now, an executable is
-no longer included with the distribution.  To build the executable
-for your machine, simply type the following commands from this
-directory:
+no longer included with the distribution.
+
+To build the executable on a Unix-based machine, type the following
+commands from the 'evalresp' directory:
 
 ./configure
 make
@@ -28,11 +29,19 @@ make
 The configure script should set up a Makefile that is appropriate
 for your available resources.  Once that Makefile is built, simply
 typing "make" will build the "libevresp.a" library and build an
-executable called "evalresp".  The "evresp" C function can be called
-from within your own C code to calculate responses from RESP files,
-or the "evresp_" function can be called from a FORTRAN program.
-A simple example of calling "evresp_" from a FORTRAN program is
-available in the included "evtest.f" file.
+executable called "evalresp".
+
+To build the executable on a Microsoft Windows-based machine, use
+one of the following make files:
+makefile.bor  -  for Borland C++
+makefile.ms   -  for Microsoft Visual C++
+The file "evalresp.ide" is a project file for use with the Borland
+C++ v5.02 graphical IDE.
+
+The "evresp" C function can be called from within your own C code
+to calculate responses from RESP files, or the "evresp_" function
+can be called from a FORTRAN program.  A simple example of calling
+"evresp_" from a FORTRAN program is available in the "evtest.f" file.
 
 
 tjm@iris.washington.edu
@@ -40,7 +49,16 @@ tjm@iris.washington.edu
 Modified
 i.dricker@isti.com
 17 July, 2001
+Modified (MS Windows port) 
+e.thomas@isti.com
+28 August, 2001
+
 --------------------- Release Notes ---------------------------
+
+version 3.2.20 (28-August-2001)
+Code ported to work with Microsoft Windows-based compilers.  Functionality
+should be unchanged.
+
 version 3.2.19 (30-July-2001)
 1) A bug which forced evalresp to compute incorrect group delays has been fixed.
 2) A computation of decimation is removed from evalresp.

@@ -267,7 +267,7 @@ char *argv[];
    checking to make sure they match one of the appropriate input values */
 
   if(strlen(rtype)) {
-    for(i = 0; i < strlen(rtype); i++)
+    for(i = 0; i < (int)strlen(rtype); i++)
       *(rtype+i) = toupper(*(rtype+i));
     if(strcmp(rtype,"AP") && strcmp(rtype,"CS"))
       error_exit(USAGE_ERROR,"evalresp; rtype entered ('%s') not a recognized string (see usage)",
@@ -277,7 +277,7 @@ char *argv[];
     strncpy(rtype,"AP",MAXFLDLEN);
 
   if(strlen(units)) {
-    for(i = 0; i < strlen(units); i++)
+    for(i = 0; i < (int)strlen(units); i++)
       *(units+i) = toupper(*(units+i));
     if(strcmp(units,"DIS") && strcmp(units,"VEL") && strcmp(units,"ACC") && strcmp(units,"DEF"))
       error_exit(USAGE_ERROR,"evalresp; units entered ('%s') not a recognized string (see usage)",
@@ -315,4 +315,5 @@ char *argv[];
   free_response(first);
 
   exit(0);
+  return 0;             /* 'return' statement to avoid compiler warning */
 }

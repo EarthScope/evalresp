@@ -6,13 +6,12 @@ dnl IGD PACKAGE="evalresp"
 dnl IGD AC_SUBST(PACKAGE)
 dnl IGD AC_DEFINE_UNQUOTED(PACKAGE, ${PACKAGE})
 
-dnl IGD VERSION="3.2.19"
 dnl IGD AC_SUBST(VERSION)
 dnl IGD AC_DEFINE_UNQUOTED(VERSION, ${VERSION})
 
 
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(evalresp,3.2.19)
+AM_INIT_AUTOMAKE(evalresp,3.2.20-beta.1)
 
 dnl Checks for programs.
 AC_PROG_CC

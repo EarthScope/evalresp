@@ -24,6 +24,7 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include <malloc.h>          /* added 8/28/2001 -- [ET] */
 #include "regexp.h"
 #include "regmagic.h"
 
@@ -195,7 +196,7 @@ char *exp;
 	register char *longest;
 	register int len;
 	int flags;
-	extern char *malloc();
+	extern void *malloc(size_t size);
 
 	if (exp == NULL)
 		FAIL("NULL argument");
@@ -253,7 +254,7 @@ char *exp;
 			longest = NULL;
 			len = 0;
 			for (; scan != NULL; scan = regnext(scan))
-				if (OP(scan) == EXACTLY && strlen(OPERAND(scan)) >= len) {
+				if (OP(scan) == EXACTLY && (int)strlen(OPERAND(scan)) >= len) {
 					longest = OPERAND(scan);
 					len = strlen(OPERAND(scan));
 				}

@@ -1,11 +1,18 @@
 /* This file is modified by I.Dricker , ISTI, NY 06/21/00 */
+
+/*
+ *  8/28/2001 -- [ET]  Added quotes to two 'blockette 55' error messages
+ *                     to avoid having an open string traverse into the
+ *                     next line.
+ */
+
 #include <stdlib.h>
 #include "evresp.h"
 
 /* merge_lists:
 
    a routine that merges two lists filters (blockettes 55).
-  The frequencies, amplitudes and phases from the
+   The frequencies, amplitudes and phases from the
    second filter are copied into the first filter and the number of
    coefficients in the first filter is adjusted to reflect the new
    filter size.  Then the next_blkt pointer for the first filter is
@@ -247,8 +254,8 @@ void check_channel(struct channel *chan) {
   	while(next_blkt != (struct blkt *)NULL && next_blkt->type == blkt_ptr->type)
         	merge_lists(blkt_ptr,&next_blkt);
 	if (blkt_ptr->next_blkt != NULL || prev_stage != NULL)	{
-	        error_return(UNSUPPORT_FILTYPE, "check_channel; blockette 55 is not the only one filter type\n
-						blockette in the response file: unsupported filter");
+	        error_return(UNSUPPORT_FILTYPE, "check_channel; blockette 55 is not the only one filter type\n"
+						"blockette in the response file: unsupported filter");
 	}
 	else {
 		/* There are still situatins which we want to avoid */
@@ -259,8 +266,8 @@ void check_channel(struct channel *chan) {
 		if ( chan->first_stage->next_stage != NULL)	{
 			if (chan->first_stage->next_stage->first_blkt != NULL)	{
 				if (chan->first_stage->next_stage->first_blkt->type != GAIN)	
-				        error_return(UNSUPPORT_FILTYPE, "check_channel; blockette 55 is not the only one filter type\n
-						blockette in the response file: unsupported filter");
+				        error_return(UNSUPPORT_FILTYPE, "check_channel; blockette 55 is not the only one filter type\n"
+						"blockette in the response file: unsupported filter");
 			}
 		}
 	}

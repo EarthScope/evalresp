@@ -19,6 +19,7 @@
  *		be misrepresented as being the original software.
  */
 #include <stdio.h>
+#include <string.h>          /* added 8/28/2001 -- [ET] */
 #include "regexp.h"
 #include "regmagic.h"
 
@@ -42,7 +43,6 @@ char *dest;
 	register char c;
 	register int no;
 	register int len;
-	extern char *strncpy();
 
 	if (prog == NULL || source == NULL || dest == NULL) {
 		regerror("NULL parm to regsub");
