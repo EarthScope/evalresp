@@ -54,6 +54,11 @@ e.thomas@isti.com
 28 August, 2001
 
 --------------------- Release Notes ---------------------------
+version 2.3.21 (21-May-2001)
+Added a partial support for generic response blockette. Partial means that
+if such blockette is found, evalresp ignores the blockette, prints a warning
+and continues execution. Previousl versions considered the generic response 
+blockette to be offensive and terminated the processing of the response
 
 version 3.2.20 (28-August-2001)
 Code ported to work with Microsoft Windows-based compilers.  Functionality

@@ -141,9 +141,12 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage, int stdio
       case DECIMATION:
         sprintf(tmp_str," SamInt=%E",this_blkt->blkt_info.decimation.sample_int);
         break;
+      case GENERIC:
+        sprintf(tmp_str," Generic blockette is ignored; ");
+        break;
+
       case FIR_COEFFS:
       case LIST:
-      case GENERIC:
       case REFERENCE:
         break;
       default:

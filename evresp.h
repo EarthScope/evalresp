@@ -51,9 +51,9 @@ enum filt_types { UNDEF_FILT, LAPLACE_PZ, ANALOG_PZ, IIR_PZ,
 };
 
 /* enumeration representing the types of stages that are recognized */
-
+/* IGD 05/15/02 Added GENERIC_TYPE */
 enum stage_types { UNDEF_STAGE, PZ_TYPE, IIR_TYPE, FIR_TYPE, 
-		GAIN_TYPE, LIST_TYPE, IIR_COEFFS_TYPE
+		GAIN_TYPE, LIST_TYPE, IIR_COEFFS_TYPE, GENERIC_TYPE
 };
 
 /* enumeration representing the types of error codes possible */

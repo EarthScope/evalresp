@@ -444,7 +444,7 @@ void iir_pz_trans(struct blkt *blkt_ptr, double w, struct complex *out) {
   next_ptr = blkt_ptr->next_blkt;
   sint = next_ptr->blkt_info.decimation.sample_int;
   wsint = w * sint;
-
+ 
   c = cos(wsint);
   s = - sin(wsint);  /* IGD 09/20/01 instead of + */
   for (i = 0; i < nz; i++) {
@@ -463,7 +463,7 @@ void iir_pz_trans(struct blkt *blkt_ptr, double w, struct complex *out) {
   }
   out->real = mod * cos(pha) * h0;
   out->imag = mod * sin(pha) * h0;
-}
+ }
 
 /*==================================================================
  *      calculate the phase shift equivalent to the time shift
@@ -537,7 +537,7 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
   }
 
   /* -------- TEST 2 -------- */
-  /* 
+  /*
 
      Compute the variable chan->calc_sensit.  This value would normally be the
      same as chan->sensit (the stage zero sensitivity) if the sensitivity
@@ -550,7 +550,7 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
      frequency.
 
      Note on terminology:
-  
+
      chan->sensit      = stage zero sensitivity read from input file
      (i.e. the total sensitivity for a given channel).
      chan->sensfreq    = frequency at which chan-sensit is reported.
@@ -573,7 +573,7 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
     stage_ptr = stage_ptr->next_stage;
   }
 
-  /* 
+  /*
      If necessary, loop thru filters, looking for a non-zero frequency to
      use for chan->sensfreq. If the channel sensitivity is defined, then
      we will use chan->sensfreq, regardless of whether it is zero or not.
@@ -592,10 +592,10 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
         fil = fil->next_blkt;
       }
       stage_ptr = stage_ptr->next_stage;
-    } 
+    }
   }
 
-  /* 
+  /*
      Loop thru filters, evaluate the filter gains and normalizations at
      the single frequency,  chan->sensfreq. Use the stage gains to
      calculate a total channel sensitivity. */
@@ -644,7 +644,7 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
 	       main_type == LAPLACE_PZ ||
 	       main_type == IIR_PZ) &&
 	      (main_filt->blkt_info.pole_zero.a0_freq != chan->sensfreq))) {
-  
+
             reset_gain = 1;
             if(main_type == ANALOG_PZ || main_type == LAPLACE_PZ) {
               main_filt->blkt_info.pole_zero.a0 = 1.0;
@@ -664,7 +664,7 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
               iir_pz_trans(main_filt, twoPi * fil->blkt_info.gain.gain_freq, &df);
               iir_pz_trans(main_filt, w, &of);
             }
-            else if((main_type == FIR_SYM_1 || main_type == FIR_SYM_2) && 
+            else if((main_type == FIR_SYM_1 || main_type == FIR_SYM_2) &&
                      main_filt->blkt_info.fir.ncoeffs) {
               main_filt->blkt_info.fir.h0 = 1.0;
               fir_sym_trans(main_filt, twoPi * fil->blkt_info.gain.gain_freq, &df);
@@ -712,7 +712,7 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
         break;
       }
       fil = fil->next_blkt;
-    } 
+    }
     stage_ptr = stage_ptr->next_stage;
   }
 

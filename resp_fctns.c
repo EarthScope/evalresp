@@ -272,10 +272,26 @@ void check_channel(struct channel *chan) {
 		}
 	}
 	stage_type = LIST_TYPE;
-	filt_blkt = blkt_ptr;		
+	filt_blkt = blkt_ptr;
 	break;
       case GENERIC:
-        error_return(UNSUPPORT_FILTYPE, "check_channel; unsupported filter type");
+//        error_return(UNSUPPORT_FILTYPE, "check_channel; unsupported filter type");
+	/* IGD 05/16/02 Added support for Generic type */
+	if(stage_type && stage_type != GAIN_TYPE)
+	        error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
+	               	       "more than one filter type",i+1);
+        /* check to see if next blockette(s) is(are) a continuation of this one.
+        If so, merge them into one blockette */
+	if(next_blkt != (struct blkt *)NULL && next_blkt->type == blkt_ptr->type)
+                error_return(ILLEGAL_RESP_FORMAT,
+                        "check_channel; multiple 55 blockettes in GENERIC stages are not supported yet");
+         stage_type = GENERIC_TYPE;
+//	nc = 1; /*for calc_delay to be 0 in decimation blockette */
+	fprintf(stdout, "WARNING: Generic blockette is detected in stage %d; content is ignored\n", i+1);
+	fflush(stdout);
+	filt_blkt = blkt_ptr;
+        break;
+
       case FIR_SYM_1:
       case FIR_SYM_2:
       case FIR_ASYM:
@@ -366,7 +382,7 @@ void check_channel(struct channel *chan) {
        order) so that they point to each other in the following manner within
        a particular stage:
 
-        STAGE_FIRST_BLKT -> (REF_BLKT) -> FILT_BLKT -> (DECI_BLKT) -> GAIN_BLKT 
+        STAGE_FIRST_BLKT -> (REF_BLKT) -> FILT_BLKT -> (DECI_BLKT) -> GAIN_BLKT
 
        where the blockette types are defined above (blockettes given in
        parentheses are optional), the STAGE_FIRST_BLKT indicates the pointer
@@ -406,7 +422,7 @@ void check_channel(struct channel *chan) {
        position (essentially, this 'disables' the units check for 'gain-only'
        stages */
 	/* IGD in version 3.2.17, there are two new stage types are in the next check */
-    if(stage_type == PZ_TYPE || stage_type == FIR_TYPE || 
+    if(stage_type == PZ_TYPE || stage_type == FIR_TYPE ||
 	stage_type == IIR_TYPE || stage_type == IIR_COEFFS_TYPE || stage_type == LIST_TYPE) {
       if(prev_stage != (struct stage *)NULL && prev_stage->output_units !=
          stage_ptr->input_units)
