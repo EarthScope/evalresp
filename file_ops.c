@@ -11,6 +11,7 @@
  */
 #include <sys/types.h>
 #include <sys/stat.h>
+
 #include <stdlib.h>
 #ifndef WIN32                /* if not Windows compiler then */
 #include <sys/param.h>       /* include header files */
@@ -304,8 +305,11 @@ int start_child(char *cmd, FILE **readpipe, FILE
 
      /* set up a signal handler so that the "SIGCLD" signal is
         ignored (that way we can avoid having zombie children) */
-
-     signal(SIGCLD, sig_child);
+#ifndef SIGCHLD
+#define SIGCHLD SIGCLD
+#endif
+     
+     signal(SIGCHLD, sig_child);
 
      return childpid;
   }

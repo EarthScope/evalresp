@@ -17,7 +17,13 @@
 #include <setjmp.h>
 #include <stdarg.h>
 
+/* IGD 10/16/04 This is for Windows which do not use Makefile.am */
+#ifdef VERSION
 #define REVNUM VERSION 
+#else
+#define REVNUM "3.2.26"
+#endif
+
 #define TRUE 1
 #define FALSE 0
 #define STALEN 64

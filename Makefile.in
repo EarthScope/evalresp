@@ -180,9 +180,9 @@ NROFF = nroff
 MANS = $(man_MANS)
 HEADERS = $(include_HEADERS)
 
-DIST_COMMON = README $(include_HEADERS) INSTALL Makefile.am Makefile.in \
-	aclocal.m4 config.h.in configure configure.in depcomp \
-	install-sh missing mkinstalldirs
+DIST_COMMON = README $(include_HEADERS) ChangeLog INSTALL Makefile.am \
+	Makefile.in aclocal.m4 config.h.in configure configure.in \
+	depcomp install-sh missing mkinstalldirs
 SOURCES = $(libevresp_a_SOURCES) $(evalresp_SOURCES)
 
 all: config.h

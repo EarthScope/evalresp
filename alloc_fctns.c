@@ -1,13 +1,19 @@
 /* This file is modified by I.Dricker I.dricker@isti.com for version 3.2.17 of evalresp*/
-#include <malloc.h>
-
-#include "./evresp.h"
-#include <stdlib.h>
-#include <string.h>
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
+
+#ifdef HAVE_MALLOC_H
+#include <malloc.h>
+#endif
+
+#include "./evresp.h"
+
+#include <stdlib.h>
+
+#include <string.h>
+
 
 /* alloc_complex:  allocates space for an array of complex numbers, returns a pointer to that
                    array (exits with error if fails) */

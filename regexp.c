@@ -28,7 +28,11 @@
  */
 #include <stdio.h>
 #include <string.h>
+
+#ifdef HAVE_MALLOC_H
 #include <malloc.h>          /* added 8/28/2001 -- [ET] */
+#endif
+
 #include "regexp.h"
 #include "regmagic.h"
 
