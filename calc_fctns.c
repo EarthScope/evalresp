@@ -446,7 +446,7 @@ void iir_pz_trans(struct blkt *blkt_ptr, double w, struct complex *out) {
   wsint = w * sint;
  
   c = cos(wsint);
-  s = - sin(wsint);  /* IGD 09/20/01 instead of + */
+  s = sin(wsint);  /* IGD 10/21/02 instead of -: pointed by Sleeman */
   for (i = 0; i < nz; i++) {
     R = c - ze[i].real;    /* IGD 09/20/01 instead of + */
     I = s - ze[i].imag;    /* IGD 09/20/01 instead of + */

@@ -54,10 +54,21 @@ e.thomas@isti.com
 28 August, 2001
 
 --------------------- Release Notes ---------------------------
-version 2.3.21 (21-May-2001)
+version 2.3.22 (21-Oct-2003)
+FIXED: evaluation of the response for an IIR filter. Versions before 
+2.3.20 computed IIR PZ incorrectly. Versions 3.2.20-21 computed amplitude
+of the filter properly, while PHASE was improperly multiplied by (-1),
+mirrored aross y = 0. This release fixes the problem.
+
+ADDED: Interpolation of blockette 55 (to enable this feature, the program
+should be compiled with -DB55_INTRPL compilation flag, which is not set
+by default). This feature is experimaental and not recommended for the 
+general use. 
+
+version 2.3.21 (21-May-2002)
 Added a partial support for generic response blockette. Partial means that
 if such blockette is found, evalresp ignores the blockette, prints a warning
-and continues execution. Previousl versions considered the generic response 
+and continues execution. Previous versions considered the generic response 
 blockette to be offensive and terminated the processing of the response
 
 version 3.2.20 (28-August-2001)

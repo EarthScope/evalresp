@@ -397,17 +397,17 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
 
             test = parse_channel(fptr, &this_channel);
 #ifdef B55_INTRPL
-					if (this_channel.first_stage->first_blkt->type == GENERIC_TYPE)
-					{
-						this_channel.first_stage->first_blkt->blkt_info.list.nresp = 
-								sscdns_interpolate_spectra(&(this_channel.first_stage->first_blkt->blkt_info.list.freq),
-																&(this_channel.first_stage->first_blkt->blkt_info.list.amp),
-																&(this_channel.first_stage->first_blkt->blkt_info.list.phase),
-                               this_channel.first_stage->first_blkt->blkt_info.list.nresp,
-															 freqs[0],
-															 (freqs[nfreqs-1] - freqs[0])/(nfreqs - 1),
-															 freqs[nfreqs-1]);
-					}
+	   if (this_channel.first_stage->first_blkt->type == GENERIC_TYPE)
+	   {
+	     this_channel.first_stage->first_blkt->blkt_info.list.nresp = 
+	       interpolate_spectra(&(this_channel.first_stage->first_blkt->blkt_info.list.freq),
+	       &(this_channel.first_stage->first_blkt->blkt_info.list.amp),
+	       &(this_channel.first_stage->first_blkt->blkt_info.list.phase),
+               this_channel.first_stage->first_blkt->blkt_info.list.nresp,
+	       freqs[0],
+	       (freqs[nfreqs-1] - freqs[0])/(nfreqs - 1),
+	       freqs[nfreqs-1]);
+	   }
 #endif
 
            /* check the filter sequence that was just read */
@@ -422,30 +422,32 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
 		/* containing previous file. Modifications by I.Dricker IGD*/
 
 
-		free(resp->rvec);
-		free(freqs);
+	    free(resp->rvec);
+	    free(freqs);
 
-		if (this_channel.first_stage->first_blkt != NULL && this_channel.first_stage->first_blkt->type == LIST)	{
-			 /*to prevent segmentation in case iof bogus input files */ 
-			nfreqs = this_channel.first_stage->first_blkt->blkt_info.list.nresp;
-			freqs = (double *) malloc(sizeof(double) * nfreqs); /* malloc a new vector */
-    			memcpy (freqs, this_channel.first_stage->first_blkt->blkt_info.list.freq, sizeof(double) * nfreqs); /*cp*/
+	    if (this_channel.first_stage->first_blkt != NULL && this_channel.first_stage->first_blkt->type == LIST)	
+	    {
+	      /*to prevent segmentation in case of bogus input files */ 
+	      nfreqs = this_channel.first_stage->first_blkt->blkt_info.list.nresp;
+	      freqs = (double *) malloc(sizeof(double) * nfreqs); /* malloc a new vector */
+    	      memcpy (freqs, this_channel.first_stage->first_blkt->blkt_info.list.freq, sizeof(double) * nfreqs); /*cp*/
 			resp->rvec = alloc_complex(nfreqs);	
-			output=resp->rvec;
-			resp->nfreqs = nfreqs;
-			resp->freqs = (double *) malloc(sizeof(double) * nfreqs); /* malloc a new vector */
-	    		memcpy (resp->freqs, this_channel.first_stage->first_blkt->blkt_info.list.freq, sizeof(double) * nfreqs); /*cp*/			
-		}
-		else	{
-			nfreqs = nfreqs_orig;
-			freqs = (double *) malloc(sizeof(double) * nfreqs); /* malloc a new vector */
-    			memcpy (freqs, freqs_orig, sizeof(double) * nfreqs); /*cp*/
-			resp->rvec = alloc_complex(nfreqs);	
-			output=resp->rvec;
-			resp->nfreqs = nfreqs;
-			resp->freqs = (double *) malloc(sizeof(double) * nfreqs); /* malloc a new vector */
-    			memcpy (resp->freqs, freqs_orig, sizeof(double) * nfreqs); /*cp*/			
-		}
+	      output=resp->rvec;
+	      resp->nfreqs = nfreqs;
+	      resp->freqs = (double *) malloc(sizeof(double) * nfreqs); /* malloc a new vector */
+	      memcpy (resp->freqs, this_channel.first_stage->first_blkt->blkt_info.list.freq, sizeof(double) * nfreqs); /*cp*/			
+	   }
+	  else	
+	  {
+	    nfreqs = nfreqs_orig;
+	    freqs = (double *) malloc(sizeof(double) * nfreqs); /* malloc a new vector */
+    	    memcpy (freqs, freqs_orig, sizeof(double) * nfreqs); /*cp*/
+	    resp->rvec = alloc_complex(nfreqs);	
+	    output=resp->rvec;
+	    resp->nfreqs = nfreqs;
+	    resp->freqs = (double *) malloc(sizeof(double) * nfreqs); /* malloc a new vector */
+    	    memcpy (resp->freqs, freqs_orig, sizeof(double) * nfreqs); /*cp*/			
+	  }
 		
 
             /* normalize the response of the filter sequence */

@@ -533,12 +533,13 @@ double y1, double y2)
  * negative value indicating the error.
  */
 /*************************************************************************************************/
-int sscdns_interpolate_spectra(double **frequency_ptr,
-double **amplitude_ptr,				 double **phase_ptr,
+int interpolate_spectra(double **frequency_ptr,
+                               double **amplitude_ptr,
+			       double **phase_ptr,
                                int number_responses,
-															 double frequency_start,
-															 double frequency_step,
-															 double frequency_end)
+			       double frequency_start,
+			       double frequency_step,
+			       double frequency_end)
 {
   int         frequencyCounter;
   int         i;
