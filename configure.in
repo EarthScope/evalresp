@@ -11,7 +11,7 @@ dnl IGD AC_DEFINE_UNQUOTED(VERSION, ${VERSION})
 
 
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(evalresp,.3.2.22)
+AM_INIT_AUTOMAKE(evalresp,3.2.22)
 
 dnl Checks for programs.
 AC_PROG_CC
