@@ -117,17 +117,24 @@ int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no, char *
               length of the resulting line if successful, exits with error if no
               non-comment lines left in file or if expected blockette and field numbers
               do not match those found in the next non-comment line. */
+/* SBH - 2004.079 added code to skip over valid lines that we didn't expect. 
+   Support for SHAPE formatte RESP files, and to skip blank lines */
 
 int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) {
   char *lcl_ptr, *eol_ptr, line[MAXLINELEN];
   int  lcl_blkt, lcl_fld, test;
+  int tmpint;
+  char tmpstr[200];
 
   test = fgetc(fptr);
+  
+  
   while(test != EOF && test == '#') {
     strncpy(line,"",MAXLINELEN-1);
     fgets(line, MAXLINELEN, fptr);
     test = fgetc(fptr);
   }
+
 
   if(test == EOF) {
     return(0);
@@ -135,6 +142,15 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
   else {
     ungetc(test,fptr);
     fgets(line, MAXLINELEN, fptr);
+
+
+    // check for blank line
+    tmpint = sscanf(line, "%s", tmpstr);
+	
+    if (tmpint == EOF) {
+		return get_line(fptr, return_line, blkt_no, fld_no, sep);
+    }
+    
     if(strlen(line) && (eol_ptr = strrchr(line,'\n')) != (char *)NULL) {
       *eol_ptr = '\0';
     }
@@ -151,17 +167,27 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
   /* check the blockette and field numbers found on the line versus the expected values */
 
   if(blkt_no != lcl_blkt) {
-    if(fld_no != lcl_fld) {
+    /* try to parse the next line */
+    return get_line(fptr, return_line, blkt_no, fld_no, sep);
+    /*
+      removed by SBH 2004.079
+      if(fld_no != lcl_fld) {
       error_return(PARSE_ERROR,"get_line; %s%s%3.3d%s%3.3d%s%2.2d%s%2.2d","blkt",
-                   " and fld numbers do not match expected values\n\tblkt_xpt=B",
-                   blkt_no, ", blkt_found=B", lcl_blkt, "; fld_xpt=F", fld_no,
-                   ", fld_found=F", lcl_fld);
-    }
+      " and fld numbers do not match expected values\n\tblkt_xpt=B",
+      blkt_no, ", blkt_found=B", lcl_blkt, "; fld_xpt=F", fld_no,
+      ", fld_found=F", lcl_fld);
+      }
+    */
   }
   else if(fld_no != lcl_fld) {
-    error_return(PARSE_ERROR,"get_line (parsing blockette [%3.3d]); %s%2.2d%s%2.2d",
-            lcl_blkt, "unexpected fld number\n\tfld_xpt=F", fld_no,
-            ", fld_found=F", lcl_fld, lcl_blkt);
+    /* try to parse the next line */
+    return get_line(fptr, return_line, blkt_no, fld_no, sep);
+    /*
+      removed by SBH 2004.079
+      error_return(PARSE_ERROR,"get_line (parsing blockette [%3.3d]); %s%2.2d%s%2.2d",
+      lcl_blkt, "unexpected fld number\n\tfld_xpt=F", fld_no,
+      ", fld_found=F", lcl_fld, lcl_blkt);
+    */
   }
 
   if((lcl_ptr = strstr(line,sep)) == (char *)NULL) {
@@ -190,10 +216,14 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
                non-comment lines left in file), regardless of the blockette and field
                numbers for the line (these values are returned as the values of the input
                pointer variables fld_no and blkt_no). */
+/* SBH - 2004.079 added code to skip blank lines */
 
 int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *sep) {
   char *lcl_ptr, *eol_ptr, line[MAXLINELEN];
   int test;
+  int tmpint;
+  char tmpstr[200];
+  
   test = fgetc(fptr);
 
   while(test != EOF && test == '#') {
@@ -210,6 +240,14 @@ int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *se
     if(strlen(line) && (eol_ptr = strrchr(line,'\n')) != (char *)NULL) {
       *eol_ptr = '\0';
     }
+  }
+  
+  // check for blank line
+  
+  tmpint = sscanf(line, "%s", tmpstr);
+	
+  if (tmpint == EOF) {
+	return   next_line(fptr, return_line, blkt_no, fld_no, sep);
   }
 
   test = parse_pref(blkt_no, fld_no, line);
@@ -334,10 +372,12 @@ int parse_delim_field(char *line, int fld_no, char *delim, char *return_field) {
 /* check_line:  returns the blockette and field numbers in the prefix of the next 'non-comment'
                 line from a RESP file (return value 1 if a non-comment field is found
                 or NULL if no non-comment line is found */
-
+/* SBH - 2004.079 added code to skip blank lines */
 int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line) {
   char  *eol_ptr, line[MAXLINELEN];
   int  test;
+  char tmpstr[200];
+  int tmpint;
 
   test = fgetc(fptr);
   while(test != EOF && test == '#') {
@@ -345,12 +385,25 @@ int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line) {
     test = fgetc(fptr);
   }
 
+//  while(test != EOF && (test == 10) {
+//    fgets(line, MAXLINELEN, fptr);
+//    test = fgetc(fptr);
+//  }
+
   if(test == EOF) {
     return(0);
   }
   else {
     ungetc(test,fptr);
     fgets(line, MAXLINELEN, fptr);
+    
+    // check for blank line
+	tmpint = sscanf(line, "%s", tmpstr);
+	
+	if (tmpint == EOF) {
+		return check_line(fptr, blkt_no, fld_no, in_line);
+	}
+    
     if(strlen(line) && (eol_ptr = strrchr(line,'\n')) != (char *)NULL) {
       *eol_ptr = '\0';
     }
@@ -478,6 +531,7 @@ int string_match(const char *string, char *expr, char *type_flag) {
   int i = 0, glob_type, test;
   register regexp *prog;
   register char *lcl_ptr;
+
 
   memset(lcl_string, 0, sizeof(lcl_string));
   memset(regexp_pattern, 0, sizeof(regexp_pattern));

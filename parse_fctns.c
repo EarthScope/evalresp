@@ -975,6 +975,10 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
                      prev_blkt_no);
         break;
       default:
+	/* code to ignore unexected blockette/field lines might be useful here, but need 
+	   example code to test it - SBH. 2004.079
+	   If we want it, replace this error_return and break with a "continue;"
+	 */
         error_return(UNRECOG_FILTYPE, "parse_ref; unexpected filter type (blockette [%3.3d])",
                      blkt_no);
         break;
@@ -1094,9 +1098,14 @@ int parse_channel(FILE *fptr, struct channel* chan) {
       tmp_stage2->first_blkt = blkt_ptr;
       break;
     default:
-      error_return(UNRECOG_FILTYPE, "parse_chan; unrecognized filter type (blockette [%c])",
-                   blkt_no);
+      /*
+	2004.079 - SBH changed to allow code to skip unrecognized lines in RESP file. Just continue
+	to the next line.
+	error_return(UNRECOG_FILTYPE, "parse_chan; unrecognized filter type (blockette [%c])",
+	blkt_no);
       break;
+      */
+      continue;
     }
     if(blkt_no != 60) {
       if(!read_blkt++) {
@@ -1433,6 +1442,7 @@ int get_resp(FILE *fptr, struct scn *scn, char *datime,
 
   len_time = strlen(datime);
   while((test = get_channel(fptr, this_channel)) != 0) {
+
     if(string_match(this_channel->staname,scn->station,"-g") &&
        ((!strlen(scn->network) && !strlen(this_channel->network)) ||
         string_match(this_channel->network,scn->network,"-g")) &&

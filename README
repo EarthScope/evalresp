@@ -54,6 +54,11 @@ e.thomas@isti.com
 28 August, 2001
 
 --------------------- Release Notes ---------------------------
+version 3.2.23 ( Mar 19, 2004) - SBH
+Added support for SHAPE compatible RESP files. When parsing lines that are valid
+RESP format, but unexpected, evalresp now skips to the next line.
+Added support for blank lines within and at the end of a RESP file.
+
 version 2.3.22 (21-Oct-2003)
 FIXED: evaluation of the response for an IIR filter. Versions before 
 2.3.20 computed IIR PZ incorrectly. Versions 3.2.20-21 computed amplitude

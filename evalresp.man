@@ -36,6 +36,10 @@ by itself returns the usage or `help' lines useful for how to correctly input
 the options.
 .sp
 .SH WHAT IS NEW
+1) Version 3.2.23. Added support for SHAPE compatible RESP files. When parsing lines that are valid
+RESP format, but unexpected, evalresp now skips to the next line. Added support for blank lines within 
+and at the end of a RESP file.
+.br
 1) Version 3.2.21 does not terminate execution if a "Generic Response Blockette" is found in the RESP file, but
 prints a warning and ignores the blockette.
 .br
