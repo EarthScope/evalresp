@@ -1,0 +1,36 @@
+dnl Process this file with autoconf to produce a configure script.
+
+dnl AC_ARG_PROGRAM
+
+dnl IGD PACKAGE="evalresp"
+dnl IGD AC_SUBST(PACKAGE)
+dnl IGD AC_DEFINE_UNQUOTED(PACKAGE, ${PACKAGE})
+
+dnl IGD VERSION="3.2.19"
+dnl IGD AC_SUBST(VERSION)
+dnl IGD AC_DEFINE_UNQUOTED(VERSION, ${VERSION})
+
+
+AC_INIT(Makefile.am)
+AM_INIT_AUTOMAKE(evalresp,3.2.19)
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_RANLIB
+
+dnl Checks for libraries.
+dnl Replace `main' with a function in -lm:
+AC_CHECK_LIB(m, fabs)
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(sys/time.h unistd.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+
+dnl Checks for library functions.
+AC_FUNC_VFORK
+AC_CHECK_FUNCS(getcwd regcomp strcspn strstr)
+
+AC_OUTPUT(Makefile)
