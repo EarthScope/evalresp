@@ -21,4 +21,4 @@ include_HEADERS =  evresp.h   regmagic.h  regexp.h
 man_MANS = evalresp.man
 
 EXTRA_DIST = evalresp.man evresp.h   regmagic.h  regexp.h  \
-        evalresp.ide makefile.bor  makefile.ms
+        evalresp.ide makefile.bor  makefile.ms evtest.f
