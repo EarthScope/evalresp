@@ -1,3 +1,6 @@
+Version 3.2.27
+	1-Mar-2005 Ilya Dricker(i.dricker@isti.com)
+	* Added -add-delay command line option
 Version 3.2.26
 	20-Oct-2004 Ilya Dricker (i.dricker@isti.com)
 	* Techical modifications for Mac OS X portability

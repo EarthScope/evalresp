@@ -114,7 +114,10 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs, struct complex *o
 #ifdef USE_DELAY
 	    calc_time_shift((corr_applied-calc_delay), w, &of);
 #else
-            calc_time_shift(0, w, &of);
+            if (TRUE == use_delay(QUERY_DELAY))
+		calc_time_shift((corr_applied-calc_delay), w, &of);
+	    else
+            	calc_time_shift(0, w, &of);
 #endif
 	    eval_flag = 1;
 	  }
@@ -765,4 +768,33 @@ double
 		}	
 		return phase;
 	}
-	
+
+/* IGD 03/01/05 Small function to set and return 
+ * a static flag to use or not use the delay in
+ * response computation
+ * Input: NEGATIVE means that we want to query the value of the flag
+ *        TRUE or FALSE means that we want to set corresponding values
+ * The reason we want to use this global variable is because we don't
+ * want to change the number of arguments in evresp() function which
+ * is used in users programs
+ */
+
+int use_delay(int flag)	
+{
+	/* WE USE THOSE WEIRD magic numbers here because
+	 * there is a chance that use_delay_flag is not
+	 * defined: in user program which uses evresp()
+	 * when use_delay() is not used before evresp().
+	 */
+	int magic_use_delay = 35443647;
+	int magic_dont_use_delay = -90934324;
+	static int use_delay_flag = FALSE;
+	if (TRUE == flag)
+		use_delay_flag = magic_use_delay;
+	if (FALSE == flag)
+		use_delay_flag = magic_dont_use_delay;
+
+	if (use_delay_flag == magic_use_delay)
+		return TRUE;
+	return FALSE;
+}

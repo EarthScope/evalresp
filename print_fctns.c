@@ -77,8 +77,10 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage, int stdio
   fprintf(stderr, "   calc_del=%.5E  corr_app=%.5E  est_delay=%.5E  final_sint=%.3g(sec/sample)\n",
           chan->calc_delay, chan->applied_corr, chan->estim_delay, chan->sint);
 #ifdef USE_DELAY
-  fprintf(stderr, "      NOTE: Estimated delay was used in computation of PHASE\n");
+  fprintf(stderr, "    NOTE: Estimated delay was used in computation of PHASE\n");
 #endif
+   if (TRUE == use_delay(QUERY_DELAY))
+ 	fprintf(stderr, "    NOTE: Estimated delay was used in computation of PHASE\n");
   /* then print the parameters for each stage (stage number, type of stage, number
      of coefficients [or number of poles and zeros], gain, and input sample interval
      if it is defined for that stage */

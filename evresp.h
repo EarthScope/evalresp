@@ -21,11 +21,12 @@
 #ifdef VERSION
 #define REVNUM VERSION 
 #else
-#define REVNUM "3.2.26"
+#define REVNUM "3.2.27"
 #endif
 
 #define TRUE 1
 #define FALSE 0
+#define QUERY_DELAY -1
 #define STALEN 64
 #define NETLEN 64
 #define LOCIDLEN 64
@@ -487,5 +488,6 @@ extern jmp_buf jump_buffer;
 
 double 
 	unwrap_phase(double phase, double prev_phase, double range, double *added_value);
-
+int 
+	use_delay(int flag); 
 #endif

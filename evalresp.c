@@ -43,6 +43,7 @@ char *argv[];
     printf("    '-r resp_type'         ('ap'=amp/pha|'cs'complex spectra)\n");
     printf("    '-stage start [stop]'  (start and stop are integer stage numbers)\n");
     printf("    '-stdio'               (take input from stdin, output to stdout)\n");
+    printf("    '-use-delay'           (use estimated delay incomputation of response)\n");
     printf("    '-v'                   (verbose; list");
     printf(" parameters on stdout)\n\n");
     printf("    NOTES:\n");
@@ -88,6 +89,8 @@ char *argv[];
 
   /* initialize the optional arguments */
 
+  /* If user did not define -use-delay option by default it is FALSE */
+  use_delay(FALSE);
   strncpy(units,"",MAXFLDLEN);
   strncpy(rtype,"",MAXFLDLEN);
   net_code = locid = file = verbose = type = (char *)NULL;
@@ -98,6 +101,8 @@ char *argv[];
   /* then get the optional arguments (if any) */
 
   for (i = 8; i < argc; i++) {
+    if (0 == strcmp(argv[i], "-use-delay"))
+    	use_delay(TRUE);
     if(!strcmp(argv[i], "-u")){
       if((++i) < argc && *argv[i] != '-')
         strncpy(units,argv[i],MAXFLDLEN);
@@ -196,10 +201,10 @@ char *argv[];
   for (i = 1; i < 8; i++) {
     if(!strncmp(argv[i],"-",1) && !is_real(argv[i])) {
       if(i < 7)
-        error_exit(USAGE_ERROR,"All of required inputs to program are not\n\t"
+        error_exit(USAGE_ERROR,"Not all of the required inputs to program are \n\t"
                    "present, %d are missing, type '%s' for usage", 8-i, argv[0]);
       else
-        error_exit(USAGE_ERROR,"All of required inputs are not\n\t"
+        error_exit(USAGE_ERROR,"Not all of the required inputs are \n\t"
                    "present, 1 is missing, type '%s' for usage", argv[0]);
     }
   }
@@ -324,3 +329,6 @@ char *argv[];
   exit(0);
   return 0;             /* 'return' statement to avoid compiler warning */
 }
+
+
+
