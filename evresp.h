@@ -17,7 +17,7 @@
 #include <setjmp.h>
 #include <stdarg.h>
 
-#define REVNUM "3.2.20"
+#define REVNUM "3.2.21"
 #define TRUE 1
 #define FALSE 0
 #define STALEN 64

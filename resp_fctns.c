@@ -253,21 +253,25 @@ void check_channel(struct channel *chan) {
 
   	while(next_blkt != (struct blkt *)NULL && next_blkt->type == blkt_ptr->type)
         	merge_lists(blkt_ptr,&next_blkt);
-	if (blkt_ptr->next_blkt != NULL || prev_stage != NULL)	{
-	        error_return(UNSUPPORT_FILTYPE, "check_channel; blockette 55 is not the only one filter type\n"
-						"blockette in the response file: unsupported filter");
+	if (stage_ptr->next_stage != NULL || prev_stage != NULL)
+	{
+				        error_return(UNSUPPORT_FILTYPE,
+						 "blockette 55 cannot be mixed with other filter blockettes\n");
 	}
-	else {
-		/* There are still situatins which we want to avoid */
-		/* Namely the next stage can be hidden in */
+	else
+	{
+		/* There are still situations which we want to avoid */
+		/* In particular, the next stage can be hidden in */
 		/* chan->first_stage->next_stage->first_blkt->type */
 		/* If it is GAIN, we will continue. If it is not gain, we generate error */
 
-		if ( chan->first_stage->next_stage != NULL)	{
-			if (chan->first_stage->next_stage->first_blkt != NULL)	{
-				if (chan->first_stage->next_stage->first_blkt->type != GAIN)	
-				        error_return(UNSUPPORT_FILTYPE, "check_channel; blockette 55 is not the only one filter type\n"
-						"blockette in the response file: unsupported filter");
+		if ( chan->first_stage->next_stage != NULL)
+		{
+			if (chan->first_stage->next_stage->first_blkt != NULL)
+			{
+				if (chan->first_stage->next_stage->first_blkt->type != GAIN)
+				        error_return(UNSUPPORT_FILTYPE,
+						"blockette 55 cannot be mixed with other filter blockettes\n");
 			}
 		}
 	}
