@@ -1,4 +1,4 @@
-This directory contains the distribution of evalresp v3.2.20
+This directory contains the distribution of evalresp v3.2.23
 The historical release notes follow the info on installation.
 
 Since the code is written as ANSI standard C, the standard
@@ -54,6 +54,14 @@ e.thomas@isti.com
 28 August, 2001
 
 --------------------- Release Notes ---------------------------
+version 3.2.24 ( Apr 5, 2004) - IGD
+Added two configuration option:
+ --enable-delay Use estimated delay in phase computation
+ --enable-phase-unwrap Unwrap phase
+
+In order to enable those options evalresp should be configured like:
+./configure --enable-delay --enable-phase-unwrap
+
 version 3.2.23 ( Mar 19, 2004) - SBH
 Added support for SHAPE compatible RESP files. When parsing lines that are valid
 RESP format, but unexpected, evalresp now skips to the next line.

@@ -2,6 +2,12 @@
 #include <string.h>
 /* print_chan:  prints a summary of the channel's response information to stderr */
 
+void
+	evresp_adjust_phase(double *pha, int len, double min, double max);
+
+int
+	evresp_vector_minmax(double *pha, int len, double *min, double *max);
+
 void print_chan(struct channel *chan, int start_stage, int stop_stage, int stdio_flag) {
   struct stage *this_stage, *last_stage, *first_stage;
   struct blkt *this_blkt;
@@ -34,7 +40,7 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage, int stdio
   }
 
   /* inform the user of which file has been evaluated */
- 
+
   fprintf(stderr, "--------------------------------------------------\n");
   if(!stdio_flag) {
     fprintf(stderr, "  %s\n", curr_file);
@@ -60,12 +66,14 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage, int stdio
     fprintf(stderr, "%s %s\n   Seed units: %s(in)->%s(out)\n",
             chan->beg_t, chan->end_t,chan->first_units,
             chan->last_units);
- 
+
   fprintf(stderr, "   computed sens=%.5E (reported=%.5E) @ %.5E Hz\n",
           chan->calc_sensit, chan->sensit, chan->sensfreq);
   fprintf(stderr, "   calc_del=%.5E  corr_app=%.5E  est_delay=%.5E  final_sint=%.3g(sec/sample)\n",
           chan->calc_delay, chan->applied_corr, chan->estim_delay, chan->sint);
-
+#ifdef USE_DELAY
+  fprintf(stderr, "      NOTE: Estimated delay was used in computation of PHASE\n");
+#endif
   /* then print the parameters for each stage (stage number, type of stage, number
      of coefficients [or number of poles and zeros], gain, and input sample interval
      if it is defined for that stage */
@@ -201,9 +209,14 @@ void print_resp(double *freqs, int nfreqs, struct response *first,
   char filename[MAXLINELEN];
   FILE *fptr1, *fptr2;
   struct response *resp;
-  struct complex *output; 
-
-
+  struct complex *output;
+#ifdef UNWRAP_PHASE
+  double range = 360;
+  double added_value = 0;
+  double prev_phase = 0;
+  double *phaArray;
+  double *modArray;
+#endif
 
   resp = first;
   while(resp != (struct response *)NULL) {
@@ -220,12 +233,36 @@ void print_resp(double *freqs, int nfreqs, struct response *first,
         if((fptr2 = fopen(filename,"w")) == (FILE *)NULL) {
           error_exit(OPEN_FILE_ERROR,"print_resp; failed to open file %s", filename);
         }
+#ifdef UNWRAP_PHASE
+	phaArray = (double *) calloc(nfreqs, sizeof(double));
+	modArray = (double *) calloc(nfreqs, sizeof(double));
+#endif
         for(i = 0; i < nfreqs; i++) {
           mod = sqrt(output[i].real*output[i].real+output[i].imag*output[i].imag);
           pha = atan2(output[i].imag, output[i].real+1.e-200)*180./Pi;
+#ifdef UNWRAP_PHASE
+	  pha = unwrap_phase(pha, prev_phase, range, &added_value);
+	  phaArray[i] = pha;
+	  prev_phase = pha;
+	  modArray[i] = mod;
+#endif
+#ifndef UNWRAP_PHASE
           fprintf(fptr1,"%.6E %.6E\n",freqs[i],mod);
           fprintf(fptr2,"%.6E %.6E\n",freqs[i],pha);
+#endif
         }
+#ifdef UNWRAP_PHASE
+	/* Next function attempts to put phase withing -360:360 bounds
+	 * this is requested by AFTAC
+	*/
+	(void) evresp_adjust_phase(phaArray, nfreqs, (double)-360, (double)360);
+        for(i = 0; i < nfreqs; i++) {
+          fprintf(fptr1,"%.6E %.6E\n",freqs[i],modArray[i]);
+          fprintf(fptr2,"%.6E %.6E\n",freqs[i],phaArray[i]);
+        }
+	free(phaArray);
+	free(modArray);
+#endif
         fclose(fptr1);
         fclose(fptr2);
       }
@@ -263,3 +300,53 @@ void print_resp(double *freqs, int nfreqs, struct response *first,
     resp = resp->next;
   }
 }
+
+void
+	evresp_adjust_phase(double *pha, int len, double min, double max)
+	{
+		double vector_min;
+		double vector_max;
+		int retVal;
+		int cycles = 0;
+		int i;
+		if (!pha)
+			return;
+
+		retVal = evresp_vector_minmax(pha, len, &vector_min, &vector_max);
+		if (0 == retVal)
+			return;
+		/* See if the data range is within the requested */
+		if ((max - min) < (vector_max - vector_min))
+			return; /* range is larger that requested */
+		/* see if shifting down puts vector inside the requested range */
+		if (vector_max > max)
+		{
+			cycles = (vector_max-max)/180 + 1;
+		}
+		/* see if shifting up puts vector inside the requested range */
+		if (vector_min < min)
+		{
+			cycles = (vector_min-min)/180 - 1;
+		}
+		/* Do actual shift: note if we were within the ranged originally , cycles == 0; */
+		for (i = 0; i < len; i++)
+			pha[i] = pha[i] - cycles * 180;
+		return;
+	}
+int
+	evresp_vector_minmax(double *pha, int len, double *min, double *max)
+	{
+		int i;
+		if (!pha)
+			return 0;
+		*min = pha[0];
+		*max = pha[0];
+		for (i = 0; i < len; i++)
+		{
+			if (pha[i] > *max)
+				*max = pha[i];
+			if (pha[i] < *min)
+				*min = pha[i];
+		}
+		return 1;
+	}

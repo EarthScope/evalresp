@@ -104,9 +104,12 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs, struct complex *o
 	  if(blkt_ptr->type != IIR_PZ && nc != 0) {
             calc_delay = ((nc-1)/2.0) * blkt_ptr->blkt_info.decimation.sample_int;
 	    corr_applied = blkt_ptr->blkt_info.decimation.applied_corr;
-	  /*  calc_time_shift((corr_applied-calc_delay), w, &of); */
-          calc_time_shift(0, w, &of);
-
+	    /* IGD 04/05/04: #IFDEF logic for proper comutation of delay */
+#ifdef USE_DELAY
+	    calc_time_shift((corr_applied-calc_delay), w, &of);
+#else
+            calc_time_shift(0, w, &of);
+#endif
 	    eval_flag = 1;
 	  }
           break;
@@ -733,3 +736,27 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
 
 
 }
+/* IGD 04/05/04 Phase unwrapping function 
+ * It works only inside a loop over phases.
+ * 
+ */
+double
+        unwrap_phase(double phase, double prev_phase, double range, double *added_value)
+	{
+		phase += *added_value;
+		if (fabs(phase - prev_phase) > range/2)
+		{
+			if (phase - prev_phase > 0)
+			{
+				*added_value -= range;
+				phase -= range;
+			}
+			else
+			{
+				*added_value += range;
+				phase += range;
+			}
+		}	
+		return phase;
+	}
+	

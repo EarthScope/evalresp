@@ -479,4 +479,7 @@ extern int curr_seq_no;
 
 extern jmp_buf jump_buffer;
 
+double 
+	unwrap_phase(double phase, double prev_phase, double range, double *added_value);
+
 #endif

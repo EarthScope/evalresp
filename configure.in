@@ -11,7 +11,7 @@ dnl IGD AC_DEFINE_UNQUOTED(VERSION, ${VERSION})
 
 
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(evalresp,3.2.23)
+AM_INIT_AUTOMAKE(evalresp,3.2.24)
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -32,4 +32,15 @@ dnl Checks for library functions.
 AC_FUNC_VFORK
 AC_CHECK_FUNCS(getcwd regcomp strcspn strstr)
 
+AC_ARG_ENABLE(delay,
+ [ --enable-delay Use estimated delay in phase computation],
+ [ CFLAGS="$CFLAGS -DUSE_DELAY -g"
+  echo ==== BEWARE: EVALRESP WILL USE ESTIMATED DELAY TO COMPUTE PHASE ======],
+ [])
+
+AC_ARG_ENABLE(phase_unwrap,
+ [ --enable-phase-unwrap Unwrap phase],
+ [ CFLAGS="$CFLAGS -DUNWRAP_PHASE -g"
+  echo ==== BEWARE: EVALRESP WILL UNWRAP PHASE  ======],
+ []) 
 AC_OUTPUT(Makefile)

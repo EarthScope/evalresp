@@ -10,15 +10,14 @@
 .\"            a blockette [60] followed by a series of blockette [41] or$
 .\"            blockette [43] through blockette [48] responses)$
 .\"    Author: Thomas J. McSweeney
-.\"  Internet: tjm@iris.washington.edu
-.\"      Also: rick@iris.washington.edu
 .\"     Phone: (206)547-0393
-.\"   Current support:	Ilya G. Dricker
-.\"  Internet: i.dricker@isti.com
-.\"      Also: rick@iris.washington.edu
-.\"     Phone: (518)580-1845
+.\"   Current support:	ISTI
+.\"   Internet: info@isti.com
+.\"   Phone: (518)602-0001
+.\"   Also: rick@iris.washington.edu
+.\"   Phone: (206)547-0393
 .\"
-.TH EVALRESP V3.2.21 05/21/02
+.TH EVALRESP V3.2.24 04/05/04
 .SH NAME
 \fIevalresp\fR - evaluate response information and output to ASCII files using \fIrdseed V4.1\fR and above RESP files.
 .SH SYNOPSIS
@@ -36,24 +35,27 @@ by itself returns the usage or `help' lines useful for how to correctly input
 the options.
 .sp
 .SH WHAT IS NEW
-1) Version 3.2.23. Added support for SHAPE compatible RESP files. When parsing lines that are valid
+Version 3.2.24. Added two confuration options (--enable-delay Use estimated delay in phase computation)
+and (--enable-phase-unwrap Unwrap phase). 
+.br
+Version 3.2.23. Added support for SHAPE compatible RESP files. When parsing lines that are valid
 RESP format, but unexpected, evalresp now skips to the next line. Added support for blank lines within 
 and at the end of a RESP file.
 .br
-1) Version 3.2.21 does not terminate execution if a "Generic Response Blockette" is found in the RESP file, but
+Version 3.2.21 does not terminate execution if a "Generic Response Blockette" is found in the RESP file, but
 prints a warning and ignores the blockette.
 .br
-2) Version 3.2.20 allows a user to compile and run evalresp on WIN32 platform. See the details in README file.
+Version 3.2.20 allows a user to compile and run evalresp on WIN32 platform. See the details in README file.
 .br
-3) As many other contemporary programs \fIevalresp\fR now supports "make install" command. A default installation
+As many other contemporary programs \fIevalresp\fR now supports "make install" command. A default installation
 directory is /usr/local, however, it can be changed during configuration phase: "./configure --prefix=/user/directory".
 .br
-4) A bug in pole-zero representations for digital stages has been fixed.
+A bug in pole-zero representations for digital stages has been fixed.
 .br
-5) Version 3.2.19 is a service release: see the file README in the evalresp distribution for a list of bugs fixed.
+Version 3.2.19 is a service release: see the file README in the evalresp distribution for a list of bugs fixed.
 .sp
 .SH SUPPORT OF PRESSURE DATA
-Starting with version 3.2.18, \fIevalresp\fR is able to process responses of the
+\fIevalresp\fR is able to process responses of the
 pressure instruments (in Passcals). Note, that the default units are assumed to be Passcals, therefore
 a use of "-u" option does not make an effect.
 .sp
