@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdlib.h>
 #include <malloc.h>
 #include <string.h>
@@ -144,7 +148,7 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
     fgets(line, MAXLINELEN, fptr);
 
 
-    // check for blank line
+    /* check for blank line */
     tmpint = sscanf(line, "%s", tmpstr);
 	
     if (tmpint == EOF) {
@@ -242,7 +246,7 @@ int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *se
     }
   }
   
-  // check for blank line
+  /* check for blank line */
   
   tmpint = sscanf(line, "%s", tmpstr);
 	
@@ -385,11 +389,13 @@ int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line) {
     test = fgetc(fptr);
   }
 
-//  while(test != EOF && (test == 10) {
-//    fgets(line, MAXLINELEN, fptr);
-//    test = fgetc(fptr);
-//  }
-
+/*
+    while(test != EOF && (test == 10) {
+    fgets(line, MAXLINELEN, fptr);
+    test = fgetc(fptr);
+  }
+*/
+  
   if(test == EOF) {
     return(0);
   }
@@ -397,7 +403,7 @@ int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line) {
     ungetc(test,fptr);
     fgets(line, MAXLINELEN, fptr);
     
-    // check for blank line
+    /* check for blank line */
 	tmpint = sscanf(line, "%s", tmpstr);
 	
 	if (tmpint == EOF) {

@@ -1,3 +1,8 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+
 #include "./evresp.h"
 #include <string.h>
 /* print_chan:  prints a summary of the channel's response information to stderr */

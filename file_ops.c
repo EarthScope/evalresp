@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* file_ops.c
  *
  *  8/28/2001 -- [ET]  Added 'WIN32' directives for Windows compiler

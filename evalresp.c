@@ -1,3 +1,8 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+
 #include <string.h>
 #include <stdlib.h>
 #include "evresp.h"
@@ -61,7 +66,7 @@ char *argv[];
     printf(" take precedence\n");
     printf("      (5) the NETID (above) indicates a one or two letter network code.\n");
     printf("          If no network code exists in the SEED volume, a value of ''\n");
-    printf("          or '*' will match the 'no network' case (since the '??' string\n");
+    printf("          or '*' will match the 'no network' case (since the ?? string\n");
     printf("          in the RESP file output is replaced with an empty string in\n");
     printf("          the program).\n");
     printf("      (6) the '-stage' option allows the user to specify the range of\n");

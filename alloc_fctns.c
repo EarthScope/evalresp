@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* alloc_complex:  allocates space for an array of complex numbers, returns a pointer to that
                    array (exits with error if fails) */
 

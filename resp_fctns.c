@@ -255,8 +255,11 @@ void check_channel(struct channel *chan) {
         	merge_lists(blkt_ptr,&next_blkt);
 	if (stage_ptr->next_stage != NULL || prev_stage != NULL)
 	{
-				        error_return(UNSUPPORT_FILTYPE,
-						 "blockette 55 cannot be mixed with other filter blockettes\n");
+		if (!stage_ptr->next_stage && 0 != chan->first_stage->next_stage->sequence_no)
+		{
+			error_return(UNSUPPORT_FILTYPE,
+			        "blockette 55 cannot be mixed with other filter blockettes\n");
+		}
 	}
 	else
 	{
@@ -269,9 +272,11 @@ void check_channel(struct channel *chan) {
 		{
 			if (chan->first_stage->next_stage->first_blkt != NULL)
 			{
+				/* If the next stage is overall sesitivity, it's OK */
 				if (chan->first_stage->next_stage->first_blkt->type != GAIN)
 				        error_return(UNSUPPORT_FILTYPE,
-						"blockette 55 cannot be mixed with other filter blockettes\n");
+				       "blockette 55 cannot be mixed with other filter blockettes\n");
+
 			}
 		}
 	}
@@ -279,7 +284,7 @@ void check_channel(struct channel *chan) {
 	filt_blkt = blkt_ptr;
 	break;
       case GENERIC:
-//        error_return(UNSUPPORT_FILTYPE, "check_channel; unsupported filter type");
+/*        error_return(UNSUPPORT_FILTYPE, "check_channel; unsupported filter type"); */
 	/* IGD 05/16/02 Added support for Generic type */
 	if(stage_type && stage_type != GAIN_TYPE)
 	        error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
@@ -290,7 +295,7 @@ void check_channel(struct channel *chan) {
                 error_return(ILLEGAL_RESP_FORMAT,
                         "check_channel; multiple 55 blockettes in GENERIC stages are not supported yet");
          stage_type = GENERIC_TYPE;
-//	nc = 1; /*for calc_delay to be 0 in decimation blockette */
+/*	nc = 1; */ /*for calc_delay to be 0 in decimation blockette */
 	fprintf(stdout, "WARNING: Generic blockette is detected in stage %d; content is ignored\n", i+1);
 	fflush(stdout);
 	filt_blkt = blkt_ptr;

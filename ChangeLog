@@ -1,0 +1,6 @@
+Version 3.2.25
+        20-Jul-2005 Ilya Dricker (i.dricker@isti.com)
+        * Finally, we started ChangeLog
+	* FIXED: Processing of B55 + GAIN stage is now allowed
+	* ADDED: config.h to the source code and AM_CONFIG_HEADER to
+            configure.in

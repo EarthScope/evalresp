@@ -1,3 +1,8 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+
 /*===================================================================
 Name:      evresp_ Version 3.0
 Purpose:

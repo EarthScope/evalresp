@@ -1,3 +1,8 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+
 /*------------------------------------------------------------------------------------*/
 /* LOG:                                                                               */                  
 /* Version 3.2.20:  iir_pz_trans()   modified IGD 09/20/01                            */

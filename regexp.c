@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /*
  * regcomp and regexec -- regsub and regerror are elsewhere
  *

@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /* parse_fctns.c
  *
  *  8/28/2001 -- [ET]  Added "!= 0" to several conditionals to squelch
