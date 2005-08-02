@@ -17,7 +17,7 @@
 .\"   Also: rick@iris.washington.edu
 .\"   Phone: (206)547-0393
 .\"
-.TH EVALRESP V3.2.27 1-Mar-2005
+.TH EVALRESP V3.2.28 2-Aug-2005
 .SH NAME
 \fIevalresp\fR - evaluate response information and output to ASCII files using \fIrdseed V4.1\fR and above RESP files.
 .SH SYNOPSIS
@@ -35,6 +35,7 @@ by itself returns the usage or `help' lines useful for how to correctly input
 the options.
 .sp
 .SH WHAT IS NEW
+Version 3.2.28. Modified to allow command-line parameters for frequency values to be missing.
 Version 3.2.27. Added command line option -add-delay (Use estimated delay in phase computation)
 Version 3.2.26. Now evalresp runs on Mac OS X.
 Version 3.2.25. Processing of B55 with GAIN stage fixed. Starting with this version, all modifications

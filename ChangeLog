@@ -1,3 +1,7 @@
+Version 3.2.28
+        2-Aug-2005 Eric Thomas (e.thomas@isti.com)
+        * Modified to allow command-line parameters for frequency
+          values to be missing (default values used).
 Version 3.2.27
 	1-Mar-2005 Ilya Dricker(i.dricker@isti.com)
 	* Added -add-delay command line option
