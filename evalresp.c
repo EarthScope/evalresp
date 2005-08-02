@@ -2,11 +2,8 @@
 #include <config.h>
 #endif
 
-
 #include <string.h>
-
 #include <stdlib.h>
-
 #include "evresp.h"
 
 #define DATIMESIZE 32
@@ -18,17 +15,18 @@ char *argv[];
 {
   char *sta_list, *cha_list, units[MAXFLDLEN], *file, *verbose;
   char *net_code, *locid, *type, rtype[MAXFLDLEN];
-  int lin_typ = 0, nfreqs, i, tmp_val, fldlen;
+  int lin_typ = 0, nfreqs, i, fswidx, tmp_val, fldlen;
   int start_stage = -1, stop_stage = 0, stdio_flag = 0;
   char *t_o_day;
   char *datime;
   double incr, freq_lims[2], temp_val, *freqs;
   double val;
   struct response *first;
+  char *minfstr, *maxfstr, *numfstr;
 
   curr_seq_no = -1;
 
-  if (argc < 8) {
+  if (argc < 5) {
     printf("EVALRESP V%s\n", REVNUM);
     printf("\nUSAGE: evalresp STALST CHALST YYYY DAY MINFREQ");
     printf(" MAXFREQ NFREQ [options]\n\n");
@@ -87,6 +85,19 @@ char *argv[];
     printf("resp.all_stations -n '*' -v\n\n");    exit(1);
   }
 
+    /* find index of first switch parameter */
+  fswidx = 0;                /* loop until switch param found (if any) */
+  while(++fswidx < argc &&   /*  (check if switch param or real #) */
+               (strncmp(argv[fswidx],"-",1) != 0 || is_real(argv[fswidx])));
+  if(fswidx < 5) {
+    error_exit(USAGE_ERROR,"Not all of the required inputs are \n\t"
+            "present (%d missing), type '%s' for usage", 8-fswidx, argv[0]);
+  }
+    /* setup min,max,num freq values; use defaults if missing */
+  minfstr = (fswidx > 5) ? argv[5] : "1.0";
+  maxfstr = (fswidx > 6) ? argv[6] : minfstr;
+  numfstr = (fswidx > 7) ? argv[7] : "1";
+
   /* initialize the optional arguments */
 
   /* If user did not define -use-delay option by default it is FALSE */
@@ -100,7 +111,7 @@ char *argv[];
 
   /* then get the optional arguments (if any) */
 
-  for (i = 8; i < argc; i++) {
+  for (i = fswidx; i < argc; i++) {
     if (0 == strcmp(argv[i], "-use-delay"))
     	use_delay(TRUE);
     if(!strcmp(argv[i], "-u")){
@@ -195,20 +206,6 @@ char *argv[];
       verbose = argv[i];
   }
 
-  /* get the mandatory inputs; check to make sure all are present and are
-     the correct 'type' (if applicable) */
-
-  for (i = 1; i < 8; i++) {
-    if(!strncmp(argv[i],"-",1) && !is_real(argv[i])) {
-      if(i < 7)
-        error_exit(USAGE_ERROR,"Not all of the required inputs to program are \n\t"
-                   "present, %d are missing, type '%s' for usage", 8-i, argv[0]);
-      else
-        error_exit(USAGE_ERROR,"Not all of the required inputs are \n\t"
-                   "present, 1 is missing, type '%s' for usage", argv[0]);
-    }
-  }
-
   sta_list = argv[1];
   cha_list = argv[2];
 
@@ -225,17 +222,18 @@ char *argv[];
   }
   sprintf(datime, "%s,%s,%s", argv[3], argv[4], t_o_day);
 
-  if(!is_real(argv[5]) || !is_real(argv[6]))
+  if(!is_real(minfstr) || !is_real(maxfstr))
     error_exit(USAGE_ERROR,"freq_lims must be real numbers, found (%s,%s)",
-               argv[5],argv[6]);
-  freq_lims[0] = atof(argv[5]);
-  freq_lims[1] = atof(argv[6]);
-  if ((freq_lims[0] == 0.0  || freq_lims[1] == 0.0) && !strcmp(type,"log")) {
+               minfstr,maxfstr);
+  freq_lims[0] = atof(minfstr);
+  freq_lims[1] = atof(maxfstr);
+  if ((freq_lims[0] == 0.0 || freq_lims[1] == 0.0) &&
+                                (type == NULL || strcmp(type,"lin") != 0)) {
     error_exit(USAGE_ERROR," freq lims can't equal 0 if log spacing is used");
   }
-  if(!is_int(argv[7]))
-    error_exit(USAGE_ERROR,"nfreqs must be an integer, found '%s'", argv[7]);
-  nfreqs = atoi(argv[7]);
+  if(!is_int(numfstr))
+    error_exit(USAGE_ERROR,"nfreqs must be an integer, found '%s'", numfstr);
+  nfreqs = atoi(numfstr);
 
   /* check the frequency input values and range */
 
@@ -329,6 +327,4 @@ char *argv[];
   exit(0);
   return 0;             /* 'return' statement to avoid compiler warning */
 }
-
-
 

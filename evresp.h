@@ -6,6 +6,9 @@
  *  8/28/2001 -- [ET]  Added 'WIN32' directives for Windows compiler
  *                     compatibility; added 'extern' to variable
  *                     declarations at end of file.
+ *   8/2/2001 -- [ET]  Version 3.2.28:  Modified to allow command-line
+ *                     parameters for frequency values to be missing
+ *                     (default values used).
  */
 
 #ifndef EVRESP_H
@@ -19,9 +22,9 @@
 
 /* IGD 10/16/04 This is for Windows which do not use Makefile.am */
 #ifdef VERSION
-#define REVNUM VERSION 
+#define REVNUM VERSION
 #else
-#define REVNUM "3.2.27"
+#define REVNUM "3.2.28"
 #endif
 
 #define TRUE 1
