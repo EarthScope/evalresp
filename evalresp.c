@@ -317,6 +317,11 @@ char *argv[];
 
   first = evresp(sta_list,cha_list,net_code,locid,datime,units,file,freqs,nfreqs,
                  rtype,verbose,start_stage,stop_stage,stdio_flag);
+  if (!first)
+  {
+	fprintf(stderr, "EVERSP FAILED");
+	exit(-1);
+  }
 
 /* and print the responses to a set of files */
 

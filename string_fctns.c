@@ -483,7 +483,7 @@ int check_units(char *line) {
  * We will play with string_match ater if more requests show
  * up for pressure data.
 ********************************************/
-  if (strcmp(line, "PA - PRESSURE IN PASCALS") == 0)
+  if (strncasecmp(line, "PA", 2) == 0)
 	return(PRESSURE);
 
   if(string_match(line,"^[CNM]?M/S\\*\\*2|^[CNM]?M/SEC\\*\\*2","-r")) {

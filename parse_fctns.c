@@ -1240,10 +1240,14 @@ int get_channel(FILE *fptr, struct channel* chan) {
     strncpy(chan->chaname,field,CHALEN);
   }
   else {
+#ifdef LIB_MODE
+    return 0;
+#else
     error_return(PARSE_ERROR,"get_line; %s%s%3.3d%s%3.3d%s[%2.2d|%2.2d]%s%2.2d","blkt",
                  " and fld numbers do not match expected values\n\tblkt_xpt=B",
                  52, ", blkt_found=B", blkt_no, "; fld_xpt=F", 3, 4,
                  ", fld_found=F", fld_no);
+#endif
   }
 
   /* get the Start Date */
@@ -1408,7 +1412,7 @@ int in_epoch(const char *datime, const char *beg_t, const char *end_t) {
 int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
               struct channel *this_channel) {
   int test, i, len_time;
-  struct scn *scn;
+  struct scn *scn = NULL;
 
   len_time = strlen(datime);
   while((test = get_channel(fptr, this_channel)) != 0) {
@@ -1473,7 +1477,7 @@ int get_resp(FILE *fptr, struct scn *scn, char *datime,
                then a zero value is returned (indicating failure to reposition the file
                pointer), otherwise the field number for that line  is returned and
                that first line is returned in the input argument "FirstLine".
-               The pointer to the file (fptr) is left in position for the get_channel 
+               The pointer to the file (fptr) is left in position for the get_channel
                routine to grab the channel information */
 
 int next_resp(FILE *fptr) {

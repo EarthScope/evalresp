@@ -189,7 +189,7 @@ int FirstField;
 
 struct response *evresp (char *stalst, char *chalst, char *net_code, char *locidlst,
              char *date_time, char *units, char *file, double *freqs, int nfreqs,
-             char *rtype, char *verbose, int start_stage, int stop_stage, int stdio_flag) 
+             char *rtype, char *verbose, int start_stage, int stop_stage, int stdio_flag)
 {
   struct channel this_channel;
   struct scn *scn;
@@ -346,6 +346,10 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
         if(!(err_type = setjmp(jump_buffer))) {
           new_file = 0;
           which_matched = find_resp(fptr, scns, date_time, &this_channel);
+#ifdef LIB_MODE
+	  if (which_matched < 1)
+	  	return NULL;
+#endif
 
           /* found a station-channel-network that matched.  First construct
              an output filename and compare to other output files. If this
@@ -392,7 +396,7 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
           if(new_file && which_matched >= 0) {
 
             /* fill in station-channel-net information for the response */
-              
+
             strncpy(resp->station,this_channel.staname,STALEN);
             strncpy(resp->locid,this_channel.locid,LOCIDLEN);
             strncpy(resp->channel,this_channel.chaname,CHALEN);
@@ -406,7 +410,7 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
 #ifdef B55_INTRPL
 	   if (this_channel.first_stage->first_blkt->type == GENERIC_TYPE)
 	   {
-	     this_channel.first_stage->first_blkt->blkt_info.list.nresp = 
+	     this_channel.first_stage->first_blkt->blkt_info.list.nresp =
 	       interpolate_spectra(&(this_channel.first_stage->first_blkt->blkt_info.list.freq),
 	       &(this_channel.first_stage->first_blkt->blkt_info.list.amp),
 	       &(this_channel.first_stage->first_blkt->blkt_info.list.phase),
@@ -432,30 +436,30 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
 	    free(resp->rvec);
 	    free(freqs);
 
-	    if (this_channel.first_stage->first_blkt != NULL && this_channel.first_stage->first_blkt->type == LIST)	
+	    if (this_channel.first_stage->first_blkt != NULL && this_channel.first_stage->first_blkt->type == LIST)
 	    {
-	      /*to prevent segmentation in case of bogus input files */ 
+	      /*to prevent segmentation in case of bogus input files */
 	      nfreqs = this_channel.first_stage->first_blkt->blkt_info.list.nresp;
 	      freqs = (double *) malloc(sizeof(double) * nfreqs); /* malloc a new vector */
     	      memcpy (freqs, this_channel.first_stage->first_blkt->blkt_info.list.freq, sizeof(double) * nfreqs); /*cp*/
-			resp->rvec = alloc_complex(nfreqs);	
+			resp->rvec = alloc_complex(nfreqs);
 	      output=resp->rvec;
 	      resp->nfreqs = nfreqs;
 	      resp->freqs = (double *) malloc(sizeof(double) * nfreqs); /* malloc a new vector */
-	      memcpy (resp->freqs, this_channel.first_stage->first_blkt->blkt_info.list.freq, sizeof(double) * nfreqs); /*cp*/			
+	      memcpy (resp->freqs, this_channel.first_stage->first_blkt->blkt_info.list.freq, sizeof(double) * nfreqs); /*cp*/
 	   }
-	  else	
+	  else
 	  {
 	    nfreqs = nfreqs_orig;
 	    freqs = (double *) malloc(sizeof(double) * nfreqs); /* malloc a new vector */
     	    memcpy (freqs, freqs_orig, sizeof(double) * nfreqs); /*cp*/
-	    resp->rvec = alloc_complex(nfreqs);	
+	    resp->rvec = alloc_complex(nfreqs);
 	    output=resp->rvec;
 	    resp->nfreqs = nfreqs;
 	    resp->freqs = (double *) malloc(sizeof(double) * nfreqs); /* malloc a new vector */
-    	    memcpy (resp->freqs, freqs_orig, sizeof(double) * nfreqs); /*cp*/			
+    	    memcpy (resp->freqs, freqs_orig, sizeof(double) * nfreqs); /*cp*/
 	  }
-		
+
 
             /* normalize the response of the filter sequence */
 
@@ -527,6 +531,10 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
           if(!(err_type = setjmp(jump_buffer))) {
             new_file = 0;
             which_matched = get_resp(fptr, scn, date_time, &this_channel);
+#ifdef LIB_MODE
+           if (which_matched < 1)
+              return NULL;
+#endif
             if(which_matched >= 0) {
 
               /* found a station-channel-network that matched.  First construct
@@ -568,7 +576,7 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
               if(new_file) {
 
                 /* fill in station-channel-net information for the response */
-              
+
                 strncpy(resp->station,this_channel.staname,STALEN);
                 strncpy(resp->locid,this_channel.locid,LOCIDLEN);
                 strncpy(resp->channel,this_channel.chaname,CHALEN);

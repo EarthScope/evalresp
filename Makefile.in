@@ -74,7 +74,7 @@ lib_LIBRARIES = libevresp.a
 libevresp_a_SOURCES = regexp.c regerror.c regsub.c calc_fctns.c resp_fctns.c         file_ops.c evresp.c alloc_fctns.c parse_fctns.c print_fctns.c         string_fctns.c error_fctns.c
 
 
-CFLAGS = -Wall -g
+#CFLAGS =    -Wall -g
 #-DB55_INTRPL
 
 include_HEADERS = evresp.h   regmagic.h  regexp.h
@@ -106,6 +106,7 @@ print_fctns.o string_fctns.o error_fctns.o
 evalresp_LDADD = $(LDADD)
 evalresp_DEPENDENCIES = 
 evalresp_LDFLAGS = 
+CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
@@ -116,8 +117,8 @@ NROFF = nroff
 HEADERS =  $(include_HEADERS)
 
 DIST_COMMON =  README ./stamp-h.in ChangeLog INSTALL Makefile.am \
-Makefile.in aclocal.m4 config.guess config.h.in config.sub configure \
-configure.in install-sh missing mkinstalldirs
+Makefile.in aclocal.m4 config.h.in configure configure.in install-sh \
+missing mkinstalldirs
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
