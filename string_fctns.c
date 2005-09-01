@@ -519,7 +519,11 @@ int check_units(char *line) {
   else if(string_match(line,"^V[^A-Z]","-r") || string_match(line,"^VOLTS[^A-Z]","-r")) {
     return(VOLTS);
   }
+#ifdef LIB_MODE
+  return (DEFAULT);
+#else
   error_return(UNRECOG_UNITS, "check_units; units found ('%s') are not supported", line);
+#endif
    return(0); /*We should not reach to here */
 }
 
