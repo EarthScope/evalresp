@@ -1,3 +1,19 @@
+/* string_fctns.c */
+
+/*
+   10/21/2005 -- [ET]  Modified so as not to require characters after
+                       'units' specifiers like "M" and "COUNTS";
+                       improved error message generated when no
+                       data fields found on line; added test of 'strstr()'
+                       result in 'count_fields()' and 'parse_field()'
+                       functions to prevent possible program crashes
+                       due to null pointer (tended to be caused by
+                       response files with Windows-type "CR/LF" line
+                       ends); modified 'get/next/check_line()' functions
+                       to make them strip trailing CR and LF characters
+                       (instead of just LF character).
+*/
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -129,7 +145,7 @@ int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no, char *
    Support for SHAPE formatte RESP files, and to skip blank lines */
 
 int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) {
-  char *lcl_ptr, *eol_ptr, line[MAXLINELEN];
+  char *lcl_ptr, line[MAXLINELEN];
   int  lcl_blkt, lcl_fld, test;
   int tmpint;
   char tmpstr[200];
@@ -158,10 +174,10 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
     if (tmpint == EOF) {
 		return get_line(fptr, return_line, blkt_no, fld_no, sep);
     }
-    
-    if(strlen(line) && (eol_ptr = strrchr(line,'\n')) != (char *)NULL) {
-      *eol_ptr = '\0';
-    }
+
+    tmpint = strlen(line);        /* strip any trailing CR or LF chars */
+    while(tmpint > 0 && line[tmpint-1] < ' ')
+      line[--tmpint] = '\0';
   }
 
   if(!line)
@@ -227,11 +243,11 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
 /* SBH - 2004.079 added code to skip blank lines */
 
 int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *sep) {
-  char *lcl_ptr, *eol_ptr, line[MAXLINELEN];
+  char *lcl_ptr, line[MAXLINELEN];
   int test;
   int tmpint;
   char tmpstr[200];
-  
+
   test = fgetc(fptr);
 
   while(test != EOF && test == '#') {
@@ -245,15 +261,15 @@ int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *se
   else {
     ungetc(test,fptr);
     fgets(line, MAXLINELEN, fptr);
-    if(strlen(line) && (eol_ptr = strrchr(line,'\n')) != (char *)NULL) {
-      *eol_ptr = '\0';
-    }
+    tmpint = strlen(line);        /* strip any trailing CR or LF chars */
+    while(tmpint > 0 && line[tmpint-1] < ' ')
+      line[--tmpint] = '\0';
   }
-  
+
   /* check for blank line */
-  
+
   tmpint = sscanf(line, "%s", tmpstr);
-	
+
   if (tmpint == EOF) {
 	return   next_line(fptr, return_line, blkt_no, fld_no, sep);
   }
@@ -288,8 +304,9 @@ int count_fields(char *line) {
   int nfields = 0, test;
 
   lcl_ptr = line;
-  while(*lcl_ptr && (test = sscanf(lcl_ptr,"%s",lcl_field)) != 0) {
-    new_ptr = strstr(lcl_ptr,lcl_field);
+         /* added test of 'strstr()' result -- 10/21/2005 -- [ET] */
+  while(*lcl_ptr && (test=sscanf(lcl_ptr,"%s",lcl_field)) != 0 &&
+                              (new_ptr=strstr(lcl_ptr,lcl_field)) != NULL) {
     lcl_ptr = new_ptr + strlen(lcl_field); 
     nfields++;
   }
@@ -330,15 +347,23 @@ int parse_field(char *line, int fld_no, char *return_field) {
 
   nfields = count_fields(line);
   if(fld_no >= nfields) {
-    error_return(PARSE_ERROR, "%s%d%s%d%s",
+    if(nfields > 0) {
+      error_return(PARSE_ERROR, "%s%d%s%d%s",
                  "parse_field; Input field number (",fld_no,
                  ") exceeds number of fields on line(",nfields,")");
+    }
+    else {
+      error_return(PARSE_ERROR, "%s",
+                              "parse_field; Data fields not found on line");
+    }
   }
 
   lcl_ptr = line;
+         /* added test of 'strstr()' result -- 10/21/2005 -- [ET] */
   for(i = 0; i < fld_no; i++) {
     sscanf(lcl_ptr,"%s",lcl_field);
-    new_ptr = strstr(lcl_ptr,lcl_field);
+    if((new_ptr=strstr(lcl_ptr,lcl_field)) == NULL)
+      break;
     lcl_ptr = new_ptr + strlen(lcl_field);
   }
 
@@ -356,9 +381,15 @@ int parse_delim_field(char *line, int fld_no, char *delim, char *return_field) {
 
   nfields = count_delim_fields(line, delim);
   if(fld_no >= nfields) {
-    error_return(PARSE_ERROR, "%s%d%s%d%s",
-                 "parse_field; Input field number (",fld_no,
+    if(nfields > 0) {
+      error_return(PARSE_ERROR, "%s%d%s%d%s",
+                 "parse_delim_field; Input field number (",fld_no,
                  ") exceeds number of fields on line(",nfields,")");
+    }
+    else {
+      error_return(PARSE_ERROR, "%s",
+                        "parse_delim_field; Data fields not found on line");
+    }
   }
 
   lcl_ptr = line;
@@ -382,7 +413,7 @@ int parse_delim_field(char *line, int fld_no, char *delim, char *return_field) {
                 or NULL if no non-comment line is found */
 /* SBH - 2004.079 added code to skip blank lines */
 int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line) {
-  char  *eol_ptr, line[MAXLINELEN];
+  char  line[MAXLINELEN];
   int  test;
   char tmpstr[200];
   int tmpint;
@@ -399,24 +430,24 @@ int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line) {
     test = fgetc(fptr);
   }
 */
-  
+
   if(test == EOF) {
     return(0);
   }
   else {
     ungetc(test,fptr);
     fgets(line, MAXLINELEN, fptr);
-    
+
     /* check for blank line */
 	tmpint = sscanf(line, "%s", tmpstr);
-	
+
 	if (tmpint == EOF) {
 		return check_line(fptr, blkt_no, fld_no, in_line);
 	}
-    
-    if(strlen(line) && (eol_ptr = strrchr(line,'\n')) != (char *)NULL) {
-      *eol_ptr = '\0';
-    }
+
+    tmpint = strlen(line);        /* strip any trailing CR or LF chars */
+    while(tmpint > 0 && line[tmpint-1] < ' ')
+      line[--tmpint] = '\0';
   }
 
   test = parse_pref(blkt_no, fld_no, line);
@@ -504,7 +535,7 @@ int check_units(char *line) {
       unitScaleFact = 1.0e2;
     return(VEL);
   }
-  else if(string_match(line,"^[CNM]?M[^A-Z/]","-r")) {
+  else if(string_match(line,"^[CNM]?M[^A-Z/]?","-r")) {
     if(first_flag && !strncmp(line,"NM",2))
       unitScaleFact = 1.0e9;
     else if(first_flag && !strncmp(line,"MM",2))
@@ -513,10 +544,10 @@ int check_units(char *line) {
       unitScaleFact = 1.0e2;
     return(DIS);
   }
-  else if(string_match(line,"^COUNTS[^A-Z]","-r") || string_match(line,"^DIGITAL[^A-Z]","-r")) {
+  else if(string_match(line,"^COUNTS[^A-Z]?","-r") || string_match(line,"^DIGITAL[^A-Z]?","-r")) {
     return(COUNTS);
   }
-  else if(string_match(line,"^V[^A-Z]","-r") || string_match(line,"^VOLTS[^A-Z]","-r")) {
+  else if(string_match(line,"^V[^A-Z]?","-r") || string_match(line,"^VOLTS[^A-Z]?","-r")) {
     return(VOLTS);
   }
 #ifdef LIB_MODE
