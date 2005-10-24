@@ -3,12 +3,25 @@
  *=================================================================*/
 
 /*
- *  8/28/2001 -- [ET]  Added 'WIN32' directives for Windows compiler
- *                     compatibility; added 'extern' to variable
- *                     declarations at end of file.
- *   8/2/2001 -- [ET]  Version 3.2.28:  Modified to allow command-line
- *                     parameters for frequency values to be missing
- *                     (default values used).
+    8/28/2001 -- [ET]  Added 'WIN32' directives for Windows compiler
+                       compatibility; added 'extern' to variable
+                       declarations at end of file.
+     8/2/2001 -- [ET]  Version 3.2.28:  Modified to allow command-line
+                       parameters for frequency values to be missing
+                       (default values used).
+   10/21/2005 -- [ET]  Version 3.2.29:  Implemented interpolation of
+                       amplitude/phase values from responses containing
+                       List blockettes (55); modified message shown when
+                       List blockette encountered; modified so as not to
+                       require characters after 'units' specifiers like
+                       "M" and "COUNTS"; modified to handle case where
+                       file contains "B052F03 Location:" and nothing
+                       after it on line; added warnings for unrecognized
+                       parameters; fixed issue where program would crash
+                       under Linux/UNIX ("segmentation fault") if input
+                       response file contained Windows-style "CR/LF"
+                       line ends; renamed 'strncasecmp()' function
+                       to 'strnicmp()' when compiling under Windows.
  */
 
 #ifndef EVRESP_H
@@ -24,7 +37,7 @@
 #ifdef VERSION
 #define REVNUM VERSION
 #else
-#define REVNUM "3.2.28"
+#define REVNUM "3.2.29"
 #endif
 
 #define TRUE 1
@@ -82,12 +95,14 @@ enum error_codes { NON_EXIST_FLD = -2, ILLEGAL_RESP_FORMAT = -5,
 /* define structures for the compound data types used in evalesp */
 
 /* if Windows compiler then redefine 'complex' to */
-/*  differentiate it from the existing struct:    */
+/*  differentiate it from the existing struct,    */
+/*  and rename 'strncasecmp' function:            */
 #ifdef WIN32
 #ifdef complex
 #undef complex
 #endif
 #define complex evr_complex
+#define strncasecmp strnicmp
 #endif
 
 struct complex {
@@ -417,40 +432,29 @@ int timecmp(struct dateTime *dt1, struct dateTime *dt2);
 
 /* print the channel info, followed by the list of filters */
 
-void print_chan(struct channel *, int, int, int);
+void print_chan(struct channel *, int, int, int, int, int);
 
 /* print the response information to the output files */
 
 void print_resp(double *, int, struct response *, char *, int);
+void print_resp_itp(double *, int, struct response *, char *, int,
+                                                               int, double);
 
 /* evaluate responses for user requested station/channel/network tuple at the
    frequencies requested by the user */
 
 struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
                         double *, int, char *, char *, int, int, int);
+struct response *evresp_itp(char *, char *, char *, char *, char *, char *,
+                            char *, double *, int, char *, char *, int,
+                            int, int, int, int, double);
 
-#ifdef B55_INTRPL
-/*     functions for interpolation of 55 blockette ***************************/
-double
-do_interpolation (double value,  double x1, double x2,
-double y1, double y2);
+ /* Interpolates amplitude and phase values from the set of frequencies
+    in the List blockette to the requested set of frequencies. */
+void interpolate_list_blockette(double **freq, double **amp, double **phase,
+                                 int *p_number_points, double *req_freq_arr,
+                                         int req_num_freqs, double tension);
 
-
-int
-sscdns_interpolate_spectra(double **freq,
-															 double **amp,
-															 double **phase,
-                               int number_responses,
-															 double start_freq,
-															 double end_freq,
-															 double step_freq);
-
-
-void
-sscdns_free_double (double *array);
-
-#endif
-/* and a global string variable showing the same information */
 
 extern char SEEDUNITS[][UNITS_STR_LEN];
 
