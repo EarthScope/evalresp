@@ -1,19 +1,32 @@
+/* print_fctns.c */
+
+/*
+   10/19/2005 -- [ET]  Added 'print_resp_itp()' function with support for
+                       List blockette interpolation; made 'print_resp()'
+                       call 'print_resp_itp()' function with default
+                       values for List blockette interpolation parameters;
+                       added List-blockette interpolation parameters to
+                       'print_chan()' function and modified message shown
+                       when List blockette encountered.
+*/
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-
 #include "./evresp.h"
 #include <string.h>
+#include <stdlib.h>
+
+/* function declarations for forward references */
+int arrays_equal(double *arr1, double *arr2, int arr_size);
+void evresp_adjust_phase(double *pha, int len, double min, double max);
+int evresp_vector_minmax(double *pha, int len, double *min, double *max);
+
 /* print_chan:  prints a summary of the channel's response information to stderr */
 
-void
-	evresp_adjust_phase(double *pha, int len, double min, double max);
-
-int
-	evresp_vector_minmax(double *pha, int len, double *min, double *max);
-
-void print_chan(struct channel *chan, int start_stage, int stop_stage, int stdio_flag) {
+void print_chan(struct channel *chan, int start_stage, int stop_stage,
+          int stdio_flag, int listinterp_out_flag, int listinterp_in_flag) {
   struct stage *this_stage, *last_stage, *first_stage;
   struct blkt *this_blkt;
   char tmp_str[TMPSTRLEN], out_str[OUTPUTLEN];
@@ -178,16 +191,25 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage, int stdio
   }
   fprintf(stderr, "--------------------------------------------------\n");
   /* IGD : here we print a notice about blockette 55: evalresp v. 2.3.17+*/
-  if ( chan->first_stage->first_blkt->type == LIST)	{
-	fprintf(stderr, "++++++++ WARNING ++++++++++++++++++++++++++++\n");
-	fprintf(stderr, "Response information  is extracted from  the blockette 55\n");
-	fprintf(stderr, "which 'is not an acceptable response description' [SEED manual]\n");
-	fprintf (stderr, "The response is computed ONLY for those %d frequencies from the",
-				chan->first_stage->first_blkt->blkt_info.list.nresp); 
-	fprintf (stderr, " input file\n");
-	fprintf(stderr, "+++++++++++++++++++++++++++++++++++++++++++++\n");
-
-
+  /* ET:  Notice modified, with different notice if freqs interpolated */
+  if(chan->first_stage->first_blkt->type == LIST) {
+    if(listinterp_out_flag) {
+      fprintf(stderr, "Note:  The output has been interpolated from the %d frequencies\n",
+                       chan->first_stage->first_blkt->blkt_info.list.nresp);
+      fprintf(stderr, "defined in the response List stage (blockette 55)\n");
+    }
+    else if(listinterp_in_flag) {
+      fprintf(stderr, "Note:  The input has been interpolated from the response List\n");
+      fprintf(stderr, "stage (blockette 55) to generate the %d frequencies requested\n",
+                       chan->first_stage->first_blkt->blkt_info.list.nresp);
+    }
+    else {
+      fprintf(stderr, "++++++++ WARNING ++++++++++++++++++++++++++++\n");
+      fprintf(stderr, "Response contains a List stage (blockette 55)--the output has\n");
+      fprintf(stderr, "been generated for those %d frequencies defined in the blockette\n",
+                       chan->first_stage->first_blkt->blkt_info.list.nresp);
+      fprintf(stderr, "+++++++++++++++++++++++++++++++++++++++++++++\n");
+    }
   }
   fflush(stderr);
 }
@@ -207,30 +229,60 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage, int stdio
                 (real/imaginary) values.  If either case, the output to stdout
                 will be in the form of three columns of real numbers, in the
                 former case they will be freq/amp/phase tuples, in the latter
-                case freq/real/imaginary tuples. */
+                case freq/real/imaginary tuples.
+                This version of the function includes the parameters
+                'listinterp_out_flag' and 'listinterp_tension'  */
 
-void print_resp(double *freqs, int nfreqs, struct response *first,
-                char *rtype, int stdio_flag) {
+void print_resp_itp(double *freqs, int nfreqs, struct response *first,
+                char *rtype, int stdio_flag, int listinterp_out_flag,
+                double listinterp_tension) {
   int i;
-  double mod, pha;
+  double amp, pha;
   char filename[MAXLINELEN];
   FILE *fptr1, *fptr2;
   struct response *resp;
   struct complex *output;
+  double *amp_arr;
+  double *pha_arr;
+  double *freq_arr;
+  int freqarr_alloc_flag;
+  int num_points;
 #ifdef UNWRAP_PHASE
-  double range = 360;
-  double added_value = 0;
-  double prev_phase = 0;
-  double *phaArray;
-  double *modArray;
+  double added_value = 0.0;
+  double prev_phase = 0.0;
 #endif
 
   resp = first;
   while(resp != (struct response *)NULL) {
     output = resp->rvec;
-    nfreqs = resp->nfreqs; /*IGD for v 3.2.17 of evalresp to support blockette 55 */
-    freqs = resp->freqs;
     if(!strcmp(rtype,"AP")) {
+         /* use count from 'response' block to support List blockette */
+      num_points = resp->nfreqs;
+         /* convert complex-spectra to amp/phase and load into arrays */
+      amp_arr = (double *)calloc(num_points,sizeof(double));
+      pha_arr = (double *)calloc(num_points,sizeof(double));
+      for(i = 0; i < num_points; i++) {
+        amp_arr[i] = sqrt(output[i].real*output[i].real+
+                                             output[i].imag*output[i].imag);
+        pha_arr[i] = atan2(output[i].imag,output[i].real+1.e-200)*180.0/Pi;
+      }
+      if(listinterp_out_flag && (nfreqs != resp->nfreqs ||
+                                 !arrays_equal(freqs,resp->freqs,nfreqs))) {
+              /* flag set for interpolating List blockette entries and
+                 requested vs response frequency arrays are not identical */
+                                       /* copy List freqs into new array */
+        freq_arr = (double *)calloc(num_points,sizeof(double));
+        memcpy(freq_arr,resp->freqs,sizeof(double)*num_points);
+        freqarr_alloc_flag = 1;        /* indicate freq array allocated */
+                                       /* interpolate to given freqs */
+        interpolate_list_blockette(&freq_arr,&amp_arr,&pha_arr,
+                               &num_points,freqs,nfreqs,listinterp_tension);
+      }
+      else {                 /* not interpolating List blockette entries */
+              /* use freqs from 'response' blk to support List blockette */
+        freq_arr = resp->freqs;
+        freqarr_alloc_flag = 0;        /* indicate freq array not alloc'd */
+      }
       if(!stdio_flag) {
         sprintf(filename,"AMP.%s.%s.%s.%s",resp->network,resp->station,resp->locid,resp->channel);
         if((fptr1 = fopen(filename,"w")) == (FILE *)NULL) {
@@ -241,35 +293,21 @@ void print_resp(double *freqs, int nfreqs, struct response *first,
           error_exit(OPEN_FILE_ERROR,"print_resp; failed to open file %s", filename);
         }
 #ifdef UNWRAP_PHASE
-	phaArray = (double *) calloc(nfreqs, sizeof(double));
-	modArray = (double *) calloc(nfreqs, sizeof(double));
-#endif
-        for(i = 0; i < nfreqs; i++) {
-          mod = sqrt(output[i].real*output[i].real+output[i].imag*output[i].imag);
-          pha = atan2(output[i].imag, output[i].real+1.e-200)*180./Pi;
-#ifdef UNWRAP_PHASE
-	  pha = unwrap_phase(pha, prev_phase, range, &added_value);
-	  phaArray[i] = pha;
+        for(i = 0; i < num_points; i++) {
+          pha = pha_arr[i];
+	  pha = unwrap_phase(pha, prev_phase, 360.0, &added_value);
+	  pha_arr[i] = pha;
 	  prev_phase = pha;
-	  modArray[i] = mod;
-#endif
-#ifndef UNWRAP_PHASE
-          fprintf(fptr1,"%.6E %.6E\n",freqs[i],mod);
-          fprintf(fptr2,"%.6E %.6E\n",freqs[i],pha);
-#endif
         }
-#ifdef UNWRAP_PHASE
 	/* Next function attempts to put phase withing -360:360 bounds
 	 * this is requested by AFTAC
-	*/
-	(void) evresp_adjust_phase(phaArray, nfreqs, (double)-360, (double)360);
-        for(i = 0; i < nfreqs; i++) {
-          fprintf(fptr1,"%.6E %.6E\n",freqs[i],modArray[i]);
-          fprintf(fptr2,"%.6E %.6E\n",freqs[i],phaArray[i]);
-        }
-	free(phaArray);
-	free(modArray);
+	 */
+	(void) evresp_adjust_phase(pha_arr, num_points, -360.0, 360.0);
 #endif
+        for(i = 0; i < num_points; i++) {
+          fprintf(fptr1,"%.6E %.6E\n",freq_arr[i],amp_arr[i]);
+          fprintf(fptr2,"%.6E %.6E\n",freq_arr[i],pha_arr[i]);
+        }
         fclose(fptr1);
         fclose(fptr2);
       }
@@ -277,13 +315,17 @@ void print_resp(double *freqs, int nfreqs, struct response *first,
         fprintf(stdout, "--------------------------------------------------\n");
         fprintf(stdout,"AMP/PHS.%s.%s.%s.%s\n",resp->network,resp->station,resp->locid,resp->channel);
         fprintf(stdout, "--------------------------------------------------\n");
-        for(i = 0; i < nfreqs; i++) {
-          mod = sqrt(output[i].real*output[i].real+output[i].imag*output[i].imag);
-          pha = atan2(output[i].imag, output[i].real+1.e-200)*180./Pi;
-          fprintf(stdout,"%.6E %.6E %.6E\n",freqs[i],mod,pha);
+        for(i = 0; i < num_points; i++) {
+          amp = amp_arr[i];
+          pha = pha_arr[i];
+          fprintf(stdout,"%.6E %.6E %.6E\n",freq_arr[i],amp,pha);
         }
         fprintf(stdout, "--------------------------------------------------\n");
       }
+      if(freqarr_alloc_flag)      /* if freq array was allocated then */
+        free(freq_arr);           /* free freq array */
+      free(pha_arr);              /* free allocated arrays */
+      free(amp_arr);
     }
     else {
       if(!stdio_flag) {
@@ -298,8 +340,8 @@ void print_resp(double *freqs, int nfreqs, struct response *first,
         fprintf(stdout,"SPECTRA.%s.%s.%s.%s\n",resp->network,resp->station,resp->locid,resp->channel);
         fprintf(stdout, "--------------------------------------------------\n");
       }
-      for(i = 0; i < nfreqs; i++)
-        fprintf(fptr1,"%.6E %.6E %.6E\n",freqs[i],output[i].real,output[i].imag);
+      for(i = 0; i < resp->nfreqs; i++)
+        fprintf(fptr1,"%.6E %.6E %.6E\n",resp->freqs[i],output[i].real,output[i].imag);
       if(!stdio_flag) {
         fclose(fptr1);
       }
@@ -308,8 +350,45 @@ void print_resp(double *freqs, int nfreqs, struct response *first,
   }
 }
 
-void
-	evresp_adjust_phase(double *pha, int len, double min, double max)
+/* print_resp:  prints the response information in the fashion that the
+                user requested it.  The response is either in the form of
+                a complex spectra (freq, real_resp, imag_resp) to the
+                file SPECTRA.NETID.STANAME.CHANAME (if rtype = "cs")
+                or in the form of seperate amplitude and phase files
+                (if rtype = "ap") with names like AMP.NETID.STANAME.CHANAME
+                and PHASE.NETID.STANAME.CHANAME.  In all cases, the pointer to
+                the channel is used to obtain the NETID, STANAME, and CHANAME
+                values.  If the 'stdio_flag' is set to 1, then the response
+                information will be output to stdout, prefixed by a header that
+                includes the NETID, STANAME, and CHANAME, as well as whether
+                the response given is in amplitude/phase or complex response
+                (real/imaginary) values.  If either case, the output to stdout
+                will be in the form of three columns of real numbers, in the
+                former case they will be freq/amp/phase tuples, in the latter
+                case freq/real/imaginary tuples.
+                This version of the function does not include the parameters
+                'listinterp_out_flag' and 'listinterp_tension'  */
+
+void print_resp(double *freqs, int nfreqs, struct response *first,
+                char *rtype, int stdio_flag) {
+  print_resp_itp(freqs,nfreqs,first,rtype,stdio_flag,0,0.0);
+}
+
+/* Compares the entries in the given arrays.
+     arr1 - first array of double values.
+     arr2 - second array of double values.
+     arr_size - number of entries in array.
+   Returns 1 if the all the entries in the arrays are equal, 0 if not. */
+int arrays_equal(double *arr1, double *arr2, int arr_size) {
+  int i;
+  for(i=0; i<arr_size; ++i) {
+    if(arr1[i] != arr2[i])
+      return 0;
+  }
+  return 1;
+}
+
+void evresp_adjust_phase(double *pha, int len, double min, double max)
 	{
 		double vector_min;
 		double vector_max;
@@ -340,8 +419,8 @@ void
 			pha[i] = pha[i] - cycles * 180;
 		return;
 	}
-int
-	evresp_vector_minmax(double *pha, int len, double *min, double *max)
+
+int evresp_vector_minmax(double *pha, int len, double *min, double *max)
 	{
 		int i;
 		if (!pha)
@@ -357,3 +436,4 @@ int
 		}
 		return 1;
 	}
+
