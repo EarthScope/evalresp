@@ -37,14 +37,16 @@ Notes:
 
  *=================================================================*/
 /*
- *  8/28/2001 -- [ET]  Moved several variable definitions from 'evresp.h'
- *                     into this file.
+    8/28/2001 -- [ET]  Moved several variable definitions from 'evresp.h'
+                       into this file.
+   10/19/2005 -- [ET]  Added 'evresp_itp()' function with support for
+                       List blockette interpolation; made 'evresp()'
+                       call 'evresp_itp()' function with default
+                       values for List blockette interpolation parameters.
  */
 
 #include "./evresp.h"
-
 #include <stdlib.h>
-
 #include <string.h>
 
 /* define a global flag to use if using "default" units */
@@ -187,9 +189,16 @@ char SEEDUNITS[][UNITS_STR_LEN] = {"Undef Units", "Displacement", "Velocity",
 char FirstLine[MAXLINELEN];
 int FirstField;
 
-struct response *evresp (char *stalst, char *chalst, char *net_code, char *locidlst,
-             char *date_time, char *units, char *file, double *freqs, int nfreqs,
-             char *rtype, char *verbose, int start_stage, int stop_stage, int stdio_flag)
+             /* This version of the function includes the parameters
+                'listinterp_out_flag' and 'listinterp_tension'  */
+
+struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
+                            char *locidlst, char *date_time, char *units,
+                            char *file, double *freqs, int nfreqs,
+                            char *rtype, char *verbose, int start_stage,
+                            int stop_stage, int stdio_flag,
+                            int listinterp_out_flag, int listinterp_in_flag,
+                            double listinterp_tension)
 {
   struct channel this_channel;
   struct scn *scn;
@@ -209,7 +218,7 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
   struct complex *output;
   struct scn_list *scns;
   FILE *fptr;
-  double *freqs_orig;  /*for saving the original frequencies */
+  double *freqs_orig;  /* for saving the original frequencies */
   int nfreqs_orig;
 
  /* Let's save the original frequencies requested by a user since they can be overwritten */
@@ -407,22 +416,19 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
                the response into a channel/filter list */
 
             test = parse_channel(fptr, &this_channel);
-#ifdef B55_INTRPL
-	   if (this_channel.first_stage->first_blkt->type == GENERIC_TYPE)
-	   {
-	     this_channel.first_stage->first_blkt->blkt_info.list.nresp =
-	       interpolate_spectra(&(this_channel.first_stage->first_blkt->blkt_info.list.freq),
-	       &(this_channel.first_stage->first_blkt->blkt_info.list.amp),
-	       &(this_channel.first_stage->first_blkt->blkt_info.list.phase),
-               this_channel.first_stage->first_blkt->blkt_info.list.nresp,
-	       freqs[0],
-	       (freqs[nfreqs-1] - freqs[0])/(nfreqs - 1),
-	       freqs[nfreqs-1]);
-	   }
-#endif
+
+            if(listinterp_in_flag &&
+                         this_channel.first_stage->first_blkt->type == LIST)
+            {      /* flag set for interpolation and stage type is "List" */
+              interpolate_list_blockette(
+                &(this_channel.first_stage->first_blkt->blkt_info.list.freq),
+                &(this_channel.first_stage->first_blkt->blkt_info.list.amp),
+                &(this_channel.first_stage->first_blkt->blkt_info.list.phase),
+                &(this_channel.first_stage->first_blkt->blkt_info.list.nresp),
+                freqs,nfreqs,listinterp_tension);
+            }
 
            /* check the filter sequence that was just read */
-
             check_channel(&this_channel);
 
 		/* If we process blockette 55, we should recompute resp->rvec */
@@ -434,7 +440,8 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
 
 
 	    free(resp->rvec);
-	    free(freqs);
+/* 'freqs' array is passed in and should not be freed -- 10/18/2005 -- [ET] */
+/*	    free(freqs); */
 
 	    if (this_channel.first_stage->first_blkt != NULL && this_channel.first_stage->first_blkt->type == LIST)
 	    {
@@ -473,7 +480,8 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
             /* diagnostic output, if the user requested it */
 
             if(verbose && !strcmp(verbose,"-v")) {
-              print_chan(&this_channel, start_stage, stop_stage, stdio_flag);
+              print_chan(&this_channel, start_stage, stop_stage,
+                       stdio_flag, listinterp_out_flag, listinterp_in_flag);
             }
 
             /* and, finally, free the memory associated with this channel/filter
@@ -599,10 +607,19 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
 				}		        	
                   	}
 		}
-	
- 
-                /* check the filter sequence that was just read */
 
+               if(listinterp_in_flag &&
+                         this_channel.first_stage->first_blkt->type == LIST)
+               {   /* flag set for interpolation and stage type is "List" */
+                 interpolate_list_blockette(
+                   &(this_channel.first_stage->first_blkt->blkt_info.list.freq),
+                   &(this_channel.first_stage->first_blkt->blkt_info.list.amp),
+                   &(this_channel.first_stage->first_blkt->blkt_info.list.phase),
+                   &(this_channel.first_stage->first_blkt->blkt_info.list.nresp),
+                   freqs,nfreqs,listinterp_tension);
+               }
+
+                /* check the filter sequence that was just read */
                 check_channel(&this_channel);
 
 		/* If we process blockette 55, we should recompute resp->rvec */
@@ -613,8 +630,9 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
 		/* containing previous file. Modifications by I.Dricker / IGD */
 
 		free(resp->rvec);
-		free(freqs);
-		if (this_channel.first_stage->first_blkt != NULL && this_channel.first_stage->first_blkt->type == LIST) {	
+/* 'freqs' array is passed in and should not be freed -- 10/18/2005 -- [ET] */
+/*		free(freqs); */
+		if (this_channel.first_stage->first_blkt != NULL && this_channel.first_stage->first_blkt->type == LIST) {
 			/* This is to prevent segmentation if the response input is bogus responses */
 			nfreqs = this_channel.first_stage->first_blkt->blkt_info.list.nresp;
 			freqs = (double *) malloc(sizeof(double) * nfreqs); /* malloc a new vector */
@@ -648,7 +666,8 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
                 /* diagnostic output, if the user requested it */
 
                 if(verbose && !strcmp(verbose,"-v")) {
-                  print_chan(&this_channel, start_stage, stop_stage, stdio_flag);
+                  print_chan(&this_channel, start_stage, stop_stage,
+                       stdio_flag, listinterp_out_flag, listinterp_in_flag);
                 }
 
                 /* and, finally, free the memory associated with this
@@ -764,3 +783,18 @@ struct response *evresp (char *stalst, char *chalst, char *net_code, char *locid
   return(first_resp);
 
 }
+
+             /* This version of the function does not include the parameters
+                'listinterp_out_flag' and 'listinterp_tension'  */
+
+struct response *evresp(char *stalst, char *chalst, char *net_code,
+                        char *locidlst, char *date_time, char *units,
+                        char *file, double *freqs, int nfreqs,
+                        char *rtype, char *verbose, int start_stage,
+                        int stop_stage, int stdio_flag)
+{
+  return evresp_itp(stalst,chalst,net_code,locidlst,date_time,units,file,
+                    freqs,nfreqs,rtype,verbose,start_stage,stop_stage,
+                    stdio_flag,0,0,0.0);
+}
+
