@@ -3,12 +3,15 @@
 #endif
 
 /* file_ops.c
- *
- *  8/28/2001 -- [ET]  Added 'WIN32' directives for Windows compiler
- *                     compatibility; added code to use 'findfirst()' and
- *                     'findnext()' (instead of 'ls') when using a Windows
- *                     compiler.
+
+    8/28/2001 -- [ET]  Added 'WIN32' directives for Windows compiler
+                       compatibility; added code to use 'findfirst()' and
+                       'findnext()' (instead of 'ls') when using a Windows
+                       compiler.
+   10/21/2005 -- [ET]  Modified 'get_names()' function to work with
+                       Microsoft compiler (under Windows).
  */
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -325,16 +328,22 @@ int get_names(char *in_file, struct matched_files *files)
   struct file_list *lst_ptr, *tmp_ptr;
 #if __BORLANDC__             /* if Borland compiler then */
   struct ffblk fblk;         /* define block for 'findfirst()' fn */
+#define findclose()
 #else                        /* if non-Borland (MS) compiler then */
   struct _finddata_t fblk;   /* define block for 'findfirst()' fn */
          /* setup things for Microsoft compiler compatibility: */
+long fhandval;
 #define ff_name name
-#define findfirst(name,blk,attrib) _findfirst(name,blk)
-#define findnext(blk) _findnext(0,blk)
+#define findfirst(name,blk,attrib) (fhandval=_findfirst(name,blk))
+#define findnext(blk) _findnext(fhandval,blk)
+#define findclose() _findclose(fhandval)
 #endif
 
   if(findfirst(in_file,&fblk,0) < 0)
+  {      /* no matching files found */
+    findclose();        /* release resources for findfirst/findnext */
     return 0;
+  }
 
   files->first_list = alloc_file_list();
   lst_ptr = files->first_list;
@@ -351,6 +360,7 @@ int get_names(char *in_file, struct matched_files *files)
     lst_ptr = lst_ptr->next_file;
   }
   while(findnext(&fblk) >= 0);
+  findclose();          /* release resources for findfirst/findnext */
 
   /* allocated one too many files in the linked list */
   if(lst_ptr != (struct file_list *)NULL) {
