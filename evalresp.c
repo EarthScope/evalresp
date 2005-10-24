@@ -1,3 +1,10 @@
+/* evalresp.c:  Main module for 'evalresp'. */
+
+/*
+   10/19/2005 -- [ET]  Added parameters for List-blockette interpolation;
+                       added warnings for unrecognized parameters.
+*/
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -17,12 +24,15 @@ char *argv[];
   char *net_code, *locid, *type, rtype[MAXFLDLEN];
   int lin_typ = 0, nfreqs, i, fswidx, tmp_val, fldlen;
   int start_stage = -1, stop_stage = 0, stdio_flag = 0;
+  int listinterp_out_flag = 0, listinterp_in_flag = 0;
+  double listinterp_tension = 1000.0;
   char *t_o_day;
   char *datime;
   double incr, freq_lims[2], temp_val, *freqs;
   double val;
   struct response *first;
   char *minfstr, *maxfstr, *numfstr;
+  char param_err_msgstr[] = "%s: missing option to argument '%s'";
 
   curr_seq_no = -1;
 
@@ -31,17 +41,19 @@ char *argv[];
     printf("\nUSAGE: evalresp STALST CHALST YYYY DAY MINFREQ");
     printf(" MAXFREQ NFREQ [options]\n\n");
     printf("  OPTIONS\n\n");
-    printf("    '-f file'              (directory-name|");
-    printf("filename)\n");
+    printf("    '-f file'              (directory-name|filename)\n");
     printf("    '-u units'             ('dis'|'vel'|'acc'|'def')\n");
     printf("    '-t time-of-day'       (HH:MM:SS)\n");
     printf("    '-s type-of-spacing'   (log|lin)\n");
     printf("    '-n netid'             ('II'|'IU'|'G'|'*'...)\n");
     printf("    '-l locid'             ('01'|'AA,AB,AC'|'A?'|'*'...)\n");
-    printf("    '-r resp_type'         ('ap'=amp/pha|'cs'complex spectra)\n");
+    printf("    '-r resp_type'         ('ap'=amp/pha | 'cs'=complex spectra)\n");
     printf("    '-stage start [stop]'  (start and stop are integer stage numbers)\n");
     printf("    '-stdio'               (take input from stdin, output to stdout)\n");
-    printf("    '-use-delay'           (use estimated delay incomputation of response)\n");
+    printf("    '-use-delay'           (use estimated delay in computation of response)\n");
+    printf("    '-il'                  (interpolate List blockette output)\n");
+    printf("    '-ii'                  (interpolate List blockette input)\n");
+    printf("    '-it tension'          (tension for List blockette interpolation)\n");
     printf("    '-v'                   (verbose; list");
     printf(" parameters on stdout)\n\n");
     printf("    NOTES:\n");
@@ -98,6 +110,10 @@ char *argv[];
   maxfstr = (fswidx > 6) ? argv[6] : minfstr;
   numfstr = (fswidx > 7) ? argv[7] : "1";
 
+    /* warn about any unexpected non-switch parameters */
+  for(i=8; i<fswidx; ++i)
+    fprintf(stderr,"WARNING:  Unrecognized parameter:  %s\n",argv[i]);
+
   /* initialize the optional arguments */
 
   /* If user did not define -use-delay option by default it is FALSE */
@@ -117,18 +133,14 @@ char *argv[];
     if(!strcmp(argv[i], "-u")){
       if((++i) < argc && *argv[i] != '-')
         strncpy(units,argv[i],MAXFLDLEN);
-      else{
-        error_exit(USAGE_ERROR,"%s: missing option to argument '%s'",
-                   argv[0],argv[i-1]);
-      }
+      else
+        error_exit(USAGE_ERROR,param_err_msgstr,argv[0],argv[i-1]);
     }
     else if(!strcmp(argv[i], "-r")){
       if((++i) < argc && *argv[i] != '-')
         strncpy(rtype,argv[i],MAXFLDLEN);
-      else{
-        error_exit(USAGE_ERROR,"%s: missing option to argument '%s'",
-                   argv[0],argv[i-1]);
-      }
+      else
+        error_exit(USAGE_ERROR,param_err_msgstr,argv[0],argv[i-1]);
     }
     else if(!strcmp(argv[i], "-stdio")){
       stdio_flag = 1;
@@ -136,10 +148,8 @@ char *argv[];
     else if(!strcmp(argv[i], "-stage")){
       if((++i) < argc && is_int(argv[i]))
         start_stage = atoi(argv[i]);
-      else {
-        error_exit(USAGE_ERROR,"%s: missing option to argument '%s'",
-                   argv[0],argv[i-1]);
-      }
+      else
+        error_exit(USAGE_ERROR,param_err_msgstr,argv[0],argv[i-1]);
       if((++i) < argc && is_int(argv[i])) {
         tmp_val = atoi(argv[i]);
         if(tmp_val > start_stage)
@@ -156,18 +166,14 @@ char *argv[];
     else if(!strcmp(argv[i], "-n")){
       if((++i) < argc && *argv[i] != '-')
         net_code = argv[i];
-      else{
-        error_exit(USAGE_ERROR,"%s: missing option to argument '%s'",
-                   argv[0],argv[i-1]);
-      }
+      else
+        error_exit(USAGE_ERROR,param_err_msgstr,argv[0],argv[i-1]);
     }
     else if(!strcmp(argv[i], "-l")){
       if((++i) < argc && *argv[i] != '-')
         locid = argv[i];
-      else{
-        error_exit(USAGE_ERROR,"%s: missing option to argument '%s'",
-                   argv[0],argv[i-1]);
-      }
+      else
+        error_exit(USAGE_ERROR,param_err_msgstr,argv[0],argv[i-1]);
     }
     else if(!strcmp(argv[i], "-t")){
       if((++i) < argc && *argv[i] != '-') {
@@ -177,33 +183,45 @@ char *argv[];
         }
         strcpy(t_o_day, argv[i]);
       }
-      else{
-        error_exit(USAGE_ERROR,"%s: missing option to argument '%s'",
-                   argv[0],argv[i-1]);
-      }
+      else
+        error_exit(USAGE_ERROR,param_err_msgstr,argv[0],argv[i-1]);
     }
     else if(!strcmp(argv[i], "-f")){
       if((++i) < argc && *argv[i] != '-')
         file = argv[i];
-      else{
-        error_exit(USAGE_ERROR,"%s: missing option to argument '%s'",
-                   argv[0],argv[i-1]);
-      }
+      else
+        error_exit(USAGE_ERROR,param_err_msgstr,argv[0],argv[i-1]);
     }
     else if(!strcmp(argv[i], "-s")){
       if((++i) < argc && *argv[i] != '-')
         type = argv[i];
-      else{
-        error_exit(USAGE_ERROR,"%s: missing option to argument '%s'",
-                   argv[0],argv[i-1]);
-      }
+      else
+        error_exit(USAGE_ERROR,param_err_msgstr,argv[0],argv[i-1]);
       if(strcmp(type,"lin") & strcmp(type,"log")){
         error_exit(USAGE_ERROR,"%s: option '-s' illegal type '%s'",
                    argv[0], type);
       }
     }
+    else if(!strcmp(argv[i], "-il"))
+      listinterp_out_flag = 1;
+    else if(!strcmp(argv[i], "-ii"))
+      listinterp_in_flag = 1;
+    else if(!strcmp(argv[i], "-it")){
+      if((++i) < argc && *argv[i] != '-') {
+        if(is_real(argv[i]))
+          listinterp_tension = atof(argv[i]);
+        else {
+          error_exit(USAGE_ERROR,
+              "%s:  illegal value for 'it' parameter:  %s",argv[0],argv[i]);
+        }
+      }
+      else
+        error_exit(USAGE_ERROR,param_err_msgstr,argv[0],argv[i-1]);
+    }
     else if(!strcmp(argv[i], "-v"))
       verbose = argv[i];
+    else
+      fprintf(stderr,"WARNING:  Unrecognized parameter:  %s\n",argv[i]);
   }
 
   sta_list = argv[1];
@@ -279,7 +297,9 @@ char *argv[];
   if(strlen(rtype)) {
     for(i = 0; i < (int)strlen(rtype); i++)
       *(rtype+i) = toupper(*(rtype+i));
-    if(strcmp(rtype,"AP") && strcmp(rtype,"CS"))
+    if(strcmp(rtype,"CS") == 0)        /* if complex-spectra output then */
+      listinterp_out_flag = 0;         /* force List-out-interp flag clear */
+    else if(strcmp(rtype,"AP") != 0)   /* if invalid value then abort */
       error_exit(USAGE_ERROR,"evalresp; rtype entered ('%s') not a recognized string (see usage)",
     rtype);
   }
@@ -315,17 +335,20 @@ char *argv[];
 /* then get the response for each of the requested station-channel pairs at
     each of the requested frequencies */
 
-  first = evresp(sta_list,cha_list,net_code,locid,datime,units,file,freqs,nfreqs,
-                 rtype,verbose,start_stage,stop_stage,stdio_flag);
+  first = evresp_itp(sta_list,cha_list,net_code,locid,datime,units,file,
+                     freqs,nfreqs,rtype,verbose,start_stage,stop_stage,
+                     stdio_flag,listinterp_out_flag,listinterp_in_flag,
+                     listinterp_tension);
   if (!first)
   {
-	fprintf(stderr, "EVERSP FAILED");
+	fprintf(stderr, "EVRESP FAILED\n");
 	exit(-1);
   }
 
 /* and print the responses to a set of files */
 
-  print_resp(freqs,nfreqs,first,rtype,stdio_flag);
+  print_resp_itp(freqs,nfreqs,first,rtype,stdio_flag,
+                                    listinterp_out_flag,listinterp_tension);
 
   free_response(first);
 
