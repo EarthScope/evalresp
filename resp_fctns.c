@@ -1,13 +1,16 @@
 /* This file is modified by I.Dricker , ISTI, NY 06/21/00 */
 
 /*
- *  8/28/2001 -- [ET]  Added quotes to two 'blockette 55' error messages
- *                     to avoid having an open string traverse into the
- *                     next line.
- */
+    8/28/2001 -- [ET]  Added quotes to two 'blockette 55' error messages
+                       to avoid having an open string traverse into the
+                       next line.
+   10/19/2005 -- [ET]  Implemented 'interpolate_list_blockette()' function.
+*/
 
 #include <stdlib.h>
+#include <string.h>
 #include "evresp.h"
+#include "evr_spline.h"
 
 /* merge_lists:
 
@@ -503,10 +506,8 @@ void check_sym(struct blkt *f, struct channel *chan) {
   }
 }
 
-/* IGD 08/03/02 Added support for B55 interpolation */
-
 /*********** function free for freeing of double arrays *******************************************/
-
+/*
 void sscdns_free_double (double *array)
 {
   if (array != NULL)
@@ -515,114 +516,151 @@ void sscdns_free_double (double *array)
     array = NULL;
   }
 }
+*/
 
-#ifdef B55_INTRPL
-/* functions for reading and interpolation of 55 blockette  */
-/**************************************************************************************************/
-double do_interpolation (double value, double x1, double x2,
-double y1, double y2)
+
+/**************************************************************************
+ * interpolate_list_blockette:  Interpolates amplitude and phase values
+ *      from the set of frequencies in the List blockette to the requested
+ *      set of frequencies.  The given frequency, amplitude and phase
+ *      arrays are replaced with newly allocated arrays containing the
+ *      interpolated values.  The '*p_number_points' value is also updated.
+ *   frequency_ptr:  reference to array of frequency values.
+ *   amplitude_ptr:  reference to array of amplitude values.
+ *   phase_ptr:  reference to array of phase values.
+ *   p_number_points:  reference to number of points value.
+ *   req_freq_arr:  array of requested frequency values.
+ *   req_num_freqs:  number values in 'req_freq_arr' array.
+ *   tension - tension value for interpolation.
+ **************************************************************************/
+void interpolate_list_blockette(double **frequency_ptr,
+                                 double **amplitude_ptr, double **phase_ptr,
+                                 int *p_number_points, double *req_freq_arr,
+                                          int req_num_freqs, double tension)
 {
-  double a, c;
-  double b;
-  a = (y1 - y2)/(x1-x2);
-  b = (x1*y2 - y1*x2)/(x1 - x2);
-  c = a*value+b;
-  return c;
-}
-/**********************************************************************************************************/
-/* This functions reads in the data from frequency/amplitude/spectra and
- * the parameters of resampling. It then does a linear interpolation of the
- * three input arrays using the new sampling paramters and saves the output
- * into the input array (reallocating memory if needed).
- * Functions returns the number of samples in the newly created array or
- * negative value indicating the error.
- */
-/*************************************************************************************************/
-int interpolate_spectra(double **frequency_ptr,
-                               double **amplitude_ptr,
-			       double **phase_ptr,
-                               int number_responses,
-			       double frequency_start,
-			       double frequency_step,
-			       double frequency_end)
-{
-  int         frequencyCounter;
-  int         i;
-  int         i_start = 0;
-  int         number_samples;
-  double      frequency_value;
-  double      *spare_frequency;
-  double      *spare_amplitude;
-  double      *spare_phase;
-  double      *frequency;
-  double      *amplitude;
-  double      *phase;
+  int i, num;
+  double first_freq, last_freq, val, min_ampval;
+  double *used_req_freq_arr;
+  int used_req_num_freqs;
+  double *retvals_arr, *retamps_arr;
+  int num_retvals;
+  char *retstr;
 
-  frequency = *frequency_ptr;
-  amplitude = *amplitude_ptr;
-  phase = *phase_ptr;
-  number_samples = (frequency_end-frequency_start)/frequency_step+1;
-  spare_frequency = (double *) calloc (1, (number_samples) * sizeof (double));
-  spare_amplitude = (double *) calloc (1, (number_samples) * sizeof (double));
-  spare_phase = (double *) calloc (1, (number_samples) * sizeof (double));
-
-  for (frequencyCounter = 0; frequencyCounter <= number_samples-1; frequencyCounter++)
+         /* get first and last values in freq array from list blockette */
+  first_freq = (*frequency_ptr)[0];
+  last_freq = (*frequency_ptr)[(*p_number_points)-1];
+  if(first_freq > last_freq)
+  {      /* first is larger than last; swap values */
+    val = first_freq;
+    first_freq = last_freq;
+    last_freq = val;
+  }
+  i = 0;      /* check if any requested frequency values are out of range */
+  while(i < req_num_freqs && (req_freq_arr[i] < first_freq ||
+                                               req_freq_arr[i] > last_freq))
+  {      /* for each out-of-range value at beginning of req freqs */
+    ++i;
+  }
+         /* if out of range values found at beginning of req freqs and last
+            clipped value is within 0.0001% of first List freq value
+            then replace it with first List frequency value: */
+  if(i > 0 && fabs(first_freq - req_freq_arr[i-1]) < first_freq*1e-6)
   {
-    frequency_value = frequency_start + frequencyCounter * frequency_step;
-    if (frequency_value < frequency[0])
-    {
-     spare_amplitude [frequencyCounter] = 0.00;
-     spare_phase [frequencyCounter] = 1.00;
-     spare_frequency[frequencyCounter] = frequency_value;
+    req_freq_arr[--i] = first_freq;
+  }
+  if(i > 0)
+  {      /* some requested frequency values were clipped; show message */
+    fprintf(stderr,
+         "Note:  %d frequenc%s clipped from beginning of requested range\n",
+                                               i, ((i == 1) ? "y" : "ies"));
+  }
+  used_req_num_freqs = req_num_freqs;
+  while(used_req_num_freqs > 0 &&
+                          (req_freq_arr[used_req_num_freqs-1] > last_freq ||
+                           req_freq_arr[used_req_num_freqs-1] < first_freq))
+  {      /* for each out-of-range value at end of req freqs */
+    --used_req_num_freqs;
+  }
+         /* if out of range values found at end of req freqs and last
+            clipped value is within 0.0001% of last List freq value
+            then replace it with last List frequency value: */
+  if(used_req_num_freqs < req_num_freqs &&
+        fabs(req_freq_arr[used_req_num_freqs] - last_freq) < last_freq*1e-6)
+  {
+    req_freq_arr[used_req_num_freqs++] = last_freq;
+  }
+  if((num=req_num_freqs-used_req_num_freqs) > 0)
+  {      /* some requested frequency values were clipped; show message */
+    req_num_freqs = used_req_num_freqs;
+    fprintf(stderr,
+               "Note:  %d frequenc%s clipped from end of requested range\n",
+                                           num, ((num == 1) ? "y" : "ies"));
+  }
+  if(i > 0)                       /* if freq entries were skipped then */
+    req_num_freqs -= i;           /* subtract # of freqs clipped from beg */
+         /* allocate new array for requested frequency values */
+  used_req_freq_arr = (double *)calloc(req_num_freqs,sizeof(double));
+         /* copy over freq values (excluding out-of-bounds values) */
+  memcpy(used_req_freq_arr,&req_freq_arr[i],req_num_freqs*sizeof(double));
+  req_freq_arr = used_req_freq_arr;    /* setup to use new array */
+
+         /* interpolate amplitude values */
+  if((retstr=evr_spline(*p_number_points,*frequency_ptr,*amplitude_ptr,
+                                     tension,1.0,req_freq_arr,req_num_freqs,
+                                        &retvals_arr,&num_retvals)) != NULL)
+  {
+    fprintf(stderr,"Error interpolating amplitudes:  %s\n",retstr);
+    return;
+  }
+  if(num_retvals != req_num_freqs)
+  {      /* # of generated values != # requested (shouldn't happen) */
+    fprintf(stderr,"Error interpolating amplitudes:  Bad # of values\n");
+    return;
+  }
+  retamps_arr = retvals_arr;      /* save ptr to interpolated amplitudes */
+
+         /* make sure all interpolated amplitude values are positive */
+              /* first find minimum value in "source" amplitudes */
+  min_ampval = (*amplitude_ptr)[0];
+  for(i=1; i<*p_number_points; ++i)
+  {      /* for each remaining "source" amplitude value */
+    if((val=(*amplitude_ptr)[i]) < min_ampval)
+      min_ampval = val;           /* if new mininum then save value */
+  }
+  if(min_ampval > 0.0)
+  {      /* all "source" amplitude values are positive */
+    min_ampval /= 10.0;           /* bring minimum a bit closer to zero */
+              /* substitude minimum for any non-positive values */
+    for(i=0; i<num_retvals; ++i)
+    {    /* for each interpolated amplitude value */
+      if(retamps_arr[i] <= 0.0)        /* if value not positive then */
+        retamps_arr[i] = min_ampval;   /* use minimum value */
     }
-    else
-    {
-      for (i = i_start; i <= number_responses-1; i++)
-      {
-       if (frequency_value>= frequency [i] && frequency_value <= frequency [i+1])
-       {
-          spare_amplitude [frequencyCounter] = do_interpolation (frequency_value, frequency[i+1], frequency[i],
-          amplitude [i+1], amplitude [i]);
-          spare_phase [frequencyCounter]=do_interpolation (frequency_value, frequency[i+1], frequency[i],
-          phase [i+1], phase [i]);
-          spare_frequency[frequencyCounter] = frequency_value;
+  }
 
-          i_start = i;
-          break;
-        }
-        else
-        {
-          if (frequency_value >= frequency[number_responses-1])
-          {
-            spare_amplitude [frequencyCounter]= 0.00;
-            spare_frequency[frequencyCounter] = frequency_value;
-            spare_phase [frequencyCounter] = phase[number_responses-1];
-            break;
-           }
-         }
-        }
-       }
-    }
-    sscdns_free_double (frequency);
-    sscdns_free_double (amplitude);
-    sscdns_free_double (phase);
+         /* interpolate phase values */
+  if((retstr=evr_spline(*p_number_points,*frequency_ptr,*phase_ptr,
+                                     tension,1.0,req_freq_arr,req_num_freqs,
+                                        &retvals_arr,&num_retvals)) != NULL)
+  {
+    fprintf(stderr,"Error interpolating phases:  %s\n",retstr);
+    return;
+  }
+  if(num_retvals != req_num_freqs)
+  {      /* # of generated values != # requested (shouldn't happen) */
+    fprintf(stderr,"Error interpolating phases:  Bad # of values\n");
+    return;
+  }
 
-    frequency = (double *) calloc (number_samples, sizeof (double));
-    amplitude = (double *) calloc(number_samples, sizeof (double));
-    phase = (double *) calloc(number_samples, sizeof (double));
+         /* free arrays passed into function */
+  free(*frequency_ptr);
+  free(*amplitude_ptr);
+  free(*phase_ptr);
 
-    *frequency_ptr = frequency;
-    *amplitude_ptr = amplitude;
-    *phase_ptr = phase;
-
-    memcpy(frequency, spare_frequency, number_samples * sizeof(double));
-    memcpy(amplitude, spare_amplitude, number_samples * sizeof(double));
-    memcpy(phase, spare_phase, number_samples * sizeof(double));
-
-    sscdns_free_double (spare_frequency);
-    sscdns_free_double (spare_amplitude);
-    sscdns_free_double (spare_phase);
-    return number_samples;
+         /* enter generated arrays and # of points */
+  *frequency_ptr = req_freq_arr;
+  *amplitude_ptr = retamps_arr;
+  *phase_ptr = retvals_arr;
+  *p_number_points = num_retvals;
 }
-/**********************************************************************************************************/
-#endif
+
