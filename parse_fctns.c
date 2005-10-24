@@ -1,11 +1,14 @@
+/* parse_fctns.c */
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-/* parse_fctns.c
- *
- *  8/28/2001 -- [ET]  Added "!= 0" to several conditionals to squelch
- *                     "possibly incorrect assignment" warnings.
+/*
+    8/28/2001 -- [ET]  Added "!= 0" to several conditionals to squelch
+                       "possibly incorrect assignment" warnings.
+   10/19/2005 -- [ET]  Modified to handle case where file contains
+                      "B052F03 Location:" and nothing after it on line.
  */
 
 #ifdef HAVE_MALLOC_H
@@ -1226,9 +1229,19 @@ int get_channel(FILE *fptr, struct channel* chan) {
      "old style" RESP files so assume old style RESP files contain a null location
      identifier) and the channel name */
 
-  test_field(fptr,field,&blkt_no,&fld_no,":",0);
+/* Modified to use 'next_line()' and 'parse_field()' directly
+   to handle case where file contains "B052F03 Location:" and
+   nothing afterward -- 10/19/2005 -- [ET] */
+/*  test_field(fptr,field,&blkt_no,&fld_no,":",0); */
+
+  next_line(fptr, line, &blkt_no, &fld_no, ":");
+  if(strlen(line) > 0)                 /* if data after "Location:" then */
+    parse_field(line, 0, field);       /* parse location data */
+  else                            /* if no data after "Location:" then */
+    field[0] = '\0';              /* clear 'field' string */
+
   if(blkt_no == 52 && fld_no == 3) {
-    if(!strncmp(field,"??",2))
+    if(strlen(field) <= 0 || !strncmp(field,"??",2))
       strncpy(chan->locid,"",LOCIDLEN);
     else
       strncpy(chan->locid,field,LOCIDLEN);
