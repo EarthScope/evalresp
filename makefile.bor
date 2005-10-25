@@ -1,4 +1,5 @@
 # evalresp makefile for use with Borland C++ 5.02, 8/28/2001 -- [ET]
+#  10/20/2005 -- [ET]  Added "evr_spline.c".
 
 #
 # Borland C++ IDE generated makefile
@@ -58,7 +59,8 @@ Dep_evalrespdexe = \
    OBJ_BC\evalresp.obj\
    OBJ_BC\error_fctns.obj\
    OBJ_BC\calc_fctns.obj\
-   OBJ_BC\string_fctns.obj
+   OBJ_BC\string_fctns.obj\
+   OBJ_BC\evr_spline.obj
 
 evalresp.exe : $(Dep_evalrespdexe)
   $(ILINK32) @&&|
@@ -76,7 +78,8 @@ OBJ_BC\parse_fctns.obj+
 OBJ_BC\evalresp.obj+
 OBJ_BC\error_fctns.obj+
 OBJ_BC\calc_fctns.obj+
-OBJ_BC\string_fctns.obj
+OBJ_BC\string_fctns.obj+
+OBJ_BC\evr_spline.obj
 $<,$*
 C:\BC5\LIB\import32.lib+
 C:\BC5\LIB\cw32mt.lib
@@ -147,6 +150,11 @@ OBJ_BC\calc_fctns.obj :  calc_fctns.c
 OBJ_BC\string_fctns.obj :  string_fctns.c
   $(BCC32) -P- -c @&&|
  $(CompOptsAt_evalrespdexe) $(CompInheritOptsAt_evalrespdexe) -o$@ string_fctns.c
+|
+
+OBJ_BC\evr_spline.obj :  evr_spline.c
+  $(BCC32) -P- -c @&&|
+ $(CompOptsAt_evalrespdexe) $(CompInheritOptsAt_evalrespdexe) -o$@ evr_spline.c
 |
 
 # Compiler configuration file
