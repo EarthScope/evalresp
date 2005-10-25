@@ -1,7 +1,20 @@
+Version 3.2.29
+	21-Oct-2005 Eric Thomas (e.thomas@isti.com)
+	* Implemented interpolation of amplitude/phase values from
+	  responses containing List blockettes (55).
+	* Modified message shown when List blockette encountered.
+	* Modified so as not to require characters after 'units'
+	  specifiers like "M" and "COUNTS".
+	* Modified to handle case where file contains "B052F03 Location:"
+	  and nothing after it on line.
+	* Added warnings for unrecognized parameters.
+	* Fixed issue where program would crash under Linux/UNIX
+	  ("segmentation fault") if input response file contained
+	  Windows-style "CR/LF" line ends.
 Version 3.2.28
-        2-Aug-2005 Eric Thomas (e.thomas@isti.com)
-        * Modified to allow command-line parameters for frequency
-          values to be missing (default values used).
+	2-Aug-2005 Eric Thomas (e.thomas@isti.com)
+	* Modified to allow command-line parameters for frequency
+	  values to be missing (default values used).
 Version 3.2.27
 	1-Mar-2005 Ilya Dricker(i.dricker@isti.com)
 	* Added -add-delay command line option
@@ -9,8 +22,8 @@ Version 3.2.26
 	20-Oct-2004 Ilya Dricker (i.dricker@isti.com)
 	* Techical modifications for Mac OS X portability
 Version 3.2.25
-        20-Jul-2005 Ilya Dricker (i.dricker@isti.com)
-        * Finally, we started ChangeLog
+	20-Jul-2005 Ilya Dricker (i.dricker@isti.com)
+	* Finally, we started ChangeLog
 	* FIXED: Processing of B55 + GAIN stage is now allowed
 	* ADDED: config.h to the source code and AM_CONFIG_HEADER to
             configure.in

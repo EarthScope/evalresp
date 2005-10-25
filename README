@@ -1,4 +1,4 @@
-This directory contains the distribution of evalresp v3.2.25
+This directory contains the distribution of evalresp v3.2.29
 The historical release notes follow the info on installation.
 
 Since the code is written as ANSI standard C, the standard
@@ -53,7 +53,8 @@ Modified (MS Windows port)
 e.thomas@isti.com
 28 August, 2001
 
---------------------- Release Notes ---------------------------
+------------------ Release Notes (old) ------------------------
+[See the "ChangeLog" file for more recent release notes]
 version 3.2.24 ( Apr 5, 2004) - IGD
 Added two configuration option:
  --enable-delay Use estimated delay in phase computation
