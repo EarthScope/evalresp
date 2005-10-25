@@ -17,12 +17,14 @@
 .\"   Also: rick@iris.washington.edu
 .\"   Phone: (206)547-0393
 .\"
-.TH EVALRESP V3.2.28 2-Aug-2005
+.TH EVALRESP V3.2.29 21-Oct-2005
 .SH NAME
-\fIevalresp\fR - evaluate response information and output to ASCII files using \fIrdseed V4.1\fR and above RESP files.
+\fIevalresp\fR - evaluate response information and output to ASCII files using \fIrdseed V4.16\fR and above RESP files.
 .SH SYNOPSIS
 evalresp STA_LIST CHA_LIST YYYY DAY MIN_FREQ MAX_FREQ NFREQS [\fB\-f\fR file] [\fB\-u\fR units]
-[\fB\-t\fR time-of-day] [\fB\-s\fR type-of-spacing] [\fB\-r\fR resp_type] [\fB\-n\fR network-code] [\fB\-stage\fR start [stop]] [-v] [-stdio]
+[\fB\-t\fR time-of-day] [\fB\-s\fR type-of-spacing] [\fB\-r\fR resp-type] [\fB\-n\fR network-id]
+[\fB\-l\fR location-id] [\fB\-stage\fR start [stop]] [-stdio] [-use-delay]
+[-il] [-ii] [\fB\-it\fR tension] [-v]
 .PD 0.3
 
 .SH DESCRIPTION
@@ -34,31 +36,65 @@ the SEED ASCII response files produced by the program \fI`rdseed'\fR.
 by itself returns the usage or `help' lines useful for how to correctly input
 the options.
 .sp
+.SH COMMAND-LINE PARAMETERS
+    '-f file':    directory-name|filename
+    '-u units':    'dis'|'vel'|'acc'|'def'
+    '-t time-of-day':    HH:MM:SS
+    '-s type-of-spacing':    log|lin
+    '-r resp_type':    'ap'=amp/pha | 'cs'=complex spectra
+    '-n netid':    'II'|'IU'|'G'|'*'...
+    '-l locid':    '01'|'AA,AB,AC'|'A?'|'*'...
+    '-stage start [stop]':    start and stop are integer stage numbers
+    '-stdio':    take input from stdin, output to stdout
+    '-use-delay':    use estimated delay in computation of response
+    '-il':    interpolate List blockette output
+    '-ii':    interpolate List blockette input
+    '-it tension':    tension for List blockette interpolation
+    '-v':    verbose; list parameters on stdout
+.sp
 .SH WHAT IS NEW
-Version 3.2.28. Modified to allow command-line parameters for frequency values to be missing.
-Version 3.2.27. Added command line option -add-delay (Use estimated delay in phase computation)
-Version 3.2.26. Now evalresp runs on Mac OS X.
-Version 3.2.25. Processing of B55 with GAIN stage fixed. Starting with this version, all modifications
-are loggied in ChangeLog file, not here.
+\fB\Version 3.2.29:\fR Implemented interpolation of amplitude/phase values from
+responses containing List blockettes (55); modified message shown when
+List blockette encountered; modified so as not to require characters after
+'units' specifiers like "M" and "COUNTS"; modified to handle case where
+file contains "B052F03 Location:" and nothing after it on line; added
+warnings for unrecognized parameters; fixed issue where program would crash
+under Linux/UNIX ("segmentation fault") if input response file contained
+Windows-style "CR/LF" line ends.
 .br
-Version 3.2.24. Added two confuration options (--enable-delay Use estimated delay in phase computation)
+.br
+\fB\Version 3.2.28:\fR Modified to allow command-line parameters for frequency values to be missing.
+.br
+.br
+\fB\Version 3.2.27:\fR Added command line option -use-delay (Use estimated delay in phase computation)
+.br
+.br
+\fB\Version 3.2.26:\fR Now evalresp runs on Mac OS X.
+.br
+.br
+\fB\Version 3.2.25:\fR Processing of B55 with GAIN stage fixed. Starting with this version, added ChangeLog file.
+.br
+.br
+\fB\Version 3.2.24:\fR Added two confuration options (--enable-delay Use estimated delay in phase computation)
 and (--enable-phase-unwrap Unwrap phase). 
 .br
-Version 3.2.23. Added support for SHAPE compatible RESP files. When parsing lines that are valid
+.br
+\fB\Version 3.2.23:\fR Added support for SHAPE compatible RESP files. When parsing lines that are valid
 RESP format, but unexpected, evalresp now skips to the next line. Added support for blank lines within 
 and at the end of a RESP file.
 .br
-Version 3.2.21 does not terminate execution if a "Generic Response Blockette" is found in the RESP file, but
+.br
+\fB\Version 3.2.21:\fR Does not terminate execution if a "Generic Response Blockette" is found in the RESP file, but
 prints a warning and ignores the blockette.
 .br
-Version 3.2.20 allows a user to compile and run evalresp on WIN32 platform. See the details in README file.
 .br
+\fB\Version 3.2.20:\fR Allows a user to compile and run evalresp on WIN32 platform. See the details in README file.
 As many other contemporary programs \fIevalresp\fR now supports "make install" command. A default installation
 directory is /usr/local, however, it can be changed during configuration phase: "./configure --prefix=/user/directory".
-.br
 A bug in pole-zero representations for digital stages has been fixed.
 .br
-Version 3.2.19 is a service release: see the file README in the evalresp distribution for a list of bugs fixed.
+.br
+\fB\Version 3.2.19:\fR Service release; see README in the evalresp distribution for a list of bugs fixed.
 .sp
 .SH SUPPORT OF PRESSURE DATA
 \fIevalresp\fR is able to process responses of the
@@ -263,6 +299,43 @@ response can be separated from the "verbose" output by splitting the standard ou
 contain the response) from the standard error (which will contain the verbose output). When this
 flag is defined, standard input is parsed for input responses until an EOF is found, indicating the
 end of the input stream of response information.
+
+
+.SH LIST BLOCKETTE INTERPOLATION
+
+The following command-line parameters are used to enable List blockette interploation:
+
+\fB\-il\fR : Specifies that the amplitude/phase values generated from responses containing List
+blockettes (55) are to be interpolated to correspond to the set of frequencies requested
+by the user.  A cubic-spline interpolation algorithm is used, with a "tension" value
+specified via the \fB\-it\fR parameter (see below).  If any of the user-requested frequency values
+fall outside of the range of frequencies defined in the List blockette then the out-of-range
+frequencies will be "clipped" (ignored), the output will be generated for the in-range
+frequencies, and a warning message will be sent to the console.  If a response does not
+contain a List blockette or if the complex-spectra response output type is selected ("-r cs")
+then this parameter will have no effect.  If this parameter and the \fB\-ii\fR parameter are not
+specified then the output for a response containing a List blockette will be generated only
+for the frequencies defined in the List blockette.
+
+\fB\-ii\fR : Specifies that the amplitude/phase values input from a response containing a List
+blockette (55) are to be interpolated to correspond to the set of frequencies requested
+by the user.  The interpolated values are then processed by the program.  A cubic-spline
+interpolation algorithm is used, with a "tension" value specified via the \fB\-it\fR parameter
+(see below).  If any of the user-requested frequency values fall outside of the range of
+frequencies defined in the List blockette then the out-of-range frequencies will be
+"clipped" (ignored), the values will be generated for the in-range frequencies, and a
+warning message will be sent to the console.  If a response does not contain a List
+blockette then this parameter will have no effect.  This parameter (rather than \fB\-il\fR)
+can be useful when the complex-spectra response output type is selected ("-r cs").
+If this parameter and the \fB\-il\fR parameter are not specified then the output for a response
+containing a List blockette will be generated only for the frequencies defined in the
+List blockette.
+
+\fB\-it\fR : The "tension" value used by the cubic-spline interpolation algorithm (see the
+\fB\-il\fR and \fB\-ii\fR parameters).  A relatively high "tension" value is desirable because it
+makes the interpolated values "track" closely to the original values.  This parameter
+may be specified as a floating-point value, and its default value is 1000.0.
+
 
 .SH EXAMPLE
 
