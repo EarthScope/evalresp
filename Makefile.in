@@ -67,15 +67,14 @@ AUTOMAKE_OPTIONS = foreign
 
 bin_PROGRAMS = evalresp
 
-evalresp_SOURCES = regexp.c regerror.c regsub.c calc_fctns.c resp_fctns.c file_ops.c evresp.c evalresp.c alloc_fctns.c parse_fctns.c print_fctns.c string_fctns.c error_fctns.c
+evalresp_SOURCES = regexp.c regerror.c regsub.c calc_fctns.c resp_fctns.c file_ops.c evresp.c evalresp.c alloc_fctns.c parse_fctns.c print_fctns.c string_fctns.c error_fctns.c evr_spline.c
 
 
 lib_LIBRARIES = libevresp.a
-libevresp_a_SOURCES = regexp.c regerror.c regsub.c calc_fctns.c resp_fctns.c         file_ops.c evresp.c alloc_fctns.c parse_fctns.c print_fctns.c         string_fctns.c error_fctns.c
+libevresp_a_SOURCES = regexp.c regerror.c regsub.c calc_fctns.c resp_fctns.c         file_ops.c evresp.c alloc_fctns.c parse_fctns.c print_fctns.c         string_fctns.c error_fctns.c evr_spline.c
 
 
 #CFLAGS =    -Wall -g
-#-DB55_INTRPL
 
 include_HEADERS = evresp.h   regmagic.h  regexp.h
 man_MANS = evalresp.man
@@ -96,13 +95,13 @@ LIBS = @LIBS@
 libevresp_a_LIBADD = 
 libevresp_a_OBJECTS =  regexp.o regerror.o regsub.o calc_fctns.o \
 resp_fctns.o file_ops.o evresp.o alloc_fctns.o parse_fctns.o \
-print_fctns.o string_fctns.o error_fctns.o
+print_fctns.o string_fctns.o error_fctns.o evr_spline.o
 AR = ar
 PROGRAMS =  $(bin_PROGRAMS)
 
 evalresp_OBJECTS =  regexp.o regerror.o regsub.o calc_fctns.o \
 resp_fctns.o file_ops.o evresp.o evalresp.o alloc_fctns.o parse_fctns.o \
-print_fctns.o string_fctns.o error_fctns.o
+print_fctns.o string_fctns.o error_fctns.o evr_spline.o
 evalresp_LDADD = $(LDADD)
 evalresp_DEPENDENCIES = 
 evalresp_LDFLAGS = 
@@ -128,7 +127,7 @@ GZIP_ENV = --best
 DEP_FILES =  .deps/alloc_fctns.P .deps/calc_fctns.P .deps/error_fctns.P \
 .deps/evalresp.P .deps/evresp.P .deps/file_ops.P .deps/parse_fctns.P \
 .deps/print_fctns.P .deps/regerror.P .deps/regexp.P .deps/regsub.P \
-.deps/resp_fctns.P .deps/string_fctns.P
+.deps/resp_fctns.P .deps/string_fctns.P .deps/evr_spline.P
 SOURCES = $(libevresp_a_SOURCES) $(evalresp_SOURCES)
 OBJECTS = $(libevresp_a_OBJECTS) $(evalresp_OBJECTS)
 
