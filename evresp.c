@@ -189,8 +189,8 @@ char SEEDUNITS[][UNITS_STR_LEN] = {"Undef Units", "Displacement", "Velocity",
 char FirstLine[MAXLINELEN];
 int FirstField;
 
-             /* This version of the function includes the parameters
-                'listinterp_out_flag' and 'listinterp_tension'  */
+             /* This version of the function includes
+                the 'listinterp...' parameters  */
 
 struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                             char *locidlst, char *date_time, char *units,
@@ -784,8 +784,8 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
 
 }
 
-             /* This version of the function does not include the parameters
-                'listinterp_out_flag' and 'listinterp_tension'  */
+             /* This version of the function does not include
+                the 'listinterp...' parameters  */
 
 struct response *evresp(char *stalst, char *chalst, char *net_code,
                         char *locidlst, char *date_time, char *units,
