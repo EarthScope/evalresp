@@ -1,3 +1,10 @@
+/* calc_fctns.c */
+
+/*
+    11/3/2005 -- [ET]  Added 'wrap_phase()' function; moved 'use_delay()'
+                       function from 'calc_fctns.c' to 'evalresp.c'.
+*/
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -741,10 +748,8 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
       fflush(stderr);
     }
   }
-
-
-
 }
+
 /* IGD 04/05/04 Phase unwrapping function 
  * It works only inside a loop over phases.
  * 
@@ -765,36 +770,32 @@ double
 				*added_value += range;
 				phase += range;
 			}
-		}	
+		}
 		return phase;
 	}
 
-/* IGD 03/01/05 Small function to set and return 
- * a static flag to use or not use the delay in
- * response computation
- * Input: NEGATIVE means that we want to query the value of the flag
- *        TRUE or FALSE means that we want to set corresponding values
- * The reason we want to use this global variable is because we don't
- * want to change the number of arguments in evresp() function which
- * is used in users programs
+/*
+ * wrap_phase:  Wraps a set of phase values so that all of the values are
+ *      between "-range" and "+range" (inclusive).  This function is called
+ *      iteratively, once for each phase value.
+ *   phase - phase value to process.
+ *   range - range value to use.
+ *   added_value - pointer to offset value used for each call.
+ * Returns:  The "wrapped" version of the given phase value.
  */
-
-int use_delay(int flag)	
+double wrap_phase(double phase, double range, double *added_value)
 {
-	/* WE USE THOSE WEIRD magic numbers here because
-	 * there is a chance that use_delay_flag is not
-	 * defined: in user program which uses evresp()
-	 * when use_delay() is not used before evresp().
-	 */
-	int magic_use_delay = 35443647;
-	int magic_dont_use_delay = -90934324;
-	static int use_delay_flag = FALSE;
-	if (TRUE == flag)
-		use_delay_flag = magic_use_delay;
-	if (FALSE == flag)
-		use_delay_flag = magic_dont_use_delay;
-
-	if (use_delay_flag == magic_use_delay)
-		return TRUE;
-	return FALSE;
+  phase += *added_value;
+  if(phase > range/2)
+  {
+    *added_value -= range;
+    phase -= range;
+  }
+  else if(phase < -range/2)
+  {
+    *added_value += range;
+    phase += range;
+  }
+  return phase;
 }
+
