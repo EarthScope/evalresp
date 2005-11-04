@@ -22,6 +22,10 @@
                        response file contained Windows-style "CR/LF"
                        line ends; renamed 'strncasecmp()' function
                        to 'strnicmp()' when compiling under Windows.
+    11/3/2005 -- [ET]  Version 3.2.30:  Modified to unwrap phase values
+                       before interpolation and re-wrap after (if needed);
+	               modified to detect when all requested interpolated
+                       frequencies are out of range.
  */
 
 #ifndef EVRESP_H
@@ -33,11 +37,11 @@
 #include <setjmp.h>
 #include <stdarg.h>
 
-/* IGD 10/16/04 This is for Windows which do not use Makefile.am */
+/* IGD 10/16/04 This is for Windows which does not use Makefile.am */
 #ifdef VERSION
 #define REVNUM VERSION
 #else
-#define REVNUM "3.2.29"
+#define REVNUM "3.2.30"
 #endif
 
 #define TRUE 1
@@ -493,8 +497,9 @@ extern int curr_seq_no;
 
 extern jmp_buf jump_buffer;
 
-double 
-	unwrap_phase(double phase, double prev_phase, double range, double *added_value);
-int 
-	use_delay(int flag); 
+double unwrap_phase(double phase, double prev_phase, double range,
+                                                       double *added_value);
+double wrap_phase(double phase, double range, double *added_value);
+int use_delay(int flag);
 #endif
+
