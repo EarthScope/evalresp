@@ -17,7 +17,7 @@
 .\"   Also: rick@iris.washington.edu
 .\"   Phone: (206)547-0393
 .\"
-.TH EVALRESP V3.2.29 21-Oct-2005
+.TH EVALRESP V3.2.30 3-Nov-2005
 .SH NAME
 \fIevalresp\fR - evaluate response information and output to ASCII files using \fIrdseed V4.16\fR and above RESP files.
 .SH SYNOPSIS
@@ -53,6 +53,11 @@ the options.
     '-v':    verbose; list parameters on stdout
 .sp
 .SH WHAT IS NEW
+\fB\Version 3.2.30:\fR Modified to unwrap phase values before interpolation
+and re-wrap after (if needed); modified to detect when all requested interpolated
+frequencies are out of range.
+.br
+.br
 \fB\Version 3.2.29:\fR Implemented interpolation of amplitude/phase values from
 responses containing List blockettes (55); modified message shown when
 List blockette encountered; modified so as not to require characters after
@@ -303,7 +308,7 @@ end of the input stream of response information.
 
 .SH LIST BLOCKETTE INTERPOLATION
 
-The following command-line parameters are used to enable List blockette interploation:
+The following command-line parameters are used to enable List-blockette interploation:
 
 \fB\-il\fR : Specifies that the amplitude/phase values generated from responses containing List
 blockettes (55) are to be interpolated to correspond to the set of frequencies requested
@@ -335,6 +340,13 @@ List blockette.
 \fB\-il\fR and \fB\-ii\fR parameters).  A relatively high "tension" value is desirable because it
 makes the interpolated values "track" closely to the original values.  This parameter
 may be specified as a floating-point value, and its default value is 1000.0.
+
+Note:  The \fB\-il\fR ("interpolate List-blockette output") parameter differs from the
+\fB\-ii\fR ("interpolate List-blockette input") parameter in that when \fB\-il\fR ("output")
+is specified the interpolation happens after the response data values have been processed
+by the program.  When \fB\-ii\fR ("input") is specified the List-blockette data values are
+interpolated before they are processed by the program.  The two types of interpolation
+should generate results that are basically identical.
 
 
 .SH EXAMPLE

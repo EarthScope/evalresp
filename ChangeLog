@@ -1,3 +1,9 @@
+Version 3.2.30
+	3-Nov-2005 Eric Thomas (e.thomas@isti.com)
+        * Modified to unwrap phase values before interpolation and re-wrap
+        * after (if needed).
+	* Modified to detect when all requested interpolated frequencies
+        * are out of range.
 Version 3.2.29
 	21-Oct-2005 Eric Thomas (e.thomas@isti.com)
 	* Implemented interpolation of amplitude/phase values from
