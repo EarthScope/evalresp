@@ -1,7 +1,7 @@
 /* print_fctns.c */
 
 /*
-   10/19/2005 -- [ET]  Added 'print_resp_itp()' function with support for
+    11/3/2005 -- [ET]  Added 'print_resp_itp()' function with support for
                        List blockette interpolation; made 'print_resp()'
                        call 'print_resp_itp()' function with default
                        values for List blockette interpolation parameters;
@@ -193,15 +193,15 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
   /* IGD : here we print a notice about blockette 55: evalresp v. 2.3.17+*/
   /* ET:  Notice modified, with different notice if freqs interpolated */
   if(chan->first_stage->first_blkt->type == LIST) {
-    if(listinterp_out_flag) {
+    if(listinterp_in_flag) {
+      fprintf(stderr, "Note:  The input has been interpolated from the response List stage\n");
+      fprintf(stderr, "(blockette 55) to generate output for the %d frequencies requested\n",
+                       chan->first_stage->first_blkt->blkt_info.list.nresp);
+    }
+    else if(listinterp_out_flag) {
       fprintf(stderr, "Note:  The output has been interpolated from the %d frequencies\n",
                        chan->first_stage->first_blkt->blkt_info.list.nresp);
       fprintf(stderr, "defined in the response List stage (blockette 55)\n");
-    }
-    else if(listinterp_in_flag) {
-      fprintf(stderr, "Note:  The input has been interpolated from the response List\n");
-      fprintf(stderr, "stage (blockette 55) to generate the %d frequencies requested\n",
-                       chan->first_stage->first_blkt->blkt_info.list.nresp);
     }
     else {
       fprintf(stderr, "++++++++ WARNING ++++++++++++++++++++++++++++\n");
@@ -230,8 +230,8 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
                 will be in the form of three columns of real numbers, in the
                 former case they will be freq/amp/phase tuples, in the latter
                 case freq/real/imaginary tuples.
-                This version of the function includes the parameters
-                'listinterp_out_flag' and 'listinterp_tension'  */
+                This version of the function includes the 'listinterp...'
+                parameters */
 
 void print_resp_itp(double *freqs, int nfreqs, struct response *first,
                 char *rtype, int stdio_flag, int listinterp_out_flag,
@@ -366,8 +366,8 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
                 will be in the form of three columns of real numbers, in the
                 former case they will be freq/amp/phase tuples, in the latter
                 case freq/real/imaginary tuples.
-                This version of the function does not include the parameters
-                'listinterp_out_flag' and 'listinterp_tension'  */
+                This version of the function does not include the
+                'listinterp...' parameters */
 
 void print_resp(double *freqs, int nfreqs, struct response *first,
                 char *rtype, int stdio_flag) {
