@@ -3,7 +3,7 @@
 #endif
 
 /*
- * regcomp and regexec -- regsub and regerror are elsewhere
+ * evr_regcomp and evr_regexec -- evr_regsub and evr_regerror are elsewhere
  *
  *	Copyright (c) 1986 by University of Toronto.
  *	Written by Henry Spencer.  Not derived from licensed software.
@@ -25,6 +25,9 @@
  * Beware that some of this code is subtly aware of the way operator
  * precedence is structured in regular expressions.  Serious changes in
  * regular-expression syntax might require a total rethink.
+ *
+ *   1/18/2006 -- [ET]  Renamed functions to prevent name clashes with
+ *                      other libraries.
  */
 #include <stdio.h>
 #include <string.h>
@@ -49,10 +52,10 @@
  * Regstart and reganch permit very fast decisions on suitable starting points
  * for a match, cutting down the work a lot.  Regmust permits fast rejection
  * of lines that cannot possibly match.  The regmust tests are costly enough
- * that regcomp() supplies a regmust only if the r.e. contains something
+ * that evr_regcomp() supplies a regmust only if the r.e. contains something
  * potentially expensive (at present, the only such thing detected is * or +
  * at the start of the r.e., which can involve a lot of backup).  Regmlen is
- * supplied because the test in regexec() needs it and regcomp() is computing
+ * supplied because the test in evr_regexec() needs it and evr_regcomp() is computing
  * it anyway.
  */
 
@@ -139,7 +142,7 @@
 #define	UCHARAT(p)	((int)*(p)&CHARBITS)
 #endif
 
-#define	FAIL(m)	{ regerror(m); return(NULL); }
+#define	FAIL(m)	{ evr_regerror(m); return(NULL); }
 #define	ISMULT(c)	((c) == '*' || (c) == '+' || (c) == '?')
 #define	META	"^$.[()|?+*\\"
 
@@ -152,7 +155,7 @@
 #define	WORST		0	/* Worst case. */
 
 /*
- * Global work variables for regcomp().
+ * Global work variables for evr_regcomp().
  */
 static char *regparse;		/* Input-scan pointer. */
 static int regnpar;		/* () count. */
@@ -161,7 +164,7 @@ static char *regcode;		/* Code-emit pointer; &regdummy = don't. */
 static long regsize;		/* Code size. */
 
 /*
- * Forward declarations for regcomp()'s friends.
+ * Forward declarations for evr_regcomp()'s friends.
  */
 #ifndef STATIC
 #define	STATIC	static
@@ -181,7 +184,7 @@ STATIC int strcspn();
 #endif
 
 /*
- - regcomp - compile a regular expression into internal code
+ - evr_regcomp - compile a regular expression into internal code
  *
  * We can't allocate space until we know how big the compiled form will be,
  * but we can't compile it (and thus know how big it is) until we've got a
@@ -196,7 +199,7 @@ STATIC int strcspn();
  * of the structure of the compiled regexp.
  */
 regexp *
-regcomp(exp)
+evr_regcomp(exp)
 char *exp;
 {
 	register regexp *r;
@@ -680,11 +683,11 @@ char *val;
 }
 
 /*
- * regexec and friends
+ * evr_regexec and friends
  */
 
 /*
- * Global work variables for regexec().
+ * Global work variables for evr_regexec().
  */
 static char *reginput;		/* String-input pointer. */
 static char *regbol;		/* Beginning of input, for ^ check. */
@@ -705,10 +708,10 @@ STATIC char *regprop();
 #endif
 
 /*
- - regexec - match a regexp against a string
+ - evr_regexec - match a regexp against a string
  */
 int
-regexec(prog, string)
+evr_regexec(prog, string)
 register regexp *prog;
 register char *string;
 {
@@ -716,13 +719,13 @@ register char *string;
 
 	/* Be paranoid... */
 	if (prog == NULL || string == NULL) {
-		regerror("NULL parameter");
+		evr_regerror("NULL parameter");
 		return(0);
 	}
 
 	/* Check validity of program. */
 	if (UCHARAT(prog->program) != MAGIC) {
-		regerror("corrupted program");
+		evr_regerror("corrupted program");
 		return(0);
 	}
 
@@ -973,7 +976,7 @@ char *prog;
 			return(1);	/* Success! */
 			break;
 		default:
-			regerror("memory corruption");
+			evr_regerror("memory corruption");
 			return(0);
 			break;
 		}
@@ -985,7 +988,7 @@ char *prog;
 	 * We get here only if there's trouble -- normally "case END" is
 	 * the terminating point.
 	 */
-	regerror("corrupted pointers");
+	evr_regerror("corrupted pointers");
 	return(0);
 }
 
@@ -1026,7 +1029,7 @@ char *p;
 		}
 		break;
 	default:		/* Oh dear.  Called inappropriately. */
-		regerror("internal foulup");
+		evr_regerror("internal foulup");
 		count = 0;	/* Best compromise. */
 		break;
 	}
@@ -1177,7 +1180,7 @@ char *op;
 		p = "PLUS";
 		break;
 	default:
-		regerror("corrupted opcode");
+		evr_regerror("corrupted opcode");
 		break;
 	}
 	if (p != NULL)

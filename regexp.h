@@ -6,6 +6,8 @@
  */
 /*
  *   8/28/2001 -- [ET]  Added parameter lists to function declarations.
+ *   1/18/2006 -- [ET]  Renamed functions to prevent name clashes with
+ *                      other libraries.
  */
 #define NSUBEXP  10
 typedef struct regexp {
@@ -18,7 +20,7 @@ typedef struct regexp {
 	char program[1];	/* Unwarranted chumminess with compiler. */
 } regexp;
 
-regexp *regcomp(char *exp);
-int regexec(regexp *prog,char *string);
-void regsub(regexp *prog,char *source,char *dest);
-void regerror(char *s);
+regexp *evr_regcomp(char *exp);
+int evr_regexec(regexp *prog, char *string);
+void evr_regsub(regexp *prog, char *source, char *dest);
+void evr_regerror(char *s);

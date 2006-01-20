@@ -17,6 +17,9 @@
  *
  *	3. Altered versions must be plainly marked as such, and must not
  *		be misrepresented as being the original software.
+ *
+ *   1/18/2006 -- [ET]  Renamed function to prevent name clashes with
+ *                      other libraries.
  */
 #include <stdio.h>
 #include <string.h>          /* added 8/28/2001 -- [ET] */
@@ -30,10 +33,10 @@
 #endif
 
 /*
- - regsub - perform substitutions after a regexp match
+ - evr_regsub - perform substitutions after a regexp match
  */
 void
-regsub(prog, source, dest)
+evr_regsub(prog, source, dest)
 regexp *prog;
 char *source;
 char *dest;
@@ -45,11 +48,11 @@ char *dest;
 	register int len;
 
 	if (prog == NULL || source == NULL || dest == NULL) {
-		regerror("NULL parm to regsub");
+		evr_regerror("NULL parm to evr_regsub");
 		return;
 	}
 	if (UCHARAT(prog->program) != MAGIC) {
-		regerror("damaged regexp fed to regsub");
+		evr_regerror("damaged regexp fed to evr_regsub");
 		return;
 	}
 
@@ -70,7 +73,7 @@ char *dest;
 			(void) strncpy(dst, prog->startp[no], len);
 			dst += len;
 			if (*(dst-1) == '\0') {		/* strncpy hit NUL. */
-				regerror("damaged match string");
+				evr_regerror("damaged match string");
 				return;
 			}
 		}

@@ -2,11 +2,16 @@
 #include <config.h>
 #endif
 
+/*
+ *   1/18/2006 -- [ET]  Renamed function to prevent name clashes with
+ *                      other libraries.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>          /* for 'exit()'; added 8/28/2001 -- [ET] */
 
 void
-regerror(s)
+evr_regerror(s)
 char *s;
 {
 #ifdef ERRAVAIL
