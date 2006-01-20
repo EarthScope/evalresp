@@ -24,8 +24,10 @@
                        to 'strnicmp()' when compiling under Windows.
     11/3/2005 -- [ET]  Version 3.2.30:  Modified to unwrap phase values
                        before interpolation and re-wrap after (if needed);
-	               modified to detect when all requested interpolated
+                       modified to detect when all requested interpolated
                        frequencies are out of range.
+    1/18/2006 -- [ET]  Version 3.2.31:  Renamed 'regexp' functions to
+                       prevent name clashes with other libraries.
  */
 
 #ifndef EVRESP_H
@@ -41,7 +43,7 @@
 #ifdef VERSION
 #define REVNUM VERSION
 #else
-#define REVNUM "3.2.30"
+#define REVNUM "3.2.31"
 #endif
 
 #define TRUE 1

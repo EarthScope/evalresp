@@ -17,7 +17,7 @@
 .\"   Also: rick@iris.washington.edu
 .\"   Phone: (206)547-0393
 .\"
-.TH EVALRESP V3.2.30 3-Nov-2005
+.TH EVALRESP V3.2.31 19-Jan-2006
 .SH NAME
 \fIevalresp\fR - evaluate response information and output to ASCII files using \fIrdseed V4.16\fR and above RESP files.
 .SH SYNOPSIS
@@ -53,6 +53,10 @@ the options.
     '-v':    verbose; list parameters on stdout
 .sp
 .SH WHAT IS NEW
+\fB\Version 3.2.31:\fR Renamed 'regexp' functions to prevent name clashes
+with other libraries; restored 'depcomp' script in distribution.
+.br
+.br
 \fB\Version 3.2.30:\fR Modified to unwrap phase values before interpolation
 and re-wrap after (if needed); modified to detect when all requested interpolated
 frequencies are out of range.

@@ -1,3 +1,8 @@
+Version 3.2.31
+	19-Jan-2006 Eric Thomas (e.thomas@isti.com)
+        * Renamed 'regexp' functions to prevent name clashes with other
+        *  libraries.
+        * Restored 'depcomp' script in distribution.
 Version 3.2.30
 	3-Nov-2005 Eric Thomas (e.thomas@isti.com)
         * Modified to unwrap phase values before interpolation and re-wrap
