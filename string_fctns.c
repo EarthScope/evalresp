@@ -12,6 +12,8 @@
                        ends); modified 'get/next/check_line()' functions
                        to make them strip trailing CR and LF characters
                        (instead of just LF character).
+    1/18/2006 -- [ET]  Renamed 'regexp' functions to prevent name clashes
+                       with other libraries.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -29,7 +31,7 @@
 #include "./evresp.h"
 #include "./regexp.h"
 
-/* parse_line: parses the fields on a line into seperate strings.  The definition of a field
+/* parse_line: parses the fields on a line into separate strings.  The definition of a field
                There is any non-white space characters with bordering white space.  The result
                is a structure containing the number of fields on the line and an array of
                character strings (which are easier to deal with than the original line).  A second
@@ -606,12 +608,12 @@ int string_match(const char *string, char *expr, char *type_flag) {
   }
   regexp_pattern[i] = '\0';
 
-  if((prog = regcomp(regexp_pattern)) == NULL) {
+  if((prog = evr_regcomp(regexp_pattern)) == NULL) {
     error_return(RE_COMP_FAILED,"string_match; pattern '%s' didn't compile", 
                  regexp_pattern);
   }
   lcl_ptr = lcl_string;
-  test = regexec(prog, lcl_ptr);
+  test = evr_regexec(prog, lcl_ptr);
 
   free(prog);
   return(test);
