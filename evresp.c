@@ -2,6 +2,10 @@
 #include <config.h>
 #endif
 
+/*
+     2/6/2006 -- [ET]  Moved 'use_delay()' function from 'evalresp.c'
+                       to 'evresp.c'.
+*/
 
 /*===================================================================
 Name:      evresp_ Version 3.0
@@ -134,6 +138,36 @@ int evresp_(char *sta, char *cha, char *net, char *locid, char *datime,
 
   return(0);
 
+}
+
+/* IGD 03/01/05 Small function to set and return
+ * a static flag to use or not use the delay in
+ * response computation
+ * Input: NEGATIVE means that we want to query the value of the flag
+ *        TRUE or FALSE means that we want to set corresponding values
+ * The reason we want to use this global variable is because we don't
+ * want to change the number of arguments in evresp() function which
+ * is used in users programs
+ */
+/* 2/6/2006 -- [ET]  Moved from 'evalresp.c' to 'evresp.c' */
+int use_delay(int flag)
+{
+	/* WE USE THOSE WEIRD magic numbers here because
+	 * there is a chance that use_delay_flag is not
+	 * defined: in user program which uses evresp()
+	 * when use_delay() is not used before evresp().
+	 */
+	int magic_use_delay = 35443647;
+	int magic_dont_use_delay = -90934324;
+	static int use_delay_flag = FALSE;
+	if (TRUE == flag)
+		use_delay_flag = magic_use_delay;
+	if (FALSE == flag)
+		use_delay_flag = magic_dont_use_delay;
+
+	if (use_delay_flag == magic_use_delay)
+		return TRUE;
+	return FALSE;
 }
 
 /*===================================================================
