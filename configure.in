@@ -16,7 +16,7 @@ dnl without this order in this file, automake will be confused!
 dnl
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(evalresp,3.2.31)
+AM_INIT_AUTOMAKE(evalresp,3.2.32)
 
 dnl Checks for programs.
 AC_PROG_CC

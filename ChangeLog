@@ -1,3 +1,6 @@
+Version 3.2.32
+	6-Feb-2006 Eric Thomas (e.thomas@isti.com)
+        * Moved 'use_delay()' function from 'evalresp.c' to 'evresp.c'.
 Version 3.2.31
 	19-Jan-2006 Eric Thomas (e.thomas@isti.com)
         * Renamed 'regexp' functions to prevent name clashes with other

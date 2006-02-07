@@ -28,6 +28,8 @@
                        frequencies are out of range.
     1/18/2006 -- [ET]  Version 3.2.31:  Renamed 'regexp' functions to
                        prevent name clashes with other libraries.
+     2/6/2006 -- [ET]  Version 3.2.32:  Moved 'use_delay()' function from
+                       'evalresp.c' to 'evresp.c'.
  */
 
 #ifndef EVRESP_H
@@ -43,7 +45,7 @@
 #ifdef VERSION
 #define REVNUM VERSION
 #else
-#define REVNUM "3.2.31"
+#define REVNUM "3.2.32"
 #endif
 
 #define TRUE 1
