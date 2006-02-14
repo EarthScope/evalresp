@@ -10,14 +10,14 @@
 .\"            a blockette [60] followed by a series of blockette [41] or$
 .\"            blockette [43] through blockette [48] responses)$
 .\"    Author: Thomas J. McSweeney
-.\"     Phone: (206)547-0393
+.\"     Phone: (206) 547-0393
 .\"   Current support:	ISTI
 .\"   Internet: info@isti.com
-.\"   Phone: (518)602-0001
+.\"   Phone: (518) 602-0001
 .\"   Also: rick@iris.washington.edu
-.\"   Phone: (206)547-0393
+.\"   Phone: (206) 547-0393
 .\"
-.TH EVALRESP V3.2.32 6-Feb-2006
+.TH EVALRESP V3.2.32 13-Feb-2006
 .SH NAME
 \fIevalresp\fR - evaluate response information and output to ASCII files using \fIrdseed V4.16\fR and above RESP files.
 .SH SYNOPSIS
@@ -53,7 +53,8 @@ the options.
     '-v':    verbose; list parameters on stdout
 .sp
 .SH WHAT IS NEW
-\fB\Version 3.2.32:\fR Moved 'use_delay()' function from 'evalresp.c' to 'evresp.c'.
+\fB\Version 3.2.32:\fR Moved 'use_delay()' function from 'evalresp.c' to 'evresp.c';
+modified to close input file when a single response file is specified.
 .br
 .br
 \fB\Version 3.2.31:\fR Renamed 'regexp' functions to prevent name clashes

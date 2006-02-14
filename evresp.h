@@ -28,8 +28,9 @@
                        frequencies are out of range.
     1/18/2006 -- [ET]  Version 3.2.31:  Renamed 'regexp' functions to
                        prevent name clashes with other libraries.
-     2/6/2006 -- [ET]  Version 3.2.32:  Moved 'use_delay()' function from
-                       'evalresp.c' to 'evresp.c'.
+    2/13/2006 -- [ET]  Version 3.2.32:  Moved 'use_delay()' function from
+                       'evalresp.c' to 'evresp.c'; modified to close input
+                       file when a single response file is specified.
  */
 
 #ifndef EVRESP_H
