@@ -2,11 +2,6 @@
 #include <config.h>
 #endif
 
-/*
-     2/6/2006 -- [ET]  Moved 'use_delay()' function from 'evalresp.c'
-                       to 'evresp.c'.
-*/
-
 /*===================================================================
 Name:      evresp_ Version 3.0
 Purpose:
@@ -47,6 +42,9 @@ Notes:
                        List blockette interpolation; made 'evresp()'
                        call 'evresp_itp()' function with default
                        values for List blockette interpolation parameters.
+    2/13/2006 -- [ET]  Moved 'use_delay()' function from 'evalresp.c'
+                       to 'evresp.c'; modified to close input file
+                       when a single response file is specified.
  */
 
 #include "./evresp.h"
@@ -390,8 +388,11 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
           new_file = 0;
           which_matched = find_resp(fptr, scns, date_time, &this_channel);
 #ifdef LIB_MODE
-	  if (which_matched < 1)
-	  	return NULL;
+	  if(which_matched < 1) {
+            if(!stdio_flag)            /* if not input from console then */
+              fclose(fptr);            /* close input file */
+	    return NULL;
+          }
 #endif
 
           /* found a station-channel-network that matched.  First construct
@@ -574,8 +575,11 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
             new_file = 0;
             which_matched = get_resp(fptr, scn, date_time, &this_channel);
 #ifdef LIB_MODE
-           if (which_matched < 1)
-              return NULL;
+           if(which_matched < 1) {
+             if(!stdio_flag)           /* if not input from console then */
+               fclose(fptr);           /* close input file */
+             return NULL;
+           }
 #endif
             if(which_matched >= 0) {
 
@@ -795,6 +799,10 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
     } /* end else if mode */
 
   }  /* end for loop */
+
+         /* added file close if single input file -- 2/13/2006 -- [ET]: */
+  if(!mode && !stdio_flag)        /* if single file was opened then */
+    fclose(fptr);                 /* close input file */
 
   /* and print a list of WARNINGS about the station-channel pairs that were not
      found in the input RESP files */
