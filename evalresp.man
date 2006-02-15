@@ -17,7 +17,7 @@
 .\"   Also: rick@iris.washington.edu
 .\"   Phone: (206) 547-0393
 .\"
-.TH EVALRESP V3.2.32 13-Feb-2006
+.TH EVALRESP V3.2.32 14-Feb-2006
 .SH NAME
 \fIevalresp\fR - evaluate response information and output to ASCII files using \fIrdseed V4.16\fR and above RESP files.
 .SH SYNOPSIS
@@ -186,8 +186,9 @@ If the `\fB\-f\fR' option is specified, a determination is made as to whether th
 the `\fB\-f\fR' flag is a directory.
 .HP 4
 (1) If it is a directory, then that directory, and only that directory, is searched for files with names
-like RESP.NET.STA.CHA, where the NET, STA, and CHA match the user supplied (or default)
-network-code, station names (from the STA_LIST), and channel names (from the CHA_LIST).
+like RESP.NET.STA.LOC.CHA (or RESP.NET.STA.CHA), where the NET, STA, and CHA match the user supplied
+(or default) network-code, station names (from the STA_LIST), location-code, and channel names (from
+the CHA_LIST).
 .HP 4
 (2) If it is not a directory, then a file with that name is used as input to the program. That file, and
 only that file, will be searched for response information that matches the user's request.
@@ -221,22 +222,22 @@ redirection to read SEED responses from a file containing the response informati
 .SH NOTES ABOUT USAGE
 .HP 4
 (1)  First, you must create an ASCII file containing the response information for the SEED volume.
-For \fIevalresp V3.0\fR (and later), \fIrdseed V4.1\fR or later must be used to create these files. To create
+For \fIevalresp V3.0\fR (and later), \fIrdseed V4.16\fR or later must be used to create these files. To create
 the files, the R option to rdseed can be specified (either on the command line or interactively).
 This places the response information in the SEED volume into ASCII files with names like
-RESP.NET.STA.CHA. Alternatively, the \fB\-d\fR option can be specified and, by responding "yes" to
+RESP.NET.STA.LOC.CHA. Alternatively, the \fB\-d\fR option can be specified and, by responding "yes" to
 the query of whether you want response files written, these same files will be extracted only for
 the station-channel-network tuples for which data is extracted from the SEED volume.
 .HP 4
 (2) If the file argument is a directory, that directory will be searched for RESP files of the form
-RESP.NET.STA.CHA.
+RESP.NET.STA.LOC.CHA (or RESP.NET.STA.CHA).
 .HP 4
 (3) If the file argument is a file, that file is assumed to be a concatenated version of the output from
 a call to rdseed with the \fB\-R\fR option. If this is the case, then only this file will be searched for
 matching response information
 .HP 4
 (4) If the file argument is missing, the current directory will be searched for RESP files of the form
-RESP.NET.STA.CHA (see \fI"How the Program Searches for Responses"\fR, above).
+RESP.NET.STA.LOC.CHA or RESP.NET.STA.CHA (see \fI"How the Program Searches for Responses"\fR, above).
 .HP 4
 (5) If the environment variable SEEDRESP exists and is the name of a directory, that directory will
 also be searched for the requested files (if the \fB\-f\fR option is not used, see \fI"How the Program
@@ -368,9 +369,9 @@ then this example will output eight files, called:
 .PD 0.5
 
 .nf 5
-AMP.IU.HRV.BHE, PHASE.IU.HRV.BHE, AMP.IU.HRV.BHN, PHASE.IU.HRV.BHN
+AMP.IU.HRV..BHE, PHASE.IU.HRV..BHE, AMP.IU.HRV..BHN, PHASE.IU.HRV..BHN
 and
-AMP.IU.ANMO.BHE, PHASE.IU.ANMO.BHE, AMP.IU.ANMO.BHN, PHASE.IU.ANMO.BHN
+AMP.IU.ANMO..BHE, PHASE.IU.ANMO..BHE, AMP.IU.ANMO..BHN, PHASE.IU.ANMO..BHN
 .sp
 .fi
 .PD 0.3
