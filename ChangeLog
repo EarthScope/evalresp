@@ -1,4 +1,7 @@
 Version 3.2.32
+	27-Mar-2006 Ilya Dricker (i.dricker@isti.com)
+	* Added include_HEADERS target evr_spline.h to Makefile.am
+	* Upgraded missing script
 	13-Feb-2006 Eric Thomas (e.thomas@isti.com)
         * Moved 'use_delay()' function from 'evalresp.c' to 'evresp.c'.
         * Modified to close input file when a single response file is

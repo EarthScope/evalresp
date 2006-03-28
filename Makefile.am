@@ -16,7 +16,7 @@ libevresp_a_SOURCES = regexp.c regerror.c regsub.c calc_fctns.c resp_fctns.c \
 
 #CFLAGS =    -Wall -g
 
-include_HEADERS =  evresp.h   regmagic.h  regexp.h
+include_HEADERS =  evresp.h   regmagic.h  regexp.h  evr_spline.h
 man_MANS = evalresp.man
 
 EXTRA_DIST = evalresp.man evresp.h   regmagic.h  regexp.h  \
