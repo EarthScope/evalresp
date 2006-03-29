@@ -31,6 +31,9 @@
     2/13/2006 -- [ET]  Version 3.2.32:  Moved 'use_delay()' function from
                        'evalresp.c' to 'evresp.c'; modified to close input
                        file when a single response file is specified.
+    3/27/2006 -- [ID]  Version 3.2.33:  Added include_HEADERS target
+                       "evr_spline.h" to "Makefile.am"; upgraded missing
+                       script.
  */
 
 #ifndef EVRESP_H
@@ -46,7 +49,7 @@
 #ifdef VERSION
 #define REVNUM VERSION
 #else
-#define REVNUM "3.2.32"
+#define REVNUM "3.2.33"
 #endif
 
 #define TRUE 1
