@@ -32,8 +32,11 @@
                        'evalresp.c' to 'evresp.c'; modified to close input
                        file when a single response file is specified.
     3/27/2006 -- [ID]  Version 3.2.33:  Added include_HEADERS target
-                       "evr_spline.h" to "Makefile.am"; upgraded missing
+                       "evr_spline.h" to "Makefile.am"; upgraded "missing"
                        script.
+    3/28/2006 -- [ET]  Version 3.2.34:  Added 'free()' calls to "evresp.c"
+                       to fix memory leaks when program functions used
+                       in external applications.
  */
 
 #ifndef EVRESP_H
@@ -49,7 +52,7 @@
 #ifdef VERSION
 #define REVNUM VERSION
 #else
-#define REVNUM "3.2.33"
+#define REVNUM "3.2.34"
 #endif
 
 #define TRUE 1
