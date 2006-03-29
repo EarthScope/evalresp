@@ -1,3 +1,7 @@
+Version 3.2.34
+	28-Mar-2006 Eric Thomas (e.thomas@isti.com)
+	* Added 'free()' calls to "evresp.c" to fix memory leaks when
+          program functions used in external applications.
 Version 3.2.33
 	27-Mar-2006 Ilya Dricker (i.dricker@isti.com)
 	* Added include_HEADERS target "evr_spline.h" to "Makefile.am".
