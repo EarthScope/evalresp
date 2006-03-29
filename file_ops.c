@@ -10,6 +10,9 @@
                        compiler.
    10/21/2005 -- [ET]  Modified 'get_names()' function to work with
                        Microsoft compiler (under Windows).
+    3/28/2006 -- [ET]  Fixed description of "mode" in header comment for
+                       'find_files()' function (changed second "zero" to
+                       "one").
  */
 
 #include <sys/types.h>
@@ -87,7 +90,7 @@ void sig_child(int sig) {
    directories had been specified
 
    the mode is set to zero if the user named a specific filename and
-   to zero if the user named a directory containing RESP files (or if the
+   to one if the user named a directory containing RESP files (or if the
    SEEDRESP environment variable was used to find RESP files
 
    if a pattern cannot be found, then a value of NULL is set for the
