@@ -7,6 +7,7 @@
                        to 'evalresp.c'.
      2/6/2006 -- [ET]  Moved 'use_delay()' function from 'evalresp.c'
                        to 'evresp.c'.
+    3/28/2006 -- [ET]  Added "free(freqs)" to end of 'main()' function.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -358,6 +359,7 @@ char *argv[];
                                     listinterp_out_flag,listinterp_tension);
 
   free_response(first);
+  free(freqs);                    /* added 3/28/2006 -- [ET] */
 
   exit(0);
   return 0;             /* 'return' statement to avoid compiler warning */

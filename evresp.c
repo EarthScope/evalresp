@@ -45,6 +45,9 @@ Notes:
     2/13/2006 -- [ET]  Moved 'use_delay()' function from 'evalresp.c'
                        to 'evresp.c'; modified to close input file
                        when a single response file is specified.
+    3/28/2006 -- [ET]  Added "free(freqs_orig)" at end of 'evresp_itp()'
+                       function; added "free_matched_files(output_files)"
+                       in 'evresp_itp()' function.                       
  */
 
 #include "./evresp.h"
@@ -552,6 +555,9 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
           }
         }
       }
+
+      free_matched_files(output_files);     /* added 3/28/2006 -- [ET] */
+
       /* allocated one too many responses */
 
       free_response(resp);
@@ -818,9 +824,11 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
   free_scn_list(scns);
   if(flst_head != (struct matched_files *)NULL)
     free_matched_files(flst_head);
-  free_string_array(sta_list);
-  free_string_array(locid_list);
   free_string_array(chan_list);
+  free_string_array(locid_list);
+  free_string_array(sta_list);
+
+  free(freqs_orig);               /* added 3/28/2006 -- [ET] */
 
   return(first_resp);
 
