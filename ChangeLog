@@ -1,3 +1,7 @@
+Version 3.2.35
+	4-Apr-2006 Eric Thomas (e.thomas@isti.com)
+	* Modified to support channel-IDs with location codes equal
+          to an empty string.
 Version 3.2.34
 	28-Mar-2006 Eric Thomas (e.thomas@isti.com)
 	* Added 'free()' calls to "evresp.c" to fix memory leaks when
