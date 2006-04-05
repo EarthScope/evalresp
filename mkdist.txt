@@ -1,0 +1,6 @@
+To make dist:
+
+aclocal; autoheader; autoconf; automake
+./configure
+make
+make dist;
