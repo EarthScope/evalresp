@@ -37,6 +37,8 @@
     3/28/2006 -- [ET]  Version 3.2.34:  Added 'free()' calls to "evresp.c"
                        to fix memory leaks when program functions used
                        in external applications.
+     4/4/2006 -- [ET]  Version 3.2.35:  Modified to support channel-IDs with
+                       location codes equal to an empty string.
  */
 
 #ifndef EVRESP_H
@@ -52,7 +54,7 @@
 #ifdef VERSION
 #define REVNUM VERSION
 #else
-#define REVNUM "3.2.34"
+#define REVNUM "3.2.35"
 #endif
 
 #define TRUE 1
