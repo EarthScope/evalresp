@@ -14,6 +14,9 @@
                        (instead of just LF character).
     1/18/2006 -- [ET]  Renamed 'regexp' functions to prevent name clashes
                        with other libraries.
+     4/4/2006 -- [ET]  Modified 'parse_line()' and 'parse_delim_line()'
+                       functions to return allocated string array with
+                       empty entry (instead of NULL) if no fields found.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -47,15 +50,24 @@ struct string_array *parse_line(char *line) {
 
   lcl_line = line;
   nfields = count_fields(lcl_line);
-  lcl_strings = alloc_string_array(nfields);
-  for(i = 0; i < nfields; i++) {
-    parse_field(line,i,field);
-    fld_len = strlen(field) + 1;
-    if((lcl_strings->strings[i] = (char *)malloc(fld_len*sizeof(char))) == (char *)NULL) {
+  if(nfields > 0) {
+    lcl_strings = alloc_string_array(nfields);
+    for(i = 0; i < nfields; i++) {
+      parse_field(line,i,field);
+      fld_len = strlen(field) + 1;
+      if((lcl_strings->strings[i] = (char *)malloc(fld_len*sizeof(char))) == (char *)NULL) {
+        error_exit(OUT_OF_MEMORY,"parse_line; malloc() failed for (char) vector");
+      }
+      strncpy(lcl_strings->strings[i],"",fld_len);
+      strncpy(lcl_strings->strings[i],field,fld_len-1);
+    }
+  }
+  else {      /* if no fields then alloc string array with empty entry */
+    lcl_strings = alloc_string_array(1);
+    if((lcl_strings->strings[0] = (char *)malloc(sizeof(char))) == (char *)NULL) {
       error_exit(OUT_OF_MEMORY,"parse_line; malloc() failed for (char) vector");
     }
-    strncpy(lcl_strings->strings[i],"",fld_len);
-    strncpy(lcl_strings->strings[i],field,fld_len-1);
+    strncpy(lcl_strings->strings[0],"",1);
   }
   return(lcl_strings);
 }
@@ -76,16 +88,25 @@ struct string_array *parse_delim_line(char *line, char *delim) {
 
   lcl_line = line;
   nfields = count_delim_fields(lcl_line, delim);
-  lcl_strings = alloc_string_array(nfields);
-  for(i = 0; i < nfields; i++) {
-    memset(field, 0, MAXFLDLEN);
-    parse_delim_field(line,i,delim,field);
-    fld_len = strlen(field) + 1;
-    if((lcl_strings->strings[i] = (char *)malloc(fld_len*sizeof(char))) == (char *)NULL) {
-      error_exit(OUT_OF_MEMORY,"parse_line; malloc() failed for (char) vector");
+  if(nfields > 0) {
+    lcl_strings = alloc_string_array(nfields);
+    for(i = 0; i < nfields; i++) {
+      memset(field, 0, MAXFLDLEN);
+      parse_delim_field(line,i,delim,field);
+      fld_len = strlen(field) + 1;
+      if((lcl_strings->strings[i] = (char *)malloc(fld_len*sizeof(char))) == (char *)NULL) {
+        error_exit(OUT_OF_MEMORY,"parse_delim_line; malloc() failed for (char) vector");
+      }
+      strncpy(lcl_strings->strings[i],"",fld_len);
+      strncpy(lcl_strings->strings[i],field,fld_len-1);
     }
-    strncpy(lcl_strings->strings[i],"",fld_len);
-    strncpy(lcl_strings->strings[i],field,fld_len-1);
+  }
+  else {      /* if no fields then alloc string array with empty entry */
+    lcl_strings = alloc_string_array(1);
+    if((lcl_strings->strings[0] = (char *)malloc(sizeof(char))) == (char *)NULL) {
+      error_exit(OUT_OF_MEMORY,"parse_delim_line; malloc() failed for (char) vector");
+    }
+    strncpy(lcl_strings->strings[0],"",1);
   }
   return(lcl_strings);
 }
