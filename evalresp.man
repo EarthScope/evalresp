@@ -17,7 +17,7 @@
 .\"   Also: rick@iris.washington.edu
 .\"   Phone: (206) 547-0393
 .\"
-.TH EVALRESP V3.2.35 4-Apr-2006
+.TH EVALRESP V3.2.36 21-Aug-2006
 .SH NAME
 \fIevalresp\fR - evaluate response information and output to ASCII files using \fIrdseed V4.16\fR and above RESP files.
 .SH SYNOPSIS
@@ -53,32 +53,36 @@ the options.
     '-v':    verbose; list parameters on stdout
 .sp
 .SH WHAT IS NEW
-\fB\Version 3.2.35:\fR Modified to support channel-IDs with
+\fB Version 3.2.36:\fR Modified to support T - Magnetic Flux Density in Teslas
+units.
+.br
+.br
+\fB Version 3.2.35:\fR Modified to support channel-IDs with
 location codes equal to an empty string.
 .br
 .br
-\fB\Version 3.2.34:\fR Added 'free()' calls to "evresp.c" to fix memory leaks when
+\fB Version 3.2.34:\fR Added 'free()' calls to "evresp.c" to fix memory leaks when
 program functions used in external applications.
 .br
 .br
-\fB\Version 3.2.33:\fR Added include_HEADERS target "evr_spline.h" to "Makefile.am";
+\fB Version 3.2.33:\fR Added include_HEADERS target "evr_spline.h" to "Makefile.am";
 upgraded "missing" script.
 .br
 .br
-\fB\Version 3.2.32:\fR Moved 'use_delay()' function from 'evalresp.c' to 'evresp.c';
+\fB Version 3.2.32:\fR Moved 'use_delay()' function from 'evalresp.c' to 'evresp.c';
 modified to close input file when a single response file is specified.
 .br
 .br
-\fB\Version 3.2.31:\fR Renamed 'regexp' functions to prevent name clashes
+\fB Version 3.2.31:\fR Renamed 'regexp' functions to prevent name clashes
 with other libraries; restored 'depcomp' script in distribution.
 .br
 .br
-\fB\Version 3.2.30:\fR Modified to unwrap phase values before interpolation
+\fB Version 3.2.30:\fR Modified to unwrap phase values before interpolation
 and re-wrap after (if needed); modified to detect when all requested interpolated
 frequencies are out of range.
 .br
 .br
-\fB\Version 3.2.29:\fR Implemented interpolation of amplitude/phase values from
+\fB Version 3.2.29:\fR Implemented interpolation of amplitude/phase values from
 responses containing List blockettes (55); modified message shown when
 List blockette encountered; modified so as not to require characters after
 'units' specifiers like "M" and "COUNTS"; modified to handle case where
@@ -88,43 +92,44 @@ under Linux/UNIX ("segmentation fault") if input response file contained
 Windows-style "CR/LF" line ends.
 .br
 .br
-\fB\Version 3.2.28:\fR Modified to allow command-line parameters for frequency values to be missing.
+\fB Version 3.2.28:\fR Modified to allow command-line parameters for frequency values to be missing.
 .br
 .br
-\fB\Version 3.2.27:\fR Added command line option -use-delay (Use estimated delay in phase computation)
+\fB Version 3.2.27:\fR Added command line option -use-delay (Use estimated delay in phase computation)
 .br
 .br
-\fB\Version 3.2.26:\fR Now evalresp runs on Mac OS X.
+\fB Version 3.2.26:\fR Now evalresp runs on Mac OS X.
 .br
 .br
-\fB\Version 3.2.25:\fR Processing of B55 with GAIN stage fixed. Starting with this version, added ChangeLog file.
+\fB Version 3.2.25:\fR Processing of B55 with GAIN stage fixed. Starting with this version, added ChangeLog file.
 .br
 .br
-\fB\Version 3.2.24:\fR Added two confuration options (--enable-delay Use estimated delay in phase computation)
+\fB Version 3.2.24:\fR Added two confuration options (--enable-delay Use estimated delay in phase computation)
 and (--enable-phase-unwrap Unwrap phase). 
 .br
 .br
-\fB\Version 3.2.23:\fR Added support for SHAPE compatible RESP files. When parsing lines that are valid
+\fB Version 3.2.23:\fR Added support for SHAPE compatible RESP files. When parsing lines that are valid
 RESP format, but unexpected, evalresp now skips to the next line. Added support for blank lines within 
 and at the end of a RESP file.
 .br
 .br
-\fB\Version 3.2.21:\fR Does not terminate execution if a "Generic Response Blockette" is found in the RESP file, but
+\fB Version 3.2.21:\fR Does not terminate execution if a "Generic Response Blockette" is found in the RESP file, but
 prints a warning and ignores the blockette.
 .br
 .br
-\fB\Version 3.2.20:\fR Allows a user to compile and run evalresp on WIN32 platform. See the details in README file.
+\fB Version 3.2.20:\fR Allows a user to compile and run evalresp on WIN32 platform. See the details in README file.
 As many other contemporary programs \fIevalresp\fR now supports "make install" command. A default installation
 directory is /usr/local, however, it can be changed during configuration phase: "./configure --prefix=/user/directory".
 A bug in pole-zero representations for digital stages has been fixed.
 .br
 .br
-\fB\Version 3.2.19:\fR Service release; see README in the evalresp distribution for a list of bugs fixed.
+\fB Version 3.2.19:\fR Service release; see README in the evalresp distribution for a list of bugs fixed.
 .sp
-.SH SUPPORT OF PRESSURE DATA
+.SH SUPPORT OF PRESSURE and MAGNETIC DATA
 \fIevalresp\fR is able to process responses of the
-pressure instruments (in Passcals). Note, that the default units are assumed to be Passcals, therefore
-a use of "-u" option does not make an effect.
+pressure instruments (in Passcals) and magnetic flux density (in Tesla). Note, that the default units 
+are assumed to be Passcals or Tesla respectively, therefore a use of "-u" option is ignored while
+processing pressure and magnetic flux responses.
 .sp
 .SH FIR FILTERS
  All FIR filters are considered as having a zero phase-shift, even

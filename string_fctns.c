@@ -17,6 +17,7 @@
      4/4/2006 -- [ET]  Modified 'parse_line()' and 'parse_delim_line()'
                        functions to return allocated string array with
                        empty entry (instead of NULL) if no fields found.
+    8/21/2006 -- [IGD] Version 3.2.36: Added support for TESLA units
 */
 
 #ifdef HAVE_CONFIG_H
@@ -539,6 +540,11 @@ int check_units(char *line) {
 ********************************************/
   if (strncasecmp(line, "PA", 2) == 0)
 	return(PRESSURE);
+
+/* IGD 08/21/06 Added support for TESLA */
+  if (strncasecmp(line, "T -", 3) == 0)
+        return(TESLA);
+
 
   if(string_match(line,"^[CNM]?M/S\\*\\*2|^[CNM]?M/SEC\\*\\*2","-r")) {
     if(first_flag && !strncmp("NM",line,(size_t)2))

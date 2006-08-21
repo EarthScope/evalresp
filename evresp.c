@@ -48,7 +48,8 @@ Notes:
     3/28/2006 -- [ET]  Added "free(freqs_orig)" at end of 'evresp_itp()'
                        function; added "free_matched_files(output_files)"
                        in 'evresp_itp()' function.                       
- */
+    8/21/2006 -- [IGD] Version 3.2.36: Added support for TESLA units 
+*/
 
 #include "./evresp.h"
 #include <stdlib.h>
@@ -218,8 +219,9 @@ Notes:
 
 double Pi;
 double twoPi;
+/* IGD 08/21/06 Added Tesla */
 char SEEDUNITS[][UNITS_STR_LEN] = {"Undef Units", "Displacement", "Velocity",
-                        "Acceleration", "Counts", "Volts", "", "Pascals"};
+                        "Acceleration", "Counts", "Volts", "", "Pascals", "Tesla"};
 
 char FirstLine[MAXLINELEN];
 int FirstField;
@@ -639,18 +641,30 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
 
                 test = parse_channel(fptr, &this_channel);
 
-		/* IGD 01/04/01 Add code preventing a user from definin output units as DIS and ACC if
+		/* IGD 01/04/01 Add code preventing a user from defining output units as DIS and ACC if
 		the input units are PRESSURE after */
 		if (strcmp (this_channel.first_units, "PA - pressure in Pascals") == 0)  {
                 	if (strcmp(units, "VEL") != 0)	{
 			 	if(strcmp(units, "DEF") != 0)  {
-					fprintf(stderr, "WARNING: OUTPUT %s do not make sense if INPUT is PRESSURE\n",
+					fprintf(stderr, "WARNING: OUTPUT %s does not make sense if INPUT is PRESSURE\n",
 							units);	
 				strcpy (units, "VEL");
 				fprintf(stderr, "      OUTPUT units are reset and interpreted as PRESSURE\n");	
 				}		        	
                   	}
 		}
+                /* IGD 08/21/06 Add code preventing a user from defining output units as DIS and ACC if
+                the input units are TESLA */
+                if (strncmp (this_channel.first_units, "T -", 3) == 0)  {
+                        if (strcmp(units, "VEL") != 0)  {
+                                if(strcmp(units, "DEF") != 0)  {
+                                        fprintf(stderr, "WARNING: OUTPUT %s does not make sense if INPUT is MAGNETIC FLUX\n",
+                                                        units);
+                                strcpy (units, "VEL");
+                                fprintf(stderr, "      OUTPUT units are reset and interpreted as TESLA\n");
+                                }
+                        }
+                }
 
                if(listinterp_in_flag &&
                          this_channel.first_stage->first_blkt->type == LIST)

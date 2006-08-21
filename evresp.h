@@ -39,6 +39,7 @@
                        in external applications.
      4/4/2006 -- [ET]  Version 3.2.35:  Modified to support channel-IDs with
                        location codes equal to an empty string.
+    8/21/2006 -- [IGD] Version 3.2.36: Added support for TESLA units
  */
 
 #ifndef EVRESP_H
@@ -79,8 +80,9 @@
    then the response is just given in input units to output units, no
    interpretation is made of the units used) */
 
-/* IGD 02/03/01 New unit pressure is added */
-enum units { UNDEF_UNITS, DIS, VEL, ACC, COUNTS, VOLTS, DEFAULT, PRESSURE
+/* IGD 02/03/01 New unit pressure  added */
+/* IGD 08/21/06 New units TESLA added */
+enum units { UNDEF_UNITS, DIS, VEL, ACC, COUNTS, VOLTS, DEFAULT, PRESSURE, TESLA
 };
 
 /*  enumeration representing the types of filters encountered  */
