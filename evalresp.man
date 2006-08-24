@@ -53,8 +53,7 @@ the options.
     '-v':    verbose; list parameters on stdout
 .sp
 .SH WHAT IS NEW
-\fB Version 3.2.36:\fR Modified to support T - Magnetic Flux Density in Teslas
-units.
+\fB Version 3.2.36:\fR Modified to support Tesla ("T") units.
 .br
 .br
 \fB Version 3.2.35:\fR Modified to support channel-IDs with
@@ -126,10 +125,10 @@ A bug in pole-zero representations for digital stages has been fixed.
 \fB Version 3.2.19:\fR Service release; see README in the evalresp distribution for a list of bugs fixed.
 .sp
 .SH SUPPORT OF PRESSURE and MAGNETIC DATA
-\fIevalresp\fR is able to process responses of the
-pressure instruments (in Passcals) and magnetic flux density (in Tesla). Note, that the default units 
-are assumed to be Passcals or Tesla respectively, therefore a use of "-u" option is ignored while
-processing pressure and magnetic flux responses.
+\fIevalresp\fR is able to process responses of
+pressure instruments (in Pascals) and magnetic flux density (in Tesla). Note that the default units 
+are assumed to be Pascals or Tesla respectively, therefore the "-u" option is ignored while
+processing pressure and magnetic flux density responses.
 .sp
 .SH FIR FILTERS
  All FIR filters are considered as having a zero phase-shift, even
