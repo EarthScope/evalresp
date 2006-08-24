@@ -48,7 +48,9 @@ Notes:
     3/28/2006 -- [ET]  Added "free(freqs_orig)" at end of 'evresp_itp()'
                        function; added "free_matched_files(output_files)"
                        in 'evresp_itp()' function.                       
-    8/21/2006 -- [IGD] Version 3.2.36: Added support for TESLA units 
+    8/21/2006 -- [IGD] Version 3.2.36: Added support for TESLA units.
+    8/23/2006 -- [ET]  Improved detection of pressure ("PA") input units
+                       for in/out units check.
 */
 
 #include "./evresp.h"
@@ -643,7 +645,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
 
 		/* IGD 01/04/01 Add code preventing a user from defining output units as DIS and ACC if
 		the input units are PRESSURE after */
-		if (strcmp (this_channel.first_units, "PA - pressure in Pascals") == 0)  {
+		if (strncmp (this_channel.first_units, "PA -",4) == 0)  {
                 	if (strcmp(units, "VEL") != 0)	{
 			 	if(strcmp(units, "DEF") != 0)  {
 					fprintf(stderr, "WARNING: OUTPUT %s does not make sense if INPUT is PRESSURE\n",
