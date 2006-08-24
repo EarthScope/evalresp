@@ -1,3 +1,6 @@
+Version 3.2.36
+	21-Aug-2006 Ilya Dricker (i.dricker@isti.com)
+	* Modified to support Tesla ("T") units.
 Version 3.2.35
 	4-Apr-2006 Eric Thomas (e.thomas@isti.com)
 	* Modified to support channel-IDs with location codes equal
