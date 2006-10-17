@@ -39,7 +39,10 @@
                        in external applications.
      4/4/2006 -- [ET]  Version 3.2.35:  Modified to support channel-IDs with
                        location codes equal to an empty string.
-    8/21/2006 -- [IGD] Version 3.2.36: Added support for TESLA units.
+    8/21/2006 -- [IGD] Version 3.2.36:  Added support for TESLA units.
+   10/16/2006 -- [ET]  Version 3.2.37:  Added two more 'free()' calls to
+                       "evresp.c" to fix memory leaks when program functions
+                       are used in external applications.
  */
 
 #ifndef EVRESP_H
@@ -55,7 +58,7 @@
 #ifdef VERSION
 #define REVNUM VERSION
 #else
-#define REVNUM "3.2.36"
+#define REVNUM "3.2.37"
 #endif
 
 #define TRUE 1
