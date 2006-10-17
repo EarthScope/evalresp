@@ -47,10 +47,12 @@ Notes:
                        when a single response file is specified.
     3/28/2006 -- [ET]  Added "free(freqs_orig)" at end of 'evresp_itp()'
                        function; added "free_matched_files(output_files)"
-                       in 'evresp_itp()' function.                       
+                       in 'evresp_itp()' function.
     8/21/2006 -- [IGD] Version 3.2.36: Added support for TESLA units.
     8/23/2006 -- [ET]  Improved detection of pressure ("PA") input units
                        for in/out units check.
+   10/16/2006 -- [ET]  Modified to free array allocated in 'evresp_itp()'
+                       function.
 */
 
 #include "./evresp.h"
@@ -526,6 +528,8 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                        stdio_flag, listinterp_out_flag, listinterp_in_flag);
             }
 
+            free(freqs);          /* free array that was allocated above */
+
             /* and, finally, free the memory associated with this channel/filter
                list and continue searching for the next match */
 
@@ -729,6 +733,8 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                   print_chan(&this_channel, start_stage, stop_stage,
                        stdio_flag, listinterp_out_flag, listinterp_in_flag);
                 }
+
+                free(freqs);      /* free array that was allocated above */
 
                 /* and, finally, free the memory associated with this
                    channel/filter list and continue searching for the
