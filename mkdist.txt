@@ -4,3 +4,10 @@ aclocal; autoheader; autoconf; automake
 ./configure
 make
 make dist;
+
+
+---------------------------------------------------------------------
+
+"depcomp" not being included in dist built via "make dist;"
+
+check for zero-length "stamp-h.in" getting into distribution
