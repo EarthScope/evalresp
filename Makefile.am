@@ -6,7 +6,7 @@ bin_PROGRAMS = evalresp
 
 evalresp_SOURCE = evalresp.c
 
-evalresp_LDADD = $(USER_LDFLAGS) -L. -levresp  -lm
+evalresp_LDADD =  -L. -levresp  -lm
 
 
 #evalresp_SOURCES = regexp.c regerror.c regsub.c calc_fctns.c resp_fctns.c \
