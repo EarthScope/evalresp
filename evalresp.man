@@ -17,7 +17,7 @@
 .\"   Also: rick@iris.washington.edu
 .\"   Phone: (206) 547-0393
 .\"
-.TH EVALRESP V3.2.37 16-Oct-2006
+.TH EVALRESP V3.2.38 08-Nov-2006
 .SH NAME
 \fIevalresp\fR - evaluate response information and output to ASCII files using \fIrdseed V4.16\fR and above RESP files.
 .SH SYNOPSIS
@@ -53,6 +53,10 @@ the options.
     '-v':    verbose; list parameters on stdout
 .sp
 .SH WHAT IS NEW
+\fB Version 3.2.38:\fR Libtoolized evresp library: using libtool instead of ranlib.
+          Now a builder can create dynamic library, not only static.
+.br
+.br
 \fB Version 3.2.37:\fR Added two more 'free()' calls to "evresp.c" to fix
 memory leaks when program functions are used in external applications.
 .br

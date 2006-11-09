@@ -43,6 +43,7 @@
    10/16/2006 -- [ET]  Version 3.2.37:  Added two more 'free()' calls to
                        "evresp.c" to fix memory leaks when program functions
                        are used in external applications.
+    8/11/2006 -- [IGD] Libtoolized evresp library
  */
 
 #ifndef EVRESP_H
@@ -58,7 +59,7 @@
 #ifdef VERSION
 #define REVNUM VERSION
 #else
-#define REVNUM "3.2.37"
+#define REVNUM "3.2.38"
 #endif
 
 #define TRUE 1
