@@ -4,13 +4,18 @@ AUTOMAKE_OPTIONS = foreign
 
 bin_PROGRAMS = evalresp
 
-evalresp_SOURCES = regexp.c regerror.c regsub.c calc_fctns.c resp_fctns.c \
-file_ops.c evresp.c evalresp.c alloc_fctns.c parse_fctns.c print_fctns.c \
-string_fctns.c error_fctns.c evr_spline.c
+evalresp_SOURCE = evalresp.c
+
+evalresp_LDADD = $(USER_LDFLAGS) -L. -levresp  -lm
 
 
-lib_LIBRARIES = libevresp.a
-libevresp_a_SOURCES = regexp.c regerror.c regsub.c calc_fctns.c resp_fctns.c \
+#evalresp_SOURCES = regexp.c regerror.c regsub.c calc_fctns.c resp_fctns.c \
+#file_ops.c evresp.c evalresp.c alloc_fctns.c parse_fctns.c print_fctns.c \
+#string_fctns.c error_fctns.c evr_spline.c
+
+
+lib_LTLIBRARIES = libevresp.la
+libevresp_la_SOURCES = regexp.c regerror.c regsub.c calc_fctns.c resp_fctns.c \
         file_ops.c evresp.c alloc_fctns.c parse_fctns.c print_fctns.c \
         string_fctns.c error_fctns.c evr_spline.c
 
