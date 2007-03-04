@@ -24,7 +24,7 @@ void error_exit(int cond, char *msg, ...) {
   int ival, i;
   double dval;
 
-  fprintf(stderr,"EVRESP ERROR: ");
+  fprintf(stderr,"%s EVRESP ERROR: ", myLabel);
   va_start(ap, msg);
   for(p = msg; *p; p++) {
     if(*p != '%') {
@@ -89,18 +89,18 @@ void error_return(int cond, char *msg, ...) {
 
   if(GblChanPtr != NULL) {
     if(curr_seq_no >= 0)
-      fprintf(stderr,"EVRESP ERROR (%s.%s.%s.%s [File: %s; Start date: %s; Stage: %d]):\n\t",
-	    GblChanPtr->staname, GblChanPtr->network, GblChanPtr->locid, GblChanPtr->chaname,
+      fprintf(stderr,"%s EVRESP ERROR (%s.%s.%s.%s [File: %s; Start date: %s; Stage: %d]):\n\t",
+	    myLabel, GblChanPtr->staname, GblChanPtr->network, GblChanPtr->locid, GblChanPtr->chaname,
 	    curr_file, GblChanPtr->beg_t, curr_seq_no);
     else if(strlen(GblChanPtr->staname))
-      fprintf(stderr,"EVRESP ERROR (%s.%s.%s.%s [File: %s; Start date: %s]):\n\t",
-	    GblChanPtr->staname, GblChanPtr->network, GblChanPtr->locid, GblChanPtr->chaname,
+      fprintf(stderr,"%s EVRESP ERROR (%s.%s.%s.%s [File: %s; Start date: %s]):\n\t",
+	    myLabel, GblChanPtr->staname, GblChanPtr->network, GblChanPtr->locid, GblChanPtr->chaname,
 	    curr_file,GblChanPtr->beg_t);
     else
-      fprintf(stderr,"EVRESP ERROR [File: %s]):\n\t", curr_file);
+      fprintf(stderr,"%s EVRESP ERROR [File: %s]):\n\t", myLabel, curr_file);
   }
   else
-    fprintf(stderr,"EVRESP ERROR [File: %s]):\n\t", curr_file);
+    fprintf(stderr,"%s EVRESP ERROR [File: %s]):\n\t", myLabel, curr_file);
   va_start(ap, msg);
   for(p = msg; *p; p++) {
     if(*p != '%') {

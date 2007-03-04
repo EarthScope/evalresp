@@ -44,6 +44,9 @@
                        "evresp.c" to fix memory leaks when program functions
                        are used in external applications.
     8/11/2006 -- [IGD] Libtoolized evresp library
+    4/03/2007 -- [IGD] Added myLabel global variable which is used to add NSLC
+                        labels in evalresp logging if --enable-log-label config
+                        option is used
  */
 
 #ifndef EVRESP_H
@@ -316,6 +319,10 @@ struct dateTime {
   int min;
   float sec;
 };
+
+/* IGD 2007/02/27 */
+extern char myLabel[20];
+//char myLabel[20] = "aa";
 
 /* utility routines that are used to parse the input file line by line and
    convert the input to what the user wants */

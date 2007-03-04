@@ -1,4 +1,13 @@
 Version 3.2.38
+        04-Mar-2007 Ilya Dricker (i.dricker@isti.com)
+        *ADDED: new configure option --enable-log-label
+          When evalresp is configured with this option, most of log messages
+          are being prepended by a label. A label consists of [Net.Sta.Loc.Chan].
+        27-Feb-2007 Ilya Dricker (i.dricker@isti.com)
+        * ADDED: Return (#ifdef LIB_MODE) if input file is not found
+	01-Feb-2007 Ilya Dricker (i.dricker@isti.com)
+	* FIXED: Bug pointed by <alessia@sismo.u-strasbg.fr> : use 
+	  else if(!strcmp(argv[i], "-u")) instead of just if in evalresp.c:141
         08-Nov-2006 Ilya Dricker (i.dricker@isti.com)
         * Libtoolized evresp library: using libtool instead of ranlib.
 	  Now a builder can create dynamic library, not only static

@@ -59,41 +59,41 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
 
   /* inform the user of which file has been evaluated */
 
-  fprintf(stderr, "--------------------------------------------------\n");
+  fprintf(stderr, "%s --------------------------------------------------\n", myLabel);
   if(!stdio_flag) {
-    fprintf(stderr, "  %s\n", curr_file);
+    fprintf(stderr, "%s  %s\n", myLabel, curr_file);
   }
   else {
     if(strlen(chan->network)) {
-      fprintf(stderr, "  RESP.%s.%s.%s.%s (from stdin)\n",chan->network,
+      fprintf(stderr, "%s  RESP.%s.%s.%s.%s (from stdin)\n", myLabel, chan->network,
                       chan->staname,chan->locid,chan->chaname);
     }
     else {
-      fprintf(stderr, "  RESP..%s.%s.%s (from stdin)\n",chan->staname,
+      fprintf(stderr, "%s  RESP..%s.%s.%s (from stdin)\n",myLabel, chan->staname,
                       chan->locid,chan->chaname);
     }
   }
-  fprintf(stderr, "--------------------------------------------------\n");
-  fprintf(stderr, "  %s %s %s %s ", (strlen(chan->network) ? chan->network : "??"),
+  fprintf(stderr, "%s --------------------------------------------------\n", myLabel);
+  fprintf(stderr, "%s  %s %s %s %s ", myLabel, (strlen(chan->network) ? chan->network : "??"),
           chan->staname, (strlen(chan->locid) ? chan->locid : "??"), chan->chaname);
   if(!def_units_flag)
-    fprintf(stderr, "%s %s\n   Seed units: %s(in)->%s(out)\n",
-            chan->beg_t, chan->end_t,SEEDUNITS[in_units],
+    fprintf(stderr, "%s %s %s\n%s   Seed units: %s(in)->%s(out)\n",
+            myLabel, chan->beg_t, chan->end_t, myLabel, SEEDUNITS[in_units],
             SEEDUNITS[out_units]);
   else
-    fprintf(stderr, "%s %s\n   Seed units: %s(in)->%s(out)\n",
-            chan->beg_t, chan->end_t,chan->first_units,
+    fprintf(stderr, "%s %s %s\n%s   Seed units: %s(in)->%s(out)\n",
+            myLabel, chan->beg_t, chan->end_t, myLabel, chan->first_units,
             chan->last_units);
 
-  fprintf(stderr, "   computed sens=%.5E (reported=%.5E) @ %.5E Hz\n",
-          chan->calc_sensit, chan->sensit, chan->sensfreq);
-  fprintf(stderr, "   calc_del=%.5E  corr_app=%.5E  est_delay=%.5E  final_sint=%.3g(sec/sample)\n",
-          chan->calc_delay, chan->applied_corr, chan->estim_delay, chan->sint);
+  fprintf(stderr, "%s   computed sens=%.5E (reported=%.5E) @ %.5E Hz\n",
+          myLabel, chan->calc_sensit, chan->sensit, chan->sensfreq);
+  fprintf(stderr, "%s   calc_del=%.5E  corr_app=%.5E  est_delay=%.5E  final_sint=%.3g(sec/sample)\n",
+          myLabel, chan->calc_delay, chan->applied_corr, chan->estim_delay, chan->sint);
 #ifdef USE_DELAY
-  fprintf(stderr, "    NOTE: Estimated delay was used in computation of PHASE\n");
+  fprintf(stderr, "%s    NOTE: Estimated delay was used in computation of PHASE\n", myLabel);
 #endif
    if (TRUE == use_delay(QUERY_DELAY))
- 	fprintf(stderr, "    NOTE: Estimated delay was used in computation of PHASE\n");
+ 	fprintf(stderr, "%s    NOTE: Estimated delay was used in computation of PHASE\n", myLabel);
   /* then print the parameters for each stage (stage number, type of stage, number
      of coefficients [or number of poles and zeros], gain, and input sample interval
      if it is defined for that stage */
@@ -178,7 +178,7 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
       case REFERENCE:
         break;
       default:
-        fprintf(stderr, ".........");
+        fprintf(stderr, "%s .........", myLabel);
       }
       strcat(out_str,tmp_str);
       if(first_blkt)
@@ -186,29 +186,29 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
       this_blkt = this_blkt->next_blkt;
     }
     if(this_stage->sequence_no)
-      fprintf(stderr,"%s\n",out_str);
+      fprintf(stderr,"%s %s\n",myLabel, out_str);
     this_stage = this_stage->next_stage;
   }
-  fprintf(stderr, "--------------------------------------------------\n");
+  fprintf(stderr, "%s--------------------------------------------------\n", myLabel);
   /* IGD : here we print a notice about blockette 55: evalresp v. 2.3.17+*/
   /* ET:  Notice modified, with different notice if freqs interpolated */
   if(chan->first_stage->first_blkt->type == LIST) {
     if(listinterp_in_flag) {
-      fprintf(stderr, "Note:  The input has been interpolated from the response List stage\n");
-      fprintf(stderr, "(blockette 55) to generate output for the %d frequencies requested\n",
-                       chan->first_stage->first_blkt->blkt_info.list.nresp);
+      fprintf(stderr, "%s Note:  The input has been interpolated from the response List stage\n", myLabel);
+      fprintf(stderr, "%s (blockette 55) to generate output for the %d frequencies requested\n",
+                       myLabel, chan->first_stage->first_blkt->blkt_info.list.nresp);
     }
     else if(listinterp_out_flag) {
-      fprintf(stderr, "Note:  The output has been interpolated from the %d frequencies\n",
-                       chan->first_stage->first_blkt->blkt_info.list.nresp);
-      fprintf(stderr, "defined in the response List stage (blockette 55)\n");
+      fprintf(stderr, "%s Note:  The output has been interpolated from the %d frequencies\n",
+                       myLabel, chan->first_stage->first_blkt->blkt_info.list.nresp);
+      fprintf(stderr, "%s defined in the response List stage (blockette 55)\n", myLabel);
     }
     else {
-      fprintf(stderr, "++++++++ WARNING ++++++++++++++++++++++++++++\n");
-      fprintf(stderr, "Response contains a List stage (blockette 55)--the output has\n");
-      fprintf(stderr, "been generated for those %d frequencies defined in the blockette\n",
-                       chan->first_stage->first_blkt->blkt_info.list.nresp);
-      fprintf(stderr, "+++++++++++++++++++++++++++++++++++++++++++++\n");
+      fprintf(stderr, "%s ++++++++ WARNING ++++++++++++++++++++++++++++\n", myLabel);
+      fprintf(stderr, "%s Response contains a List stage (blockette 55)--the output has\n", myLabel);
+      fprintf(stderr, "%s been generated for those %d frequencies defined in the blockette\n",
+                       myLabel, chan->first_stage->first_blkt->blkt_info.list.nresp);
+      fprintf(stderr, "%s +++++++++++++++++++++++++++++++++++++++++++++\n", myLabel);
     }
   }
   fflush(stderr);
@@ -312,15 +312,15 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
         fclose(fptr2);
       }
       else {
-        fprintf(stdout, "--------------------------------------------------\n");
-        fprintf(stdout,"AMP/PHS.%s.%s.%s.%s\n",resp->network,resp->station,resp->locid,resp->channel);
-        fprintf(stdout, "--------------------------------------------------\n");
+        fprintf(stdout, "%s --------------------------------------------------\n", myLabel);
+        fprintf(stdout,"%s AMP/PHS.%s.%s.%s.%s\n",myLabel, resp->network,resp->station,resp->locid,resp->channel);
+        fprintf(stdout, "%s --------------------------------------------------\n", myLabel);
         for(i = 0; i < num_points; i++) {
           amp = amp_arr[i];
           pha = pha_arr[i];
-          fprintf(stdout,"%.6E %.6E %.6E\n",freq_arr[i],amp,pha);
+          fprintf(stdout,"%s %.6E %.6E %.6E\n",myLabel, freq_arr[i],amp,pha);
         }
-        fprintf(stdout, "--------------------------------------------------\n");
+        fprintf(stdout, "%s --------------------------------------------------\n", myLabel);
       }
       if(freqarr_alloc_flag)      /* if freq array was allocated then */
         free(freq_arr);           /* free freq array */
@@ -336,9 +336,9 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
       }
       else {
         fptr1 = stdout;
-        fprintf(stdout, "--------------------------------------------------\n");
-        fprintf(stdout,"SPECTRA.%s.%s.%s.%s\n",resp->network,resp->station,resp->locid,resp->channel);
-        fprintf(stdout, "--------------------------------------------------\n");
+        fprintf(stdout, "%s --------------------------------------------------\n", myLabel);
+        fprintf(stdout,"%s SPECTRA.%s.%s.%s.%s\n",myLabel, resp->network,resp->station,resp->locid,resp->channel);
+        fprintf(stdout, "%s --------------------------------------------------\n", myLabel);
       }
       for(i = 0; i < resp->nfreqs; i++)
         fprintf(fptr1,"%.6E %.6E %.6E\n",resp->freqs[i],output[i].real,output[i].imag);

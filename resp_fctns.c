@@ -299,7 +299,7 @@ void check_channel(struct channel *chan) {
                         "check_channel; multiple 55 blockettes in GENERIC stages are not supported yet");
          stage_type = GENERIC_TYPE;
 /*	nc = 1; */ /*for calc_delay to be 0 in decimation blockette */
-	fprintf(stdout, "WARNING: Generic blockette is detected in stage %d; content is ignored\n", i+1);
+	fprintf(stdout, "%s WARNING: Generic blockette is detected in stage %d; content is ignored\n", myLabel, i+1);
 	fflush(stdout);
 	filt_blkt = blkt_ptr;
         break;
@@ -475,8 +475,8 @@ void check_sym(struct blkt *f, struct channel *chan) {
 
   for (k=0; k<nc; k++) sum += f->blkt_info.fir.coeffs[k];
   if (nc && (sum < (1.0-FIR_NORM_TOL) || sum > (1.0+FIR_NORM_TOL))) {
-    fprintf(stderr,"WARNING: FIR normalized: sum[coef]=%E; ", sum);
-    fprintf(stderr,"%s %s %s %s\n", chan->network, chan->staname, chan->locid, chan->chaname);
+    fprintf(stderr,"%s WARNING: FIR normalized: sum[coef]=%E; ", myLabel, sum);
+    fprintf(stderr,"%s %s %s %s %s\n", myLabel, chan->network, chan->staname, chan->locid, chan->chaname);
     fflush(stderr);
     for (k=0; k<nc; k++) f->blkt_info.fir.coeffs[k] /= sum;
   }
@@ -584,8 +584,8 @@ void interpolate_list_blockette(double **frequency_ptr,
       return;
     }
     fprintf(stderr,
-         "Note:  %d frequenc%s clipped from beginning of requested range\n",
-                                               i, ((i == 1) ? "y" : "ies"));
+         "%s Note:  %d frequenc%s clipped from beginning of requested range\n",
+                                               myLabel, i, ((i == 1) ? "y" : "ies"));
   }
   used_req_num_freqs = req_num_freqs;
   while(used_req_num_freqs > 0 &&
@@ -609,8 +609,8 @@ void interpolate_list_blockette(double **frequency_ptr,
   {      /* some requested frequency values were clipped; show message */
     req_num_freqs = used_req_num_freqs;
     fprintf(stderr,
-               "Note:  %d frequenc%s clipped from end of requested range\n",
-                                           num, ((num == 1) ? "y" : "ies"));
+               "%s Note:  %d frequenc%s clipped from end of requested range\n",
+                                           myLabel, num, ((num == 1) ? "y" : "ies"));
   }
   if(i > 0)                       /* if freq entries were skipped then */
     req_num_freqs -= i;           /* subtract # of freqs clipped from beg */

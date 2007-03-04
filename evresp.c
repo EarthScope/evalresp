@@ -53,6 +53,8 @@ Notes:
                        for in/out units check.
    10/16/2006 -- [ET]  Modified to free array allocated in 'evresp_itp()'
                        function.
+   02/27/2007 -- [IGD] Added return (#ifdef LIB_MODE) if the input file is not
+                       found
 */
 
 #include "./evresp.h"
@@ -353,7 +355,11 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
       }
     }
   }
-
+#ifdef LOG_LABEL
+  sprintf(myLabel, "[%s.%s.%s.%s]", scn->network, scn->station, scn->locid, scn->channel);
+#else
+  myLabel[0] = '\0';
+#endif
   /* if input is from stdin, set fptr to stdin, else find whatever matching
      files there are */
 
@@ -371,8 +377,14 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
 
   if(!mode && !stdio_flag) {
     curr_file = file;
-    if((fptr = fopen(file,"r")) == (FILE *)NULL)
+    if((fptr = fopen(file,"r")) == (FILE *)NULL)  {
+#ifdef LIB_MODE
+      fprintf(stderr, "%s failed to open file %s\n", myLabel, file);
+      return NULL;
+#else
       error_exit(OPEN_FILE_ERROR,"failed to open file %s", file);
+#endif
+    }
   }
 
   /* allocate space for the first response */
@@ -413,6 +425,11 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
           sprintf(out_name,"%s.%s.%s.%s",this_channel.network,
                   this_channel.staname,this_channel.locid,
                   this_channel.chaname);
+#ifdef LOG_LABEL
+          sprintf(myLabel, "[%s]", out_name);
+#else
+          myLabel[0] = '\0';
+#endif
 	  if(!stdio_flag) {
 	    tmp_file = output_files->first_list;
 	    for(k = 0; k < output_files->nfiles; k++) {
@@ -606,6 +623,11 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
               sprintf(out_name,"%s.%s.%s.%s",this_channel.network,
                       this_channel.staname,this_channel.locid,
                       this_channel.chaname);
+#ifdef LOG_LABEL
+              sprintf (myLabel, "[%s]", out_name);
+#else
+              myLabel[0] = '\0';
+#endif
               tmp_file = output_files->first_list;
               for(k = 0; k < output_files->nfiles; k++) {
                 out_file = tmp_file;
@@ -647,41 +669,41 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
 
                 test = parse_channel(fptr, &this_channel);
 
-		/* IGD 01/04/01 Add code preventing a user from defining output units as DIS and ACC if
-		the input units are PRESSURE after */
-		if (strncmp (this_channel.first_units, "PA -",4) == 0)  {
-                	if (strcmp(units, "VEL") != 0)	{
-			 	if(strcmp(units, "DEF") != 0)  {
-					fprintf(stderr, "WARNING: OUTPUT %s does not make sense if INPUT is PRESSURE\n",
-							units);	
-				strcpy (units, "VEL");
-				fprintf(stderr, "      OUTPUT units are reset and interpreted as PRESSURE\n");	
-				}		        	
-                  	}
-		}
+                /* IGD 01/04/01 Add code preventing a user from defining output units as DIS and ACC if
+                the input units are PRESSURE after */
+                if (strncmp (this_channel.first_units, "PA -",4) == 0)  {
+                  if (strcmp(units, "VEL") != 0)	{
+                    if(strcmp(units, "DEF") != 0)  {
+                      fprintf(stderr, "%s WARNING: OUTPUT %s does not make sense if INPUT is PRESSURE\n",
+                                      myLabel, units);	
+                      strcpy (units, "VEL");
+                      fprintf(stderr, "%s      OUTPUT units are reset and interpreted as PRESSURE\n", myLabel);	
+                    }
+                  }
+                }
                 /* IGD 08/21/06 Add code preventing a user from defining output units as DIS and ACC if
                 the input units are TESLA */
                 if (strncmp (this_channel.first_units, "T -", 3) == 0)  {
-                        if (strcmp(units, "VEL") != 0)  {
-                                if(strcmp(units, "DEF") != 0)  {
-                                        fprintf(stderr, "WARNING: OUTPUT %s does not make sense if INPUT is MAGNETIC FLUX\n",
-                                                        units);
-                                strcpy (units, "VEL");
-                                fprintf(stderr, "      OUTPUT units are reset and interpreted as TESLA\n");
-                                }
-                        }
+                  if (strcmp(units, "VEL") != 0)  {
+                    if(strcmp(units, "DEF") != 0)  {
+                      fprintf(stderr, "%s WARNING: OUTPUT %s does not make sense if INPUT is MAGNETIC FLUX\n",
+                                                        myLabel, units);
+                      strcpy (units, "VEL");
+                      fprintf(stderr, "%s      OUTPUT units are reset and interpreted as TESLA\n", myLabel);
+                   }
+                  }
                 }
 
-               if(listinterp_in_flag &&
-                         this_channel.first_stage->first_blkt->type == LIST)
-               {   /* flag set for interpolation and stage type is "List" */
-                 interpolate_list_blockette(
+                if(listinterp_in_flag &&
+                         this_channel.first_stage->first_blkt->type == LIST)  {
+                        /* flag set for interpolation and stage type is "List" */
+                  interpolate_list_blockette(
                    &(this_channel.first_stage->first_blkt->blkt_info.list.freq),
                    &(this_channel.first_stage->first_blkt->blkt_info.list.amp),
                    &(this_channel.first_stage->first_blkt->blkt_info.list.phase),
                    &(this_channel.first_stage->first_blkt->blkt_info.list.nresp),
                    freqs,nfreqs,listinterp_tension);
-               }
+                }
 
                 /* check the filter sequence that was just read */
                 check_channel(&this_channel);
@@ -838,8 +860,8 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
   for(i = 0; i < scns->nscn; i++) {
     scn = scns->scn_vec[i];
     if(!scn->found) {
-      fprintf(stderr,"WARNING: no response found for NET=%s,STA=%s,LOCID=%s,CHAN=%s,DATE=%s\n",
-              scn->network, scn->station, scn->locid, scn->channel, date_time);
+      fprintf(stderr,"%s WARNING: no response found for NET=%s,STA=%s,LOCID=%s,CHAN=%s,DATE=%s\n",
+              myLabel, scn->network, scn->station, scn->locid, scn->channel, date_time);
       fflush(stderr);
     }
   }

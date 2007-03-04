@@ -742,9 +742,9 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
     percent_diff = fabs((chan->sensit - chan->calc_sensit) / chan->sensit);
 
     if (percent_diff >= 0.05) {
-      fprintf(stderr,"WARNING (norm_resp): computed and reported sensitivities");
-      fprintf(stderr," differ by more than 5 percent. \n ");
-      fprintf(stderr,"\tExecution continuing.\n");
+      fprintf(stderr,"%s WARNING (norm_resp): computed and reported sensitivities", myLabel);
+      fprintf(stderr,"%s differ by more than 5 percent. \n", myLabel);
+      fprintf(stderr,"%s\t Execution continuing.\n", myLabel);
       fflush(stderr);
     }
   }

@@ -616,7 +616,7 @@ int string_match(const char *string, char *expr, char *type_flag) {
   else if(!strcmp(type_flag,"-g"))
     glob_type = 1;
   else {
-    fprintf(stderr,"string_match; improper pattern type (%s)\n", type_flag);
+    fprintf(stderr,"%s string_match; improper pattern type (%s)\n",myLabel, type_flag);
     fflush(stderr);
     exit(2);
   }

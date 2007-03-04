@@ -21,6 +21,8 @@
 #define DATIMESIZE 32
 #define TODAYSIZE 10
 
+char myLabel[20];
+
 int main(argc, argv)
 int  argc;
 char *argv[];
@@ -40,6 +42,8 @@ char *argv[];
   char param_err_msgstr[] = "%s: missing option to argument '%s'";
 
   curr_seq_no = -1;
+
+  myLabel[0]= '\0';
 
   if (argc < 5) {
     printf("EVALRESP V%s\n", REVNUM);
@@ -138,7 +142,7 @@ char *argv[];
   for (i = fswidx; i < argc; i++) {
     if (0 == strcmp(argv[i], "-use-delay"))
     	use_delay(TRUE);
-    if(!strcmp(argv[i], "-u")){
+    else if(!strcmp(argv[i], "-u")){
       if((++i) < argc && *argv[i] != '-')
         strncpy(units,argv[i],MAXFLDLEN);
       else
