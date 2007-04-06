@@ -77,6 +77,7 @@ int curr_seq_no;
    combination for error handling */
 jmp_buf jump_buffer;
 
+char myLabel[20];
 
 int evresp_(char *sta, char *cha, char *net, char *locid, char *datime, 
 	    char *units, char *file, float *freqs, int *nfreqs_in, float *resp,
@@ -409,7 +410,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
           new_file = 0;
           which_matched = find_resp(fptr, scns, date_time, &this_channel);
 #ifdef LIB_MODE
-	  if(which_matched < 1) {
+	  if(which_matched < 0) {
             if(!stdio_flag)            /* if not input from console then */
               fclose(fptr);            /* close input file */
 	    return NULL;

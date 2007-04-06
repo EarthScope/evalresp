@@ -44,7 +44,7 @@ c
 c      file = '/users/tjm/eg_responses'
 c if above line commented out and following line not, must
 c define the SEEDRESP environment variable
-      file = ''
+      file = 'aa'
       vbs = '-v'
       npts = 100
       rtyp = 'CS'

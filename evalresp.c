@@ -21,7 +21,7 @@
 #define DATIMESIZE 32
 #define TODAYSIZE 10
 
-char myLabel[20];
+
 
 int main(argc, argv)
 int  argc;
