@@ -53,6 +53,7 @@ the options.
     '\-v':    verbose; list parameters on stdout
 .sp
 .SH "WHAT IS NEW"
+\fBVersion 3.2.39-40:\fR Minor bugfixes
 \fBVersion 3.2.38:\fR (1) Libtoolized evresp library: using libtool 
 instead of ranlib. Now a builder can create dynamic library, 
 not only static. (2)Added new configure option \-\-enable\-log\-label.

@@ -409,12 +409,12 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
         if(!(err_type = setjmp(jump_buffer))) {
           new_file = 0;
           which_matched = find_resp(fptr, scns, date_time, &this_channel);
-#ifdef LIB_MODE
-	  if(which_matched < 0) {
-            if(!stdio_flag)            /* if not input from console then */
-              fclose(fptr);            /* close input file */
-	    return NULL;
-          }
+#ifdef LIB_MODE /* IGD 25-Sep-2007 Looks like we do not need this: function returns anyway */
+//        if(which_matched < 0) {
+//        if(!stdio_flag)            /* if not input from console then */
+//          fclose(fptr);            /* close input file
+//        return NULL;
+//       }
 #endif
 
           /* found a station-channel-network that matched.  First construct
@@ -606,12 +606,12 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
           if(!(err_type = setjmp(jump_buffer))) {
             new_file = 0;
             which_matched = get_resp(fptr, scn, date_time, &this_channel);
-#ifdef LIB_MODE
-           if(which_matched < 1) {
-             if(!stdio_flag)           /* if not input from console then */
-               fclose(fptr);           /* close input file */
-             return NULL;
-           }
+#ifdef LIB_MODE /* IGD 25-Sep-2007 Looks like we do not need this: function returns anyway */
+//           if(which_matched < 1) {
+//             if(!stdio_flag)           /* if not input from console then */
+//               fclose(fptr);           /* close input file */
+//             return NULL;
+//          }
 #endif
             if(which_matched >= 0) {
 

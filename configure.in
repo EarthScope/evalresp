@@ -1,22 +1,10 @@
-dnl Process this file with autoconf to produce a configure script.
-
-dnl AC_ARG_PROGRAM
-
-dnl IGD PACKAGE="evalresp"
-dnl IGD AC_SUBST(PACKAGE)
-dnl IGD AC_DEFINE_UNQUOTED(PACKAGE, ${PACKAGE})
-
-dnl IGD AC_SUBST(VERSION)
-dnl IGD AC_DEFINE_UNQUOTED(VERSION, ${VERSION})
-
-
 AC_INIT(Makefile.am)
 
 dnl without this order in this file, automake will be confused!
 dnl
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(evalresp,3.2.38)
+AM_INIT_AUTOMAKE(evalresp,3.2.40)
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -45,17 +33,17 @@ dnl Checks for library functions.
 AC_FUNC_VFORK
 AC_CHECK_FUNCS(getcwd regcomp strcspn strstr)
 
-CFLAGS="-Wall -g" 
+CFLAGS= 
 
 AC_ARG_ENABLE(delay,
  [  --enable-delay            Use estimated delay in phase computation],
- [ CFLAGS="$CFLAGS -DUSE_DELAY -g"
+ [ CFLAGS="$CFLAGS -DUSE_DELAY"
   echo ==== BEWARE: EVALRESP WILL USE ESTIMATED DELAY TO COMPUTE PHASE ======],
  [])
 
 AC_ARG_ENABLE(phase_unwrap,
  [  --enable-phase-unwrap     Unwrap phase],
- [ CFLAGS="$CFLAGS -DUNWRAP_PHASE -g"
+ [ CFLAGS="$CFLAGS -DUNWRAP_PHASE"
   echo ==== BEWARE: EVALRESP WILL UNWRAP PHASE  ======],
  []) 
 
@@ -70,4 +58,27 @@ AC_ARG_ENABLE(log-label,
  [ CFLAGS="$CFLAGS -DLOG_LABEL"
   echo ==== enabling log-label mode  ======],
  [])
+
+AC_ARG_ENABLE(debug,
+ [  --enable-debug            Enable debug],
+  [enable_debug=yes
+                CFLAGS="$CFLAGS -g"
+  echo ==== Enabling DEBUG options ======],
+  [enable_debug=no])
+
+AC_ARG_ENABLE(optimization,
+ [  --enable-optimization     Enable optimization],
+  [enable_optimization=yes
+                CFLAGS="$CFLAGS -02"
+  echo ==== Enabling -O2 option ======],
+  [enable_optimization=no])
+
+AC_ARG_ENABLE(strict,
+ [  --enable-strict           Enable strict mode],
+  [enable_strict=yes
+                CFLAGS="$CFLAGS -Wall"
+  echo ==== Enabling -Wall option ======],
+  [enable_strict=no])
+
+
 AC_OUTPUT(Makefile)

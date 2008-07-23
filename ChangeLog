@@ -1,3 +1,12 @@
+Version 3.2.40
+	20-Jun-2008 Ilya Dricker (i.dricker@isti.com)
+	* FIXED: bug in computation time limits
+	25-Sep-2007 Ilya Dricker (i.dricker@isti.com)
+	* REMOVED: 2 return statements in eversp which break LIB_MODE logic
+Version 3.2.39
+	12-Jul-2007 Ilya Dricker (i.dricker@isti.com)
+	*REMOVED: -g -Wall hardcoded flags from configure.in. Made then configurable 
+	   options;
 Version 3.2.38
         04-Mar-2007 Ilya Dricker (i.dricker@isti.com)
         *ADDED: new configure option --enable-log-label

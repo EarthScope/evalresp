@@ -62,7 +62,7 @@
 #ifdef VERSION
 #define REVNUM VERSION
 #else
-#define REVNUM "3.2.38"
+#define REVNUM "3.2.40"
 #endif
 
 #define TRUE 1

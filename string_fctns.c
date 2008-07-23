@@ -173,6 +173,7 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
   int  lcl_blkt, lcl_fld, test;
   int tmpint;
   char tmpstr[200];
+  int i;
 
   test = fgetc(fptr);
   
@@ -190,6 +191,12 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
   else {
     ungetc(test,fptr);
     fgets(line, MAXLINELEN, fptr);
+
+  for (i = 0; i < strlen(line); i++)
+  {
+    if ('\t' == line[i])
+      line[i] = ' ';
+  }
 
 
     /* check for blank line */
