@@ -450,7 +450,7 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
   int blkt_read, check_fld;
   int nresp;
   char field[MAXFLDLEN], line[MAXLINELEN];
-  long marker;
+  int marker;
   int format = -1;
   /* set the filter type */
 

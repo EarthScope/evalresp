@@ -161,7 +161,7 @@ static char *regparse;		/* Input-scan pointer. */
 static int regnpar;		/* () count. */
 static char regdummy;
 static char *regcode;		/* Code-emit pointer; &regdummy = don't. */
-static long regsize;		/* Code size. */
+static int regsize;		/* Code size. */
 
 /*
  * Forward declarations for evr_regcomp()'s friends.

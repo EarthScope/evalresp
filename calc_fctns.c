@@ -1,6 +1,8 @@
 /* calc_fctns.c */
 
 /*
+    08/28/2008 -- [IGD] Fixed a bug which used calucalated delay instead of estimated in 
+                          computation of phase
     11/3/2005 -- [ET]  Added 'wrap_phase()' function; moved 'use_delay()'
                        function from 'calc_fctns.c' to 'evalresp.c'.
 */
@@ -43,12 +45,12 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs, struct complex *o
           char *out_units, int start_stage, int stop_stage) {
   struct blkt *blkt_ptr;
   struct stage *stage_ptr;
-  int i, j, units_code, eval_flag = 0, nc = 0;
+  int i, j, units_code, eval_flag = 0, nc = 0, sym_fir = 0;
   double w;
   int matching_stages = 0, has_stage0 = 0, deciStageEvaluated = 0;
   struct complex of, val;
-  double corr_applied, calc_delay;
-
+  double corr_applied, estim_delay, delay;
+  
 /*  if(start_stage && start_stage > chan->nstages) {
     error_return(NO_STAGE_MATCHED, "calc_resp: %s start_stage=%d, highest stage found=%d)",
                  "No Matching Stages Found (requested",start_stage, chan->nstages);
@@ -67,6 +69,7 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs, struct complex *o
     units_code = stage_ptr->input_units;
     for(j = 0; j < chan->nstages; j++) {
       nc = 0;
+      sym_fir = 0;
       deciStageEvaluated = 0;
       if(!stage_ptr->sequence_no)
         has_stage0 = 1;
@@ -103,6 +106,7 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs, struct complex *o
 	    nc = (double) blkt_ptr->blkt_info.fir.ncoeffs*2;
           if(blkt_ptr->blkt_info.fir.ncoeffs) {
             fir_sym_trans(blkt_ptr, w, &of);
+	    sym_fir = 1;
             eval_flag = 1;
           }
           break;
@@ -110,22 +114,30 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs, struct complex *o
 	  nc = (double) blkt_ptr->blkt_info.fir.ncoeffs;
           if(blkt_ptr->blkt_info.fir.ncoeffs) {
             fir_asym_trans(blkt_ptr, w, &of);
+	    sym_fir = -1;
             eval_flag = 1;
           }
           break;
         case DECIMATION:
 	  if(blkt_ptr->type != IIR_PZ && nc != 0) {
-            calc_delay = ((nc-1)/2.0) * blkt_ptr->blkt_info.decimation.sample_int;
+	    /* IGD 08/27/08 Use estimated delay instead of calculated */
+	    estim_delay = (double) blkt_ptr->blkt_info.decimation.estim_delay;
 	    corr_applied = blkt_ptr->blkt_info.decimation.applied_corr;
-	    /* IGD 04/05/04: #IFDEF logic for proper comutation of delay */
-#ifdef USE_DELAY
-	    calc_time_shift((corr_applied-calc_delay), w, &of);
-#else
-            if (TRUE == use_delay(QUERY_DELAY))
-		calc_time_shift((corr_applied-calc_delay), w, &of);
-	    else
-            	calc_time_shift(0, w, &of);
-#endif
+	    
+	    /* Asymmetric FIR coefficients require a delay correction */
+	    if ( sym_fir == -1 ) {
+	      if (TRUE == use_delay(QUERY_DELAY))
+		delay = estim_delay;
+	      else
+		delay = corr_applied;
+	    }
+	    /* Otherwise delay has already been handled in fir_sym_trans() */
+	    else {
+	      delay = 0;
+	    }
+	    
+	    calc_time_shift (delay, w, &of);
+	    
 	    eval_flag = 1;
 	  }
           break;
@@ -435,7 +447,7 @@ void fir_asym_trans(struct blkt *blkt_ptr, double w, struct complex *out) {
   }
 
   mod = sqrt(R*R + I*I);
-  pha = atan2(I,R) + (w*(double)((na-1)/2.0)*sint);
+  pha = atan2(I,R);
   R = mod * cos(pha);
   I = mod * sin(pha);
   out->real = R * h0;

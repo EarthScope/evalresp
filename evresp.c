@@ -150,7 +150,7 @@ int evresp_(char *sta, char *cha, char *net, char *locid, char *datime,
 }
 
 /* IGD 03/01/05 Small function to set and return
- * a static flag to use or not use the delay in
+ * a static flag to use or not use the estimated delay in
  * response computation
  * Input: NEGATIVE means that we want to query the value of the flag
  *        TRUE or FALSE means that we want to set corresponding values
@@ -178,6 +178,9 @@ int use_delay(int flag)
 		return TRUE;
 	return FALSE;
 }
+
+
+
 
 /*===================================================================
 Name:      evresp Version 3.0

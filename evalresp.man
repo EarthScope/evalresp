@@ -17,13 +17,13 @@
 .\" Also: rick@iris.washington.edu
 .\" Phone: (206) 547-0393
 .\" 
-.TH "EVALRESP" "V3.2.38" "08-Nov-2006" "" ""
+.TH "EVALRESP" "V3.3.0" "10-May-2008" "" ""
 .SH "NAME"
 \fIevalresp\fR \- evaluate response information and output to ASCII files using \fIrdseed V4.16\fR and above RESP files.
 .SH "SYNOPSIS"
 evalresp STA_LIST CHA_LIST YYYY DAY MIN_FREQ MAX_FREQ NFREQS [\fB\-f\fR file] [\fB\-u\fR units]
 [\fB\-t\fR time\-of\-day] [\fB\-s\fR type\-of\-spacing] [\fB\-r\fR resp\-type] [\fB\-n\fR network\-id]
-[\fB\-l\fR location\-id] [\fB\-stage\fR start [stop]] [\-stdio] [\-use\-delay]
+[\fB\-l\fR location\-id] [\fB\-stage\fR start [stop]] [\-stdio] [\-use\-estimated\-delay]
 [\-il] [\-ii] [\fB\-it\fR tension] [\-v]
 .PD 0.3
 
@@ -46,15 +46,37 @@ the options.
     '\-l locid':    '01'|'AA,AB,AC'|'A?'|'*'...
     '\-stage start [stop]':    start and stop are integer stage numbers
     '\-stdio':    take input from stdin, output to stdout
-    '\-use\-delay':    use estimated delay in computation of response
+    '\-use\-estimated\-delay':    use estimated delay in computation of response
     '\-il':    interpolate List blockette output
     '\-ii':    interpolate List blockette input
     '\-it tension':    tension for List blockette interpolation
     '\-v':    verbose; list parameters on stdout
 .sp
 .SH "WHAT IS NEW"
-\fBVersion 3.2.39-40:\fR Minor bugfixes
-\fBVersion 3.2.38:\fR (1) Libtoolized evresp library: using libtool 
+\fBVersion 3.3.0:\fR
+.br  This version modifies the way evalresp deals with the delays in FIR stages.
+.br 
+Note that \-use\-delay option becomes obsolete in this version
+.br 
+Now the following rules are applied for adding delays to the FIR stages: 
+.br 
+(1) Calculation  of the response for a symmetrical FIR filter ignores the delay value in the RESP; 
+.br 
+(2) Calculation of the response for an asymmetrical FIR filter uses the "correction applied" 
+field of the RESP by default and "estimated delay" field on user request (a user should use an
+option \-use\-estimated\-delay to switch this option on).
+.br 
+This version has been tested to work on 64\-bit processors.
+.br 
+Minor bug fixes
+.br 
+\fBVersion 3.2.39\-40:\fR 
+.br 
+Minor bugfixes
+.br 
+\fBVersion 3.2.38:
+.br 
+\fR (1) Libtoolized evresp library: using libtool 
 instead of ranlib. Now a builder can create dynamic library, 
 not only static. (2)Added new configure option \-\-enable\-log\-label.
 When evalresp is configured with this option, most of log messages
@@ -62,7 +84,9 @@ are being prepended by a label. A label consists of [Net.Sta.Loc.Chan]
 (3)Minor bug fixes (see ChangeLog for detail).
 .br 
 .br 
-\fBVersion 3.2.37:\fR Added two more 'free()' calls to "evresp.c" to fix
+\fBVersion 3.2.37:
+.br 
+\fR Added two more 'free()' calls to "evresp.c" to fix
 memory leaks when program functions are used in external applications.
 .br 
 .br 

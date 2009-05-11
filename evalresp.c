@@ -59,7 +59,7 @@ char *argv[];
     printf("    '-r resp_type'         ('ap'=amp/pha | 'cs'=complex spectra)\n");
     printf("    '-stage start [stop]'  (start and stop are integer stage numbers)\n");
     printf("    '-stdio'               (take input from stdin, output to stdout)\n");
-    printf("    '-use-delay'           (use estimated delay in computation of response)\n");
+    printf("    '-use-estimated-delay' (use estimated delay in computation of ASYM FIR response; calculated is used by default)\n");
     printf("    '-il'                  (interpolate List blockette output)\n");
     printf("    '-ii'                  (interpolate List blockette input)\n");
     printf("    '-it tension'          (tension for List blockette interpolation)\n");
@@ -130,6 +130,7 @@ char *argv[];
 
   /* If user did not define -use-delay option by default it is FALSE */
   use_delay(FALSE);
+
   strncpy(units,"",MAXFLDLEN);
   strncpy(rtype,"",MAXFLDLEN);
   net_code = locid = file = verbose = type = (char *)NULL;
@@ -140,8 +141,10 @@ char *argv[];
   /* then get the optional arguments (if any) */
 
   for (i = fswidx; i < argc; i++) {
-    if (0 == strcmp(argv[i], "-use-delay"))
-    	use_delay(TRUE);
+    if (0 == strcmp(argv[i], "-use-estimated-delay"))
+       use_delay(TRUE);
+    else if (0 == strcmp(argv[i], "-use-delay"))  /* IGD 04/29/09 Backward compatibility */
+       use_delay(TRUE);
     else if(!strcmp(argv[i], "-u")){
       if((++i) < argc && *argv[i] != '-')
         strncpy(units,argv[i],MAXFLDLEN);

@@ -1,3 +1,14 @@
+Version 3.2.41
+	29-Apr-2009 Ilya Dricker (i.dricker@isti.com)
+	*MODIFIED: processing of delays in FIR stages.
+	      Now the following rules are applied for adding delays to the FIR
+	      stages:
+	      1) Calculation of the response for a symmetrical FIR filter ignores
+	      the delay value in the RESP;
+	      2) Calculation of the response for an asymmetrical FIR filter
+		uses the "correction applied" field of the RESP by default and
+		"estimated delay" field on user request (a user should use an
+		option -use-estimated-delay to switch this option on).
 Version 3.2.40
 	20-Jun-2008 Ilya Dricker (i.dricker@isti.com)
 	* FIXED: bug in computation time limits

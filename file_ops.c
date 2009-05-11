@@ -335,7 +335,7 @@ int get_names(char *in_file, struct matched_files *files)
 #else                        /* if non-Borland (MS) compiler then */
   struct _finddata_t fblk;   /* define block for 'findfirst()' fn */
          /* setup things for Microsoft compiler compatibility: */
-long fhandval;
+int fhandval;
 #define ff_name name
 #define findfirst(name,blk,attrib) (fhandval=_findfirst(name,blk))
 #define findnext(blk) _findnext(fhandval,blk)

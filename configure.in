@@ -4,7 +4,7 @@ dnl without this order in this file, automake will be confused!
 dnl
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(evalresp,3.2.40)
+AM_INIT_AUTOMAKE(evalresp,3.3.0)
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -33,13 +33,7 @@ dnl Checks for library functions.
 AC_FUNC_VFORK
 AC_CHECK_FUNCS(getcwd regcomp strcspn strstr)
 
-CFLAGS= 
-
-AC_ARG_ENABLE(delay,
- [  --enable-delay            Use estimated delay in phase computation],
- [ CFLAGS="$CFLAGS -DUSE_DELAY"
-  echo ==== BEWARE: EVALRESP WILL USE ESTIMATED DELAY TO COMPUTE PHASE ======],
- [])
+#CFLAGS= 
 
 AC_ARG_ENABLE(phase_unwrap,
  [  --enable-phase-unwrap     Unwrap phase],

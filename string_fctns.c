@@ -738,7 +738,7 @@ int add_null(char *s, int len, char where) {
     return(0);
 }
 
-  int is_IIR_coeffs (FILE *fp,  long position)	{
+  int is_IIR_coeffs (FILE *fp,  int position)	{
    /* IGD Very narrow-specified function.                                    */     
    /* It is used to check out if we are using a FIR or IIR coefficients      */
    /* in the  blockette 54. This information is contained in the 10th field  */

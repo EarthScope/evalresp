@@ -364,7 +364,8 @@ void check_channel(struct channel *chan) {
         if(stage_type) {
           if(blkt_ptr->type != IIR_PZ) {
 	/*    if (stage_type == IIR_COEFFS_TYPE)  ;IGD commented out offending statement 07/17/01*/
-            chan->calc_delay += ((nc-1)/2.0) * blkt_ptr->blkt_info.decimation.sample_int;
+	    if (nc > 0)
+            	chan->calc_delay += ((nc-1)/2.0) * blkt_ptr->blkt_info.decimation.sample_int;
             chan->estim_delay += (double) blkt_ptr->blkt_info.decimation.estim_delay;
             chan->applied_corr += (double) blkt_ptr->blkt_info.decimation.applied_corr;
           }

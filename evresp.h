@@ -344,7 +344,7 @@ int check_units(char *);
 int string_match(const char *, char *, char *);
 int is_int(const char *);
 int is_real(const char *);
-int is_IIR_coeffs (FILE *, long);   /*IGD */
+int is_IIR_coeffs (FILE *, int);   /*IGD */
 
 /* routines used to load a channel's response information into a linked
    list of filter stages, each containing a linked list of blockettes */
