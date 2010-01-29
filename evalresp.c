@@ -32,6 +32,7 @@ char *argv[];
   int lin_typ = 0, nfreqs, i, fswidx, tmp_val, fldlen;
   int start_stage = -1, stop_stage = 0, stdio_flag = 0;
   int listinterp_out_flag = 0, listinterp_in_flag = 0;
+  int unwrap_flag = 0;
   double listinterp_tension = 1000.0;
   char *t_o_day;
   char *datime;
@@ -40,6 +41,8 @@ char *argv[];
   struct response *first;
   char *minfstr, *maxfstr, *numfstr;
   char param_err_msgstr[] = "%s: missing option to argument '%s'";
+  int useTotalSensitivityFlag = 0; /* IGD 01/29/10 */
+  
 
   curr_seq_no = -1;
 
@@ -56,13 +59,15 @@ char *argv[];
     printf("    '-s type-of-spacing'   (log|lin)\n");
     printf("    '-n netid'             ('II'|'IU'|'G'|'*'...)\n");
     printf("    '-l locid'             ('01'|'AA,AB,AC'|'A?'|'*'...)\n");
-    printf("    '-r resp_type'         ('ap'=amp/pha | 'cs'=complex spectra)\n");
+    printf("    '-r resp_type'         ('ap'=amp/pha | 'cs'=complex spectra | 'fap'=freq/amp/pha)\n");
     printf("    '-stage start [stop]'  (start and stop are integer stage numbers)\n");
     printf("    '-stdio'               (take input from stdin, output to stdout)\n");
     printf("    '-use-estimated-delay' (use estimated delay in computation of ASYM FIR response; calculated is used by default)\n");
     printf("    '-il'                  (interpolate List blockette output)\n");
     printf("    '-ii'                  (interpolate List blockette input)\n");
     printf("    '-it tension'          (tension for List blockette interpolation)\n");
+    printf("    '-unwrap'              (unwrap phase if the output is AP) \n");
+    printf("    '-ts'                  (Use nominal sensitivity from stage 0 instead of computed)\n");
     printf("    '-v'                   (verbose; list");
     printf(" parameters on stdout)\n\n");
     printf("    NOTES:\n");
@@ -218,6 +223,10 @@ char *argv[];
                    argv[0], type);
       }
     }
+    else if(!strcmp(argv[i], "-unwrap"))
+      unwrap_flag = 1;
+    else if(!strcmp(argv[i], "-ts"))
+      useTotalSensitivityFlag = 1;
     else if(!strcmp(argv[i], "-il"))
       listinterp_out_flag = 1;
     else if(!strcmp(argv[i], "-ii"))
@@ -315,9 +324,10 @@ char *argv[];
       *(rtype+i) = toupper(*(rtype+i));
     if(strcmp(rtype,"CS") == 0)        /* if complex-spectra output then */
       listinterp_out_flag = 0;         /* force List-out-interp flag clear */
-    else if(strcmp(rtype,"AP") != 0)   /* if invalid value then abort */
-      error_exit(USAGE_ERROR,"evalresp; rtype entered ('%s') not a recognized string (see usage)",
-    rtype);
+    else if((strcmp(rtype,"AP") != 0)) {  /* if invalid value then abort */
+      if ((strcmp(rtype,"FAP") != 0))
+	error_exit(USAGE_ERROR,"evalresp; rtype entered ('%s') not a recognized string (see usage)", rtype);
+    }
   }
   else
     strncpy(rtype,"AP",MAXFLDLEN);
@@ -354,7 +364,7 @@ char *argv[];
   first = evresp_itp(sta_list,cha_list,net_code,locid,datime,units,file,
                      freqs,nfreqs,rtype,verbose,start_stage,stop_stage,
                      stdio_flag,listinterp_out_flag,listinterp_in_flag,
-                     listinterp_tension);
+                     listinterp_tension, useTotalSensitivityFlag);
   if (!first)
   {
 	fprintf(stderr, "EVRESP FAILED\n");
@@ -364,7 +374,7 @@ char *argv[];
 /* and print the responses to a set of files */
 
   print_resp_itp(freqs,nfreqs,first,rtype,stdio_flag,
-                                    listinterp_out_flag,listinterp_tension);
+                                    listinterp_out_flag,listinterp_tension, unwrap_flag);
 
   free_response(first);
   free(freqs);                    /* added 3/28/2006 -- [ET] */

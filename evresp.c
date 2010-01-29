@@ -83,7 +83,7 @@ int evresp_(char *sta, char *cha, char *net, char *locid, char *datime,
 	    char *units, char *file, float *freqs, int *nfreqs_in, float *resp,
 	    char *rtype, char *verbose, int *start_stage, int *stop_stage,
 	    int *stdio_flag, int lsta, int lcha, int lnet, int llocid,
-	    int ldatime, int lunits, int lfile, int lrtype, int lverbose)
+	    int ldatime, int lunits, int lfile, int lrtype, int lverbose, int useTotalSensitivityFlag)
 {
   struct response *first = (struct response *)NULL;
   double *dfreqs;
@@ -114,7 +114,7 @@ int evresp_(char *sta, char *cha, char *net, char *locid, char *datime,
   /* then call evresp */
 
   first = evresp(sta, cha, net, locid, datime, units, file, dfreqs, nfreqs,
-             rtype, verbose, start, stop, flag);
+             rtype, verbose, start, stop, flag, useTotalSensitivityFlag);
 
   /* free up the frequency vector */
 
@@ -245,7 +245,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                             char *rtype, char *verbose, int start_stage,
                             int stop_stage, int stdio_flag,
                             int listinterp_out_flag, int listinterp_in_flag,
-                            double listinterp_tension)
+                            double listinterp_tension, int useTotalSensitivityFlag)
 {
   struct channel this_channel;
   struct scn *scn;
@@ -540,13 +540,13 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
             /* calculate the response at the requested frequencies */
 
             calc_resp(&this_channel, freqs, nfreqs, output, units,
-                      start_stage, stop_stage);
+                      start_stage, stop_stage, useTotalSensitivityFlag);
 
             /* diagnostic output, if the user requested it */
 
             if(verbose && !strcmp(verbose,"-v")) {
               print_chan(&this_channel, start_stage, stop_stage,
-                       stdio_flag, listinterp_out_flag, listinterp_in_flag);
+                       stdio_flag, listinterp_out_flag, listinterp_in_flag, useTotalSensitivityFlag);
             }
 
             free(freqs);          /* free array that was allocated above */
@@ -751,13 +751,13 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                 /* calculate the response at the requested frequencies */
 
                 calc_resp(&this_channel, freqs, nfreqs, output, units,
-                          start_stage, stop_stage);
+                          start_stage, stop_stage, useTotalSensitivityFlag);
 
                 /* diagnostic output, if the user requested it */
 
                 if(verbose && !strcmp(verbose,"-v")) {
                   print_chan(&this_channel, start_stage, stop_stage,
-                       stdio_flag, listinterp_out_flag, listinterp_in_flag);
+                       stdio_flag, listinterp_out_flag, listinterp_in_flag, useTotalSensitivityFlag);
                 }
 
                 free(freqs);      /* free array that was allocated above */
@@ -889,10 +889,10 @@ struct response *evresp(char *stalst, char *chalst, char *net_code,
                         char *locidlst, char *date_time, char *units,
                         char *file, double *freqs, int nfreqs,
                         char *rtype, char *verbose, int start_stage,
-                        int stop_stage, int stdio_flag)
+                        int stop_stage, int stdio_flag, int useTotalSensitivityFlag)
 {
   return evresp_itp(stalst,chalst,net_code,locidlst,date_time,units,file,
                     freqs,nfreqs,rtype,verbose,start_stage,stop_stage,
-                    stdio_flag,0,0,0.0);
+                    stdio_flag,0,0,0.0, 0);
 }
 

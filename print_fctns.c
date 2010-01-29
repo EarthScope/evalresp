@@ -26,7 +26,8 @@ int evresp_vector_minmax(double *pha, int len, double *min, double *max);
 /* print_chan:  prints a summary of the channel's response information to stderr */
 
 void print_chan(struct channel *chan, int start_stage, int stop_stage,
-          int stdio_flag, int listinterp_out_flag, int listinterp_in_flag) {
+          int stdio_flag, int listinterp_out_flag, int listinterp_in_flag, 
+          int useTotalSensitivityFlag) {
   struct stage *this_stage, *last_stage, *first_stage;
   struct blkt *this_blkt;
   char tmp_str[TMPSTRLEN], out_str[OUTPUTLEN];
@@ -89,6 +90,10 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
           myLabel, chan->calc_sensit, chan->sensit, chan->sensfreq);
   fprintf(stderr, "%s   calc_del=%.5E  corr_app=%.5E  est_delay=%.5E  final_sint=%.3g(sec/sample)\n",
           myLabel, chan->calc_delay, chan->applied_corr, chan->estim_delay, chan->sint);
+  if (1 == useTotalSensitivityFlag)
+    fprintf(stderr, "%s   (reported sensitivity was used to compute response (-ts option enabled))\n");
+  if (chan->calc_delay < 0)	  
+    fprintf(stderr, "Negative calc_del=%.5E is likely to be incorrect\n", chan->calc_delay);
   
 /* then print the parameters for each stage (stage number, type of stage, number
      of coefficients [or number of poles and zeros], gain, and input sample interval
@@ -231,7 +236,7 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
 
 void print_resp_itp(double *freqs, int nfreqs, struct response *first,
                 char *rtype, int stdio_flag, int listinterp_out_flag,
-                double listinterp_tension) {
+                double listinterp_tension, int unwrap_flag) {
   int i;
   double amp, pha;
   char filename[MAXLINELEN];
@@ -243,15 +248,15 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
   double *freq_arr;
   int freqarr_alloc_flag;
   int num_points;
-#ifdef UNWRAP_PHASE
+
   double added_value = 0.0;
   double prev_phase = 0.0;
-#endif
+
 
   resp = first;
   while(resp != (struct response *)NULL) {
     output = resp->rvec;
-    if(!strcmp(rtype,"AP")) {
+    if((0 == strcasecmp(rtype,"AP")) || (0 == strcasecmp(rtype,"FAP"))) {
          /* use count from 'response' block to support List blockette */
       num_points = resp->nfreqs;
          /* convert complex-spectra to amp/phase and load into arrays */
@@ -280,33 +285,74 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
         freqarr_alloc_flag = 0;        /* indicate freq array not alloc'd */
       }
       if(!stdio_flag) {
-        sprintf(filename,"AMP.%s.%s.%s.%s",resp->network,resp->station,resp->locid,resp->channel);
-        if((fptr1 = fopen(filename,"w")) == (FILE *)NULL) {
-          error_exit(OPEN_FILE_ERROR,"print_resp; failed to open file %s", filename);
-        }
-        sprintf(filename,"PHASE.%s.%s.%s.%s",resp->network,resp->station,resp->locid,resp->channel);
-        if((fptr2 = fopen(filename,"w")) == (FILE *)NULL) {
-          error_exit(OPEN_FILE_ERROR,"print_resp; failed to open file %s", filename);
-        }
+	if (0 == strcasecmp(rtype,"AP")) {
+          sprintf(filename,"AMP.%s.%s.%s.%s",resp->network,resp->station,resp->locid,resp->channel);
+          if((fptr1 = fopen(filename,"w")) == (FILE *)NULL) {
+            error_exit(OPEN_FILE_ERROR,"print_resp; failed to open file %s", filename);
+          }
+          sprintf(filename,"PHASE.%s.%s.%s.%s",resp->network,resp->station,resp->locid,resp->channel);
+          if((fptr2 = fopen(filename,"w")) == (FILE *)NULL) {
+            error_exit(OPEN_FILE_ERROR,"print_resp; failed to open file %s", filename);
+          }
+	  if (1 == unwrap_flag) {
+	    for(i = 0; i < num_points; i++) {
+	      pha = pha_arr[i];
+	      pha = unwrap_phase(pha, prev_phase, 360.0, &added_value);
+	      pha_arr[i] = pha;
+	      prev_phase = pha;
+	    }
+	    /* Next function attempts to put phase withing -360:360 bounds
+	    * this is requested by AFTAC
+	    */
+	    (void) evresp_adjust_phase(pha_arr, num_points, -360.0, 360.0);
+	  }
+	  else {
 #ifdef UNWRAP_PHASE
-        for(i = 0; i < num_points; i++) {
-          pha = pha_arr[i];
-	  pha = unwrap_phase(pha, prev_phase, 360.0, &added_value);
-	  pha_arr[i] = pha;
-	  prev_phase = pha;
-        }
-	/* Next function attempts to put phase withing -360:360 bounds
-	 * this is requested by AFTAC
-	 */
-	(void) evresp_adjust_phase(pha_arr, num_points, -360.0, 360.0);
+	    for(i = 0; i < num_points; i++) {
+	      pha = pha_arr[i];
+	      pha = unwrap_phase(pha, prev_phase, 360.0, &added_value);
+	      pha_arr[i] = pha;
+	      prev_phase = pha;
+	    }
+	    /* Next function attempts to put phase withing -360:360 bounds
+	    * this is requested by AFTAC
+	    */
+	    (void) evresp_adjust_phase(pha_arr, num_points, -360.0, 360.0);
+#else
+            /* Do not unwrap */ ;
 #endif
-        for(i = 0; i < num_points; i++) {
-          fprintf(fptr1,"%.6E %.6E\n",freq_arr[i],amp_arr[i]);
-          fprintf(fptr2,"%.6E %.6E\n",freq_arr[i],pha_arr[i]);
-        }
-        fclose(fptr1);
-        fclose(fptr2);
-      }
+	  }
+	   	  
+          for(i = 0; i < num_points; i++) {
+            fprintf(fptr1,"%.6E %.6E\n",freq_arr[i],amp_arr[i]);
+            fprintf(fptr2,"%.6E %.6E\n",freq_arr[i],pha_arr[i]);
+          }
+          fclose(fptr1);
+          fclose(fptr2);
+	}  /* End of AP CASE */
+	if (0 == strcasecmp(rtype,"FAP")) {
+          sprintf(filename,"FAP.%s.%s.%s.%s",resp->network,resp->station,resp->locid,resp->channel);
+          if((fptr1 = fopen(filename,"w")) == (FILE *)NULL)
+            error_exit(OPEN_FILE_ERROR,"print_resp; failed to open file %s", filename);
+
+	  /* Unwrap phase regardless of compile option */
+	  for(i = 0; i < num_points; i++) {
+            pha = pha_arr[i];
+	    pha = unwrap_phase(pha, prev_phase, 360.0, &added_value);
+	    pha_arr[i] = pha;
+	    prev_phase = pha;
+          }
+	  /* Next function attempts to put phase withing -360:360 bounds
+	   * this is requested by AFTAC
+	   */
+	  (void) evresp_adjust_phase(pha_arr, num_points, -360.0, 360.0);
+
+          for(i = 0; i < num_points; i++) {
+            fprintf(fptr1,"%.6E  %.6E  %.6E\n",freq_arr[i],amp_arr[i], pha_arr[i]);
+          }
+          fclose(fptr1);
+	}  /* End of new FAP CASE */
+      }  /* End of AP or FAP case */
       else {
         fprintf(stdout, "%s --------------------------------------------------\n", myLabel);
         fprintf(stdout,"%s AMP/PHS.%s.%s.%s.%s\n",myLabel, resp->network,resp->station,resp->locid,resp->channel);
@@ -367,7 +413,7 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
 
 void print_resp(double *freqs, int nfreqs, struct response *first,
                 char *rtype, int stdio_flag) {
-  print_resp_itp(freqs,nfreqs,first,rtype,stdio_flag,0,0.0);
+  print_resp_itp(freqs,nfreqs,first,rtype,stdio_flag,0,0.0, 0);
 }
 
 /* Compares the entries in the given arrays.

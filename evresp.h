@@ -83,6 +83,7 @@
 #define MAXLINELEN 256
 #define FIR_NORM_TOL 0.02
 
+
 /* enumeration representing the types of units encountered (Note: if default,
    then the response is just given in input units to output units, no
    interpretation is made of the units used) */
@@ -443,7 +444,9 @@ void check_sym(struct blkt *, struct channel *);
 
 /* routines used to calculate the instrument responses */
 
-void calc_resp(struct channel *, double *, int, struct complex *,char *, int, int);
+/*void calc_resp(struct channel *, double *, int, struct complex *,char *, int, int);*/
+void calc_resp(struct channel *chan, double *freq, int nfreqs, struct complex *output,
+          char *out_units, int start_stage, int stop_stage, int useTotalSensitivityFlag);
 void convert_to_units(int, char *, struct complex *, double);
 void analog_trans(struct blkt *, double, struct complex *);
 void fir_sym_trans(struct blkt *, double, struct complex *);
@@ -462,22 +465,22 @@ int timecmp(struct dateTime *dt1, struct dateTime *dt2);
 
 /* print the channel info, followed by the list of filters */
 
-void print_chan(struct channel *, int, int, int, int, int);
+void print_chan(struct channel *, int, int, int, int, int, int);
 
 /* print the response information to the output files */
 
 void print_resp(double *, int, struct response *, char *, int);
 void print_resp_itp(double *, int, struct response *, char *, int,
-                                                               int, double);
+                                                               int, double, int);
 
 /* evaluate responses for user requested station/channel/network tuple at the
    frequencies requested by the user */
 
 struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
-                        double *, int, char *, char *, int, int, int);
+                        double *, int, char *, char *, int, int, int, int);
 struct response *evresp_itp(char *, char *, char *, char *, char *, char *,
                             char *, double *, int, char *, char *, int,
-                            int, int, int, int, double);
+                            int, int, int, int, double, int);
 
  /* Interpolates amplitude and phase values from the set of frequencies
     in the List blockette to the requested set of frequencies. */

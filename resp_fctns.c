@@ -362,13 +362,10 @@ void check_channel(struct channel *chan) {
         /* if stage is a FIR filter, increment the estimated delay and applied
            correction for the channel */
         if(stage_type) {
-          if(blkt_ptr->type != IIR_PZ) {
-	/*    if (stage_type == IIR_COEFFS_TYPE)  ;IGD commented out offending statement 07/17/01*/
-	    if (nc > 0)
-            	chan->calc_delay += ((nc-1)/2.0) * blkt_ptr->blkt_info.decimation.sample_int;
-            chan->estim_delay += (double) blkt_ptr->blkt_info.decimation.estim_delay;
-            chan->applied_corr += (double) blkt_ptr->blkt_info.decimation.applied_corr;
-          }
+	  if (nc > 0)
+            chan->calc_delay += ((nc-1)/2.0) * blkt_ptr->blkt_info.decimation.sample_int;
+          chan->estim_delay += (double) blkt_ptr->blkt_info.decimation.estim_delay;
+          chan->applied_corr += (double) blkt_ptr->blkt_info.decimation.applied_corr;
           chan->sint = blkt_ptr->blkt_info.decimation.sample_int*
             (double)blkt_ptr->blkt_info.decimation.deci_fact;  /* channel's sint is the last stage's */
         }

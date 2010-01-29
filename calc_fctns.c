@@ -42,7 +42,7 @@
 *                   Calculate response
 *=================================================================*/
 void calc_resp(struct channel *chan, double *freq, int nfreqs, struct complex *output,
-          char *out_units, int start_stage, int stop_stage) {
+          char *out_units, int start_stage, int stop_stage, int useTotalSensitivityFlag) {
   struct blkt *blkt_ptr;
   struct stage *stage_ptr;
   int i, j, units_code, eval_flag = 0, nc = 0, sym_fir = 0;
@@ -119,7 +119,7 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs, struct complex *o
           }
           break;
         case DECIMATION:
-	  if(blkt_ptr->type != IIR_PZ && nc != 0) {
+	  if(nc != 0) {
 	    /* IGD 08/27/08 Use estimated delay instead of calculated */
 	    estim_delay = (double) blkt_ptr->blkt_info.decimation.estim_delay;
 	    corr_applied = blkt_ptr->blkt_info.decimation.applied_corr;
@@ -174,9 +174,14 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs, struct complex *o
         set by the 'check_units' function that is used to convert to 'MKS' units when the
         the response was given as a displacement, velocity, or acceleration in units other
         than meters) */
-
-    output[i].real = val.real * chan->calc_sensit * unitScaleFact;
-    output[i].imag = val.imag * chan->calc_sensit * unitScaleFact;
+    if (0 == useTotalSensitivityFlag) {
+      output[i].real = val.real * chan->calc_sensit * unitScaleFact;
+      output[i].imag = val.imag * chan->calc_sensit * unitScaleFact;
+    }
+    else  {
+      output[i].real = val.real * chan->sensit * unitScaleFact;
+      output[i].imag = val.imag * chan->sensit * unitScaleFact;
+    }
 
     convert_to_units(units_code, out_units, &output[i], w);
   }

@@ -3,7 +3,7 @@ these steps:
 
 1. Uncompress and untar the distribution file.  
  
-        zcat evalresp-3.1.tar.gz | tar -xvf - 
+        zcat evalresp-[version].tar.gz | tar -xvf - 
 
    This will create a directory "evalresp" that contains the full
    evalresp distribution.
@@ -28,6 +28,15 @@ these steps:
 
      type './configure --help' for help with other options that can
      be set on the command line when running the './configure' script
+
+  * The following ./configure options can be used during this stage:
+    
+     --enable-phase-unwrap     Unwrap phase
+     --enable-lib-mode         Functions of evalresp return, not exit
+     --enable-log-label        Add NSLC as a label to log messages
+     --enable-debug            Enable debug
+     --enable-optimization     Enable optimization
+     --enable-strict           Enable strict mode
 
 3. Compile the program "evalresp".
  
