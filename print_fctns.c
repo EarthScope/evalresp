@@ -91,9 +91,11 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
   fprintf(stderr, "%s   calc_del=%.5E  corr_app=%.5E  est_delay=%.5E  final_sint=%.3g(sec/sample)\n",
           myLabel, chan->calc_delay, chan->applied_corr, chan->estim_delay, chan->sint);
   if (1 == useTotalSensitivityFlag)
-    fprintf(stderr, "%s   (reported sensitivity was used to compute response (-ts option enabled))\n");
+    fprintf(stderr, "%s   (reported sensitivity was used to compute response (-ts option enabled))\n", myLabel);
   if (chan->calc_delay < 0)	  
-    fprintf(stderr, "Negative calc_del=%.5E is likely to be incorrect\n", chan->calc_delay);
+    fprintf(stderr, "%s WARNING Negative calc_del=%.5E is likely to be incorrect\n", myLabel, chan->calc_delay);
+  if (chan->estim_delay < 0)
+    fprintf(stderr, "%s WARNING Negative calc_del=%.5E is likely to be incorrect\n", myLabel, chan->estim_delay);
   
 /* then print the parameters for each stage (stage number, type of stage, number
      of coefficients [or number of poles and zeros], gain, and input sample interval
@@ -304,7 +306,8 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
 	    /* Next function attempts to put phase withing -360:360 bounds
 	    * this is requested by AFTAC
 	    */
-	    (void) evresp_adjust_phase(pha_arr, num_points, -360.0, 360.0);
+	   /* Next line is removed at request of Chad */
+	   /* (void) evresp_adjust_phase(pha_arr, num_points, -360.0, 360.0); */
 	  }
 	  else {
 #ifdef UNWRAP_PHASE
@@ -345,7 +348,8 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
 	  /* Next function attempts to put phase withing -360:360 bounds
 	   * this is requested by AFTAC
 	   */
-	  (void) evresp_adjust_phase(pha_arr, num_points, -360.0, 360.0);
+	/* Next line is removed at request of Chad */
+	 /* (void) evresp_adjust_phase(pha_arr, num_points, -360.0, 360.0); */
 
           for(i = 0; i < num_points; i++) {
             fprintf(fptr1,"%.6E  %.6E  %.6E\n",freq_arr[i],amp_arr[i], pha_arr[i]);

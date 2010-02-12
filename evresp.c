@@ -319,7 +319,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
     if(stalst[i] == ',')
       stalst[i] = ' ';
   }
-  sta_list = parse_line(stalst);
+  sta_list = ev_parse_line(stalst);
 
   /* remove any blank spaces from the beginning and end of the string */
 
@@ -340,7 +340,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
     if(chalst[i] == ',')
       chalst[i] = ' ';
   }
-  chan_list = parse_line(chalst);
+  chan_list = ev_parse_line(chalst);
 
   /* then form a set of network-station-locid-channel tuples to search for */
 

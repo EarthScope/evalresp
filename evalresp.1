@@ -17,13 +17,13 @@
 .\" Also: rick@iris.washington.edu
 .\" Phone: (206) 547-0393
 .\" 
-.TH "EVALRESP" "V3.3.2" "12-Feb-2010" "" ""
+.TH "EVALRESP" "V3.3.2" "12-Feb-2010" "" "IRIS programs"
 .SH "NAME"
 \fIevalresp\fR \- evaluate response information and output to ASCII files using \fIrdseed V4.16\fR and above RESP files.
 .SH "SYNOPSIS"
 evalresp STA_LIST CHA_LIST YYYY DAY MIN_FREQ MAX_FREQ NFREQS [\fB\-f\fR file] [\fB\-u\fR units]
 [\fB\-t\fR time\-of\-day] [\fB\-s\fR type\-of\-spacing] [\fB\-r\fR resp\-type] [\fB\-n\fR network\-id]
-[\fB\-l\fR location\-id] [\fB\-stage\fR start [stop]] [\-stdio] [\-use\-estimated\-delay]
+[\fB\-l\fR location\-id] [\fB\-stage\fR start [stop]] [\-stdio] [\-use\-estimated\-delay] [\-unwrap] [\-ts]
 [\-il] [\-ii] [\fB\-it\fR tension] [\-v]
 .PD 0.3
 
@@ -37,146 +37,24 @@ by itself returns the usage or `help' lines useful for how to correctly input
 the options.
 .sp
 .SH "COMMAND-LINE PARAMETERS"
-'\-f file':    directory\-name|filename
-    '\-u units':    'dis'|'vel'|'acc'|'def'
-    '\-t time\-of\-day':    HH:MM:SS
-    '\-s type\-of\-spacing':    log|lin
-    '\-r resp_type':    'ap'=amp/pha | 'cs'=complex spectra
-    '\-n netid':    'II'|'IU'|'G'|'*'...
-    '\-l locid':    '01'|'AA,AB,AC'|'A?'|'*'...
-    '\-stage start [stop]':    start and stop are integer stage numbers
-    '\-stdio':    take input from stdin, output to stdout
+'\-f file':                      directory\-name|filename
+    '\-u units':                'dis'|'vel'|'acc'|'def'
+    '\-t time\-of\-day':          HH:MM:SS
+    '\-s type\-of\-spacing':      log|lin
+    '\-r resp_type':            'ap'=amp/pha | 'cs'=complex spectra
+    '\-n netid':                'II'|'IU'|'G'|'*'...
+    '\-l locid':                '01'|'AA,AB,AC'|'A?'|'*'...
+    '\-stage start [stop]':     start and stop are integer stage numbers
+    '\-stdio':                  take input from stdin, output to stdout
     '\-use\-estimated\-delay':    use estimated delay in computation of response
-    '\-il':    interpolate List blockette output
-    '\-ii':    interpolate List blockette input
-    '\-it tension':    tension for List blockette interpolation
-    '\-v':    verbose; list parameters on stdout
+    '\-il':                     interpolate List blockette output
+    '\-ii':                     interpolate List blockette input
+    '\-it tension':             tension for List blockette interpolation
+    '\-unwrap':                 unwrap phase if the output is AP (amplitude\-phase)
+    '\-ts':                     use nominal sensitivity from stage 0 instead of computed
 .sp
 .SH "WHAT IS NEW"
-\fBVersion 3.3.1:\fR
-.br 
-(NEW FEATURE) Added a 'fap' response type with the \-r option (in addition to the 'ap' and 'cs' types) to write out frequency\-amplitude\-phase triplets. The resulting file names are in the form : "FAP.Net.Sta.Loc.Chan". The phase is always unwrapped in this output. Essential this is just a re\-packaging of the amplitude\-phase output into a single, three\-column file with unwrapped phase.
-.br 
-(NEW FEATURE) Added run\-time option (\-unwrap) to unwrap the output phase in addition to the previous compile\-time option.
-.br 
-(NEW FEATURE) Added option (\-ts ?) to use the stage 0 total sensitivity instead of product of the stage gains.  The idea is that this can be used in combination with the \-stage option to provide a full scale response, i.e. just stage 1 (the sensor) with a correct system gain (which is exact what SAC Poles and Zeros do). 
-.br 
-(NEW FEATURE) Included checks for likely incorrect (negative) delay values; in case such delays are found evalresp prints a warning.
-.br 
-(BUG FIX) Cleaned improper checks for IIR_PZ blockette types in calc_fctns.c and resp_fctns.c.
-.br 
-(BUG FIX) Fixed search for matching RESP files, name search did not seem to use location ID.
-.br 
-Documented the SEED requirements regarding the order of the FIR coefficients and the sign of the delay (see section below).
-.br 
-\fBVersion 3.3.0:\fR
-.br  This version modifies the way evalresp deals with the delays in FIR stages.
-.br 
-Note that \-use\-delay option becomes obsolete in this version
-.br 
-Now the following rules are applied for adding delays to the FIR stages: 
-.br 
-(1) Calculation  of the response for a symmetrical FIR filter ignores the delay value in the RESP; 
-.br 
-(2) Calculation of the response for an asymmetrical FIR filter uses the "correction applied" 
-field of the RESP by default and "estimated delay" field on user request (a user should use an
-option \-use\-estimated\-delay to switch this option on).
-.br 
-This version has been tested to work on 64\-bit processors.
-.br 
-Minor bug fixes
-.br 
-\fBVersion 3.2.39\-40:\fR 
-.br 
-Minor bugfixes
-.br 
-\fBVersion 3.2.38:
-.br 
-\fR (1) Libtoolized evresp library: using libtool 
-instead of ranlib. Now a builder can create dynamic library, 
-not only static. (2)Added new configure option \-\-enable\-log\-label.
-When evalresp is configured with this option, most of log messages
-are being prepended by a label. A label consists of [Net.Sta.Loc.Chan]
-(3)Minor bug fixes (see ChangeLog for detail).
-.br 
-.br 
-\fBVersion 3.2.37:
-.br 
-\fR Added two more 'free()' calls to "evresp.c" to fix
-memory leaks when program functions are used in external applications.
-.br 
-.br 
-\fBVersion 3.2.36:\fR Modified to support Tesla ("T") units.
-.br 
-.br 
-\fBVersion 3.2.35:\fR Modified to support channel\-IDs with
-location codes equal to an empty string.
-.br 
-.br 
-\fBVersion 3.2.34:\fR Added 'free()' calls to "evresp.c" to fix memory leaks when
-program functions used in external applications.
-.br 
-.br 
-\fBVersion 3.2.33:\fR Added include_HEADERS target "evr_spline.h" to "Makefile.am";
-upgraded "missing" script.
-.br 
-.br 
-\fBVersion 3.2.32:\fR Moved 'use_delay()' function from 'evalresp.c' to 'evresp.c';
-modified to close input file when a single response file is specified.
-.br 
-.br 
-\fBVersion 3.2.31:\fR Renamed 'regexp' functions to prevent name clashes
-with other libraries; restored 'depcomp' script in distribution.
-.br 
-.br 
-\fBVersion 3.2.30:\fR Modified to unwrap phase values before interpolation
-and re\-wrap after (if needed); modified to detect when all requested interpolated
-frequencies are out of range.
-.br 
-.br 
-\fBVersion 3.2.29:\fR Implemented interpolation of amplitude/phase values from
-responses containing List blockettes (55); modified message shown when
-List blockette encountered; modified so as not to require characters after
-'units' specifiers like "M" and "COUNTS"; modified to handle case where
-file contains "B052F03 Location:" and nothing after it on line; added
-warnings for unrecognized parameters; fixed issue where program would crash
-under Linux/UNIX ("segmentation fault") if input response file contained
-Windows\-style "CR/LF" line ends.
-.br 
-.br 
-\fBVersion 3.2.28:\fR Modified to allow command\-line parameters for frequency values to be missing.
-.br 
-.br 
-\fBVersion 3.2.27:\fR Added command line option \-use\-delay (Use estimated delay in phase computation)
-.br 
-.br 
-\fBVersion 3.2.26:\fR Now evalresp runs on Mac OS X.
-.br 
-.br 
-\fBVersion 3.2.25:\fR Processing of B55 with GAIN stage fixed. Starting with this version, added ChangeLog file.
-.br 
-.br 
-\fBVersion 3.2.24:\fR Added two confuration options (\-\-enable\-delay Use estimated delay in phase computation)
-and (\-\-enable\-phase\-unwrap Unwrap phase). 
-.br 
-.br 
-\fBVersion 3.2.23:\fR Added support for SHAPE compatible RESP files. When parsing lines that are valid
-RESP format, but unexpected, evalresp now skips to the next line. Added support for blank lines within 
-and at the end of a RESP file.
-.br 
-.br 
-\fBVersion 3.2.21:\fR Does not terminate execution if a "Generic Response Blockette" is found in the RESP file, but
-prints a warning and ignores the blockette.
-.br 
-.br 
-\fBVersion 3.2.20:\fR Allows a user to compile and run evalresp on WIN32 platform. See the details in README file.
-As many other contemporary programs \fIevalresp\fR now supports "make install" command. A default installation
-directory is /usr/local, however, it can be changed during configuration phase: "./configure \-\-prefix=/user/directory".
-A bug in pole\-zero representations for digital stages has been fixed.
-.br 
-.br 
-\fBVersion 3.2.19:\fR Service release; see README in the evalresp distribution for a list of bugs fixed.
-.sp
+\fBSee ChangeLog file from evalresp distribution\fR
 .SH "SUPPORT OF PRESSURE and MAGNETIC DATA"
 \fIevalresp\fR is able to process responses of
 pressure instruments (in Pascals) and magnetic flux density (in Tesla). Note that the default units 
@@ -351,12 +229,15 @@ station\-channel\-network tuple that matches the user's request. If this option 
 only error output will occur in the program.
 .HP 4
 (10) The \fB\-r\fR argument indicates the response type the user desires. Available values are "cs" for
-complex\-spectra output and "ap" for amplitude\-phase output. If the "cs" option is chosen, then
-the result is a set of files like SPECTRA.NET.STA..CHA (SPECTRA.NET.STA..CHA  if location ID is present
-in the input file) that contain the frequency, real response and imaginary response (in that order).
+complex\-spectra output, "ap" for amplitude\-phase output, and "fap" for frequency\-amplitude\-phase output.
+If the "cs" option is chosen, then the result is a set of files like SPECTRA.NET.STA..CHA (SPECTRA.NET.STA..CHA  
+if location ID is present in the input file) that contain the frequency, real response and imaginary response (in that order).
 If the "ap" option is chosen, then a set of files like AMP.NET.STA..CHA (or AMP.NET.STA.LOC.CHA)
 and PHASE.NET.STA..CHA (PHASE.NET.STA.LOC.CHA) are created, containing the amplitude and
-phase response, respectively. This argument defaults to a value of "ap".
+phase response, respectively. If the "fap" option is selected, the program writes out frequency\-amplitude\-phase 
+triplets. The resulting file names are in the form : "FAP.Net.Sta.Loc.Chan". The phase is always unwrapped 
+in this output. Essentially this is just a re\-packaging of the amplitude\-phase output into a single, 
+three\-column file with unwrapped phase.  This argument defaults to a value of "ap".
 .HP 4
 (11) The use of wildcards is allowed in the specification of stations, channels, and networks to
 search for. The first response of each station\-channel\-network that matches the wildcard
@@ -380,6 +261,13 @@ indicating why no output occurred. If a range of responses is specified that is 
 range that is given in the RESP file, then no output will occur. Otherwise, the stages with
 numbers within the interval from the starting to the stopping stage will be used to calculate the
 response.
+.HP 4
+(13) The  \fB\-unwrap\fR argument is used to unwrap the output phase if used in combination with \fB\-r ap\fR option
+(see note 10 above).
+.HP 4
+(14) The \fB\-ts\fR argument is forcing useage of the stage 0 total sensitivity instead of product of the stage gains.  
+The idea is that this can be utilized in combination with the \-stage option to provide a full scale response, 
+i.e. just stage 1 (the sensor) with a correct system gain (which is exactly what SAC Poles and Zeros do)
 .HP 4
 (13) The \fB\-stdio\fR argument can be used to specify that input should be taken from standard input and
 output should be sent to standard output. In the case where both \fB\-stdio\fR and \fB\-v\fR are specified, the

@@ -1,6 +1,8 @@
 /* string_fctns.c */
 
 /*
+   02/12/2005 -- [IGD] Moved parse_line() to ev_parse_line() to avoid name 
+                       conflict	with external libraries
    10/21/2005 -- [ET]  Modified so as not to require characters after
                        'units' specifiers like "M" and "COUNTS";
                        improved error message generated when no
@@ -35,7 +37,7 @@
 #include "./evresp.h"
 #include "./regexp.h"
 
-/* parse_line: parses the fields on a line into separate strings.  The definition of a field
+/* ev_parse_line: parses the fields on a line into separate strings.  The definition of a field
                There is any non-white space characters with bordering white space.  The result
                is a structure containing the number of fields on the line and an array of
                character strings (which are easier to deal with than the original line).  A second
@@ -44,7 +46,7 @@
                first occurrence of this string is used as the start of the line.  A null string
                can be used to indicate that the start of the line should be used. */
 
-struct string_array *parse_line(char *line) {
+struct string_array *ev_parse_line(char *line) {
   char *lcl_line, field[MAXFLDLEN];
   int nfields, fld_len, i = 0;
   struct string_array* lcl_strings;
@@ -57,7 +59,7 @@ struct string_array *parse_line(char *line) {
       parse_field(line,i,field);
       fld_len = strlen(field) + 1;
       if((lcl_strings->strings[i] = (char *)malloc(fld_len*sizeof(char))) == (char *)NULL) {
-        error_exit(OUT_OF_MEMORY,"parse_line; malloc() failed for (char) vector");
+        error_exit(OUT_OF_MEMORY,"ev_parse_line; malloc() failed for (char) vector");
       }
       strncpy(lcl_strings->strings[i],"",fld_len);
       strncpy(lcl_strings->strings[i],field,fld_len-1);
@@ -66,7 +68,7 @@ struct string_array *parse_line(char *line) {
   else {      /* if no fields then alloc string array with empty entry */
     lcl_strings = alloc_string_array(1);
     if((lcl_strings->strings[0] = (char *)malloc(sizeof(char))) == (char *)NULL) {
-      error_exit(OUT_OF_MEMORY,"parse_line; malloc() failed for (char) vector");
+      error_exit(OUT_OF_MEMORY,"ev_parse_line; malloc() failed for (char) vector");
     }
     strncpy(lcl_strings->strings[0],"",1);
   }
@@ -211,8 +213,8 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
       line[--tmpint] = '\0';
   }
 
-  if(!line)
-    error_return(UNEXPECTED_EOF, "get_line; no more non-comment lines found in file");
+  /*if(!line)
+    error_return(UNEXPECTED_EOF, "get_line; no more non-comment lines found in file");*/
 
   test = parse_pref(&lcl_blkt, &lcl_fld, line);
   if(!test) {

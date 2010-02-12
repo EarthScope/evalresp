@@ -328,7 +328,7 @@ extern char myLabel[20];
 /* utility routines that are used to parse the input file line by line and
    convert the input to what the user wants */
 
-struct string_array *parse_line(char *);
+struct string_array *ev_parse_line(char *);
 struct string_array *parse_delim_line(char *, char *);
 int get_field(FILE *, char *, int, int, char *, int);
 int test_field(FILE *, char *, int *, int *, char *, int);
