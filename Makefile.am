@@ -23,7 +23,7 @@ libevresp_la_SOURCES = regexp.c regerror.c regsub.c calc_fctns.c resp_fctns.c \
 include_HEADERS =  evresp.h   regmagic.h  regexp.h  evr_spline.h
 man_MANS = evalresp.1
 
-EXTRA_DIST = evalresp.man evresp.h   regmagic.h  regexp.h  \
+EXTRA_DIST =  evresp.h   regmagic.h  regexp.h  \
         evalresp.ide makefile.bor  makefile.ms evtest.f depcomp evalresp.1
 
 #libevresp_la_LDFLAGS = -version-info 2:3:40
