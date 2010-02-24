@@ -170,7 +170,7 @@ struct matched_files *find_files(char *file, struct scn_list *scn_lst, int *mode
            directory (and the SEEDRESP directory exists) add it to the
            search path */
         stat(basedir, &buf);
-        getcwd(testdir,MAXLINELEN);
+        (void)getcwd(testdir,MAXLINELEN);
         if(S_ISDIR(buf.st_mode) && strcmp(testdir, basedir)) {
 	  memset(new_name,0,MAXLINELEN);
           sprintf(new_name, " %s/RESP.%s.%s.%s.%s",basedir,
@@ -189,7 +189,7 @@ struct matched_files *find_files(char *file, struct scn_list *scn_lst, int *mode
                 scn_ptr->channel);
         if(basedir != NULL) {
           stat(basedir, &buf);
-          getcwd(testdir,MAXLINELEN);
+          (void) getcwd(testdir,MAXLINELEN);
           if(S_ISDIR(buf.st_mode) && strcmp(testdir, basedir)) {
 	    memset(new_name,0,MAXLINELEN);
             sprintf(new_name, " %s/RESP.%s.%s.%s",basedir,

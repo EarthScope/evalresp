@@ -61,7 +61,7 @@ void error_exit(int cond, char *msg, ...) {
         fprintf(stderr,fmt_str,sval);
         break;
       default:
-        fprintf(stderr,fmt_str);
+/*        fprintf(stderr,fmt_str); */
         break;
       }
       new_p = strstr(p,fmt_str);
@@ -137,7 +137,7 @@ void error_return(int cond, char *msg, ...) {
         fprintf(stderr,fmt_str,sval);
         break;
       default:
-        fprintf(stderr,fmt_str);
+/*        fprintf(stderr,fmt_str); */
         break;
       }
       new_p = strstr(p,fmt_str);
