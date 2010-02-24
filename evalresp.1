@@ -17,7 +17,7 @@
 .\" Also: rick@iris.washington.edu
 .\" Phone: (206) 547-0393
 .\" 
-.TH "EVALRESP" "V3.3.2" "12-Feb-2010" "" "IRIS programs"
+.TH "EVALRESP" "V3.3.2" "17-Feb-2010" "" "IRIS programs"
 .SH "NAME"
 \fIevalresp\fR \- evaluate response information and output to ASCII files using \fIrdseed V4.16\fR and above RESP files.
 .SH "SYNOPSIS"
@@ -37,24 +37,28 @@ by itself returns the usage or `help' lines useful for how to correctly input
 the options.
 .sp
 .SH "COMMAND-LINE PARAMETERS"
-'\-f file':                      directory\-name|filename
-    '\-u units':                'dis'|'vel'|'acc'|'def'
-    '\-t time\-of\-day':          HH:MM:SS
-    '\-s type\-of\-spacing':      log|lin
-    '\-r resp_type':            'ap'=amp/pha | 'cs'=complex spectra
-    '\-n netid':                'II'|'IU'|'G'|'*'...
-    '\-l locid':                '01'|'AA,AB,AC'|'A?'|'*'...
-    '\-stage start [stop]':     start and stop are integer stage numbers
-    '\-stdio':                  take input from stdin, output to stdout
-    '\-use\-estimated\-delay':    use estimated delay in computation of response
-    '\-il':                     interpolate List blockette output
-    '\-ii':                     interpolate List blockette input
-    '\-it tension':             tension for List blockette interpolation
-    '\-unwrap':                 unwrap phase if the output is AP (amplitude\-phase)
-    '\-ts':                     use nominal sensitivity from stage 0 instead of computed
+.nf
+ \-f file              directory\-name|filename
+ \-u units             'dis'|'vel'|'acc'|'def'
+ \-t time\-of\-day       HH:MM:SS
+ \-s type\-of\-spacing   log|lin
+ \-n netid             'II'|'IU'|'G'|'*'...
+ \-l locid             '01'|'AA,AB,AC'|'A?'|'*'...
+ \-r resp_type         'ap'=amp/pha|'cs'=complex spectra|'fap'=freq/amp/pha
+ \-stage start [stop]  start and stop are integer stage numbers
+ \-stdio               take input from stdin, output to stdout
+ \-use\-estimated\-delay use estimated delay in computation of response
+ \-il                  interpolate List blockette output
+ \-ii                  interpolate List blockette input
+ \-it tension          tension for List blockette interpolation
+ \-unwrap              unwrap phase if the output is AP (amplitude\-phase)
+ \-ts                  use total sensitivity from stage 0 instead of computed
+ \-v                   verbose; list parameters on stdout
+.fi
 .sp
 .SH "WHAT IS NEW"
 \fBSee ChangeLog file from evalresp distribution\fR
+.sp
 .SH "SUPPORT OF PRESSURE and MAGNETIC DATA"
 \fIevalresp\fR is able to process responses of
 pressure instruments (in Pascals) and magnetic flux density (in Tesla). Note that the default units 
@@ -200,7 +204,7 @@ i.e. if typed setenv SEEDRESP /foo/resp_dir and no file or directory is specifie
 to search on the command line, then the current directory and the directory
 /foo/resp_dir will be searched for matching RESP files from which to calculate
 responses.
-.sp4
+.sp
 .HP 4
 (6) The units argument is one of the following: DIS (displacement), VEL (velocity), ACC
 (acceleration), DEF (default units), and represents the units for which the output response
@@ -329,9 +333,9 @@ then this example will output eight files, called:
 .PD 0.5
 
 .nf 5
-AMP.I U.HRV..B HE, PHASE.I U.HRV..B HE, AMP.I U.HRV..B HN, PHASE.I U.HRV..B HN
+AMP.IU.HRV..BHE, PHASE.IU.HRV..BHE, AMP.IU.HRV..BHN, PHASE.IU.HRV..BHN
 and
-AMP.I U.ANMO..B HE, PHASE.I U.ANMO..B HE, AMP.I U.ANMO..B HN, PHASE.I U.ANMO..B HN
+AMP.IU.ANMO..BHE, PHASE.IU.ANMO..BHE, AMP.IU.ANMO..BHN, PHASE.IU.ANMO..BHN
 .sp
 .fi 
 .PD 0.3
@@ -339,10 +343,7 @@ for the HRV and ANMO BHE and BHN channels. A corresponding set of files would be
 channels and for all the HRV and ANMO long\-period high\-gain channels in the directory `/home/RESP/NEW'.
 These files contain the amplitude and phase information, respectively.
 .sp
-These can be used as input for \fIgraph\fR or \fISAC\fR. For example, take the amplitude file
-and try this:
-.sp
- graph < HRV.B HE.I U.AMP | xtek
+These can be used as input for any graphing programs capable of reading simple columns of data.
+
 .SH "SEE ALSO"
-\fIrdseed(dmc)\fR, \fIrelish(dmc)\fR a Matlab(R) version of this program
-(note that the changes in the version 3.2.17 of \fIevalresp\fR are not applicable to \fIrelish\fR), \fIgraph\fR, and \fISAC\fR.
+\fIrdseed(dmc)\fR

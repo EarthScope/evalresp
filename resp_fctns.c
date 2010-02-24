@@ -362,7 +362,7 @@ void check_channel(struct channel *chan) {
         /* if stage is a FIR filter, increment the estimated delay and applied
            correction for the channel */
         if(stage_type) {
-	  if (nc > 0)
+	  if (stage_type == FIR_TYPE && nc > 0)
             chan->calc_delay += ((nc-1)/2.0) * blkt_ptr->blkt_info.decimation.sample_int;
           chan->estim_delay += (double) blkt_ptr->blkt_info.decimation.estim_delay;
           chan->applied_corr += (double) blkt_ptr->blkt_info.decimation.applied_corr;
