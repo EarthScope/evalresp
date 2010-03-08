@@ -13,6 +13,10 @@
     3/28/2006 -- [ET]  Fixed description of "mode" in header comment for
                        'find_files()' function (changed second "zero" to
                        "one").
+    2/25/2010 -- [CT]  Convert 'get_names()' used under non-Windows to use
+                       to use the system glob() to find files instead of 
+		       forking a child to run 'ls' in a sub-process.
+
  */
 
 #include <sys/types.h>
@@ -22,41 +26,16 @@
 #ifndef WIN32                /* if not Windows compiler then */
 #include <sys/param.h>       /* include header files */
 #include <unistd.h>
+#include <glob.h>
+#include <errno.h>
 #include <sys/time.h>
 #else                        /* if Windows compiler then */
 #include <time.h>            /* 'time.h' is not in 'sys/' */
 #endif
 #include <string.h>
-#include <signal.h>
 #include "evresp.h"
 
-#ifndef WIN32      /* if not Windows compiler then include 'sig_child()' */
-
-/*
- * This is a 4.3BSD SIGCLD signal handler that can be used by a
- * server that's not interested in its child's exit status, but needs to
- * wait for them, to avoid clogging up the system with zombies.
- *
- * Beware that the calling process may get an interrupted system call
- * when we return, so they had better handle that.
- */
-
-#include        <sys/wait.h>
-#include        <signal.h>
-
-void sig_child(int sig) {
-  /*
-  * Use the wait3() system call with the WNOHANG option.
-  */
-
-  int pid;
-  int status;
-
-  while((pid = wait3(&status, WNOHANG, (struct rusage *) 0)) > 0)
-                ;
-}
-
-#else                   /* if Windows compiler then */
+#ifdef WIN32
 #if __BORLANDC__        /* if Borland compiler then */
 #include <dir.h>        /* include header file for directory functions */
 #else                   /* if non-Borland (MS) compiler then */
@@ -218,107 +197,54 @@ struct matched_files *find_files(char *file, struct scn_list *scn_lst, int *mode
 
 #ifndef WIN32      /* if not Windows then use original 'get_names()' */
 
-/* get_names:  uses a child process to get filenames matching the
-               expression in 'in_file' using the 'ls' command. */
+/* get_names:  uses system glob() to get filenames matching the
+               expression in 'in_file'. */
 
 int get_names(char *in_file, struct matched_files *files) {
-  FILE *read_from, *write_to, *err_stream;
-  char result[MAXLINELEN], lst_string[MAXLINELEN];
-  char filename[MAXLINELEN], remainder[MAXLINELEN];
-  int childpid, int_test;
   struct file_list *lst_ptr, *tmp_ptr;
-  char *test;
-
-  /* Tell system command to get a directory listing of matching files */
-
-  memset(lst_string,0,MAXLINELEN);
-  sprintf(lst_string,"ls %s", in_file);
-  childpid = start_child(lst_string,&read_from,&write_to,&err_stream);
-  sleep(1);
+  glob_t globs;
+  int count;
+  int rv;
+  
+  /* Search for matching file names */
+  if ( (rv = glob (in_file, 0, NULL, &globs)) ) {
+    if ( rv != GLOB_NOMATCH )
+      perror("glob");
+    return 0;
+  }
+  
   /* set the head of the 'files' linked list to a pointer to a newly allocated
      'matched_files' structure */
-
+  
   files->first_list = alloc_file_list();
   tmp_ptr = lst_ptr = files->first_list;
-
-  /* retrieve the files from the 'read_from' stream and build up a linked
+  
+  /* retrieve the files from the glob list and build up a linked
      list of matching files */
-
-  while((test = fgets(result,MAXLINELEN,read_from))) {
-    if ((int_test = sscanf(result,"%s%s",filename,remainder)) == 1) {
-      files->nfiles++;
-      lst_ptr->name = alloc_char(strlen(filename)+1);
-      strcpy(lst_ptr->name,filename);
-      lst_ptr->next_file = alloc_file_list();
-      tmp_ptr = lst_ptr;
-      lst_ptr = lst_ptr->next_file;
-    }
-    else {
-      fclose(read_from); fclose(write_to); fclose(err_stream);
-      return(0);
-   }
+  
+  count = globs.gl_pathc;
+  while( count ) {
+    count--;
+    files->nfiles++;
+    lst_ptr->name = alloc_char(strlen(globs.gl_pathv[count])+1);
+    strcpy(lst_ptr->name,globs.gl_pathv[count]);
+    lst_ptr->next_file = alloc_file_list();
+    tmp_ptr = lst_ptr;
+    lst_ptr = lst_ptr->next_file;
   }
-
-
+  
   /* allocated one too many files in the linked list */
-
+  
   if(lst_ptr != (struct file_list *)NULL) {
     free_file_list(lst_ptr);
     free(lst_ptr);
     if(tmp_ptr != lst_ptr)
       tmp_ptr->next_file = (struct file_list *)NULL;
   }
-
-  fclose(read_from); fclose(write_to); fclose(err_stream);
+  
+  globfree (&globs);
+  
   return(files->nfiles);
-}
-
-/* Exec the named cmd as a child process, returning
- * two pipes to communicate with the process, and
- * the child's process ID */
-
-int start_child(char *cmd, FILE **readpipe, FILE
-                **writepipe, FILE **errpipe) {
-   int childpid, pipe1[2], pipe2[2], pipe3[2];
-   char *null_buf = "";
-
-   if ((pipe(pipe1) < 0) || (pipe(pipe2) < 0) || pipe(pipe3)) {
-     perror("pipe"); _exit(-1);
-   }
-   switch (childpid = vfork()) {
-   case -1:
-     perror("fork");
-     _exit(-1);
-   case 0: /* Child. */
-     close(pipe1[1]); close(pipe2[0]); close(pipe3[0]);
-     /* Read from parent is pipe1[0], write to
-      * parent is pipe2[1].  */
-     dup2(pipe1[0],0);
-     dup2(pipe3[1],2);  /* stderr for this process (the child) */
-     dup2(pipe2[1],1);
-     close(pipe1[0]); close(pipe2[1]); close(pipe3[1]);
-     if (system(cmd) != 0)
-       perror("execlp");
-     _exit(1);
-   default:  /* Parent. */
-     close(pipe1[0]); close(pipe2[1]); close(pipe3[1]);
-     /* Write to child is pipe1[1], read from
-      * child is pipe2[0].  */
-     *errpipe = fdopen(pipe3[0],"r");   /* stderr from child process */
-     *readpipe = fdopen(pipe2[0],"r");
-     *writepipe=fdopen(pipe1[1],"w");
-     setbuffer(*writepipe,null_buf, 1);
-
-     /* set up a signal handler so that the "SIGCLD" signal is
-        ignored (that way we can avoid having zombie children) */
-#ifndef SIGCHLD
-#define SIGCHLD SIGCLD
-#endif
-     
-     signal(SIGCHLD, sig_child);
-
-     return childpid;
-  }
 }
 
 #else              /* if Windows compiler then use new 'get_names()' */

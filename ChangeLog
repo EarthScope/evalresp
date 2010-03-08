@@ -1,11 +1,13 @@
 Version 3.3.2
 	12-Feb-2010 Ilya Dricker (i.dricker@isti.com)
+	* MODIFIED: get_names() to properly parse file names: did not work under Mac OSX: done by Chad
 	* MOVED: evalresp.man to evalresp.1
 	* MOVED: What's New section of evalresp.1 to ChangeLog file
 	* MODIFIED: printing a warning when using a negative delay
 	* MODIFIED: evalresp man pages
 	* REMOVED: evresp_adjust_phase() for 'fap' and 'ap' cases
 	* RENAMED: parse_line() to ev_parse_line() to avoid naming conflict
+	* MODIFIED: searching for RESP files now uses system glob().
 Version 3.3.1
 	29-Jan-2010 Ilya Dricker (i.dricker@isti.com)
 	* NEW: Added a 'fap' response type with the -r option (in addition to the 'ap' and 'cs' types) to write out frequency-amplitude-phase triplets. 

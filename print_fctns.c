@@ -92,11 +92,7 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
           myLabel, chan->calc_delay, chan->applied_corr, chan->estim_delay, chan->sint);
   if (1 == useTotalSensitivityFlag)
     fprintf(stderr, "%s   (reported sensitivity was used to compute response (-ts option enabled))\n", myLabel);
-  if (chan->calc_delay < 0)	  
-    fprintf(stderr, "%s WARNING Negative calc_del=%.5E is likely to be incorrect\n", myLabel, chan->calc_delay);
-  if (chan->estim_delay < 0)
-    fprintf(stderr, "%s WARNING Negative calc_del=%.5E is likely to be incorrect\n", myLabel, chan->estim_delay);
-  
+
 /* then print the parameters for each stage (stage number, type of stage, number
      of coefficients [or number of poles and zeros], gain, and input sample interval
      if it is defined for that stage */
@@ -171,6 +167,12 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
         break;
       case DECIMATION:
         sprintf(tmp_str," SamInt=%E",this_blkt->blkt_info.decimation.sample_int);
+	if (this_blkt->blkt_info.decimation.applied_corr < 0)
+	  fprintf(stderr, "%s WARNING Stage %d: Negative correction_applied=%.5E is likely to be incorrect\n",
+		  myLabel, this_stage->sequence_no, this_blkt->blkt_info.decimation.applied_corr);
+	if (this_blkt->blkt_info.decimation.estim_delay < 0)
+	  fprintf(stderr, "%s WARNING Stage %d: Negative estimated_delay=%.5E is likely to be incorrect\n",
+		  myLabel, this_stage->sequence_no, this_blkt->blkt_info.decimation.estim_delay);
         break;
       case GENERIC:
         sprintf(tmp_str," Generic blockette is ignored; ");
