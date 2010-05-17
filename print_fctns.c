@@ -255,6 +255,7 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
 
   double added_value = 0.0;
   double prev_phase = 0.0;
+  double phas1 = 0.0;
 
 
   resp = first;
@@ -299,8 +300,13 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
             error_exit(OPEN_FILE_ERROR,"print_resp; failed to open file %s", filename);
           }
 	  if (1 == unwrap_flag) {
+          /* 04/27/2010 unwraped phases should only start causal! - Johannes Schweitzer*/
+	  phas1 = 0.0;
+	  if(pha_arr[0] < 0.0 ) { phas1 = 360.0; }
+	  prev_phase = pha_arr[0] + phas1;	    
+	    
 	    for(i = 0; i < num_points; i++) {
-	      pha = pha_arr[i];
+	      pha = pha_arr[i] + phas1;
 	      pha = unwrap_phase(pha, prev_phase, 360.0, &added_value);
 	      pha_arr[i] = pha;
 	      prev_phase = pha;
@@ -340,20 +346,20 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
           if((fptr1 = fopen(filename,"w")) == (FILE *)NULL)
             error_exit(OPEN_FILE_ERROR,"print_resp; failed to open file %s", filename);
 
+          /* 04/27/2010 unwraped phases should only start causal! - Johannes Schweitzer*/
+	  phas1 = 0.0;
+	  if(pha_arr[0] < 0.0 ) { phas1 = 360.0; }
+	  prev_phase = pha_arr[0] + phas1;
+
 	  /* Unwrap phase regardless of compile option */
 	  for(i = 0; i < num_points; i++) {
-            pha = pha_arr[i];
+	    pha = pha_arr[i] + phas1;
 	    pha = unwrap_phase(pha, prev_phase, 360.0, &added_value);
 	    pha_arr[i] = pha;
 	    prev_phase = pha;
-          }
-	  /* Next function attempts to put phase withing -360:360 bounds
-	   * this is requested by AFTAC
-	   */
-	/* Next line is removed at request of Chad */
-	 /* (void) evresp_adjust_phase(pha_arr, num_points, -360.0, 360.0); */
-
-          for(i = 0; i < num_points; i++) {
+	  }           
+          
+	  for(i = 0; i < num_points; i++) {
             fprintf(fptr1,"%.6E  %.6E  %.6E\n",freq_arr[i],amp_arr[i], pha_arr[i]);
           }
           fclose(fptr1);

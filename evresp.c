@@ -257,15 +257,15 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
   char  out_name[MAXLINELEN], locid[LOCIDLEN+1];
   char *locid_ptr, *end_locid_ptr;
   struct matched_files *flst_head = (struct matched_files *)NULL;
-  struct matched_files *flst_ptr, *output_files;
-  struct file_list *lst_ptr, *tmp_ptr, *out_file, *tmp_file;
-  struct response *resp, *next_ptr;
+  struct matched_files *flst_ptr = NULL, *output_files = NULL;
+  struct file_list *lst_ptr = NULL, *tmp_ptr = NULL, *out_file = NULL, *tmp_file = NULL;
+  struct response *resp = NULL, *next_ptr = NULL;
   struct response *prev_ptr = (struct response *)NULL;
   struct response *first_resp = (struct response *)NULL;
-  struct complex *output;
-  struct scn_list *scns;
-  FILE *fptr;
-  double *freqs_orig;  /* for saving the original frequencies */
+  struct complex *output = NULL;
+  struct scn_list *scns = NULL;
+  FILE *fptr = NULL;
+  double *freqs_orig = NULL;  /* for saving the original frequencies */
   int nfreqs_orig;
 
  /* Let's save the original frequencies requested by a user since they can be overwritten */
@@ -584,8 +584,8 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
           }
         }
       }
-
-      free_matched_files(output_files);     /* added 3/28/2006 -- [ET] */
+      if(!stdio_flag)
+	free_matched_files(output_files);     /* added 3/28/2006 -- [ET] */
 
       /* allocated one too many responses */
 
@@ -841,8 +841,8 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
         scn = scns->scn_vec[i];
         goto next_scn;
       }
-
-      free_matched_files(output_files);
+      if(!stdio_flag)
+	free_matched_files(output_files);
 
       /* allocated one too many responses */
 
