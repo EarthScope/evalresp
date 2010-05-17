@@ -47,6 +47,8 @@
     4/03/2007 -- [IGD] Added myLabel global variable which is used to add NSLC
                         labels in evalresp logging if --enable-log-label config
                         option is used
+    5/14/2010 -- [ET]  Version 3.3.3:  Added "#define strcasecmp stricmp"
+                       if Windows.
  */
 
 #ifndef EVRESP_H
@@ -62,7 +64,7 @@
 #ifdef VERSION
 #define REVNUM VERSION
 #else
-#define REVNUM "3.2.40"
+#define REVNUM "3.3.3"
 #endif
 
 #define TRUE 1
@@ -123,12 +125,13 @@ enum error_codes { NON_EXIST_FLD = -2, ILLEGAL_RESP_FORMAT = -5,
 
 /* if Windows compiler then redefine 'complex' to */
 /*  differentiate it from the existing struct,    */
-/*  and rename 'strncasecmp' function:            */
+/*  and rename 'strcasecmp' functions:            */
 #ifdef WIN32
 #ifdef complex
 #undef complex
 #endif
 #define complex evr_complex
+#define strcasecmp stricmp
 #define strncasecmp strnicmp
 #endif
 
