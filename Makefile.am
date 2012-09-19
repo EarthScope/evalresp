@@ -27,3 +27,4 @@ EXTRA_DIST =  evresp.h   regmagic.h  regexp.h  \
         evalresp.ide makefile.bor  makefile.ms evtest.f depcomp evalresp.1
 
 #libevresp_la_LDFLAGS = -version-info 2:3:40
+ACLOCAL_AMFLAGS=-I m4
