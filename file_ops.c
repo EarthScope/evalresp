@@ -13,9 +13,11 @@
     3/28/2006 -- [ET]  Fixed description of "mode" in header comment for
                        'find_files()' function (changed second "zero" to
                        "one").
-    2/25/2010 -- [CT]  Convert 'get_names()' used under non-Windows to use
+    2/25/2010 -- [ET]  Convert 'get_names()' used under non-Windows to use
                        to use the system glob() to find files instead of 
 		       forking a child to run 'ls' in a sub-process.
+    5/30/203 -- [IGD] Modified get_names() a bit more to properly process
+                      cases with environmental variable SEEDRESP
 
  */
 
