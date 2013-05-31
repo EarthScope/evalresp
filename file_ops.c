@@ -151,7 +151,7 @@ struct matched_files *find_files(char *file, struct scn_list *scn_lst, int *mode
         stat(basedir, &buf);
         (void)getcwd(testdir,MAXLINELEN);
         if(S_ISDIR(buf.st_mode) && strcmp(testdir, basedir)) {
-	  memset(new_name,0,MAXLINELEN);
+			 memset(new_name,0,MAXLINELEN);
           sprintf(new_name, " %s/RESP.%s.%s.%s.%s",basedir,
                   scn_ptr->network,scn_ptr->station,scn_ptr->locid,scn_ptr->channel);
           strcat(comp_name,new_name);
@@ -163,14 +163,13 @@ struct matched_files *find_files(char *file, struct scn_list *scn_lst, int *mode
         fflush(stderr);
       }
       else if(!nfiles && !strcmp(scn_ptr->locid,"*")) {
-	memset(comp_name,0,MAXLINELEN);
-        sprintf(comp_name, "./RESP.%s.%s.%s",scn_ptr->network,scn_ptr->station,
-                scn_ptr->channel);
+		  memset(comp_name,0,MAXLINELEN);
+        sprintf(comp_name, "./RESP.%s.%s.%s",scn_ptr->network,scn_ptr->station, scn_ptr->channel);
         if(basedir != NULL) {
           stat(basedir, &buf);
           (void) getcwd(testdir,MAXLINELEN);
           if(S_ISDIR(buf.st_mode) && strcmp(testdir, basedir)) {
-	    memset(new_name,0,MAXLINELEN);
+				memset(new_name,0,MAXLINELEN);
             sprintf(new_name, " %s/RESP.%s.%s.%s",basedir,
                     scn_ptr->network,scn_ptr->station,scn_ptr->channel);
             strcat(comp_name,new_name);
@@ -205,12 +204,31 @@ int get_names(char *in_file, struct matched_files *files) {
   glob_t globs;
   int count;
   int rv;
+  char *first_infile = NULL;
+  char *second_infile = NULL;
   
+  /* IGD 05/30/2013: in_file can contain one token (pathname with possible widlcards)
+	* or two tokens pathname + default pathname pointed by SEEDRESP environmental variable.
+	* When ET modified this function SEEDRESP case was forgoten. I am restoring it adding strtok
+	* function
+	*/
+  
+   first_infile = strtok(in_file, " "); /*IGD 05/30/2013 Assumed to be always present */
+
   /* Search for matching file names */
-  if ( (rv = glob (in_file, 0, NULL, &globs)) ) {
-    if ( rv != GLOB_NOMATCH )
-      perror("glob");
-    return 0;
+  if ( (rv = glob (first_infile, 0, NULL, &globs)) ) {
+	 second_infile = strtok(NULL, " ");
+	 if (!second_infile) {
+		if (GLOB_NOMATCH != rv)
+		  perror("glob");
+		return 0;		
+	 }
+	 if ( (rv = glob (second_infile, 0, NULL, &globs)) ) {
+		if (GLOB_NOMATCH != rv)
+		  perror("glob");
+		return 0;
+	 }
+	 
   }
   
   /* set the head of the 'files' linked list to a pointer to a newly allocated
