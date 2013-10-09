@@ -4,7 +4,7 @@ dnl without this order in this file, automake will be confused!
 dnl
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(evalresp,3.3.3.1)
+AM_INIT_AUTOMAKE(evalresp,3.3.4)
 AC_CONFIG_MACRO_DIR([m4])
 dnl Checks for programs.
 AC_PROG_CC

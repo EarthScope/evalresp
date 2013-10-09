@@ -118,6 +118,10 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
     while(this_blkt) {
       strncpy(tmp_str,"",TMPSTRLEN);
       switch (this_blkt->type) {
+      case POLYNOMIAL:
+        sprintf(tmp_str," POLYNOMIAL     MacLaurin Coeffs= %2d",
+                   this_blkt->blkt_info.polynomial.ncoeffs);
+        break;
       case LAPLACE_PZ:
         sprintf(tmp_str," LAPLACE     A0=%E NZeros= %2d NPoles= %2d",
                   this_blkt->blkt_info.pole_zero.a0,

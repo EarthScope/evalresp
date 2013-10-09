@@ -554,6 +554,9 @@ int check_units(char *line) {
   if (strncasecmp(line, "T -", 3) == 0)
         return(TESLA);
 
+/* IHD 10/03/13 Adding DEGREES CENTIGRADE */
+  if (strncasecmp(line, "C -", 3) == 0)
+        return(CENTIGRADE);
 
   if(string_match(line,"^[CNM]?M/S\\*\\*2|^[CNM]?M/SEC\\*\\*2","-r")) {
     if(first_flag && !strncmp("NM",line,(size_t)2))

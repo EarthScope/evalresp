@@ -258,7 +258,7 @@ char **alloc_char_ptr(int len)
                     for these vectors must be allocated as they are read, since the number of
                     poles and zeros is unknown until the blockette is partially parsed. */
 
-struct blkt *alloc_pz()
+struct blkt *alloc_pz( void )
 {
   struct blkt *blkt_ptr;
 
@@ -281,7 +281,7 @@ struct blkt *alloc_pz()
                  Note:  see alloc_pz for details (like alloc_pz, this does not allocate space for
                         the numerators and denominators, that is left until parse_fir()) */
 
-struct blkt *alloc_coeff()
+struct blkt *alloc_coeff( void )
 {
   struct blkt *blkt_ptr;
 
@@ -300,6 +300,24 @@ struct blkt *alloc_coeff()
 
   return(blkt_ptr);
 }
+
+/* alloc_plynomial:  allocates space for a polynomial Blockette 62 
+ * IGDS 05/31/2013
+ */
+
+struct blkt *alloc_polynomial( void )
+{
+  struct blkt *blkt_ptr;
+
+  if((blkt_ptr = (struct blkt *) calloc(1, sizeof(struct blkt)))
+     == (struct blkt *)NULL) {
+    error_exit(OUT_OF_MEMORY,"alloc_polynomial; calloc() failed for polynomial blkt structure");
+  }
+
+  return(blkt_ptr);
+}
+
+
 
 /* alloc_fir:  allocates space for a fir-type filter 
                Note:  see alloc_pz for details (like alloc_pz, this does not allocate space for

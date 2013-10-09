@@ -1,6 +1,12 @@
-Version 3.3.3.1
+Version 3.3.4
+	09-Oct-2013 Ilya Dricker (i.dricker@isti.com)
+	* ADDED: processing of blockette 62 (which requires input prameter -b62_x
+        * MODIFIED: Redefined processing of DECIMATION as correction applied minus calculated delay
+	* MODIFIED: Redifined processing of DECIMATION with --use-estimated-delay as estimated delay
+	* FIXED: Reverted back to version 2.3.25 the code in function fir_asym_trans()
+	* ADDED: support of temperature units in centigrades C
 	30-May-2013 Ilya Dricker (i.dricker@isti.com)
-	* Fixed get_names() to properly process cases with the environmental variable SEEDRESP set
+	* FIXED: get_names() to properly process cases with the environmental variable SEEDRESP set
 Version 3.3.3 
 	27-Apr-2010 Ilya Dricker (i.dricker@isti.com)
 	* FIXED: bug which prevented using evalresp with -stdio flag 

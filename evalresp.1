@@ -54,16 +54,18 @@ the options.
  \-unwrap              unwrap phase if the output is AP (amplitude\-phase)
  \-ts                  use total sensitivity from stage 0 instead of computed
  \-v                   verbose; list parameters on stdout
+ \-b62_x value         Sample value/volts where we compute response for B62 \- NEW in v. 3.3.4
+
 .fi 
 .sp
 .SH "WHAT IS NEW"
 \fBSee ChangeLog file from evalresp distribution\fR
 .sp
-.SH "SUPPORT OF PRESSURE and MAGNETIC DATA"
+.SH "SUPPORT OF PRESSURE, MAGNETIC DATA AND TEMPERATURE"
 \fIevalresp\fR is able to process responses of
-pressure instruments (in Pascals) and magnetic flux density (in Tesla). Note that the default units 
-are assumed to be Pascals or Tesla respectively, therefore the "\-u" option is ignored while
-processing pressure and magnetic flux density responses.
+pressure instruments (in Pascals), temperature (in C) and magnetic flux density (in Tesla). Note that the default units 
+are assumed to be Pascals, Centigrades, or Tesla respectively, therefore the "\-u" option is ignored while
+processing pressure, temperature, and magnetic flux density responses.
 .sp
 .SH "SEED FILTER COEFFICIENTS AND STAGE DELAY CORRECTION"
 As of July 2007 the SEED standard was clarified to require that digital filter coefficients are to be listed in forward order.  For a mathematical description see the SEED manual. As a reference, minimum\-phase filters (which are asymmetric) should be written with the largest values near the beginning of the coefficient list.  Additionally the sign convention for the estimated delay and correction applied specified in Blockette 57 for a given stage were clarified.  In almost all cases both the estimated delay and correction applied should be positive values and very nearly the same, if not exactly, the same value.
@@ -90,6 +92,35 @@ stage into one large FIR filter in the order that they were scanned.
 Versions 3.2.17 and above support IIR digital filters in coefficients format with a non\-zero phase shift.
 IIR coefficients for a single stage must fit in a single blockette.
 .sp
+.SH "DECIMATION BLOCKETTE"
+UPDATED in VERSION 3.3.4
+
+By default \fBevalresp\fR uses delay is correction_applied (field 9 of B57) minus calculated delay to compute a delay introduced by
+asymmetrical FIR filter (delay is set to 0 for all other cases). There are some historical responses where
+correction_applied value is set incorrectly. In this case a user can run \fBevalresp\fR with \fB\-use\-estimate\-delay\fR
+command line option. In this case delay will be computed as estimated delay (field 7 of B57).
+.fi 
+.SH "NON-LINEAR BLOCKETTE 62"
+NEW in VERSION 3.3.4
+
+In general, we cannot represent Blockette 62 as a Fourier response because it is intrinsically non\-linear.  See, for example, p28 of Bendat & Piersol, where they explicitly say that Fourier analysis is done on the assumption of a linear system (as defined p 26).
+
+But there are two exceptions.
+
+First, the polynomial may be linear (have only two terms, y = a x + b).  In that case, it is (by definition) linear and can be treated as an offset ("a", ignored by the Fourier response) and gain ("b", the slope, independent of frequency).  Note that the amplitude response is always positive (abs(b)); the phase will be zero if the slope of the curve is positive (b>0) and 180 degrees if negative (b<0).
+
+Second, the user may have a signal that uses some part of the (non\-linear) response curve that is sufficiently small (for the accuracy they require) that it can be treated as linearin that region.  In this case we use a tangent (first order Taylor expansion) of the polynomial at the given point (and then treat that as the linear case above).
+
+For a polynomial f(x) = a0 + a1 x + a2 x^2 + ... an x^n the slope at X is f'(X) where f' = a1 + 2 a2 x + 3 a3 x^2 ... n an x^(n\-1).  So the recipe to calculate the gain (b) at a given X is:
+
+   sum(i=1 to n)  i * ai * x^(i\-1)
+
+In \fBevalresp\-3.3.4\fR we require a user to input a particular value x as in the equiation above using command line option \fB\-b62_x\fR. This value is assumed to be in digital counts in B62 is the only blockette of the response or in volts if B62 is the part of the cascade. 
+
+The results of processing (response amplitude) depends on the valued selected by a user.
+
+For responses without B62 command line option \fB\-b62_x\fR is not needed
+ 
 .SH "GENERIC RESPONSE BLOCKETTES"
 Versions 3.2.17 and above support generic response blockette (SEED blockettes 55).
 Generic response blockette is a list of phases and amplitudes computed for the

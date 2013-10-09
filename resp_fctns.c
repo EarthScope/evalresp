@@ -225,6 +225,11 @@ void check_channel(struct channel *chan) {
       j++;
       next_blkt = blkt_ptr->next_blkt;
       switch (blkt_ptr->type) {
+      case POLYNOMIAL: /* IGS 06/01/2013 */
+      /* FIXME: Add checks for the stage */
+        stage_type = POLYNOMIAL_TYPE;
+        filt_blkt = blkt_ptr;
+        break;
       case ANALOG_PZ:
       case LAPLACE_PZ:
         if(stage_type && stage_type != GAIN_TYPE)
@@ -432,7 +437,7 @@ void check_channel(struct channel *chan) {
        position (essentially, this 'disables' the units check for 'gain-only'
        stages */
 	/* IGD in version 3.2.17, there are two new stage types are in the next check */
-    if(stage_type == PZ_TYPE || stage_type == FIR_TYPE ||
+    if(stage_type == PZ_TYPE || stage_type == FIR_TYPE  ||
 	stage_type == IIR_TYPE || stage_type == IIR_COEFFS_TYPE || stage_type == LIST_TYPE) {
       if(prev_stage != (struct stage *)NULL && prev_stage->output_units !=
          stage_ptr->input_units)

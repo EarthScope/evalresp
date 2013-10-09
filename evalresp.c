@@ -23,9 +23,7 @@
 
 
 
-int main(argc, argv)
-int  argc;
-char *argv[];
+int main(int argc, char *argv[])
 {
   char *sta_list, *cha_list, units[MAXFLDLEN], *file, *verbose;
   char *net_code, *locid, *type, rtype[MAXFLDLEN];
@@ -42,6 +40,7 @@ char *argv[];
   char *minfstr, *maxfstr, *numfstr;
   char param_err_msgstr[] = "%s: missing option to argument '%s'";
   int useTotalSensitivityFlag = 0; /* IGD 01/29/10 */
+  double x_for_b62 = 0;  /* IGD 10/03/13 */
   
 
   curr_seq_no = -1;
@@ -68,6 +67,7 @@ char *argv[];
     printf("    '-it tension'          (tension for List blockette interpolation)\n");
     printf("    '-unwrap'              (unwrap phase if the output is AP) \n");
     printf("    '-ts'                  (Use total sensitivity from stage 0 instead of computed)\n");
+    printf("    '-b62_x value          (Sample value/volts where we compute response for B62)\n");
     printf("    '-v'                   (verbose; list");
     printf(" parameters on stdout)\n\n");
     printf("    NOTES:\n");
@@ -102,6 +102,9 @@ char *argv[];
     printf("          that stage.  If both a start and stop stage number are given,\n");
     printf("          any stage between (and including) the start and stop stages\n");
     printf("          will be included in the calculation.\n\n");
+    printf("      (7) -b62_x defines a value in counts or volts where response is computed\n");
+    printf("          This flag only is applied to responses with B62\n");
+
     printf("  EXAMPLES:\n");
     printf("evalresp AAK,ARU,TLY VHZ 1992 21 0.001 10 100 -f ");
     printf("/sd15/EVRESP/NEW/rdseed.out\n");
@@ -133,8 +136,8 @@ char *argv[];
 
   /* initialize the optional arguments */
 
-  /* If user did not define -use-delay option by default it is FALSE */
-  use_delay(FALSE);
+  /* If user did not define -use-estimated-delay option by default it is FALSE */
+  use_estimated_delay(FALSE);
 
   strncpy(units,"",MAXFLDLEN);
   strncpy(rtype,"",MAXFLDLEN);
@@ -147,9 +150,9 @@ char *argv[];
 
   for (i = fswidx; i < argc; i++) {
     if (0 == strcmp(argv[i], "-use-estimated-delay"))
-       use_delay(TRUE);
+       use_estimated_delay(TRUE);
     else if (0 == strcmp(argv[i], "-use-delay"))  /* IGD 04/29/09 Backward compatibility */
-       use_delay(TRUE);
+       use_estimated_delay(TRUE);
     else if(!strcmp(argv[i], "-u")){
       if((++i) < argc && *argv[i] != '-')
         strncpy(units,argv[i],MAXFLDLEN);
@@ -223,6 +226,14 @@ char *argv[];
                    argv[0], type);
       }
     }
+
+    else if(!strcmp(argv[i], "-b62_x")){
+      if((++i) < argc && *argv[i] != '-')
+        x_for_b62 = atof(argv[i]);
+      else
+        error_exit(USAGE_ERROR,param_err_msgstr,argv[0],argv[i-1]);
+	}
+
     else if(!strcmp(argv[i], "-unwrap"))
       unwrap_flag = 1;
     else if(!strcmp(argv[i], "-ts"))
@@ -364,7 +375,7 @@ char *argv[];
   first = evresp_itp(sta_list,cha_list,net_code,locid,datime,units,file,
                      freqs,nfreqs,rtype,verbose,start_stage,stop_stage,
                      stdio_flag,listinterp_out_flag,listinterp_in_flag,
-                     listinterp_tension, useTotalSensitivityFlag);
+                     listinterp_tension, useTotalSensitivityFlag, x_for_b62);
   if (!first)
   {
 	fprintf(stderr, "EVRESP FAILED\n");

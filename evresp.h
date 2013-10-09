@@ -49,6 +49,8 @@
                         option is used
     5/14/2010 -- [ET]  Version 3.3.3:  Added "#define strcasecmp stricmp"
                        if Windows.
+    5/31/2013 -- [IGD] Version 3.3.4: Adding polynomial filter
+    10/02/2013 -- [IGD] Version 3.3.4: Adding DEGREE CENTIGRADE as units
  */
 
 #ifndef EVRESP_H
@@ -85,6 +87,10 @@
 #define MAXLINELEN 256
 #define FIR_NORM_TOL 0.02
 
+#define CORRECTION_APPLIED_FLAG 0
+#define ESTIMATED_DELAY_FLAG 1
+#define CALC_DELAY_FLAG 2
+
 
 /* enumeration representing the types of units encountered (Note: if default,
    then the response is just given in input units to output units, no
@@ -92,20 +98,21 @@
 
 /* IGD 02/03/01 New unit pressure  added */
 /* IGD 08/21/06 New units TESLA added */
-enum units { UNDEF_UNITS, DIS, VEL, ACC, COUNTS, VOLTS, DEFAULT, PRESSURE, TESLA
+/* IGD 10/03/13 New units  CENTIGRADE added */
+enum units { UNDEF_UNITS, DIS, VEL, ACC, COUNTS, VOLTS, DEFAULT, PRESSURE, TESLA, CENTIGRADE
 };
 
 /*  enumeration representing the types of filters encountered  */
 
 enum filt_types { UNDEF_FILT, LAPLACE_PZ, ANALOG_PZ, IIR_PZ,
                   FIR_SYM_1, FIR_SYM_2, FIR_ASYM, LIST, GENERIC, DECIMATION,
-                  GAIN, REFERENCE, FIR_COEFFS, IIR_COEFFS 
+                  GAIN, REFERENCE, FIR_COEFFS, IIR_COEFFS, POLYNOMIAL 
 };
 
 /* enumeration representing the types of stages that are recognized */
 /* IGD 05/15/02 Added GENERIC_TYPE */
 enum stage_types { UNDEF_STAGE, PZ_TYPE, IIR_TYPE, FIR_TYPE, 
-		GAIN_TYPE, LIST_TYPE, IIR_COEFFS_TYPE, GENERIC_TYPE
+		GAIN_TYPE, LIST_TYPE, IIR_COEFFS_TYPE, GENERIC_TYPE, POLYNOMIAL_TYPE
 };
 
 /* enumeration representing the types of error codes possible */
@@ -199,6 +206,20 @@ struct coeffType {             /* a Response (Coefficients) blockette */
   double h0; /*IGD this field is new v 3.2.17 */
 };
 
+struct polynomialType {        /* a Response (Coefficients) blockette */
+  unsigned char approximation_type;     /* (blockettes [42] or [62]) IGD 05/31/2013 */
+  unsigned char frequency_units;
+  double lower_freq_bound;
+  double upper_freq_bound;
+  double lower_approx_bound;
+  double upper_approx_bound;
+  double max_abs_error;
+  int ncoeffs;
+  double *coeffs;
+  double *coeffs_err;
+};
+
+
 struct firType {             /* a FIR Response blockette */
   int ncoeffs;               /* (blockettes [41] or [61])*/
   double *coeffs;
@@ -255,6 +276,7 @@ struct blkt {
     struct decimationType decimation;
     struct gainType gain;
     struct referType reference;
+    struct polynomialType polynomial;
   } blkt_info;
   struct blkt *next_blkt;
 };
@@ -388,7 +410,9 @@ struct blkt *alloc_gain(void);
 struct blkt *alloc_list(void);
 struct blkt *alloc_generic(void);
 struct blkt *alloc_deci(void);
+struct blkt *alloc_polynomial(void);  /*IGD 05/31/2013 */
 struct stage *alloc_stage(void);
+
 
 /* routines to free up space associated with dynamically allocated
    structure members */
@@ -432,6 +456,7 @@ int parse_deci(FILE *, struct blkt *);                       /* decimation */
 int parse_gain(FILE *, struct blkt *);                       /* gain/sensitivity */
 void parse_fir(FILE *, struct blkt *, struct stage *);       /* fir */
 void parse_ref(FILE *, struct blkt *, struct stage *);       /* response reference */
+void parse_polynomial(FILE *, struct blkt *, struct stage *);       /* polynomial B42 B62 IGD 05/31/2013 */
 
 /* remove trailing white space from (if last arg is 'a') and add null character to
    end of (if last arg is 'a' or 'e') input (FORTRAN) string */
@@ -449,7 +474,7 @@ void check_sym(struct blkt *, struct channel *);
 
 /*void calc_resp(struct channel *, double *, int, struct complex *,char *, int, int);*/
 void calc_resp(struct channel *chan, double *freq, int nfreqs, struct complex *output,
-          char *out_units, int start_stage, int stop_stage, int useTotalSensitivityFlag);
+          char *out_units, int start_stage, int stop_stage, int useTotalSensitivityFlag, double x_for_b62);
 void convert_to_units(int, char *, struct complex *, double);
 void analog_trans(struct blkt *, double, struct complex *);
 void fir_sym_trans(struct blkt *, double, struct complex *);
@@ -459,6 +484,7 @@ void calc_time_shift(double, double, struct complex *);
 void zmul(struct complex *, struct complex *);
 void norm_resp(struct channel *, int, int);
 void calc_list(struct blkt *, int , struct complex *); /*IGD i.dricker@isti.com for version 3.2.17 */
+void calc_polynomial(struct blkt *, int , struct complex *, double); /*IGD 06/01/2013 */
 void iir_trans(struct blkt *, double , struct complex *); /* IGD for version 3.2.17 */
 int is_time (const char * );
 
@@ -480,10 +506,10 @@ void print_resp_itp(double *, int, struct response *, char *, int,
    frequencies requested by the user */
 
 struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
-                        double *, int, char *, char *, int, int, int, int);
+                        double *, int, char *, char *, int, int, int, int, double);
 struct response *evresp_itp(char *, char *, char *, char *, char *, char *,
                             char *, double *, int, char *, char *, int,
-                            int, int, int, int, double, int);
+                            int, int, int, int, double, int, double);
 
  /* Interpolates amplitude and phase values from the set of frequencies
     in the List blockette to the requested set of frequencies. */
@@ -532,6 +558,6 @@ extern jmp_buf jump_buffer;
 double unwrap_phase(double phase, double prev_phase, double range,
                                                        double *added_value);
 double wrap_phase(double phase, double range, double *added_value);
-int use_delay(int flag);
+int use_estimated_delay(int flag);
 #endif
 

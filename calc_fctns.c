@@ -13,7 +13,15 @@
 
 
 /*------------------------------------------------------------------------------------*/
-/* LOG:                                                                               */                  
+/* LOG:
+/* Version 3.3.4:   IGD 10/03/2013                                                                              */            /* We add double sample_for_b62 into a list of input parameters for calc_resp()       */
+/* Generally, B62 describes a non-linear response which cannot be properly            */
+/* represented into a spectral domain.                                                */
+/* We only can do it in a special case ehrn MacLaurin polynomial si linear,           */
+/*               y = a + bx                                                           */
+/* For other cases we compute spectra for a value of x explicitely provided by a user */
+/* This value is x_for_b62 and this is what we now add to calc_resp() interface       */
+/*  ------------------------------------------------------------------------          */ 
 /* Version 3.2.20:  iir_pz_trans()   modified IGD 09/20/01                            */
 /* Starting with version 3.2.17, evalresp supports IIR type blockettes 54             */
 /* Starting with version 3.2.17, evalresp supports blockette 55 of SEED               */
@@ -32,7 +40,6 @@
 /* I. Dricker, ISTI, 06/22/00 for version 2.3.17 of evalresp                          */
 /*------------------------------------------------------------------------------------*/
 
-/* Notice: this version is modified by I.Dricker, ISTI i.dricker@isti.com 06/22/00 */
 #include "./evresp.h"
 
 #include <stdlib.h>
@@ -41,151 +48,173 @@
 /*=================================================================
 *                   Calculate response
 *=================================================================*/
+
+
+/* IGD 10/04/13 Reformatted */
 void calc_resp(struct channel *chan, double *freq, int nfreqs, struct complex *output,
-          char *out_units, int start_stage, int stop_stage, int useTotalSensitivityFlag) {
-  struct blkt *blkt_ptr;
-  struct stage *stage_ptr;
-  int i, j, units_code, eval_flag = 0, nc = 0, sym_fir = 0;
-  double w;
-  int matching_stages = 0, has_stage0 = 0, deciStageEvaluated = 0;
-  struct complex of, val;
-  double corr_applied, estim_delay, delay;
+          char *out_units, int start_stage, int stop_stage, int useTotalSensitivityFlag, 
+          double x_for_b62) 
+{
+	struct blkt *blkt_ptr;
+	struct stage *stage_ptr;
+	int i, j, units_code, eval_flag = 0, nc = 0, sym_fir = 0;
+	double w;
+	int matching_stages = 0, has_stage0 = 0, deciStageEvaluated = 0;
+	struct complex of, val;
+	double corr_applied, calc_delay, estim_delay, delay;
   
 /*  if(start_stage && start_stage > chan->nstages) {
     error_return(NO_STAGE_MATCHED, "calc_resp: %s start_stage=%d, highest stage found=%d)",
                  "No Matching Stages Found (requested",start_stage, chan->nstages);
   } */
 
-  /* for each frequency */
+	/* for each frequency */
 
-  for(i = 0; i < nfreqs; i++) {
-    w = twoPi * freq[i];
-    val.real = 1.0; val.imag =  0.0;
+	for(i = 0; i < nfreqs; i++) 
+	{
+		w = twoPi * freq[i];
+		val.real = 1.0; val.imag =  0.0;
 
-    /* loop through the stages and filters for each stage, calculating
-       the response for each frequency for all stages */
+		/* loop through the stages and filters for each stage, calculating
+		       the response for each frequency for all stages */
 
-    stage_ptr = chan->first_stage;
-    units_code = stage_ptr->input_units;
-    for(j = 0; j < chan->nstages; j++) {
-      nc = 0;
-      sym_fir = 0;
-      deciStageEvaluated = 0;
-      if(!stage_ptr->sequence_no)
-        has_stage0 = 1;
-      if(start_stage >= 0 && stop_stage && (stage_ptr->sequence_no < start_stage ||
-         stage_ptr->sequence_no > stop_stage)) {
-        stage_ptr = stage_ptr->next_stage;
-        continue;
-      }
-      else if(start_stage >= 0 && !stop_stage && stage_ptr->sequence_no != start_stage) {
-        stage_ptr = stage_ptr->next_stage;
-        continue;
-      }
-      matching_stages++;
-      blkt_ptr = stage_ptr->first_blkt;
-      while(blkt_ptr) {
-        eval_flag = 0;
-        switch(blkt_ptr->type) {
-        case ANALOG_PZ:
-        case LAPLACE_PZ:
-          analog_trans(blkt_ptr, freq[i], &of);
-          eval_flag = 1;
-          break;
-        case IIR_PZ:
-          if(blkt_ptr->blkt_info.pole_zero.nzeros || blkt_ptr->blkt_info.pole_zero.npoles) {
-            iir_pz_trans(blkt_ptr, w, &of);
-            eval_flag = 1;
-          }
-          break;
-        case FIR_SYM_1: 
-        case FIR_SYM_2:
-	  if(blkt_ptr->type == FIR_SYM_1)
-	    nc = (double) blkt_ptr->blkt_info.fir.ncoeffs*2 - 1;
-	  else if(blkt_ptr->type == FIR_SYM_2)
-	    nc = (double) blkt_ptr->blkt_info.fir.ncoeffs*2;
-          if(blkt_ptr->blkt_info.fir.ncoeffs) {
-            fir_sym_trans(blkt_ptr, w, &of);
-	    sym_fir = 1;
-            eval_flag = 1;
-          }
-          break;
-        case FIR_ASYM:
-	  nc = (double) blkt_ptr->blkt_info.fir.ncoeffs;
-          if(blkt_ptr->blkt_info.fir.ncoeffs) {
-            fir_asym_trans(blkt_ptr, w, &of);
-	    sym_fir = -1;
-            eval_flag = 1;
-          }
-          break;
-        case DECIMATION:
-	  if(nc != 0) {
-	    /* IGD 08/27/08 Use estimated delay instead of calculated */
-	    estim_delay = (double) blkt_ptr->blkt_info.decimation.estim_delay;
-	    corr_applied = blkt_ptr->blkt_info.decimation.applied_corr;
-	    
-	    /* Asymmetric FIR coefficients require a delay correction */
-	    if ( sym_fir == -1 ) {
-	      if (TRUE == use_delay(QUERY_DELAY))
-		delay = estim_delay;
-	      else
-		delay = corr_applied;
-	    }
-	    /* Otherwise delay has already been handled in fir_sym_trans() */
-	    else {
-	      delay = 0;
-	    }
-	    
-	    calc_time_shift (delay, w, &of);
-	    
-	    eval_flag = 1;
-	  }
-          break;
-	case LIST: /* This option is added in version 2.3.17 I.Dricker*/
-		calc_list (blkt_ptr, i, &of); /*compute real and imag parts for the i-th ampl and phase */
-		eval_flag = 1;
-		break;
-	case IIR_COEFFS: /* This option is added in version 2.3.17 I.Dricker*/
-		iir_trans(blkt_ptr, w, &of);
-		eval_flag = 1;
-		break;
-        default:
-          break;
-        }
-        if(eval_flag)
-          zmul(&val, &of);
-        blkt_ptr = blkt_ptr->next_blkt;
-      }
-      stage_ptr = stage_ptr->next_stage;
-    }
+		stage_ptr = chan->first_stage;
+		units_code = stage_ptr->input_units;
+		for(j = 0; j < chan->nstages; j++) 
+		{
+			nc = 0;
+			sym_fir = 0;
+			deciStageEvaluated = 0;
+			if(!stage_ptr->sequence_no)
+				has_stage0 = 1;
+			if(start_stage >= 0 && stop_stage && (stage_ptr->sequence_no < start_stage ||
+			stage_ptr->sequence_no > stop_stage)) 
+			{
+				stage_ptr = stage_ptr->next_stage;
+				continue;
+			}
+			else if(start_stage >= 0 && !stop_stage && stage_ptr->sequence_no != start_stage) 
+			{
+				stage_ptr = stage_ptr->next_stage;
+				continue;
+			}
+			matching_stages++;
+			blkt_ptr = stage_ptr->first_blkt;
+			while(blkt_ptr) 
+			{
+				eval_flag = 0;
+				switch(blkt_ptr->type) 
+				{
+					case ANALOG_PZ:
+ 					case LAPLACE_PZ:
+						analog_trans(blkt_ptr, freq[i], &of);
+						eval_flag = 1;
+						break;
+					case IIR_PZ:
+						if(blkt_ptr->blkt_info.pole_zero.nzeros || blkt_ptr->blkt_info.pole_zero.npoles) 
+						{
+							iir_pz_trans(blkt_ptr, w, &of);
+							eval_flag = 1;
+						}
+						break;
+					case FIR_SYM_1: 
+					case FIR_SYM_2:
+						if(blkt_ptr->type == FIR_SYM_1)
+							nc = (double) blkt_ptr->blkt_info.fir.ncoeffs*2 - 1;
+						else if(blkt_ptr->type == FIR_SYM_2)
+							nc = (double) blkt_ptr->blkt_info.fir.ncoeffs*2;
+						if(blkt_ptr->blkt_info.fir.ncoeffs) 
+						{
+							fir_sym_trans(blkt_ptr, w, &of);
+							sym_fir = 1;
+							eval_flag = 1;
+						}
+						break;
+					case FIR_ASYM:
+						nc = (double) blkt_ptr->blkt_info.fir.ncoeffs;
+						if(blkt_ptr->blkt_info.fir.ncoeffs) 
+						{
+							fir_asym_trans(blkt_ptr, w, &of);
+							sym_fir = -1;
+							eval_flag = 1;
+						}
+						break;
+					case DECIMATION:         /* IGD 10/05/13 Logic updated to include calc_delay on demand */
+						if(blkt_ptr->type != IIR_PZ && nc != 0) 
+						{
+							/* IGD 08/27/08 Use estimated delay instead of calculated */
+							estim_delay = (double) blkt_ptr->blkt_info.decimation.estim_delay;
+							corr_applied = blkt_ptr->blkt_info.decimation.applied_corr;
+							calc_delay = ((nc-1)/2.0) * blkt_ptr->blkt_info.decimation.sample_int;
+							/* Asymmetric FIR coefficients require a delay correction */
+							if ( sym_fir == -1 ) 
+							{
+								if (TRUE == use_estimated_delay(QUERY_DELAY))
+									delay = estim_delay;
+								else
+									delay = corr_applied - calc_delay;
+							}
+							/* Otherwise delay has already been handled in fir_sym_trans() */
+							else 
+							{
+								delay = 0;
+							}
+							calc_time_shift (delay, w, &of);
+							eval_flag = 1;
+						}
+						break;
+					case LIST: /* This option is added in version 2.3.17 I.Dricker*/
+						calc_list (blkt_ptr, i, &of); /*compute real and imag parts for the i-th ampl and phase */
+						eval_flag = 1;
+						break;
+					case POLYNOMIAL: /* IGD 06/01/2013*/
+						calc_polynomial (blkt_ptr, i, &of, x_for_b62); 
+						eval_flag = 1;
+						break;
+					case IIR_COEFFS: /* This option is added in version 2.3.17 I.Dricker*/
+						iir_trans(blkt_ptr, w, &of);
+						eval_flag = 1;
+						break;
+					default:
+						break;
+				}
+				if(eval_flag)
+					zmul(&val, &of);
+				blkt_ptr = blkt_ptr->next_blkt;
+			}
+			stage_ptr = stage_ptr->next_stage;
+		}
 
-    /* if no matching stages were found, then report the error */
+		/* if no matching stages were found, then report the error */
 
-    if(!matching_stages && !has_stage0) {
-      error_return(NO_STAGE_MATCHED, "calc_resp: %s start_stage=%d, highest stage found=%d)",
-                   "No Matching Stages Found (requested",start_stage, chan->nstages);
-    }
-    else if(!matching_stages) {
-      error_return(NO_STAGE_MATCHED, "calc_resp: %s start_stage=%d, highest stage found=%d)",
-                   "No Matching Stages Found (requested",start_stage, chan->nstages-1);
-    }
+		if(!matching_stages && !has_stage0) 
+		{
+			error_return(NO_STAGE_MATCHED, "calc_resp: %s start_stage=%d, highest stage found=%d)",
+			                   "No Matching Stages Found (requested",start_stage, chan->nstages);
+		}
+		else if(!matching_stages) 
+		{
+			error_return(NO_STAGE_MATCHED, "calc_resp: %s start_stage=%d, highest stage found=%d)",
+			                   "No Matching Stages Found (requested",start_stage, chan->nstages-1);
+		}
 
-    /*  Write output for freq[i] in output[i] (note: unitScaleFact is a global variable
-        set by the 'check_units' function that is used to convert to 'MKS' units when the
-        the response was given as a displacement, velocity, or acceleration in units other
-        than meters) */
-    if (0 == useTotalSensitivityFlag) {
-      output[i].real = val.real * chan->calc_sensit * unitScaleFact;
-      output[i].imag = val.imag * chan->calc_sensit * unitScaleFact;
-    }
-    else  {
-      output[i].real = val.real * chan->sensit * unitScaleFact;
-      output[i].imag = val.imag * chan->sensit * unitScaleFact;
-    }
+		/*  Write output for freq[i] in output[i] (note: unitScaleFact is a global variable
+		        set by the 'check_units' function that is used to convert to 'MKS' units when the
+		        the response was given as a displacement, velocity, or acceleration in units other
+		        than meters) */
+		if (0 == useTotalSensitivityFlag) 
+		{
+			output[i].real = val.real * chan->calc_sensit * unitScaleFact;
+			output[i].imag = val.imag * chan->calc_sensit * unitScaleFact;
+		}
+		else  
+		{
+			output[i].real = val.real * chan->sensit * unitScaleFact;
+			output[i].imag = val.imag * chan->sensit * unitScaleFact;
+		}
 
-    convert_to_units(units_code, out_units, &output[i], w);
-  }
-
+		convert_to_units(units_code, out_units, &output[i], w);
+	}
 }
 
 /*==================================================================
@@ -317,6 +346,36 @@ void iir_trans(struct blkt *blkt_ptr, double wint, struct complex *out) {
   out->imag = amp * sin(phase) * h0;
 
  }
+
+
+/*================================================================
+ *	Response of blockette 62 (Polynomial)
+ * Function introduced in version 3.3.4 of evalresp
+ * Ilya Dricker ISTI (.dricker@isti.com) 06/01/13
+ *===============================================================*/
+void calc_polynomial (struct blkt *blkt_ptr, int i, struct complex *out, double x_for_b62)	{
+  double  amp = 0, phase = 0;
+  double halfcirc = 180;
+  int j;
+
+  if (x_for_b62 <= 0)
+	 error_return(IMPROP_DATA_TYPE,"Cannot compute B62 response for negative or zero input: %f", x_for_b62);
+
+
+ // Compute a first derivate of MacLaurin polynomial
+  for (j = 1; j< blkt_ptr->blkt_info.polynomial.ncoeffs; j++)
+     amp += blkt_ptr->blkt_info.polynomial.coeffs[j] * j * pow(x_for_b62, j-1) ;
+
+  if (amp >= 0)
+	phase = 0;
+  else 
+	phase = Pi;
+
+  out->real = amp * cos(phase);
+  out->imag = amp * sin(phase);
+
+}
+
 
 
 /*================================================================
@@ -452,7 +511,8 @@ void fir_asym_trans(struct blkt *blkt_ptr, double w, struct complex *out) {
   }
 
   mod = sqrt(R*R + I*I);
-  pha = atan2(I,R);
+/* IGD The last member is reterned from evalresp-3.2.35 after Gabi Laske report) */
+  pha = atan2(I,R)  + (w*(double)((na-1)/2.0)*sint); 
   R = mod * cos(pha);
   I = mod * sin(pha);
   out->real = R * h0;
@@ -539,7 +599,10 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
       A single stage response must specify a stage gain, a stage zero
       sensitivity, or both.  If the gain has been set, simply drop through
       to the next test. If the gain is zero, set the gain equal to the
-      sensitivity and then go to the next test. */
+      sensitivity and then go to the next test. 
+      (IGD 06/01/2013) Above notes are not applicable to polynomial stage which does 
+      not require gain or sensitivity
+  */
 
   if (chan->nstages == 1 ) {			/* has no stage 0, does it have a gain??? */
     stage_ptr = chan->first_stage;
@@ -548,7 +611,7 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
       last_fil = fil;
       fil = last_fil->next_blkt;
     }
-    if (fil == (struct blkt *)NULL) {
+    if (fil == (struct blkt *)NULL && last_fil->type != POLYNOMIAL) {
       error_return(ILLEGAL_RESP_FORMAT, "norm_resp; no stage gain defined, zero sensitivity");
     }
   }
@@ -559,7 +622,7 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
       last_fil = fil;
       fil = last_fil->next_blkt;
     }
-    if (fil == (struct blkt *)NULL) {
+    if (fil == (struct blkt *)NULL && last_fil->type != POLYNOMIAL) {
       if (chan->sensit == 0.0) {
         error_return(ILLEGAL_RESP_FORMAT, "norm_resp; no stage gain defined, zero sensitivity");
       }
@@ -669,6 +732,7 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
       case FIR_SYM_1:
       case FIR_SYM_2:
       case FIR_ASYM:
+      case POLYNOMIAL: /*IGD 06/01/0213 */
       case IIR_COEFFS:   /* IGD New type from v 3.2.17 */
         main_filt = fil;
         main_type = fil->type;

@@ -790,6 +790,126 @@ int parse_gain(FILE *fptr, struct blkt *blkt_ptr) {
 
 }
 
+/* parse_polynomial:  parses the RESP file blockettes for polynomial filters (in a Blockette [62] or [42]).
+               Errors cause the program to terminate.  The blockette and field numbers are
+               checked as the file is parsed.
+               The lines must contain evalresp-3.0 style prefixes */
+
+void parse_polynomial (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
+  int i, blkt_typ;
+  int blkt_read, check_fld;
+  int ncoeffs;
+  char field[MAXFLDLEN], line[MAXLINELEN];
+
+
+  /* first get the stage sequence number (from the input line) */
+
+  if(FirstField != 3 && FirstField != 5) {
+    error_return(PARSE_ERROR,"parse_polynomial; %s%s%s%2.2d","(return_field) fld ",
+                 "number does not match expected value\n\tfld_xpt=F03 or F05",
+                 ", fld_found=F", FirstField);
+  }
+
+  if(FirstField == 3)
+    blkt_read = 62;
+  else
+    blkt_read = 42;
+
+
+  parse_field(FirstLine,0,field);
+  if(strlen(field) != 1) {
+    error_return(PARSE_ERROR,"parse_polynomial; parsing (Polynomial), illegal filter type ('%s')",
+                 field);
+  }
+  blkt_typ = *field;
+  switch (blkt_typ) {
+  case 'P':
+    blkt_ptr->type = POLYNOMIAL;
+    break;
+  default:
+    error_return(PARSE_ERROR, "parse_polynomial; parsing (Polynomial), unexpected filter type ('%c')",
+                 *field);
+  }
+
+check_fld = FirstField+1;
+
+  if(check_fld == 4) {
+    get_field(fptr,field,blkt_read,check_fld++,":",0);
+    stage_ptr->sequence_no = get_int(field);
+    curr_seq_no = stage_ptr->sequence_no;
+  }
+
+  /* next should be the units (in first, then out) */
+
+  get_line(fptr,line,blkt_read,check_fld++,":");
+  stage_ptr->input_units = check_units(line);
+
+  get_line(fptr,line,blkt_read,check_fld++,":");
+  stage_ptr->output_units = check_units(line);
+
+  /* Polynomial Approximation Type */
+  get_field(fptr,field,blkt_read,check_fld++,":",0);
+  blkt_ptr->blkt_info.polynomial.approximation_type = field[0];
+
+  /* Valid Frequency Units */
+  get_field(fptr,field,blkt_read,check_fld++,":",0);
+  blkt_ptr->blkt_info.polynomial.frequency_units = field[0];
+
+  /* Lower Valid Frequency Bound */
+  get_field(fptr,field,blkt_read,check_fld++,":",0);
+  blkt_ptr->blkt_info.polynomial.lower_freq_bound = get_double(field);
+
+  /* Upper Valid Frequency Bound */
+  get_field(fptr,field,blkt_read,check_fld++,":",0);
+  blkt_ptr->blkt_info.polynomial.upper_freq_bound = get_double(field);
+
+
+  /* Lower Bound of Approximation */
+  get_field(fptr,field,blkt_read,check_fld++,":",0);
+  blkt_ptr->blkt_info.polynomial.lower_approx_bound = get_double(field);
+
+  /* Upper Bound of Approximation */
+  get_field(fptr,field,blkt_read,check_fld++,":",0);
+  blkt_ptr->blkt_info.polynomial.upper_approx_bound = get_double(field);
+
+  /* Maximum Absolute Error */
+  get_field(fptr,field,blkt_read,check_fld++,":",0);
+  blkt_ptr->blkt_info.polynomial.max_abs_error = get_double(field);
+
+  /* the number of coefficients */
+
+  get_field(fptr,field,blkt_read,check_fld,":",0);
+  ncoeffs = get_int(field);
+  blkt_ptr->blkt_info.polynomial.ncoeffs = ncoeffs;
+
+  /* remember to allocate enough space for the number of coeffs */
+
+  blkt_ptr->blkt_info.polynomial.coeffs = calloc(ncoeffs, sizeof(double));
+  blkt_ptr->blkt_info.polynomial.coeffs_err = calloc(ncoeffs, sizeof(double));
+
+  check_fld += 1;
+
+  /* get the coefficients and their errors */
+
+
+  for(i = 0; i < ncoeffs; i++) {
+    get_line(fptr,line,blkt_read,check_fld," ");
+    parse_field(line,1,field);
+    if(!is_real(field))
+      error_return(PARSE_ERROR,"polynomial: %s%s%s",
+                   "coeffs must be real numbers (found '",field,"')");
+    blkt_ptr->blkt_info.polynomial.coeffs[i] = atof(field);
+    parse_field(line,2,field);
+    if(!is_real(field))
+      error_return(PARSE_ERROR,"polynomial: %s%s%s",
+                   "coeffs errors must be real numbers (found '",field,"')");
+    blkt_ptr->blkt_info.polynomial.coeffs_err[i] = atof(field);
+  }
+}
+
+
+
+
 /* parse_fir:  parses the RESP file blockettes for FIR filters (in a Blockette [61] or [41]).
                Errors cause the program to terminate.  The blockette and field numbers are
                checked as the file is parsed. As with parse_pz(), for this routine to work,
@@ -1095,17 +1215,22 @@ int parse_channel(FILE *fptr, struct channel* chan) {
       blkt_ptr = alloc_gain();
       curr_seq_no = parse_gain(fptr, blkt_ptr);
       break;
-    case 61:
-      blkt_ptr = alloc_fir();
-      parse_fir(fptr, blkt_ptr, tmp_stage);
-      curr_seq_no = tmp_stage->sequence_no;
-      break;
     case 60:  /* never see a blockette [41], [43]-[48] without a [60], parse_ref handles these */
       blkt_ptr = alloc_ref();
       tmp_stage2 = alloc_stage();
       parse_ref(fptr, blkt_ptr, tmp_stage2);
       curr_seq_no = tmp_stage2->sequence_no;
       tmp_stage2->first_blkt = blkt_ptr;
+      break;
+    case 61:
+      blkt_ptr = alloc_fir();
+      parse_fir(fptr, blkt_ptr, tmp_stage);
+      curr_seq_no = tmp_stage->sequence_no;
+      break;
+    case 62:
+      blkt_ptr = alloc_polynomial();
+      parse_polynomial(fptr, blkt_ptr, tmp_stage);
+      curr_seq_no = tmp_stage->sequence_no;
       break;
     default:
       /*
