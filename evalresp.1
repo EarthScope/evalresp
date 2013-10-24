@@ -17,7 +17,7 @@
 .\" Also: rick@iris.washington.edu
 .\" Phone: (206) 547-0393
 .\" 
-.TH "EVALRESP" "V3.3.3" "03-May-2010" "" "IRIS programs"
+.TH "EVALRESP" "V3.3.4" "24-OCt-2013" "" "IRIS programs"
 .SH "NAME"
 \fIevalresp\fR \- evaluate response information and output to ASCII files using \fIrdseed V4.16\fR and above RESP files.
 .SH "SYNOPSIS"
@@ -95,10 +95,16 @@ IIR coefficients for a single stage must fit in a single blockette.
 .SH "DECIMATION BLOCKETTE"
 UPDATED in VERSION 3.3.4
 
-By default \fBevalresp\fR uses delay is correction_applied (field 9 of B57) minus calculated delay to compute a delay introduced by
-asymmetrical FIR filter (delay is set to 0 for all other cases). There are some historical responses where
-correction_applied value is set incorrectly. In this case a user can run \fBevalresp\fR with \fB\-use\-estimate\-delay\fR
-command line option. In this case delay will be computed as estimated delay (field 7 of B57).
+Without additional command\-line option \fB\-use\-estimate\-delay\fR \fBevalresp\fR computes a delay introduced by
+an asymmetrical FIR filter as correction_applied (Field 8 of B57) minus calculated delay.
+
+A user can choose to run \fBevalresp\fR with \fB\-use\-estimate\-delay\fR command line option.In this case
+estimated delay (field 7 of B57) will be used as a value of the delay for asymmetrical FIR filter phase computation.
+
+A user is advised to select \fB\-use\-estimate\-delay\fR option only if it is known that correction_applied (Field 8 of B57)
+is not properly set in the RESP file.
+
+For all other filter types \fBevalresp\fR uses delay of 0 while processing decimation blockettes. 
 .fi 
 .SH "NON-LINEAR BLOCKETTE 62"
 NEW in VERSION 3.3.4
@@ -109,13 +115,13 @@ But there are two exceptions.
 
 First, the polynomial may be linear (have only two terms, y = a x + b).  In that case, it is (by definition) linear and can be treated as an offset ("a", ignored by the Fourier response) and gain ("b", the slope, independent of frequency).  Note that the amplitude response is always positive (abs(b)); the phase will be zero if the slope of the curve is positive (b>0) and 180 degrees if negative (b<0).
 
-Second, the user may have a signal that uses some part of the (non\-linear) response curve that is sufficiently small (for the accuracy they require) that it can be treated as linearin that region.  In this case we use a tangent (first order Taylor expansion) of the polynomial at the given point (and then treat that as the linear case above).
+Second, the user may have a signal that uses some part of the (non\-linear) response curve that is sufficiently small (for the accuracy they require) that it can be treated as linear in that region.  In this case we use a tangent (first order Taylor expansion) of the polynomial at the given point (and then treat that as the linear case above).
 
 For a polynomial f(x) = a0 + a1 x + a2 x^2 + ... an x^n the slope at X is f'(X) where f' = a1 + 2 a2 x + 3 a3 x^2 ... n an x^(n\-1).  So the recipe to calculate the gain (b) at a given X is:
 
    sum(i=1 to n)  i * ai * x^(i\-1)
 
-In \fBevalresp\-3.3.4\fR we require a user to input a particular value x as in the equiation above using command line option \fB\-b62_x\fR. This value is assumed to be in digital counts in B62 is the only blockette of the response or in volts if B62 is the part of the cascade. 
+In \fBevalresp\-3.3.4\fR we require a user to input a particular value x as in the equation above using command line option \fB\-b62_x\fR. This value is assumed to be in digital counts in B62 is the only blockette of the response or in volts if B62 is the part of the cascade.
 
 The results of processing (response amplitude) depends on the valued selected by a user.
 

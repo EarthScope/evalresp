@@ -724,7 +724,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
 
 						/* IGD 10/03/13 Add code preventing a user from defining output units as DIS and ACC if
 						the input units are CENTIGRADE */
-						if (strncmp (this_channel.first_units, "T -", 3) == 0)  
+						if (strncmp (this_channel.first_units, "C -", 3) == 0)  
 						{
 							if (strcmp(units, "VEL") != 0)  
 							{

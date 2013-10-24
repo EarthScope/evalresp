@@ -30,6 +30,9 @@ commands from the 'evalresp' directory:
 ./configure
 make
 
+To install in default location:
+sudo make install
+
 The configure script should set up a Makefile that is appropriate
 for your available resources.  Once that Makefile is built, simply
 typing "make" will build the "libevresp.a" library and build an
