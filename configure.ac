@@ -68,6 +68,7 @@ if test "x$with_check" = "xyes"; then
   PKG_CHECK_MODULES([CHECK], [check >= 0.9.4])
 fi
 
+dnl allow alternative locations for libxml2
 LIBXML2_DIR="/usr/include/libxml2"
 AC_ARG_WITH(
   [libxml2],

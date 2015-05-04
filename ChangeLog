@@ -2,6 +2,14 @@
 Version 4.0.0
 
   ??-May-2015 Andrew Cooke (a.cooke@isti.com)
+  
+  * ADDED: Optional support for unit tests (--enable-check)
+  
+  * ADDED: The xml2resp command.
+
+  * MODIFIED: Help text (-h).
+  
+  * MODIFIED: Removed tabs, standardised indents.
 
   * MODIFIED: Documentation and directory layout.
 
