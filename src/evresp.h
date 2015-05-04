@@ -99,75 +99,75 @@
 /* IGD 08/21/06 New units TESLA added */
 /* IGD 10/03/13 New units  CENTIGRADE added */
 enum units {
-	UNDEF_UNITS,
-	DIS,
-	VEL,
-	ACC,
-	COUNTS,
-	VOLTS,
-	DEFAULT,
-	PRESSURE,
-	TESLA,
-	CENTIGRADE
+    UNDEF_UNITS,
+    DIS,
+    VEL,
+    ACC,
+    COUNTS,
+    VOLTS,
+    DEFAULT,
+    PRESSURE,
+    TESLA,
+    CENTIGRADE
 };
 
 /*  enumeration representing the types of filters encountered  */
 
 enum filt_types {
-	UNDEF_FILT,
-	LAPLACE_PZ,
-	ANALOG_PZ,
-	IIR_PZ,
-	FIR_SYM_1,
-	FIR_SYM_2,
-	FIR_ASYM,
-	LIST,
-	GENERIC,
-	DECIMATION,
-	GAIN,
-	REFERENCE,
-	FIR_COEFFS,
-	IIR_COEFFS,
-	POLYNOMIAL
+    UNDEF_FILT,
+    LAPLACE_PZ,
+    ANALOG_PZ,
+    IIR_PZ,
+    FIR_SYM_1,
+    FIR_SYM_2,
+    FIR_ASYM,
+    LIST,
+    GENERIC,
+    DECIMATION,
+    GAIN,
+    REFERENCE,
+    FIR_COEFFS,
+    IIR_COEFFS,
+    POLYNOMIAL
 };
 
 /* enumeration representing the types of stages that are recognized */
 /* IGD 05/15/02 Added GENERIC_TYPE */
 enum stage_types {
-	UNDEF_STAGE,
-	PZ_TYPE,
-	IIR_TYPE,
-	FIR_TYPE,
-	GAIN_TYPE,
-	LIST_TYPE,
-	IIR_COEFFS_TYPE,
-	GENERIC_TYPE,
-	POLYNOMIAL_TYPE
+    UNDEF_STAGE,
+    PZ_TYPE,
+    IIR_TYPE,
+    FIR_TYPE,
+    GAIN_TYPE,
+    LIST_TYPE,
+    IIR_COEFFS_TYPE,
+    GENERIC_TYPE,
+    POLYNOMIAL_TYPE
 };
 
 /* enumeration representing the types of error codes possible */
 
 enum error_codes {
-	NON_EXIST_FLD = -2,
-	ILLEGAL_RESP_FORMAT = -5,
-	PARSE_ERROR = -4,
-	UNDEF_PREFIX = -3,
-	UNDEF_SEPSTR = -6,
-	OUT_OF_MEMORY = -1,
-	UNRECOG_FILTYPE = -7,
-	UNEXPECTED_EOF = -8,
-	ARRAY_BOUNDS_EXCEEDED = -9,
-	OPEN_FILE_ERROR = 2,
-	RE_COMP_FAILED = 3,
-	MERGE_ERROR = 4,
-	SWAP_FAILED = 5,
-	USAGE_ERROR = 6,
-	BAD_OUT_UNITS = 7,
-	IMPROP_DATA_TYPE = -10,
-	UNSUPPORT_FILTYPE = -11,
-	ILLEGAL_FILT_SPEC = -12,
-	NO_STAGE_MATCHED = -13,
-	UNRECOG_UNITS = -14
+    NON_EXIST_FLD = -2,
+    ILLEGAL_RESP_FORMAT = -5,
+    PARSE_ERROR = -4,
+    UNDEF_PREFIX = -3,
+    UNDEF_SEPSTR = -6,
+    OUT_OF_MEMORY = -1,
+    UNRECOG_FILTYPE = -7,
+    UNEXPECTED_EOF = -8,
+    ARRAY_BOUNDS_EXCEEDED = -9,
+    OPEN_FILE_ERROR = 2,
+    RE_COMP_FAILED = 3,
+    MERGE_ERROR = 4,
+    SWAP_FAILED = 5,
+    USAGE_ERROR = 6,
+    BAD_OUT_UNITS = 7,
+    IMPROP_DATA_TYPE = -10,
+    UNSUPPORT_FILTYPE = -11,
+    ILLEGAL_FILT_SPEC = -12,
+    NO_STAGE_MATCHED = -13,
+    UNRECOG_UNITS = -14
 };
 
 /* define structures for the compound data types used in evalesp */
@@ -185,118 +185,118 @@ enum error_codes {
 #endif
 
 struct complex {
-	double real;
-	double imag;
+    double real;
+    double imag;
 };
 
 struct string_array {
-	int nstrings;
-	char **strings;
+    int nstrings;
+    char **strings;
 };
 
 struct scn {
-	char *station;
-	char *network;
-	char *locid;
-	char *channel;
-	int found;
+    char *station;
+    char *network;
+    char *locid;
+    char *channel;
+    int found;
 };
 
 struct response {
-	char station[STALEN];
-	char network[NETLEN];
-	char locid[LOCIDLEN];
-	char channel[CHALEN];
-	struct complex *rvec;
-	int nfreqs; /*Add by I.Dricker IGD to  support blockette 55 */
-	double *freqs; /*Add by I.Dricker IGD to  support blockette 55 */
-	struct response *next;
+    char station[STALEN];
+    char network[NETLEN];
+    char locid[LOCIDLEN];
+    char channel[CHALEN];
+    struct complex *rvec;
+    int nfreqs; /*Add by I.Dricker IGD to  support blockette 55 */
+    double *freqs; /*Add by I.Dricker IGD to  support blockette 55 */
+    struct response *next;
 };
 
 struct file_list {
-	char *name;
-	struct file_list *next_file;
+    char *name;
+    struct file_list *next_file;
 };
 
 struct matched_files {
-	int nfiles;
-	struct file_list *first_list;
-	struct matched_files *ptr_next;
+    int nfiles;
+    struct file_list *first_list;
+    struct matched_files *ptr_next;
 };
 
 struct scn_list {
-	int nscn;
-	struct scn **scn_vec;
+    int nscn;
+    struct scn **scn_vec;
 };
 
 /* define structures for the various types of filters defined in seed */
 
 struct pole_zeroType { /* a Response (Poles & Zeros) blockette */
-	int nzeros; /* (blockettes [43] or [53]) */
-	int npoles;
-	double a0;
-	double a0_freq;
-	struct complex *zeros;
-	struct complex *poles;
+    int nzeros; /* (blockettes [43] or [53]) */
+    int npoles;
+    double a0;
+    double a0_freq;
+    struct complex *zeros;
+    struct complex *poles;
 };
 
 struct coeffType { /* a Response (Coefficients) blockette */
-	int nnumer; /* (blockettes [44] or [54]) */
-	int ndenom;
-	double *numer;
-	double *denom;
-	double h0; /*IGD this field is new v 3.2.17 */
+    int nnumer; /* (blockettes [44] or [54]) */
+    int ndenom;
+    double *numer;
+    double *denom;
+    double h0; /*IGD this field is new v 3.2.17 */
 };
 
 struct polynomialType { /* a Response (Coefficients) blockette */
-	unsigned char approximation_type; /* (blockettes [42] or [62]) IGD 05/31/2013 */
-	unsigned char frequency_units;
-	double lower_freq_bound;
-	double upper_freq_bound;
-	double lower_approx_bound;
-	double upper_approx_bound;
-	double max_abs_error;
-	int ncoeffs;
-	double *coeffs;
-	double *coeffs_err;
+    unsigned char approximation_type; /* (blockettes [42] or [62]) IGD 05/31/2013 */
+    unsigned char frequency_units;
+    double lower_freq_bound;
+    double upper_freq_bound;
+    double lower_approx_bound;
+    double upper_approx_bound;
+    double max_abs_error;
+    int ncoeffs;
+    double *coeffs;
+    double *coeffs_err;
 };
 
 struct firType { /* a FIR Response blockette */
-	int ncoeffs; /* (blockettes [41] or [61])*/
-	double *coeffs;
-	double h0;
+    int ncoeffs; /* (blockettes [41] or [61])*/
+    double *coeffs;
+    double h0;
 };
 
 struct listType { /* a Response (List) blockette */
-	int nresp; /* (blockettes [45] or [55]) */
-	double *freq;
-	double *amp;
-	double *phase;
+    int nresp; /* (blockettes [45] or [55]) */
+    double *freq;
+    double *amp;
+    double *phase;
 };
 
 struct genericType { /* a Generic Response blockette */
-	int ncorners; /* (blockettes [46] or [56]) */
-	double *corner_freq;
-	double *corner_slope;
+    int ncorners; /* (blockettes [46] or [56]) */
+    double *corner_freq;
+    double *corner_slope;
 };
 
 struct decimationType { /* a Decimation blockette */
-	double sample_int; /* (blockettes [47] or [57]) */
-	int deci_fact;
-	int deci_offset;
-	double estim_delay;
-	double applied_corr;
+    double sample_int; /* (blockettes [47] or [57]) */
+    int deci_fact;
+    int deci_offset;
+    double estim_delay;
+    double applied_corr;
 };
 
 struct gainType { /* a Channel Sensitivity/Gain blockette */
-	double gain; /* (blockettes [48] or [58]) */
-	double gain_freq;
+    double gain; /* (blockettes [48] or [58]) */
+    double gain_freq;
 };
 
 struct referType { /* a Response Reference blockette */
-	int num_stages;
-	int stage_num;
-	int num_responses;
+    int num_stages;
+    int stage_num;
+    int num_responses;
 };
 
 /* define a blkt as a stucture containing the blockette type, a union
@@ -307,19 +307,19 @@ struct referType { /* a Response Reference blockette */
  position */
 
 struct blkt {
-	int type;
-	union {
-		struct pole_zeroType pole_zero;
-		struct coeffType coeff;
-		struct firType fir;
-		struct listType list;
-		struct genericType generic;
-		struct decimationType decimation;
-		struct gainType gain;
-		struct referType reference;
-		struct polynomialType polynomial;
-	} blkt_info;
-	struct blkt *next_blkt;
+    int type;
+    union {
+        struct pole_zeroType pole_zero;
+        struct coeffType coeff;
+        struct firType fir;
+        struct listType list;
+        struct genericType generic;
+        struct decimationType decimation;
+        struct gainType gain;
+        struct referType reference;
+        struct polynomialType polynomial;
+    } blkt_info;
+    struct blkt *next_blkt;
 };
 
 /* define a stage as a structure that contains the sequence number, the
@@ -329,11 +329,11 @@ struct blkt {
  in the 'next_stage' position */
 
 struct stage {
-	int sequence_no;
-	int input_units;
-	int output_units;
-	struct blkt *first_blkt;
-	struct stage *next_stage;
+    int sequence_no;
+    int input_units;
+    int output_units;
+    struct blkt *first_blkt;
+    struct stage *next_stage;
 };
 
 /* and define a channel as a stucture containing a pointer to the head of a
@@ -358,33 +358,33 @@ struct stage {
  */
 
 struct channel {
-	char staname[STALEN];
-	char network[NETLEN];
-	char locid[LOCIDLEN];
-	char chaname[CHALEN];
-	char beg_t[DATIMLEN];
-	char end_t[DATIMLEN];
-	char first_units[MAXLINELEN];
-	char last_units[MAXLINELEN];
-	double sensit;
-	double sensfreq;
-	double calc_sensit;
-	double calc_delay;
-	double estim_delay;
-	double applied_corr;
-	double sint;
-	int nstages;
-	struct stage *first_stage;
+    char staname[STALEN];
+    char network[NETLEN];
+    char locid[LOCIDLEN];
+    char chaname[CHALEN];
+    char beg_t[DATIMLEN];
+    char end_t[DATIMLEN];
+    char first_units[MAXLINELEN];
+    char last_units[MAXLINELEN];
+    double sensit;
+    double sensfreq;
+    double calc_sensit;
+    double calc_delay;
+    double estim_delay;
+    double applied_corr;
+    double sint;
+    int nstages;
+    struct stage *first_stage;
 };
 
 /* structure used for time comparisons */
 
 struct dateTime {
-	int year;
-	int jday;
-	int hour;
-	int min;
-	float sec;
+    int year;
+    int jday;
+    int hour;
+    int min;
+    float sec;
 };
 
 /* IGD 2007/02/27 */
@@ -514,8 +514,8 @@ void check_sym(struct blkt *, struct channel *);
 
 /*void calc_resp(struct channel *, double *, int, struct complex *,char *, int, int);*/
 void calc_resp(struct channel *chan, double *freq, int nfreqs,
-		struct complex *output, char *out_units, int start_stage,
-		int stop_stage, int useTotalSensitivityFlag, double x_for_b62);
+        struct complex *output, char *out_units, int start_stage,
+        int stop_stage, int useTotalSensitivityFlag, double x_for_b62);
 void convert_to_units(int, char *, struct complex *, double);
 void analog_trans(struct blkt *, double, struct complex *);
 void fir_sym_trans(struct blkt *, double, struct complex *);
@@ -541,22 +541,22 @@ void print_chan(struct channel *, int, int, int, int, int, int);
 
 void print_resp(double *, int, struct response *, char *, int);
 void print_resp_itp(double *, int, struct response *, char *, int, int, double,
-		int);
+        int);
 
 /* evaluate responses for user requested station/channel/network tuple at the
  frequencies requested by the user */
 
 struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
-		double *, int, char *, char *, int, int, int, int, double);
+        double *, int, char *, char *, int, int, int, int, double);
 struct response *evresp_itp(char *, char *, char *, char *, char *, char *,
-		char *, double *, int, char *, char *, int, int, int, int, int, double,
-		int, double);
+        char *, double *, int, char *, char *, int, int, int, int, int, double,
+        int, double);
 
 /* Interpolates amplitude and phase values from the set of frequencies
  in the List blockette to the requested set of frequencies. */
 void interpolate_list_blockette(double **freq, double **amp, double **phase,
-		int *p_number_points, double *req_freq_arr, int req_num_freqs,
-		double tension);
+        int *p_number_points, double *req_freq_arr, int req_num_freqs,
+        double tension);
 
 extern char SEEDUNITS[][UNITS_STR_LEN];
 
@@ -596,7 +596,7 @@ extern int curr_seq_no;
 extern jmp_buf jump_buffer;
 
 double unwrap_phase(double phase, double prev_phase, double range,
-		double *added_value);
+        double *added_value);
 double wrap_phase(double phase, double range, double *added_value);
 int use_estimated_delay(int flag);
 #endif

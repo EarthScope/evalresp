@@ -2,7 +2,7 @@
 
 /*
    02/12/2005 -- [IGD] Moved parse_line() to ev_parse_line() to avoid name 
-                       conflict	with external libraries
+                       conflict    with external libraries
    10/21/2005 -- [ET]  Modified so as not to require characters after
                        'units' specifiers like "M" and "COUNTS";
                        improved error message generated when no
@@ -215,7 +215,7 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
     }
 
     /*if(!line)
-	 error_return(UNEXPECTED_EOF, "get_line; no more non-comment lines found in file");*/
+     error_return(UNEXPECTED_EOF, "get_line; no more non-comment lines found in file");*/
 
     test = parse_pref(&lcl_blkt, &lcl_fld, line);
     if (!test) {
@@ -230,22 +230,22 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
         /* try to parse the next line */
         return get_line(fptr, return_line, blkt_no, fld_no, sep);
         /*
-		 removed by SBH 2004.079
-		 if(fld_no != lcl_fld) {
-		 error_return(PARSE_ERROR,"get_line; %s%s%3.3d%s%3.3d%s%2.2d%s%2.2d","blkt",
-		 " and fld numbers do not match expected values\n\tblkt_xpt=B",
-		 blkt_no, ", blkt_found=B", lcl_blkt, "; fld_xpt=F", fld_no,
-		 ", fld_found=F", lcl_fld);
-		 }
+         removed by SBH 2004.079
+         if(fld_no != lcl_fld) {
+         error_return(PARSE_ERROR,"get_line; %s%s%3.3d%s%3.3d%s%2.2d%s%2.2d","blkt",
+         " and fld numbers do not match expected values\n\tblkt_xpt=B",
+         blkt_no, ", blkt_found=B", lcl_blkt, "; fld_xpt=F", fld_no,
+         ", fld_found=F", lcl_fld);
+         }
          */
     } else if (fld_no != lcl_fld) {
         /* try to parse the next line */
         return get_line(fptr, return_line, blkt_no, fld_no, sep);
         /*
-		 removed by SBH 2004.079
-		 error_return(PARSE_ERROR,"get_line (parsing blockette [%3.3d]); %s%2.2d%s%2.2d",
-		 lcl_blkt, "unexpected fld number\n\tfld_xpt=F", fld_no,
-		 ", fld_found=F", lcl_fld, lcl_blkt);
+         removed by SBH 2004.079
+         error_return(PARSE_ERROR,"get_line (parsing blockette [%3.3d]); %s%2.2d%s%2.2d",
+         lcl_blkt, "unexpected fld number\n\tfld_xpt=F", fld_no,
+         ", fld_found=F", lcl_fld, lcl_blkt);
          */
     }
 
@@ -461,10 +461,10 @@ int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line) {
     }
 
     /*
-	 while(test != EOF && (test == 10) {
-	 fgets(line, MAXLINELEN, fptr);
-	 test = fgetc(fptr);
-	 }
+     while(test != EOF && (test == 10) {
+     fgets(line, MAXLINELEN, fptr);
+     test = fgetc(fptr);
+     }
      */
 
     if (test == EOF) {
@@ -666,7 +666,7 @@ int is_int(const char *test) {
     char ipattern[MAXLINELEN];
 
     /* first check to see if is an integer prefixed by a plus or minus.  If not
-	 then check to see if is simply an integer */
+     then check to see if is simply an integer */
 
     strncpy(ipattern, "^[-+]?[0-9]+$", MAXLINELEN);
     return (string_match(test, ipattern, "-r"));
@@ -691,7 +691,7 @@ int is_time(const char *test) {
     char fpattern[MAXLINELEN];
 
     /* time strings must be in the format 'hh:mm:ss[.#####]', so more than 14
-	 characters is an error (too many digits) */
+     characters is an error (too many digits) */
 
     if (is_int(test) && atoi(test) < 24)
         return (1);
