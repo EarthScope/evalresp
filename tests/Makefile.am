@@ -1,4 +1,6 @@
 
+SUBDIRS = java
+
 TESTS = check_read_xml check_convert
 
 check_PROGRAMS = check_read_xml check_convert
