@@ -7,6 +7,7 @@ import java.util.List;
 import java.io.FileInputStream;
 import java.io.File;
 
+import static java.lang.System.in;
 import static java.lang.System.out;
 
 /**
@@ -21,7 +22,7 @@ public class Convert {
 	ServiceUtil serviceManager;
 	serviceManager = ServiceUtil.getInstance();
 	StationService stationService = serviceManager.getStationService();
-	List<Network> list = stationService.load(new FileInputStream(new File("../data/station.xml")));
+	List<Network> list = stationService.load(in);
 	RespUtil.write(out, list);
     }
 

@@ -7,6 +7,6 @@ if [ ! -f IRIS-WS-2.0.12.jar ]; then
 fi
 
 javac -cp IRIS-WS-2.0.12.jar Convert.java
-java -cp IRIS-WS-2.0.12.jar:. Convert > ../data/response
+java -cp IRIS-WS-2.0.12.jar:. Convert < ../data/station-1.xml > ../data/response-1
 
 
