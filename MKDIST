@@ -1,12 +1,8 @@
+
 To make dist:
 
-automake -a
-aclocal; autoheader; autoconf; automake
-./configure
-make
-make dist
+  autoreconf -fi
+  ./configure
+  make
+  make dist
 
--------------------------------------------------
-
-Ignore "required file `./ltmain.sh' not found" message
-generated after "automake -a".

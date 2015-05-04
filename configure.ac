@@ -3,6 +3,7 @@ AC_INIT([evalresp], [4.0.0], [andrewcooke@isti.com])
 AM_INIT_AUTOMAKE([foreign])
 AM_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile doc/Makefile])
 
 dnl The check library for tests
