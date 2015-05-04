@@ -8,5 +8,6 @@ fi
 
 javac -cp IRIS-WS-2.0.12.jar Convert.java
 java -cp IRIS-WS-2.0.12.jar:. Convert < ../data/station-1.xml > ../data/response-1
+java -cp IRIS-WS-2.0.12.jar:. Convert < ../data/station-2.xml > ../data/response-2
 
 
