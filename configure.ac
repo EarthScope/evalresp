@@ -11,9 +11,9 @@ AC_PROG_CC
 AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 
-dnl select dynamic and/or static libraries here
-AC_ENABLE_SHARED(yes)
-AC_ENABLE_STATIC(yes)
+dnl To select dynamic and/or static libraries use
+dnl --enable-shared or --disable-shared
+dnl --enable-static or --disable-static
 
 dnl Checks for libraries.
 AC_CHECK_LIB(m, fabs)
@@ -72,5 +72,21 @@ if test "x$with_check" = "xyes"; then
   dnl The check library for tests
   PKG_CHECK_MODULES([CHECK], [check >= 0.9.4])
 fi
+
+LIBXML2_DIR="/usr/include/libxml2"
+AC_ARG_WITH(
+  [libxml2],
+  AS_HELP_STRING(
+    [--with-libxml2=DIR],
+    [libxml2 header location @<:@default DIR=/usr/include/libxml2@:>@]),
+  [LIBXML2_DIR="{withval}"],
+  [])
+AC_CHECK_HEADER(
+  ${LIBXML2_DIR}/libxml/xmlexports.h,
+  [echo "Found xmlexports.h includes in ${LIBXML2_DIR}/libxml/, good"],
+  [echo "================================================="
+   echo "libxml2 library not found; Install libxml2: yum install libxml2"
+   exit -1])
+CPPFLAGS="$CPPFLAGS -I ${LIBXML2_DIR}"
 
 AC_OUTPUT
