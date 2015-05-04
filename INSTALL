@@ -9,8 +9,7 @@ these steps:
    evalresp distribution.
 
 2. Run './configure' to construct a 'Makefile' appropriate for your
-   site ('./configure' uses the 'Makefile.in' file to construct the
-   'Makefile' for your site).  Use the following procedure
+   site.  Use the following procedure
 
    Go into the "evalresp" directory 
  
@@ -37,6 +36,10 @@ these steps:
      --enable-debug            Enable debug
      --enable-optimization     Enable optimization
      --enable-strict           Enable strict mode
+     --enable-check            Enable check (unit tests)
+
+     --disable-static          Disable static library generation
+     --disbale-dynamic         Disable dynamic library generation
 
 3. Compile the program "evalresp".
  
