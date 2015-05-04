@@ -380,7 +380,7 @@ static int print_fir(x2r_log *log, FILE *out, const char *net, const char *stn,
         if ((status = line(log, out, "#              i  FIR Coefficient"))) goto exit;
         for (i = 0; i < fir->n_numerator_coefficients; ++i) {
             x2r_numerator_coefficient nc = fir->numerator_coefficient[i];
-            if ((status = line(log, out, "B061F09%6d  %+9.5E", nc.i, nc.value))) goto exit;
+            if ((status = line(log, out, "B061F09%6d  %+9.5E", i, nc.value))) goto exit;
         }
     }
 

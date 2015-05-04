@@ -224,10 +224,18 @@ exit:
 
 
 /** Read an attribute value as a char*. */
-static int char_attribute(x2r_log *log, xmlNodePtr node, const char *name, char **value) {
+static int char_attribute(x2r_log *log, xmlNodePtr node, const char *name,
+        const char *deflt, char **value) {
+
     xmlChar *attr;
+
     if (!(attr = xmlGetProp(node, BAD_CAST name))) {
-        return x2r_error(log, X2R_ERR_XML, "Could not find %s in %s", name, node->name);
+        if (deflt) {
+            *value = strdup(deflt);
+            return X2R_OK;
+        } else {
+            return x2r_error(log, X2R_ERR_XML, "Could not find %s in %s", name, node->name);
+        }
     } else {
         *value = (char*) attr;
         return X2R_OK;
@@ -241,7 +249,7 @@ static int datetime_attribute(x2r_log *log, xmlNodePtr node, const char *name, s
     int status = X2R_OK;
     char *value = NULL, *end;
 
-    if ((status = char_attribute(log, node, name, &value))) goto exit;
+    if ((status = char_attribute(log, node, name, NULL, &value))) goto exit;
     if (!(end = strptime(value, "%FT%T", tm))) {  // NULL on error
         status = x2r_error(log, X2R_ERR_XML, "Could not parse %s", value);
         goto exit;
@@ -258,12 +266,13 @@ exit:
 
 
 /** Read an attribute value as an int. */
-static int int_attribute(x2r_log *log, xmlNodePtr node, const char *name, int *value) {
+static int int_attribute(x2r_log *log, xmlNodePtr node, const char *name,
+        const char *deflt, int *value) {
 
     int status = X2R_OK;
     char *text = NULL, *end;
 
-    if ((status = char_attribute(log, node, name, &text))) goto exit;
+    if ((status = char_attribute(log, node, name, deflt, &text))) goto exit;
     *value = strtol(text, &end, 10);
     if (*end) {  // should point to end of string
         status = x2r_error(log, X2R_ERR_XML, "Did not parse all of %s", text);
@@ -282,7 +291,7 @@ static int double_attribute(x2r_log *log, xmlNodePtr node, const char *name, dou
     int status = X2R_OK;
     char *text = NULL, *end;
 
-    if ((status = char_attribute(log, node, name, &text))) goto exit;
+    if ((status = char_attribute(log, node, name, NULL, &text))) goto exit;
     *value = strtod(text, &end);
     if (*end) {  // should point to end of string
         status = x2r_error(log, X2R_ERR_XML, "Did not parse all of %s", text);
@@ -322,7 +331,7 @@ static int parse_pole_zero(x2r_log *log, xmlDocPtr doc, xmlNodePtr node,
 
     x2r_debug(log, "Parsing pole_zero");
 
-    if ((status = int_attribute(log, node, "number", &pole_zero->number))) goto exit;
+    if ((status = int_attribute(log, node, "number", NULL, &pole_zero->number))) goto exit;
     if ((status = parse_float(log, doc, node, "./stn:Real", &pole_zero->real))) goto exit;
     if ((status = parse_float(log, doc, node, "./stn:Imaginary", &pole_zero->imaginary))) goto exit;
 
@@ -339,7 +348,7 @@ static int parse_coefficient(x2r_log *log, xmlDocPtr doc, xmlNodePtr node,
 
     x2r_debug(log, "Parsing coefficient");
 
-    if ((status = int_attribute(log, node, "number", &coefficient->number))) goto exit;
+    if ((status = int_attribute(log, node, "number", NULL, &coefficient->number))) goto exit;
     if ((status = parse_float(log, doc, node, ".", &coefficient->value))) goto exit;
 
 exit:
@@ -373,7 +382,10 @@ static int parse_numerator_coefficient(x2r_log *log, xmlDocPtr doc, xmlNodePtr n
 
     x2r_debug(log, "Parsing numerator_coefficient");
 
-    if ((status = int_attribute(log, node, "i", &numerator_coefficient->i))) goto exit;
+    // this (i) is not used in IRIS-WS or here - on output we provide a new index.
+    // furthermore, the statoin.xml examples seem to have a 'number' attribute
+    if ((status = int_attribute(log, node, "i", "0",
+            &numerator_coefficient->i))) goto exit;
     if ((status = double_element(log, doc, node, ".", NULL,
             &numerator_coefficient->value))) goto exit;
 
@@ -582,7 +594,8 @@ static int parse_fir(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, x2r_fir *fir)
     x2r_debug(log, "Parsing fir");
 
     if ((status = char_element(log, doc, node, "./stn:Symmetry", NULL, &fir->symmetry))) goto exit;
-    if ((status = char_attribute(log, node, "name", &fir->name))) goto exit;
+    // 'null'[sic] - see station-2.xml and response-2 in tests
+    if ((status = char_attribute(log, node, "name", "null", &fir->name))) goto exit;
     if ((status = parse_units(log, doc, node, "./stn:InputUnits", &fir->input_units))) goto exit;
     if ((status = parse_units(log, doc, node, "./stn:OutputUnits", &fir->output_units))) goto exit;
 
@@ -733,7 +746,7 @@ static int parse_stage(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, x2r_stage *
 
     x2r_debug(log, "Parsing stage");
 
-    if ((status = int_attribute(log, node, "number", &stage->number))) goto exit;
+    if ((status = int_attribute(log, node, "number", NULL, &stage->number))) goto exit;
 
     if ((status = find_xpath(log, doc, &poles_zeros, &found, node, "./stn:PolesZeros"))) goto exit;
     if (found) {
@@ -924,8 +937,8 @@ static int parse_channel(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, x2r_chann
 
     x2r_debug(log, "Parsing channel");
 
-    if ((status = char_attribute(log, node, "code", &channel->code))) goto exit;
-    if ((status = char_attribute(log, node, "locationCode", &channel->location_code))) goto exit;
+    if ((status = char_attribute(log, node, "code", NULL, &channel->code))) goto exit;
+    if ((status = char_attribute(log, node, "locationCode", NULL, &channel->location_code))) goto exit;
     if ((status = datetime_attribute(log, node, "startDate", &channel->start_date))) goto exit;
     if ((status = datetime_attribute(log, node, "endDate", &channel->end_date))) goto exit;
     if ((status = find_xpath(log, doc, &response, NULL, node, "./stn:Response"))) goto exit;
@@ -964,7 +977,7 @@ static int parse_station(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, x2r_stati
         goto exit;
     }
 
-    if ((status = char_attribute(log, node, "code", &station->code))) goto exit;
+    if ((status = char_attribute(log, node, "code", NULL, &station->code))) goto exit;
 
     for (i = 0; i < station->n_channels; ++i) {
         if ((status = parse_channel(log, doc, stations->nodesetval->nodeTab[i],
@@ -1007,7 +1020,7 @@ static int parse_network(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, x2r_netwo
         goto exit;
     }
 
-    if ((status = char_attribute(log, node, "code", &network->code))) goto exit;
+    if ((status = char_attribute(log, node, "code", NULL, &network->code))) goto exit;
 
     for (i = 0; i < network->n_stations; ++i) {
         if ((status = parse_station(log, doc, stations->nodesetval->nodeTab[i],

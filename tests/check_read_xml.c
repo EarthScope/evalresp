@@ -11,7 +11,7 @@
 START_TEST (test_read_xml)
 {
     FILE *in;
-    fail_if(!(in = fopen("./data/station.xml", "r")));
+    fail_if(!(in = fopen("./data/station-1.xml", "r")));
     x2r_log *log;
     fail_if(x2r_alloc_log(X2R_DEBUG, stderr, &log));
     x2r_fdsn_station_xml *root = NULL;
