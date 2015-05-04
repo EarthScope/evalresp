@@ -15,4 +15,4 @@ include_HEADERS = evresp.h regmagic.h regexp.h evr_spline.h
 EXTRA_DIST = evresp.h regmagic.h regexp.h
 
 distclean-local:
-	rm Makefile.in *~
+	rm -f Makefile.in *~

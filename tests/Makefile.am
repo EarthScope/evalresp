@@ -1,4 +1,4 @@
 
 distclean-local:
-	rm Makefile.in *~
+	rm -f Makefile.in *~
 
