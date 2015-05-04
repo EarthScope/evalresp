@@ -35,12 +35,8 @@
 /*
  - evr_regsub - perform substitutions after a regexp match
  */
-void
-evr_regsub(prog, source, dest)
-regexp *prog;
-char *source;
-char *dest;
-{
+void evr_regsub(prog, source, dest)
+	regexp *prog;char *source;char *dest; {
 	register char *src;
 	register char *dst;
 	register char c;
@@ -66,13 +62,13 @@ char *dest;
 		else
 			no = -1;
 
-		if (no < 0)	/* Ordinary character. */
+		if (no < 0) /* Ordinary character. */
 			*dst++ = c;
 		else if (prog->startp[no] != NULL && prog->endp[no] != NULL) {
 			len = prog->endp[no] - prog->startp[no];
 			(void) strncpy(dst, prog->startp[no], len);
 			dst += len;
-			if (*(dst-1) == '\0') {		/* strncpy hit NUL. */
+			if (*(dst - 1) == '\0') { /* strncpy hit NUL. */
 				evr_regerror("damaged match string");
 				return;
 			}

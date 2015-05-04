@@ -29,171 +29,180 @@
  */
 
 void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt) {
-  int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;
-  double *amp1, *amp2, *phase1, *phase2, *freq1, *freq2;
-  struct blkt *tmp_blkt;
+	int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;
+	double *amp1, *amp2, *phase1, *phase2, *freq1, *freq2;
+	struct blkt *tmp_blkt;
 
-  tmp_blkt = *second_blkt;
-  switch(first_blkt->type) {
-  case LIST:
- 	   break;
-  default:
-    error_return(MERGE_ERROR, "merge_lists; filter types must be LIST");
-  }
+	tmp_blkt = *second_blkt;
+	switch (first_blkt->type) {
+	case LIST:
+		break;
+	default:
+		error_return(MERGE_ERROR, "merge_lists; filter types must be LIST");
+	}
 
-  if(first_blkt->type != tmp_blkt->type)
-    error_return(MERGE_ERROR, "merge_lists; both filters must have the same type");
+	if (first_blkt->type != tmp_blkt->type)
+		error_return(MERGE_ERROR,
+				"merge_lists; both filters must have the same type");
 
-  /* set up some local pointers and values */
+	/* set up some local pointers and values */
 
-  ncoeffs1 = first_blkt->blkt_info.list.nresp;
-  
-  amp1 = first_blkt->blkt_info.list.amp;
-  phase1 = first_blkt->blkt_info.list.phase;
-  freq1 = first_blkt->blkt_info.list.freq;
+	ncoeffs1 = first_blkt->blkt_info.list.nresp;
 
-  ncoeffs2 = tmp_blkt->blkt_info.list.nresp;
-  amp2 = tmp_blkt->blkt_info.list.amp;
-  phase2 = tmp_blkt->blkt_info.list.phase;
-  freq2 = tmp_blkt->blkt_info.list.freq;
+	amp1 = first_blkt->blkt_info.list.amp;
+	phase1 = first_blkt->blkt_info.list.phase;
+	freq1 = first_blkt->blkt_info.list.freq;
 
-  new_ncoeffs = ncoeffs1 + ncoeffs2;
+	ncoeffs2 = tmp_blkt->blkt_info.list.nresp;
+	amp2 = tmp_blkt->blkt_info.list.amp;
+	phase2 = tmp_blkt->blkt_info.list.phase;
+	freq2 = tmp_blkt->blkt_info.list.freq;
 
-  /* attempt to reallocate space for the new (combined) coefficients vector */
+	new_ncoeffs = ncoeffs1 + ncoeffs2;
 
-  if((amp1 = (double *)realloc(amp1,new_ncoeffs*sizeof(double))) == (double *)NULL)
-    error_exit(OUT_OF_MEMORY, "merge_lists; insufficient memory for combined amplitudes");
+	/* attempt to reallocate space for the new (combined) coefficients vector */
 
-  if((phase1 = (double *)realloc(phase1,new_ncoeffs*sizeof(double))) == (double *)NULL)
-    error_exit(OUT_OF_MEMORY, "merge_lists; insufficient memory for combined phases");
+	if ((amp1 = (double *) realloc(amp1, new_ncoeffs * sizeof(double)))
+			== (double *) NULL)
+		error_exit(OUT_OF_MEMORY,
+				"merge_lists; insufficient memory for combined amplitudes");
 
-  if((freq1 = (double *)realloc(freq1,new_ncoeffs*sizeof(double))) == (double *)NULL)
-    error_exit(OUT_OF_MEMORY, "merge_lists; insufficient memory for combined frequencies");
-;
+	if ((phase1 = (double *) realloc(phase1, new_ncoeffs * sizeof(double)))
+			== (double *) NULL)
+		error_exit(OUT_OF_MEMORY,
+				"merge_lists; insufficient memory for combined phases");
 
-  /* copy the coeff values to the new space */
+	if ((freq1 = (double *) realloc(freq1, new_ncoeffs * sizeof(double)))
+			== (double *) NULL)
+		error_exit(OUT_OF_MEMORY,
+				"merge_lists; insufficient memory for combined frequencies");
+	;
 
-  for(i = 0, j = (ncoeffs1); i < ncoeffs2; i++, j++) {
-    amp1[j] = amp2[i];
-    phase1[j]=phase2[i];
-    freq1[j]=freq2[i];
-  }
+	/* copy the coeff values to the new space */
 
-  /* set the new values for the combined filter, free second_blkt and reset to the next_blkt
-     value for first_blkt (i.e. to the next filter in the sequence) */
+	for (i = 0, j = (ncoeffs1); i < ncoeffs2; i++, j++) {
+		amp1[j] = amp2[i];
+		phase1[j] = phase2[i];
+		freq1[j] = freq2[i];
+	}
 
-  first_blkt->blkt_info.list.nresp = new_ncoeffs;
-  first_blkt->blkt_info.list.amp = amp1;
-  first_blkt->blkt_info.list.freq = freq1;
-  first_blkt->blkt_info.list.phase = phase1;
-  first_blkt->next_blkt = tmp_blkt->next_blkt;
-  free_fir(tmp_blkt);
-  *second_blkt = first_blkt->next_blkt;
+	/* set the new values for the combined filter, free second_blkt and reset to the next_blkt
+	 value for first_blkt (i.e. to the next filter in the sequence) */
+
+	first_blkt->blkt_info.list.nresp = new_ncoeffs;
+	first_blkt->blkt_info.list.amp = amp1;
+	first_blkt->blkt_info.list.freq = freq1;
+	first_blkt->blkt_info.list.phase = phase1;
+	first_blkt->next_blkt = tmp_blkt->next_blkt;
+	free_fir(tmp_blkt);
+	*second_blkt = first_blkt->next_blkt;
 
 }
 
-
 /* merge_coeffs:
 
-   a routine that merges two fir filters.  The coefficients from the
-   second filter are copied into the first filter and the number of
-   coefficients in the first filter is adjusted to reflect the new
-   filter size.  Then the next_blkt pointer for the first filter is
-   reset to the value of the next_blkt pointer of the second filter
-   and the space associated with the second filter is free'd.  Finally,
-   the second filter pointer is reset to the next_blkt pointer value
-   of the first filter */
+ a routine that merges two fir filters.  The coefficients from the
+ second filter are copied into the first filter and the number of
+ coefficients in the first filter is adjusted to reflect the new
+ filter size.  Then the next_blkt pointer for the first filter is
+ reset to the value of the next_blkt pointer of the second filter
+ and the space associated with the second filter is free'd.  Finally,
+ the second filter pointer is reset to the next_blkt pointer value
+ of the first filter */
 
 void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt) {
-  int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;
-  double *coeffs1, *coeffs2;
-  struct blkt *tmp_blkt;
+	int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;
+	double *coeffs1, *coeffs2;
+	struct blkt *tmp_blkt;
 
-  tmp_blkt = *second_blkt;
-  switch(first_blkt->type) {
-  case FIR_SYM_1:
-  case FIR_SYM_2:
-  case FIR_ASYM:
-    break;
-  default:
-    error_return(MERGE_ERROR, "merge_coeffs; filter types must be FIR");
-  }
+	tmp_blkt = *second_blkt;
+	switch (first_blkt->type) {
+	case FIR_SYM_1:
+	case FIR_SYM_2:
+	case FIR_ASYM:
+		break;
+	default:
+		error_return(MERGE_ERROR, "merge_coeffs; filter types must be FIR");
+	}
 
-  if(first_blkt->type != tmp_blkt->type)
-    error_return(MERGE_ERROR, "merge_coeffs; both filters must have the same type");
+	if (first_blkt->type != tmp_blkt->type)
+		error_return(MERGE_ERROR,
+				"merge_coeffs; both filters must have the same type");
 
-  /* set up some local pointers and values */
+	/* set up some local pointers and values */
 
-  ncoeffs1 = first_blkt->blkt_info.fir.ncoeffs;
-  coeffs1 = first_blkt->blkt_info.fir.coeffs;
+	ncoeffs1 = first_blkt->blkt_info.fir.ncoeffs;
+	coeffs1 = first_blkt->blkt_info.fir.coeffs;
 
-  ncoeffs2 = tmp_blkt->blkt_info.fir.ncoeffs;
-  coeffs2 = tmp_blkt->blkt_info.fir.coeffs;
+	ncoeffs2 = tmp_blkt->blkt_info.fir.ncoeffs;
+	coeffs2 = tmp_blkt->blkt_info.fir.coeffs;
 
-  new_ncoeffs = ncoeffs1 + ncoeffs2;
+	new_ncoeffs = ncoeffs1 + ncoeffs2;
 
-  /* attempt to reallocate space for the new (combined) coefficients vector */
+	/* attempt to reallocate space for the new (combined) coefficients vector */
 
-  if((coeffs1 = (double *)realloc(coeffs1,new_ncoeffs*sizeof(double))) == (double *)NULL)
-    error_exit(OUT_OF_MEMORY, "merge_coeffs; insufficient memory for combined coeffs");
+	if ((coeffs1 = (double *) realloc(coeffs1, new_ncoeffs * sizeof(double)))
+			== (double *) NULL)
+		error_exit(OUT_OF_MEMORY,
+				"merge_coeffs; insufficient memory for combined coeffs");
 
-  /* copy the coeff values to the new space */
+	/* copy the coeff values to the new space */
 
-  for(i = 0, j = (ncoeffs1); i < ncoeffs2; i++, j++) {
-    coeffs1[j] = coeffs2[i];
-  }
+	for (i = 0, j = (ncoeffs1); i < ncoeffs2; i++, j++) {
+		coeffs1[j] = coeffs2[i];
+	}
 
-  /* set the new values for the combined filter, free second_blkt and reset to the next_blkt
-     value for first_blkt (i.e. to the next filter in the sequence) */
+	/* set the new values for the combined filter, free second_blkt and reset to the next_blkt
+	 value for first_blkt (i.e. to the next filter in the sequence) */
 
-  first_blkt->blkt_info.fir.ncoeffs = new_ncoeffs;
-  first_blkt->blkt_info.fir.coeffs = coeffs1;
-  first_blkt->next_blkt = tmp_blkt->next_blkt;
-  free_fir(tmp_blkt);
-  *second_blkt = first_blkt->next_blkt;
+	first_blkt->blkt_info.fir.ncoeffs = new_ncoeffs;
+	first_blkt->blkt_info.fir.coeffs = coeffs1;
+	first_blkt->next_blkt = tmp_blkt->next_blkt;
+	free_fir(tmp_blkt);
+	*second_blkt = first_blkt->next_blkt;
 
 }
 
 /*  check_channel: a routine that checks a channel's filter stages to
 
-    (1) run a sanity check on the filter sequence.
-        and that LAPLACE_PZ and ANALOG_PZ filters will be followed
-        by a GAIN blockette only.
-        REFERENCE blockettes are ignored (since they contain no response information)
-    (2) As the routine moves through the stages in the filter sequence,
-        several other checks are made.  First, the output units of this
-        stage are compared with the input units of the next on to ensure
-        that no stages have been skipped.  Second, the filter type of this
-        blockette is compared with the filter type of the next. If they
-        are the same and have the same stage-sequence number, then they
-        are merged to form one filter.  At the present time this is only
-        implemented for the FIR type filters (since those are the only filter
-        types that typically are continued to a second filter blockette).
-        The new filter will have the combined number of coefficients and a
-        new vector containing the coefficients for both filters, one after
-        the other.
-    (3) the expected delay from the FIR filter stages in the channel's
-        filter sequence is calculated and stored in the filter structure.
+ (1) run a sanity check on the filter sequence.
+ and that LAPLACE_PZ and ANALOG_PZ filters will be followed
+ by a GAIN blockette only.
+ REFERENCE blockettes are ignored (since they contain no response information)
+ (2) As the routine moves through the stages in the filter sequence,
+ several other checks are made.  First, the output units of this
+ stage are compared with the input units of the next on to ensure
+ that no stages have been skipped.  Second, the filter type of this
+ blockette is compared with the filter type of the next. If they
+ are the same and have the same stage-sequence number, then they
+ are merged to form one filter.  At the present time this is only
+ implemented for the FIR type filters (since those are the only filter
+ types that typically are continued to a second filter blockette).
+ The new filter will have the combined number of coefficients and a
+ new vector containing the coefficients for both filters, one after
+ the other.
+ (3) the expected delay from the FIR filter stages in the channel's
+ filter sequence is calculated and stored in the filter structure.
 
-*/
+ */
 
 void check_channel(struct channel *chan) {
-  struct stage *stage_ptr, *next_stage, *prev_stage;
-  struct blkt *blkt_ptr, *next_blkt;
-  struct blkt *filt_blkt, *deci_blkt, *gain_blkt, *ref_blkt;
-  int stage_type;
-  int  gain_flag, deci_flag, ref_flag;
-  int i, j, nc, nblkts;
+	struct stage *stage_ptr, *next_stage, *prev_stage;
+	struct blkt *blkt_ptr, *next_blkt;
+	struct blkt *filt_blkt, *deci_blkt, *gain_blkt, *ref_blkt;
+	int stage_type;
+	int gain_flag, deci_flag, ref_flag;
+	int i, j, nc, nblkts;
 
-  /* first run a 'sanity-check' of the filter sequence, making sure
-     that the units match and that the proper blockettes are found
-     where they are 'expected'.  At the same time, continuation filters
-     from the FIR filters are merged and out of order filters are
-     moved to ensure that the order for blockettes in a stage will be
+	/* first run a 'sanity-check' of the filter sequence, making sure
+	 that the units match and that the proper blockettes are found
+	 where they are 'expected'.  At the same time, continuation filters
+	 from the FIR filters are merged and out of order filters are
+	 moved to ensure that the order for blockettes in a stage will be
 
-        FILT_TYPE   ( ->  DECIMATION  )->  GAIN
+	 FILT_TYPE   ( ->  DECIMATION  )->  GAIN
 
-     where FILT_TYPE is one of ANALOG_PZ, LAPLACE_PZ (which are both called
+	 where FILT_TYPE is one of ANALOG_PZ, LAPLACE_PZ (which are both called
      PZ_TYPE here), IIR_PZ (called IIR_TYPE here), FIR_ASYM, FIR_SYM1 or
      FIR_SYM2 (which are all called FIR_TYPE in this routine).
      This sequence will order will be established, regardless of the order
