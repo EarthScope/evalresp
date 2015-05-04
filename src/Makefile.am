@@ -13,3 +13,6 @@ libevresp_la_SOURCES = regexp.c regerror.c regsub.c calc_fctns.c resp_fctns.c \
 include_HEADERS = evresp.h regmagic.h regexp.h evr_spline.h
 
 EXTRA_DIST = evresp.h regmagic.h regexp.h
+
+distclean-local:
+	rm Makefile.in *~
