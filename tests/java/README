@@ -1,0 +1,9 @@
+
+This directory contains a Java program that generates the target response
+file for check_convert.c using the IRIS-WS library.
+
+In this way, we can make sure that the output from xml2resp is identical
+to that produced by IRIS-WS.
+
+Before running the script, the IRIS-WS jar file (of the correct version)
+must be added to (or linked to) this directory.
