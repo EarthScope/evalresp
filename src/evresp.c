@@ -58,6 +58,7 @@ Notes:
 */
 
 #include "./evresp.h"
+#include "x2r_ws.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -84,7 +85,7 @@ int evresp_(char *sta, char *cha, char *net, char *locid, char *datime,
         char *rtype, char *verbose, int *start_stage, int *stop_stage,
         int *stdio_flag, int lsta, int lcha, int lnet, int llocid, int ldatime,
         int lunits, int lfile, int lrtype, int lverbose,
-        int useTotalSensitivityFlag, double x_for_b62) {
+        int useTotalSensitivityFlag, double x_for_b62, int xml_flag) {
     struct response *first = (struct response *) NULL;
     double *dfreqs;
     int i, j, nfreqs, start, stop, flag;
@@ -115,7 +116,7 @@ int evresp_(char *sta, char *cha, char *net, char *locid, char *datime,
 
     first = evresp(sta, cha, net, locid, datime, units, file, dfreqs, nfreqs,
             rtype, verbose, start, stop, flag, useTotalSensitivityFlag,
-            x_for_b62);
+            x_for_b62, xml_flag);
 
     /* free up the frequency vector */
 
@@ -245,7 +246,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
         int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
         int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
         double listinterp_tension, int useTotalSensitivityFlag,
-        double x_for_b62) {
+        double x_for_b62, int xml_flag) {
     struct channel this_channel;
     struct scn *scn;
     struct string_array *sta_list, *chan_list;
@@ -378,7 +379,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
 
     if (!mode && !stdio_flag) {
         curr_file = file;
-        if ((fptr = fopen(file, "r")) == (FILE *) NULL) {
+        if (!(fptr = fopen(file, "r"))) {
 #ifdef LIB_MODE
             fprintf(stderr, "%s failed to open file %s\n", myLabel, file);
             return NULL;
@@ -387,6 +388,9 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
 #endif
         }
     }
+
+    /* convert from xml format if necessary, logging error messages to stderr. */
+    if (x2r_xml2resp_on_flag(&fptr, xml_flag, X2R_ERROR)) return NULL;
 
     /* allocate space for the first response */
     resp = alloc_response(nfreqs);
@@ -592,7 +596,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                 if (!stdio_flag) {
                     fptr = fopen(lst_ptr->name, "r");
                 }
-                if (fptr != (FILE *) NULL) {
+                if (fptr) {
                     curr_file = lst_ptr->name;
                     look_again: if (!(err_type = setjmp(jump_buffer))) {
                         new_file = 0;
@@ -910,9 +914,9 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
 struct response *evresp(char *stalst, char *chalst, char *net_code,
         char *locidlst, char *date_time, char *units, char *file, double *freqs,
         int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
-        int stdio_flag, int useTotalSensitivityFlag, double x_for_b62) {
+        int stdio_flag, int useTotalSensitivityFlag, double x_for_b62, int xml_flag) {
     return evresp_itp(stalst, chalst, net_code, locidlst, date_time, units,
             file, freqs, nfreqs, rtype, verbose, start_stage, stop_stage,
-            stdio_flag, 0, 0, 0.0, 0, 0);
+            stdio_flag, 0, 0, 0.0, 0, 0, xml_flag);
 }
 

@@ -3,6 +3,7 @@
 #include <libxml/xpath.h>
 
 #include "x2r.h"
+#include "x2r_log.h"
 #include "x2r_xml.h"
 #include "x2r_ws.h"
 
@@ -615,5 +616,32 @@ int x2r_resp_util_write(x2r_log *log, FILE *out, const x2r_fdsn_station_xml *roo
     }
 
 exit:
+    return status;
+}
+
+
+int x2r_xml2resp_on_flag(FILE **in, int xml_flag, int log_level) {
+
+    int status = X2R_OK;
+    x2r_log *log = NULL;
+    x2r_fdsn_station_xml *root = NULL;
+    FILE *tmp;
+
+    if (xml_flag) {
+        if ((status = x2r_alloc_log(log_level, stderr, &log))) goto exit;
+        if (!(tmp = tmpfile())) {
+            status = x2r_error(log, X2R_ERR_IO, "Could not open temporary file");
+            goto exit;
+        }
+        if ((status = x2r_station_service_load(log, *in, &root))) goto exit;
+        if ((status = x2r_resp_util_write(log, tmp, root))) goto exit;
+        rewind(tmp);
+        if (*in != stdin) fclose(*in);
+        *in = tmp;
+    }
+
+exit:
+    status = x2r_free_fdsn_station_xml(root, status);
+    status = x2r_free_log(log, status);
     return status;
 }

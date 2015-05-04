@@ -547,10 +547,10 @@ void print_resp_itp(double *, int, struct response *, char *, int, int, double,
  frequencies requested by the user */
 
 struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
-        double *, int, char *, char *, int, int, int, int, double);
+        double *, int, char *, char *, int, int, int, int, double, int);
 struct response *evresp_itp(char *, char *, char *, char *, char *, char *,
         char *, double *, int, char *, char *, int, int, int, int, int, double,
-        int, double);
+        int, double, int);
 
 /* Interpolates amplitude and phase values from the set of frequencies
  in the List blockette to the requested set of frequencies. */
