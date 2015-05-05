@@ -2,7 +2,6 @@
 #ifndef X2R_XML_H
 #define X2R_XML_H
 
-#define __USE_XOPEN  // for strptime
 #include <time.h>
 #include <stdio.h>
 
