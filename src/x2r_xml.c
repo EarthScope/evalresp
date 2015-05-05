@@ -242,22 +242,52 @@ static int char_attribute(x2r_log *log, xmlNodePtr node, const char *name,
     }
 }
 
+/**
+ * Parse an ISO yyyy-mm-ddThh:mm:ss format datetime.
+ *
+ * Separated out for testing.
+ */
+int x2r_parse_iso_datetime(x2r_log *log, const char *datetime, time_t *epoch) {
 
-/** Read an attribute value as a datetime (struct tm). */
-static int datetime_attribute(x2r_log *log, xmlNodePtr node, const char *name, struct tm *tm) {
+    int status = X2R_OK, year, month;
+    struct tm tm;
+    char *old_tz;
+
+    if (!(6 == sscanf(datetime, "%d-%d-%dT%d:%d:%d",
+    		&year, &month, &tm.tm_mday,
+    		&tm.tm_hour, &tm.tm_min, &tm.tm_sec))) {
+    	status = x2r_error(log, X2R_ERR_XML, "Could not parse %s", datetime);
+        goto exit;
+    }
+    tm.tm_year = year - 1900;
+    tm.tm_mon = month - 1;
+    tm.tm_isdst = 0;
+    // these two are bsd extensions which we're not using
+//    tm.tm_gmtoff = 0;
+//    tm.tm_zone = "UTC";
+    // these two are wrong, but ignored by mktime
+    tm.tm_wday = 0;
+    tm.tm_yday = 0;
+    // see http://www.delorie.com/gnu/docs/glibc/libc_435.html
+    old_tz = getenv("TZ");
+    // ignoring errors from setenv, because it returns an error but works :o(
+    setenv("TZ", "UTC", 1);
+    *epoch = mktime(&tm);
+    setenv("TZ", old_tz, 1);
+
+exit:
+    return status;
+}
+
+
+/** Read an attribute value as an ISO formatted epoch. */
+static int datetime_attribute(x2r_log *log, xmlNodePtr node, const char *name, time_t *epoch) {
 
     int status = X2R_OK;
-    char *value = NULL, *end;
+    char *value = NULL;
 
     if ((status = char_attribute(log, node, name, NULL, &value))) goto exit;
-    if (!(end = strptime(value, "%FT%T", tm))) {  // NULL on error
-        status = x2r_error(log, X2R_ERR_XML, "Could not parse %s", value);
-        goto exit;
-    }
-    if (*end) {  // should point to end of string
-        status = x2r_error(log, X2R_ERR_XML, "Did not parse all of %s", value);
-        goto exit;
-    }
+    if ((status = x2r_parse_iso_datetime(log, value, epoch))) goto exit;
 
 exit:
     free(value);

@@ -149,8 +149,8 @@ typedef struct {
 typedef struct {
     char *code;
     char *location_code;
-    struct tm start_date;
-    struct tm end_date;
+    time_t start_date;
+    time_t end_date;
     x2r_response response;
 } x2r_channel;
 
@@ -172,6 +172,7 @@ typedef struct {
 } x2r_fdsn_station_xml;
 
 
+int x2r_parse_iso_datetime(x2r_log *log, const char *datetime, time_t *epoch);
 int x2r_station_service_load(x2r_log *log, FILE *in, x2r_fdsn_station_xml **root);
 int x2r_free_fdsn_station_xml(x2r_fdsn_station_xml *root, int status);
 

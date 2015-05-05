@@ -55,18 +55,23 @@ static int lines(x2r_log *log, FILE *out, ...) {
 }
 
 
-/** Format struct tm as julian days. */
-static int format_date_yjhms(x2r_log *log, const struct tm *tm, char **date) {
+/** Format epoch as given. */
+static int format_date(x2r_log *log, const time_t epoch, int n, char *template, char **date) {
 
-    int status = X2R_OK, n;
+    int status = X2R_OK;
+    struct tm tm;
 
-    n = strlen("YYYY,jjj,HH:MM:SS") + 1;
+    if (!(gmtime_r(&epoch, &tm))) {
+        status = x2r_error(log, X2R_ERR_DATE, "Cannot convert epoch to time");
+        goto exit;
+    }
     if (!(*date = calloc(n, sizeof(**date)))) {
         status = x2r_error(log, X2R_ERR_MEMORY, "Cannot alloc date");
         goto exit;
     }
-    if (!(strftime(*date, n, "%Y,%j,%H:%M:%S", tm))) {
-        status = x2r_error(log, X2R_ERR_BUFFER, "Cannot format date in %d char", n);
+    if (!(strftime(*date, n, template, &tm))) {
+        status = x2r_error(log, X2R_ERR_BUFFER, "Cannot format date in %d char"\
+, n);
         goto exit;
     }
 
@@ -75,23 +80,15 @@ exit:
 }
 
 
-/** Format struct tm in American date style. */
-static int format_date_mdy(x2r_log *log, const struct tm *tm, char **date) {
+/** Format epoch julian days. */
+static int format_date_yjhms(x2r_log *log, const time_t epoch, char **date) {
+    return format_date(log, epoch, strlen("YYYY,jjj,HH:MM:SS") + 1, "%Y,%j,%H:%M:%S", date);
+}
 
-    int status = X2R_OK, n;
 
-    n = strlen("mm/dd/YYYY") + 1;
-    if (!(*date = calloc(n, sizeof(**date)))) {
-        status = x2r_error(log, X2R_ERR_MEMORY, "Cannot alloc date");
-        goto exit;
-    }
-    if (!(strftime(*date, n, "%m/%d/%Y", tm))) {
-        status = x2r_error(log, X2R_ERR_BUFFER, "Cannot format date in %d char", n);
-        goto exit;
-    }
-
-exit:
-    return status;
+/** Format epoch in American date style. */
+static int format_date_mdy(x2r_log *log, time_t epoch, char **date) {
+    return format_date(log, epoch, strlen("mm/dd/YYYY") + 1, "%m/%d/%Y", date);
 }
 
 
@@ -196,8 +193,8 @@ static int box(x2r_log *log, FILE *out, const char *title, const char UNUSED *ne
 
     if ((status = centre(log, title, 35, &ctitle))) goto exit;
     if ((status = centre_sncl(log, net, stn, channel, 35, &csncl))) goto exit;
-    if ((status = format_date_mdy(log, &channel->start_date, &start))) goto exit;
-    if ((status = format_date_mdy(log, &channel->end_date, &end))) goto exit;
+    if ((status = format_date_mdy(log, channel->start_date, &start))) goto exit;
+    if ((status = format_date_mdy(log, channel->end_date, &end))) goto exit;
 
     if ((status = lines(log, out,
             "#",
@@ -581,9 +578,9 @@ static int print_channel(x2r_log *log, FILE *out, const char *net, const char *s
             (!(strcmp(channel->location_code, "  ") && strcmp(channel->location_code, ""))) ?
                     "??" : channel->location_code))) goto exit;
     if ((status = line(log, out, "B052F04     Channel:     %s", channel->code))) goto exit;
-    if ((status = format_date_yjhms(log, &channel->start_date, &start))) goto exit;
+    if ((status = format_date_yjhms(log, channel->start_date, &start))) goto exit;
     if ((status = line(log, out, "B052F22     Start date:  %s", start))) goto exit;
-    if ((status = format_date_yjhms(log, &channel->end_date, &end))) goto exit;
+    if ((status = format_date_yjhms(log, channel->end_date, &end))) goto exit;
     if ((status = line(log, out, "B052F23     End date:    %s", end))) goto exit;
 
     if ((status = print_response(log, out, net, stn, channel, &channel->response))) goto exit;

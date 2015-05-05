@@ -53,10 +53,10 @@ AC_ARG_ENABLE(optimization,
   [CFLAGS="$CFLAGS -02"
    echo ==== Enabling -O2 option ======])
 
-AC_ARG_ENABLE(strict,
-  [  --enable-strict         enable strict mode],
-  [CFLAGS="$CFLAGS -Wall -Werror"
-   echo ==== Enabling -Wall -Werror options ======])
+AC_ARG_ENABLE(unsafe,
+  [  --enable-unsafe         remove compiler checks],
+  [echo ==== Disabling -Wall -Werror options ======],
+  [CFLAGS="$CFLAGS -Wall -Werror"])
 
 AC_ARG_ENABLE(check,
   [  --enable-check          enable check (unit tests)],
