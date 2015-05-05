@@ -55,8 +55,8 @@ AC_ARG_ENABLE(optimization,
 
 AC_ARG_ENABLE(strict,
   [  --enable-strict         enable strict mode],
-  [CFLAGS="$CFLAGS -Wall"
-   echo ==== Enabling -Wall option ======])
+  [CFLAGS="$CFLAGS -Wall -Werror"
+   echo ==== Enabling -Wall -Werror options ======])
 
 AC_ARG_ENABLE(check,
   [  --enable-check          enable check (unit tests)],

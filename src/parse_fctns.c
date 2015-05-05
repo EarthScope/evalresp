@@ -1169,11 +1169,12 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
  (i.e. that the next non-comment line starts the actual response information) */
 
 int parse_channel(FILE *fptr, struct channel* chan) {
-    int blkt_no, read_blkt = 0, fld_no, no_units;
-    int curr_seq_no, last_seq_no;
 
-    struct blkt *blkt_ptr, *last_blkt = (struct blkt *) NULL;
-    struct stage *this_stage, *last_stage, *tmp_stage, *tmp_stage2;
+	// TODO - assigments for no_units and tmp_stage2 made blindly to fix compiler warning.  bug?
+    int blkt_no, read_blkt = 0, fld_no, no_units = 0;
+    int curr_seq_no, last_seq_no;
+    struct blkt *blkt_ptr, *last_blkt = NULL;
+    struct stage *this_stage, *last_stage, *tmp_stage, *tmp_stage2 = NULL;
 
     /* initialize the channel's sequence of stages */
 

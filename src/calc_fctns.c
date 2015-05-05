@@ -12,8 +12,9 @@
 #endif
 
 /*------------------------------------------------------------------------------------*/
-/* LOG:
- /* Version 3.3.4:   IGD 10/03/2013                                                                              *//* We add double sample_for_b62 into a list of input parameters for calc_resp()       */
+/* LOG:                                                                               */
+/* Version 3.3.4:   IGD 10/03/2013                                                    */
+/* We add double sample_for_b62 into a list of input parameters for calc_resp()       */
 /* Generally, B62 describes a non-linear response which cannot be properly            */
 /* represented into a spectral domain.                                                */
 /* We only can do it in a special case ehrn MacLaurin polynomial si linear,           */
@@ -210,7 +211,8 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs,
  * Convert response to velocity first, then to specified units
  *=================================================================*/
 void convert_to_units(int inp, char *out_units, struct complex *data, double w) {
-    int out, l;
+	// TODO - 0 assignment below made blindly to fix compiler warning.  bug?
+    int out = 0, l;
     struct complex scale_val;
 
     /* if default units were specified by the user, no conversion is made,
@@ -343,7 +345,6 @@ void iir_trans(struct blkt *blkt_ptr, double wint, struct complex *out) {
 void calc_polynomial(struct blkt *blkt_ptr, int i, struct complex *out,
         double x_for_b62) {
     double amp = 0, phase = 0;
-    double halfcirc = 180;
     int j;
 
     if (x_for_b62 <= 0)
@@ -581,7 +582,8 @@ void zmul(struct complex *val1, struct complex *val2) {
  *=================================================================*/
 void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
     struct stage *stage_ptr;
-    struct blkt *fil, *last_fil, *main_filt;
+    // TODO - NULL assignments below made blindly to fix compiler warning.  bug?
+    struct blkt *fil, *last_fil = NULL, *main_filt = NULL;
     int i, main_type, reset_gain, skipped_stages = 0;
     double w, f;
     double percent_diff;

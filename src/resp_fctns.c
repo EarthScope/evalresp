@@ -187,12 +187,13 @@ void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt) {
  */
 
 void check_channel(struct channel *chan) {
+	// TODO - assignments below (0 + NULL) made blindly to fix compiler warning.  bug?
     struct stage *stage_ptr, *next_stage, *prev_stage;
     struct blkt *blkt_ptr, *next_blkt;
-    struct blkt *filt_blkt, *deci_blkt, *gain_blkt, *ref_blkt;
+    struct blkt *filt_blkt = NULL, *deci_blkt = NULL, *gain_blkt = NULL, *ref_blkt = NULL;
     int stage_type;
     int gain_flag, deci_flag, ref_flag;
-    int i, j, nc, nblkts;
+    int i, j, nc = 0, nblkts;
 
     /* first run a 'sanity-check' of the filter sequence, making sure
      that the units match and that the proper blockettes are found
