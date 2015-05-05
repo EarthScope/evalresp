@@ -3,7 +3,7 @@
 #endif
 
 /*===================================================================
-Name:      evresp_ Version 3.0
+Name:   evresp_1
 Purpose:
         FORTRAN callable interface to the evresp routine (below)
 Reference:
@@ -11,28 +11,32 @@ Reference:
         Reference Manual
         SEED Format Version 2.3 or later
         ??? 1995
-Author:    Thomas J. McSweeney
+Author:    Thomas J. McSweeney, Andrew Cooke
 
 Usage (from FORTRAN):
-
-        nmatch = evresp(sta,cha,net,datime,units,file,freq,nfreqs,resp,rtype,
-     1                  verbose, start_stage, stop_stage)
+        See tests/fortran/evresp.f
 
 Notes:
-        C users should call 'evresp' directly, rather than using this interface.
-        This interface includes extra arguments that are required by the FORTRAN
-        compiler (the length of each string in the argument list, in the order
-        that they appear in the argument list), which C programmers will probably
-        not want to include in their call)
+        This routine was updated in release 4.0.0 to support Fortran
+        95.  Previous versions were clearly broken (parameters had
+        been added with no respect to the implicit lengths from
+        Fortran character arrays), so backwards compatibility is not
+        provided.
 
-        whereas the C function returns a linked list of responses (one for each
-        response that matched the user's request), this routine returns the
-        response for one (1) station-channel-network for one (1) effective time.
-        If more than one match is found for a given station-channel-network-time,
-        an error condition is raised (and a value of -1 is returned to the calling
-        routine to indicate failure).  Likewise, a value of 1 is returned if no
-        match is found for the given station-channel-network-time.  If a unique
-        match is found, a value of 0 is returned to the calling routine
+        Given the cleaner interface supported by Fortran 95, this
+        routine can also be called from C.
+
+        Whereas the other function returns a linked list of responses
+        (one for each response that matched the user's request), this
+        routine returns the response for one (1)
+        station-channel-network for one (1) effective time.  If more
+        than one match is found for a given
+        station-channel-network-time, an error condition is raised
+        (and a value of -1 is returned to the calling routine to
+        indicate failure).  Likewise, a value of 1 is returned if no
+        match is found for the given station-channel-network-time.  If
+        a unique match is found, a value of 0 is returned to the
+        calling routine
 
  *=================================================================*/
 /*
@@ -55,6 +59,7 @@ Notes:
                        function.
    02/27/2007 -- [IGD] Added return (#ifdef LIB_MODE) if the input file is not
                        found
+   2015-05-04 -- [AC]  Simplifed / fixed for fortran 95
 */
 
 #include "./evresp.h"
@@ -80,33 +85,13 @@ jmp_buf jump_buffer;
 
 char myLabel[20];
 
-int evresp_(char *sta, char *cha, char *net, char *locid, char *datime,
-        char *units, char *file, float *freqs, int *nfreqs_in, float *resp,
-        char *rtype, char *verbose, int *start_stage, int *stop_stage,
-        int *stdio_flag, int lsta, int lcha, int lnet, int llocid, int ldatime,
-        int lunits, int lfile, int lrtype, int lverbose,
-        int useTotalSensitivityFlag, double x_for_b62, int xml_flag) {
+int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
+        char *units, char *file, double *freqs, int nfreqs, double *resp,
+        char *rtype, char *verbose, int start_stage, int stop_stage,
+        int stdio_flag, int useTotalSensitivityFlag, double x_for_b62, int xml_flag) {
     struct response *first = (struct response *) NULL;
     double *dfreqs;
-    int i, j, nfreqs, start, stop, flag;
-
-    /* add null characters to end of input string arguments (remove trailing
-     spaces first */
-
-    add_null(sta, lsta - 1, 'a');
-    add_null(cha, lcha - 1, 'a');
-    add_null(net, lnet - 1, 'a');
-    add_null(locid, llocid - 1, 'a');
-    add_null(datime, ldatime - 1, 'a');
-    add_null(units, lunits - 1, 'a');
-    add_null(file, lfile - 1, 'a');
-    add_null(rtype, lrtype - 1, 'a');
-    add_null(verbose, lverbose - 1, 'a');
-
-    nfreqs = *nfreqs_in;
-    start = *start_stage;
-    stop = *stop_stage;
-    flag = *stdio_flag;
+    int i, j;
 
     dfreqs = alloc_double(nfreqs);
     for (i = 0; i < nfreqs; i++)
@@ -115,7 +100,7 @@ int evresp_(char *sta, char *cha, char *net, char *locid, char *datime,
     /* then call evresp */
 
     first = evresp(sta, cha, net, locid, datime, units, file, dfreqs, nfreqs,
-            rtype, verbose, start, stop, flag, useTotalSensitivityFlag,
+            rtype, verbose, start_stage, stop_stage, stdio_flag, useTotalSensitivityFlag,
             x_for_b62, xml_flag);
 
     /* free up the frequency vector */
@@ -147,7 +132,6 @@ int evresp_(char *sta, char *cha, char *net, char *locid, char *datime,
     /* and return to FORTRAN program */
 
     return (0);
-
 }
 
 /* IGD 03/01/05 Small function to set and return
@@ -180,45 +164,62 @@ int use_estimated_delay(int flag) {
 }
 
 /*===================================================================
- Name:      evresp Version 3.0
+
+ Name:      evresp
+
  Purpose:
- Extract channel response parameters from either ASCII
- files produced by rdseed -r ("response" file) or
- rdseed -d ("sta-cha" files) and calculate the complex
- response.
+        Extract channel response parameters from either ASCII files
+        produced by rdseed -r ("response" file) or rdseed -d
+        ("sta-cha" files) and calculate the complex response.
+
  Reference:
- SEED. Standard for the Exchange of Earthquake Data
- Reference Manual
- SEED Format Version 2.3 or later
- ??? 1995
- Author:    Thomas J. McSweeney
- Modofications: Ilya Dricker (i.dricker@isti.com) IGD for versions of evalresp 3.2.17
+        SEED. Standard for the Exchange of Earthquake Data Reference
+        Manual SEED Format Version 2.3 or later ??? 1995
+
+ Author:
+        Thomas J. McSweeney
+
+ Modifications:
+        Ilya Dricker (i.dricker@isti.com) IGD for versions of evalresp 3.2.17
+
  Notes:
- ???. Version 3.0
- - modified to parse "new" rdseed RESP file output (includes a new
- field that contains the blockette and field numbers for each of
- the items in the RESP file)
- - is a very substantial change over the previous releases of
- evresp.  The code has been completely rewritten from the original
- form authored by Jean-Francios Fels to support several new features.
- among them are:
- (a) a "new" RESP file format that contains the blockette and
- field numbers as prefixes to each line.  This allows for
- quick determination of whether or not the program is
- parsing the correct information without relying on searching
- for non-standardized character strings in the RESP file
- (b) support for the blockette [61] responses
- (c) support for the response-reference style responses (i.e.
- a blockette [60] followed by a series of blockette [41] or
- blockette [43] through blockette [48] responses)
- - the code has been rewritten so that the calculations are all confined
- to this function and the functions that it calls.  All the user
- has to do us supply the appropriate control parameters to this function
- - the parsing has been entirely reworked so that each blockette style is
- parsed in a seperate.  This should make the code easier to maintain and
- allow for changes in the output from RDSEED (either in number of fields
- on a line or in which fields are output from a given blockette)
- - the code has been converted to ANSI standard C, rather than K&R style C
+
+         ???. Version 3.0
+
+        - modified to parse "new" rdseed RESP file output (includes a
+        new field that contains the blockette and field numbers for
+        each of the items in the RESP file)
+
+        - is a very substantial change over the previous releases of
+        evresp.  The code has been completely rewritten from the
+        original form authored by Jean-Francios Fels to support
+        several new features.  among them are:
+
+        (a) a "new" RESP file format that contains the blockette and
+        field numbers as prefixes to each line.  This allows for quick
+        determination of whether or not the program is parsing the
+        correct information without relying on searching for
+        non-standardized character strings in the RESP file
+
+        (b) support for the blockette [61] responses
+
+        (c) support for the response-reference style responses (i.e.
+        a blockette [60] followed by a series of blockette [41] or
+        blockette [43] through blockette [48] responses)
+
+        - the code has been rewritten so that the calculations are all
+        confined to this function and the functions that it calls.
+        All the user has to do us supply the appropriate control
+        parameters to this function
+
+        - the parsing has been entirely reworked so that each
+        blockette style is parsed in a seperate.  This should make the
+        code easier to maintain and allow for changes in the output
+        from RDSEED (either in number of fields on a line or in which
+        fields are output from a given blockette)
+
+        - the code has been converted to ANSI standard C, rather than
+          K&R style C
 
  Thomas J. McSweeney:  tjm@iris.washington.edu
 
@@ -917,6 +918,6 @@ struct response *evresp(char *stalst, char *chalst, char *net_code,
         int stdio_flag, int useTotalSensitivityFlag, double x_for_b62, int xml_flag) {
     return evresp_itp(stalst, chalst, net_code, locidlst, date_time, units,
             file, freqs, nfreqs, rtype, verbose, start_stage, stop_stage,
-            stdio_flag, 0, 0, 0.0, 0, 0, xml_flag);
+            stdio_flag, 0, 0, 0.0, 0, x_for_b62, xml_flag);
 }
 

@@ -1,87 +1,77 @@
+
       program evtest
-c This program calls the instrument response package and writes out 
-c a file suitable for plotting
-c
-      call wresp
-      stop
-      end
-c
-c---------------------------------------------
-c
-      subroutine wresp
-c
-c writes out a single instrument response
-c
-      integer evresp
-      character file*80, datime*20
-      character*5  unts,sta,cha,net,locid,rtyp
-      character*10 vbs
-      integer npts, start_stage, stop_stage, stdio_flag
-      dimension freq(10000),resp(20000)
-      data pi/3.14159265358979/
 
-c set start_stage to -1, stop_stage to 0 (this will cause all of the
-c response stages to be included in the response that is calculated)
+      implicit none
 
-      start_stage = -1
-      stop_stage = 0
+      call wresp()
 
-c set the stdio_flag to zero (the response is returned to the calling routine
+      end program evtest
 
-      stdio_flag = 0
 
-c
-c hardwire the values of strings
-c *** may need to set up new strings, e.g. "IU", etc. ******
-c
+      subroutine wresp()
 
-      sta = 'CTAO'
-      cha = 'BHZ'
-      net = '*'
-      locid = '*'
-      datime = '1995,260'
-      unts = 'VEL'
-c      file = '/users/tjm/eg_responses'
-c if above line commented out and following line not, must
-c define the SEEDRESP environment variable
-      file = 'aa'
-      vbs = '-v'
-      npts = 100
-      rtyp = 'CS'
-c
-c set up 100 frequency points
-c
-      fhigh = 100.
-      flow = .0001
-      fpts = 100.
-      df = (alog10(fhigh) - alog10(flow) ) / (fpts-1)
+      use iso_c_binding, only: c_loc, c_int, c_double
+      implicit none
+
+      interface
+         integer(kind=c_int) function evresp(
+     &        sta, cha, net, loc, datime, units, file,
+     &        freq, npts, resp, rtype, vbs,
+     &        start_stage, stop_stage, stdio_flag, sens_flag,
+     &        b62_x, xml_flag) bind(C, name="evresp_1")
+         use iso_c_binding, only: c_char, c_double, c_int, c_ptr
+         character(kind=c_char) :: 
+     &        sta(*), cha(*), net(*), loc(*),
+     &        datime(*), units(*), file(*), rtype(*), vbs(*)
+         integer(kind=c_int), value :: 
+     &        npts, start_stage, stop_stage, stdio_flag, sens_flag,
+     &        xml_flag
+         type(c_ptr) :: freq, resp
+         real(kind=c_double), value :: b62_x
+         end function evresp
+      end interface
+
+      character*1 :: sta = "*", net = "*", loc = "*"
+      character*3 :: cha = "VMZ"
+      character*8 :: datime = "2010,260"
+      character*3 :: units = "VEL"
+      character*21 :: file = "../data/station-1.xml"
+      integer(kind=c_int), parameter :: npts = 100
+      real(kind=c_double), target :: freq(npts), resp(2*npts)
+      character*2 :: rtype = "CS"
+      character*2 :: vbs = "-v"
+      integer(kind=c_int) :: 
+     &     start_stage = -1, stop_stage = 0, stdio_flag = 0, 
+     &     sens_flag = 0, xml_flag = 1, iflag
+      real(kind=c_double) :: b62_x = 1
+
+      real(8), parameter :: flow = 0.0001, fhigh = 100
+      real(8), parameter :: df = (log10(fhigh) - log10(flow)) / (npts-1)
+      integer :: i
+      real(8) :: amp, phase, pi = 3.14159265358979
+
+      do i = 1, npts
+         freq(i) = 10**(log10(flow) + (i-1) * df)
+      end do
+
+      iflag = evresp(
+     &     sta//char(0), cha//char(0), net//char(0), loc//char(0),
+     &     datime//char(0), units//char(0), file//char(0), 
+     &     c_loc(freq), npts, c_loc(resp), rtype//char(0), vbs//char(0), 
+     &     start_stage, stop_stage, stdio_flag, sens_flag,
+     &     b62_x, xml_flag)
+
+      print *, "return value", iflag
+      if (iflag .eq. 0) then
       
-      do 10 i=1,npts
-        freq(i) = 10.0**( alog10(flow) + float(i-1) * df )
- 10   continue
-c
-c now call evresp, assume resp() will contain the multiplexed output
-c 
-        
-       iflag = evresp(sta,cha,net,locid,datime,unts,file,freq,npts,resp,
-     .                rtyp,vbs,start_stage,stop_stage,stdio_flag)
-       if (iflag.ne.0) then
-          write(*,31) 'ERROR processing: ',sta,cha,datime
- 31       format(a,1x,a5,1x,a5,1x,a20)
-          return
-       endif
-c 
-c  write out file of frequency, amplitude, phase
-c     
-      open(8,file='evtest.out')
-      j = 1
-      do 30 i=1,fpts
-        amp = sqrt(resp(j)**2 + resp(j+1)**2)
-        pha = atan2(resp(j+1),resp(j)) * 180. / pi
-        write(8,'(3e15.6)') freq(i),amp,pha
-        j = j + 2
- 30   continue
-      close(8) 
+         open(1, file="evtest.out")
+         do i = 1, npts
+            amp = sqrt(resp(2*i-1)**2 + resp(2*i)**2)
+            phase = atan2(resp(2*i), resp(2*i-1)) * 180. / pi
+            write(1,'(3e15.6)') freq(i), amp, phase
+         end do
+         close(1)
 
-      return
-      end
+      end if
+
+      end subroutine wresp

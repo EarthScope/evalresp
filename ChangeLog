@@ -3,24 +3,32 @@ Version 4.0.0
 
   ??-May-2015 Andrew Cooke (a.cooke@isti.com)
   
-  * ADDED: Optional support for unit tests (--enable-check)
+  * ADDED: Support for station.xml files (-x)
+
+  * ADDED: The xml2resp command to convert from station.xml to
+    response format (and man page) 
   
-  * ADDED: The xml2resp command.
-
-  * MODIFIED: Help text (-h).
+  * ADDED: Optional support for unit tests (--enable-check; make check)
   
-  * MODIFIED: Removed tabs, standardised indents.
+  * ADDED: Installation of man pages
 
-  * MODIFIED: Documentation and directory layout.
+  * MODIFIED: Help text (-h)
+  
+  * MODIFIED: Fortran demo and associated code (works; now Fortran 95)
+  
+  * MODIFIED: Source format: removed tabs; standardised indents
 
-  * REMOVED: Unsupported build files.
+  * MODIFIED: Documentation and directory layout (autoreconf, multiple
+    directories)
+
+  * REMOVED: Unsupported build files
 
 
 Version 3.3.4
 
   09-Oct-2013 Ilya Dricker (i.dricker@isti.com)
 
-  * ADDED: processing of blockette 62 (which requires input prameter
+  * ADDED: processing of blockette 62 (which requires input parameter
     -b62_x
 
   * MODIFIED: Redefined processing of DECIMATION as correction applied
