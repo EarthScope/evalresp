@@ -245,7 +245,8 @@ static int char_attribute(x2r_log *log, xmlNodePtr node, const char *name,
 /**
  * Parse an ISO yyyy-mm-ddThh:mm:ss format datetime.
  *
- * Separated out for testing.
+ * Separated out for testing (see check_parse_datetime and also implicit tests against
+ * the IRIS-WS code elsewhere).
  */
 int x2r_parse_iso_datetime(x2r_log *log, const char *datetime, time_t *epoch) {
 
@@ -265,10 +266,10 @@ int x2r_parse_iso_datetime(x2r_log *log, const char *datetime, time_t *epoch) {
     // these two are bsd extensions which we're not using
 //    tm.tm_gmtoff = 0;
 //    tm.tm_zone = "UTC";
-    // these two are wrong, but ignored by mktime
+    // these two are wrong, but ignored (actually, set) by mktime
     tm.tm_wday = 0;
     tm.tm_yday = 0;
-    // see http://www.delorie.com/gnu/docs/glibc/libc_435.html
+    // see http://www.delorie.com/gnu/docs/glibc/libc_435.html (yeah this sucks)
     old_tz = getenv("TZ");
     // ignoring errors from setenv, because it returns an error but works :o(
     setenv("TZ", "UTC", 1);
