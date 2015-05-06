@@ -58,7 +58,11 @@ these steps:
    an example of this process is the compile statement for the 'evtest.f'
    FORTRAN program, which is included in this distribution as an example
    of how to call evresp from your own code.  Although the 'evtest' program
-   is not compiled by default, it can be compiled using the following command:
+   is not compiled by default, it can be compiled and run using the following 
+   commands:
 
         cd tests/fortran
-        f77 evtest.f -L. -levresp -lx2r -o evtest
+        gfortran evtest.f -o evtest -levresp -lx2r -lxml2
+        LD_LIBRARY_PATH=/usr/local/lib ./evtest
+        cat evtest.out
+        
