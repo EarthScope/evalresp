@@ -8,8 +8,7 @@ Version 4.0.0
   * ADDED: The xml2resp command to convert from station.xml to
     response format (and man page) 
   
-  * ADDED: Optional support for unit tests (configure --enable-check; 
-    make check)
+  * ADDED: Unit tests (configure --enable-check; make check)
   
   * ADDED: Installation of man pages
 
