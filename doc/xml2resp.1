@@ -1,0 +1,22 @@
+.TH "XML2RESP" "V4.0.0" "??-MAY-2015" "" "IRIS programs"
+.SH "NAME"
+\fIxml2resp\fR \- convert a file from station.xml to RESP format.
+.SH "SYNOPSIS"
+xml2resp [-v] [-o output] [input]
+.SH "DESCRIPTION"
+\fIXml2resp\fR will read an input file in station.xml format and write the
+equivalent response data in RESP format.  It is intended to produce identical
+output to the IRIS-WS package, and is used internally by \fIevalresp\fR when
+the \fB-x\fR option is given.
+.SH "COMMAND-LINE PARAMETERS"
+.nf 
+ \-o file      output file (RESP format; stdout used if omitted)
+ \-v           show error messages (to stderr)
+ \-v \-v        show warning messages
+ \-v \-v \-v     show information messages
+ \-v \-v \-v \-v  show debug messages
+
+If no input file is given, stdin is read.
+.fi
+.SH "SEE ALSO"
+\fIevalresp\fR.
