@@ -257,6 +257,7 @@ void check_channel(struct channel *chan) {
         break;
       case FIR_COEFFS:
         error_return(UNSUPPORT_FILTYPE, "check_channel; unsupported filter type");
+        break;
       case LIST:
 /* IGD         error_return(UNSUPPORT_FILTYPE, "check_channel; unsupported filter type"); */
 /* We are going to support this blockette starting with version 3.2.17 IGD */
