@@ -270,6 +270,7 @@ int x2r_parse_iso_datetime(x2r_log *log, const char *datetime, time_t *epoch) {
     // these two are wrong, but ignored (actually, set) by mktime
     tm.tm_wday = 0;
     tm.tm_yday = 0;
+
     // see http://www.delorie.com/gnu/docs/glibc/libc_435.html (yeah this sucks)
     old_tz = getenv("TZ");
     // ignoring errors from setenv, because it returns an error but works :o(
