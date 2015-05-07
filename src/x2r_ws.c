@@ -59,9 +59,9 @@ static int lines(x2r_log *log, FILE *out, ...) {
 static int format_date(x2r_log *log, const time_t epoch, int n, char *template, char **date) {
 
     int status = X2R_OK;
-    struct tm tm;
+    struct tm *tm;
 
-    if (!(gmtime_r(&epoch, &tm))) {
+    if (!(tm = gmtime(&epoch))) {
         status = x2r_error(log, X2R_ERR_DATE, "Cannot convert epoch to time");
         goto exit;
     }
@@ -69,7 +69,7 @@ static int format_date(x2r_log *log, const time_t epoch, int n, char *template, 
         status = x2r_error(log, X2R_ERR_MEMORY, "Cannot alloc date");
         goto exit;
     }
-    if (!(strftime(*date, n, template, &tm))) {
+    if (!(strftime(*date, n, template, tm))) {
         status = x2r_error(log, X2R_ERR_BUFFER, "Cannot format date in %d char"\
 , n);
         goto exit;

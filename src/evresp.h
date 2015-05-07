@@ -62,6 +62,14 @@
 #include <setjmp.h>
 #include <stdarg.h>
 
+/* if Windows compiler then redefine 'complex' to */
+/*  differentiate it from the existing struct,    */
+/*  and rename 'strcasecmp' functions:            */
+#ifdef _WIN32
+#define strcasecmp stricmp
+#define strncasecmp strnicmp
+#endif
+
 /* IGD 10/16/04 This is for Windows which does not use Makefile.am */
 #ifdef VERSION
 #define REVNUM VERSION
@@ -171,14 +179,6 @@ enum error_codes {
 };
 
 /* define structures for the compound data types used in evalesp */
-
-/* if Windows compiler then redefine 'complex' to */
-/*  differentiate it from the existing struct,    */
-/*  and rename 'strcasecmp' functions:            */
-#ifdef WIN32
-#define strcasecmp stricmp
-#define strncasecmp strnicmp
-#endif
 
 struct evr_complex {
     double real;

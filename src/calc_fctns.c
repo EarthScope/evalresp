@@ -1,7 +1,7 @@
 /* calc_fctns.c */
 
 /*
- 08/28/2008 -- [IGD] Fixed a bug which used calucalated delay instead of estimated in 
+ 08/28/2008 -- [IGD] Fixed a bug which used calculated delay instead of estimated in
  computation of phase
  11/3/2005 -- [ET]  Added 'wrap_phase()' function; moved 'use_delay()'
  function from 'calc_fctns.c' to 'evalresp.c'.
