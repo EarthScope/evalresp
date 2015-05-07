@@ -1,5 +1,5 @@
 
-SUBDIRS = java
+SUBDIRS = java fortran
 
 if USE_CHECK
 TESTS = check_read_xml check_convert check_parse_datetime
