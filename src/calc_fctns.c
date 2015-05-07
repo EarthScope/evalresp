@@ -51,14 +51,14 @@
 
 /* IGD 10/04/13 Reformatted */
 void calc_resp(struct channel *chan, double *freq, int nfreqs,
-        struct complex *output, char *out_units, int start_stage,
+        struct evr_complex *output, char *out_units, int start_stage,
         int stop_stage, int useTotalSensitivityFlag, double x_for_b62) {
     struct blkt *blkt_ptr;
     struct stage *stage_ptr;
     int i, j, units_code, eval_flag = 0, nc = 0, sym_fir = 0;
     double w;
     int matching_stages = 0, has_stage0 = 0, deciStageEvaluated = 0;
-    struct complex of, val;
+    struct evr_complex of, val;
     double corr_applied, calc_delay, estim_delay, delay;
 
     /*  if(start_stage && start_stage > chan->nstages) {
@@ -210,10 +210,10 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs,
 /*==================================================================
  * Convert response to velocity first, then to specified units
  *=================================================================*/
-void convert_to_units(int inp, char *out_units, struct complex *data, double w) {
+void convert_to_units(int inp, char *out_units, struct evr_complex *data, double w) {
 	// TODO - 0 assignment below made blindly to fix compiler warning.  bug?
     int out = 0, l;
-    struct complex scale_val;
+    struct evr_complex scale_val;
 
     /* if default units were specified by the user, no conversion is made,
      otherwise convert to unit the user specified. */
@@ -274,7 +274,7 @@ void convert_to_units(int inp, char *out_units, struct complex *data, double w) 
  * C translation from FORTRAN function: Ilya Dricker (ISTI), i.dricker@isti.com
  * Version 0.2 07/12/00
  *================================================================*/
-void iir_trans(struct blkt *blkt_ptr, double wint, struct complex *out) {
+void iir_trans(struct blkt *blkt_ptr, double wint, struct evr_complex *out) {
 
     double h0;
     double xre, xim, phase;
@@ -342,7 +342,7 @@ void iir_trans(struct blkt *blkt_ptr, double wint, struct complex *out) {
  * Function introduced in version 3.3.4 of evalresp
  * Ilya Dricker ISTI (.dricker@isti.com) 06/01/13
  *===============================================================*/
-void calc_polynomial(struct blkt *blkt_ptr, int i, struct complex *out,
+void calc_polynomial(struct blkt *blkt_ptr, int i, struct evr_complex *out,
         double x_for_b62) {
     double amp = 0, phase = 0;
     int j;
@@ -372,7 +372,7 @@ void calc_polynomial(struct blkt *blkt_ptr, int i, struct complex *out,
  * Function introduced in version 3.2.17 of evalresp
  * Ilya Dricker ISTI (.dricker@isti.com) 06/22/00
  *===============================================================*/
-void calc_list(struct blkt *blkt_ptr, int i, struct complex *out) {
+void calc_list(struct blkt *blkt_ptr, int i, struct evr_complex *out) {
     double amp, phase;
     double halfcirc = 180;
 
@@ -387,9 +387,9 @@ void calc_list(struct blkt *blkt_ptr, int i, struct complex *out) {
 /*==================================================================
  *                Response of analog filter
  *=================================================================*/
-void analog_trans(struct blkt *blkt_ptr, double freq, struct complex *out) {
+void analog_trans(struct blkt *blkt_ptr, double freq, struct evr_complex *out) {
     int nz, np, i;
-    struct complex *ze, *po, denom, num, omega, temp;
+    struct evr_complex *ze, *po, denom, num, omega, temp;
     double h0, mod_squared;
 
     if (blkt_ptr->type == LAPLACE_PZ)
@@ -432,7 +432,7 @@ void analog_trans(struct blkt *blkt_ptr, double freq, struct complex *out) {
 /*==================================================================
  *                Response of symetrical FIR filters
  *=================================================================*/
-void fir_sym_trans(struct blkt *blkt_ptr, double w, struct complex *out) {
+void fir_sym_trans(struct blkt *blkt_ptr, double w, struct evr_complex *out) {
     double *a, h0, wsint;
     struct blkt *next_ptr;
     int na;
@@ -466,7 +466,7 @@ void fir_sym_trans(struct blkt *blkt_ptr, double w, struct complex *out) {
 /*==================================================================
  *                Response of asymetrical FIR filters
  *=================================================================*/
-void fir_asym_trans(struct blkt *blkt_ptr, double w, struct complex *out) {
+void fir_asym_trans(struct blkt *blkt_ptr, double w, struct evr_complex *out) {
     double *a, h0, sint;
     struct blkt *next_ptr, *third_ptr;
     int na;
@@ -514,8 +514,8 @@ void fir_asym_trans(struct blkt *blkt_ptr, double w, struct complex *out) {
 /*==================================================================
  *                Response of IIR filters
  *=================================================================*/
-void iir_pz_trans(struct blkt *blkt_ptr, double w, struct complex *out) {
-    struct complex *ze, *po;
+void iir_pz_trans(struct blkt *blkt_ptr, double w, struct evr_complex *out) {
+    struct evr_complex *ze, *po;
     double h0, sint, wsint;
     struct blkt *next_ptr;
     int nz, np;
@@ -561,7 +561,7 @@ void iir_pz_trans(struct blkt *blkt_ptr, double w, struct complex *out) {
  *      calculate the phase shift equivalent to the time shift
  *      delta at the frequence w (rads/sec)
  *=================================================================*/
-void calc_time_shift(double delta, double w, struct complex *out) {
+void calc_time_shift(double delta, double w, struct evr_complex *out) {
     out->real = cos(w * delta);
     out->imag = sin(w * delta);
 }
@@ -569,7 +569,7 @@ void calc_time_shift(double delta, double w, struct complex *out) {
 /*==================================================================
  *    Complex multiplication:  complex version of val1 *= val2;
  *=================================================================*/
-void zmul(struct complex *val1, struct complex *val2) {
+void zmul(struct evr_complex *val1, struct evr_complex *val2) {
     double r, i;
     r = val1->real * val2->real - val1->imag * val2->imag;
     i = val1->imag * val2->real + val1->real * val2->imag;
@@ -587,7 +587,7 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
     int i, main_type, reset_gain, skipped_stages = 0;
     double w, f;
     double percent_diff;
-    struct complex of, df;
+    struct evr_complex of, df;
 
     /* -------- TEST 1 -------- */
     /*  

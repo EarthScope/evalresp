@@ -25,7 +25,7 @@
 #include <sys/stat.h>
 
 #include <stdlib.h>
-#ifndef WIN32                /* if not Windows compiler then */
+#ifndef _WIN32               /* if not Windows compiler then */
 #include <sys/param.h>       /* include header files */
 #include <unistd.h>
 #include <glob.h>
@@ -37,7 +37,7 @@
 #include <string.h>
 #include "evresp.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #if __BORLANDC__        /* if Borland compiler then */
 #include <dir.h>        /* include header file for directory functions */
 #else                   /* if non-Borland (MS) compiler then */
@@ -204,7 +204,7 @@ struct matched_files *find_files(char *file, struct scn_list *scn_lst,
 
 }
 
-#ifndef WIN32      /* if not Windows then use original 'get_names()' */
+#ifndef _WIN32      /* if not Windows then use original 'get_names()' */
 
 /* get_names:  uses system glob() to get filenames matching the
  expression in 'in_file'. */

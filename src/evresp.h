@@ -66,7 +66,7 @@
 #ifdef VERSION
 #define REVNUM VERSION
 #else
-#define REVNUM "3.3.3"
+#define REVNUM "4.0.0"
 #endif
 
 #define TRUE 1
@@ -176,15 +176,11 @@ enum error_codes {
 /*  differentiate it from the existing struct,    */
 /*  and rename 'strcasecmp' functions:            */
 #ifdef WIN32
-#ifdef complex
-#undef complex
-#endif
-#define complex evr_complex
 #define strcasecmp stricmp
 #define strncasecmp strnicmp
 #endif
 
-struct complex {
+struct evr_complex {
     double real;
     double imag;
 };
@@ -207,7 +203,7 @@ struct response {
     char network[NETLEN];
     char locid[LOCIDLEN];
     char channel[CHALEN];
-    struct complex *rvec;
+    struct evr_complex *rvec;
     int nfreqs; /*Add by I.Dricker IGD to  support blockette 55 */
     double *freqs; /*Add by I.Dricker IGD to  support blockette 55 */
     struct response *next;
@@ -236,8 +232,8 @@ struct pole_zeroType { /* a Response (Poles & Zeros) blockette */
     int npoles;
     double a0;
     double a0_freq;
-    struct complex *zeros;
-    struct complex *poles;
+    struct evr_complex *zeros;
+    struct evr_complex *poles;
 };
 
 struct coeffType { /* a Response (Coefficients) blockette */
@@ -430,7 +426,7 @@ int start_child(char *, FILE **, FILE **, FILE **);
 /* routines used to allocate vectors of the basic data types used in the
  filter stages */
 
-struct complex *alloc_complex(int);
+struct evr_complex *alloc_complex(int);
 struct response *alloc_response(int);
 struct string_array *alloc_string_array(int);
 struct scn *alloc_scn(void);
@@ -512,21 +508,21 @@ void check_sym(struct blkt *, struct channel *);
 
 /* routines used to calculate the instrument responses */
 
-/*void calc_resp(struct channel *, double *, int, struct complex *,char *, int, int);*/
+/*void calc_resp(struct channel *, double *, int, struct evr_complex *,char *, int, int);*/
 void calc_resp(struct channel *chan, double *freq, int nfreqs,
-        struct complex *output, char *out_units, int start_stage,
+        struct evr_complex *output, char *out_units, int start_stage,
         int stop_stage, int useTotalSensitivityFlag, double x_for_b62);
-void convert_to_units(int, char *, struct complex *, double);
-void analog_trans(struct blkt *, double, struct complex *);
-void fir_sym_trans(struct blkt *, double, struct complex *);
-void fir_asym_trans(struct blkt *, double, struct complex *);
-void iir_pz_trans(struct blkt *, double, struct complex *);
-void calc_time_shift(double, double, struct complex *);
-void zmul(struct complex *, struct complex *);
+void convert_to_units(int, char *, struct evr_complex *, double);
+void analog_trans(struct blkt *, double, struct evr_complex *);
+void fir_sym_trans(struct blkt *, double, struct evr_complex *);
+void fir_asym_trans(struct blkt *, double, struct evr_complex *);
+void iir_pz_trans(struct blkt *, double, struct evr_complex *);
+void calc_time_shift(double, double, struct evr_complex *);
+void zmul(struct evr_complex *, struct evr_complex *);
 void norm_resp(struct channel *, int, int);
-void calc_list(struct blkt *, int, struct complex *); /*IGD i.dricker@isti.com for version 3.2.17 */
-void calc_polynomial(struct blkt *, int, struct complex *, double); /*IGD 06/01/2013 */
-void iir_trans(struct blkt *, double, struct complex *); /* IGD for version 3.2.17 */
+void calc_list(struct blkt *, int, struct evr_complex *); /*IGD i.dricker@isti.com for version 3.2.17 */
+void calc_polynomial(struct blkt *, int, struct evr_complex *, double); /*IGD 06/01/2013 */
+void iir_trans(struct blkt *, double, struct evr_complex *); /* IGD for version 3.2.17 */
 int is_time(const char *);
 
 /* compare two times and determine if the first is greater, equal to, or less than the second */

@@ -16,17 +16,17 @@
 /* alloc_complex:  allocates space for an array of complex numbers, returns a pointer to that
  array (exits with error if fails) */
 
-struct complex *alloc_complex(int npts) {
-    struct complex *cptr;
+struct evr_complex *alloc_complex(int npts) {
+    struct evr_complex *cptr;
 
     if (npts) {
-        if ((cptr = (struct complex *) malloc(npts * sizeof(struct complex)))
-                == (struct complex *) NULL) {
+        if ((cptr = (struct evr_complex *) malloc(npts * sizeof(struct evr_complex)))
+                == (struct evr_complex *) NULL) {
             error_exit(OUT_OF_MEMORY,
                     "alloc_complex; malloc() failed for (complex) vector");
         }
     } else
-        cptr = (struct complex *) NULL;
+        cptr = (struct evr_complex *) NULL;
 
     return (cptr);
 }
@@ -101,7 +101,7 @@ struct scn *alloc_scn() {
 
 struct response *alloc_response(int npts) {
     struct response *rptr;
-    struct complex *cvec;
+    struct evr_complex *cvec;
     int k;
 
     if (npts) {
@@ -263,8 +263,8 @@ struct blkt *alloc_pz(void) {
 
     blkt_ptr->type = 0;
     blkt_ptr->next_blkt = (struct blkt *) NULL;
-    blkt_ptr->blkt_info.pole_zero.zeros = (struct complex *) NULL;
-    blkt_ptr->blkt_info.pole_zero.poles = (struct complex *) NULL;
+    blkt_ptr->blkt_info.pole_zero.zeros = (struct evr_complex *) NULL;
+    blkt_ptr->blkt_info.pole_zero.poles = (struct evr_complex *) NULL;
     blkt_ptr->blkt_info.pole_zero.nzeros = 0;
     blkt_ptr->blkt_info.pole_zero.npoles = 0;
 
@@ -544,9 +544,9 @@ void free_file_list(struct file_list *lst) {
 
 void free_pz(struct blkt *blkt_ptr) {
     if (blkt_ptr != (struct blkt *) NULL) {
-        if (blkt_ptr->blkt_info.pole_zero.zeros != (struct complex *) NULL)
+        if (blkt_ptr->blkt_info.pole_zero.zeros != (struct evr_complex *) NULL)
             free(blkt_ptr->blkt_info.pole_zero.zeros);
-        if (blkt_ptr->blkt_info.pole_zero.poles != (struct complex *) NULL)
+        if (blkt_ptr->blkt_info.pole_zero.poles != (struct evr_complex *) NULL)
             free(blkt_ptr->blkt_info.pole_zero.poles);
         free(blkt_ptr);
     }
