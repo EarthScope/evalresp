@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "x2r.h"
 #include "x2r_log.h"
@@ -10,42 +9,49 @@
 #include "x2r_xml.h"
 
 
-/** Handle command-line options. */
+/**
+ * Handle command-line options.
+ *
+ * We don't use getopt because Windows.
+ */
 static int parse_opts(int argc, char *argv[], x2r_log **log, FILE **in, FILE **out) {
 
-    int status = X2R_OK, opt, level = 0;
-    char *output = NULL;
+    int status = X2R_OK, level = 0, index = 0;
+    char *input = NULL, *output = NULL;
 
     *in = stdin;
     *out = stdout;
 
-    while ((!status && ((opt = getopt(argc, argv, "vo:")) != -1))) {
-        switch(opt) {
-        case 'v':
-            level += 1;
-            break;
-        case 'o':
-            output = strdup(optarg);
-            break;
-        default:
-            status = X2R_ERR_USER;
-            goto exit;
-        }
+    while (++index < argc) {
+    	if (argv[index][0] == '-') {
+    		switch (argv[index][1]) {
+            case 'v':
+                level += 1;
+                break;
+            case 'o':
+                output = strdup(argv[++index]);
+                break;
+            default:
+                status = X2R_ERR_USER;
+                goto exit;
+    		}
+    	} else if (input) {
+    		status = X2R_ERR_USER;
+    		goto exit;
+    	} else {
+    		input = strdup(argv[index]);
+    	}
     }
 
     if ((status = x2r_alloc_log(level, stderr, log))) goto exit;
     x2r_info(*log, "Logging to stderr");
 
-    if (optind < argc) {
-        if (!(*in = fopen(argv[optind], "r"))) {
-            status = x2r_error(*log, X2R_ERR_IO, "Cannot open %s to read", argv[optind]);
+    if (input) {
+        if (!(*in = fopen(input, "r"))) {
+            status = x2r_error(*log, X2R_ERR_IO, "Cannot open %s to read", input);
             goto exit;
         }
-        x2r_info(*log, "Input from %s", argv[optind]);
-        if (++optind != argc) {
-            status = x2r_error(*log, X2R_ERR_USER, "Multiple input files");
-            goto exit;
-        }
+        x2r_info(*log, "Input from %s", input);
     } else {
         x2r_info(*log, "Input from stdin");
     }
@@ -61,6 +67,7 @@ static int parse_opts(int argc, char *argv[], x2r_log **log, FILE **in, FILE **o
     }
 
 exit:
+    free(input);
     free(output);
     return status;
 }
@@ -91,8 +98,8 @@ exit:
         fprintf(stderr, "\n  Logging goes to stderr (multiple -v gives more detail)\n");
         fprintf(stderr, "  %s -vvvv -o OUT.resp < IN.xml 2> LOG\n\n", argv[0]);
     }
-    if (in != stdin) fclose(in);
-    if (out != stdout) fclose(out);
+    if (in && in != stdin) fclose(in);
+    if (out && out != stdout) fclose(out);
     status = x2r_free_fdsn_station_xml(root, status);
     status = x2r_free_log(log, status);
     return status;

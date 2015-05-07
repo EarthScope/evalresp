@@ -11,6 +11,10 @@
 #define X2R_ERR_IO 6
 #define X2R_ERR_DATE 7
 
+#ifdef __GNUC__
 #define UNUSED __attribute__((unused))
+#else
+#define UNUSED
+#endif
 
 #endif

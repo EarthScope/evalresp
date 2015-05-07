@@ -27,6 +27,8 @@ dnl Checks for library functions.
 AC_FUNC_VFORK
 AC_CHECK_FUNCS(getcwd regcomp strcspn strstr)
 
+CFLAGS=""
+
 dnl Options processing
 AC_ARG_ENABLE(phase_unwrap,
   [  --enable-phase-unwrap   unwrap phase],
@@ -50,8 +52,9 @@ AC_ARG_ENABLE(debug,
 
 AC_ARG_ENABLE(optimization,
   [  --enable-optimization   enable optimization],
-  [CFLAGS="$CFLAGS -02"
-   echo ==== Enabling -O2 option ======])
+  [CFLAGS="$CFLAGS -O2"
+   echo ==== Enabling -O2 option ======],
+  [CFLAGS="$CFLAGS -O0"])
 
 AC_ARG_ENABLE(unsafe,
   [  --enable-unsafe         remove compiler checks],
