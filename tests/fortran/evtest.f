@@ -48,7 +48,7 @@
       real(8), parameter :: flow = 0.0001, fhigh = 100
       real(8), parameter :: df = (log10(fhigh) - log10(flow)) / (npts-1)
       integer :: i
-      real(8) :: amp, phase, pi = 3.14159265358979
+      real(8) :: rl, im, amp, phase, pi = 3.14159265358979
 
       do i = 1, npts
          freq(i) = 10**(log10(flow) + (i-1) * df)
@@ -66,8 +66,10 @@
       
          open(1, file="evtest.out")
          do i = 1, npts
-            amp = sqrt(resp(2*i-1)**2 + resp(2*i)**2)
-            phase = atan2(resp(2*i), resp(2*i-1)) * 180. / pi
+            rl = resp(2*i-1)
+            im = resp(2*i)
+            amp = sqrt(rl**2 + im**2)
+            phase = atan2(im, rl) * 180. / pi
             write(1,'(3e15.6)') freq(i), amp, phase
          end do
          close(1)
