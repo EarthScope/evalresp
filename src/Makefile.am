@@ -18,5 +18,7 @@ libx2r_la_SOURCES = x2r_log.c x2r_xml.c x2r_ws.c
 include_HEADERS = evresp.h regmagic.h regexp.h evr_spline.h \
   x2r.h x2r_log.h x2r_xml.h x2r_ws.h
 
+EXTRA_DIST = Makefile.ms
+
 distclean-local:
 	rm -f Makefile.in *~
