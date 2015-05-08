@@ -1,0 +1,10 @@
+
+# To build the distribution:
+
+  make disctclean
+  autoreconf -fi
+  ./configure --enable-debug
+  make dist
+  make dist-zip
+
+# (or just "sh MKDIST")
