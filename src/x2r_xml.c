@@ -15,6 +15,10 @@
 // Only those parts needed to print the response document (in x2r_ws.c)
 // are generated.
 
+// http://stackoverflow.com/questions/16647819/timegm-cross-platform
+#ifdef _WIN32
+#define timegm _mkgmtime
+#endif
 
 /** Support routine for stream2doc */
 static int ioread(FILE *f, char * buf, int len) {
@@ -253,7 +257,6 @@ int x2r_parse_iso_datetime(x2r_log *log, const char *datetime, time_t *epoch) {
 
     int status = X2R_OK, year, month;
     struct tm tm;
-    char *old_tz;
 
     if (!(6 == sscanf(datetime, "%d-%d-%dT%d:%d:%d",
     		&year, &month, &tm.tm_mday,
@@ -271,17 +274,7 @@ int x2r_parse_iso_datetime(x2r_log *log, const char *datetime, time_t *epoch) {
     tm.tm_wday = 0;
     tm.tm_yday = 0;
 
-    // see http://www.delorie.com/gnu/docs/glibc/libc_435.html (yeah this sucks)
-    old_tz = getenv("TZ");
-    // ignoring errors from setenv, because it returns an error but works :o(
-    setenv("TZ", "UTC", 1);
-    // we can check this way instead
-    if (strcmp("UTC", getenv("TZ"))) {
-    	status = x2r_error(log, X2R_ERR_DATE, "Cannot set TZ: %s", getenv("TZ"));
-    	goto exit;
-    }
-    *epoch = mktime(&tm);
-    setenv("TZ", old_tz, 1);
+    *epoch = timegm(&tm);
 
 exit:
     return status;

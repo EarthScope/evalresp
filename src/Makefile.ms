@@ -8,13 +8,19 @@ EV_OBJS = alloc_fctns.obj calc_fctns.obj error_fctns.obj \
 
 XR_OBJS = $(CM_OBJS) xml2resp.obj
 
+LIBS = /libpath:..\..\libxml2\lib libxml2.lib
+
+# don't forget that you also need (at the very least) before running
+# compiled commands
+# set PATH=%PATH%;..\..\libxml2\bin;..\..\iconv\bin;..\..\zlib\bin
+
 all: evalresp.exe xml2resp.exe
 
 evalresp.exe: $(EV_OBJS)
-	link $(EV_OBJS) /out:evalresp.exe
+	link $(LIBS) $(EV_OBJS) /out:evalresp.exe
 
 xml2resp.exe: $(XR_OBJS)
-	link $(XR_OBJS) /out:xml2resp.exe
+	link $(LIBS) $(XR_OBJS) /out:xml2resp.exe
 
 .c.obj:
 	cl /c /I ..\..\libxml2\include /I ..\..\iconv\include /I ..\..\zlib\include $<
