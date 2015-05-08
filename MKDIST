@@ -1,7 +1,7 @@
 
 # To build the distribution:
 
-  make disctclean
+  make distclean
   autoreconf -fi
   ./configure --enable-debug
   make dist
