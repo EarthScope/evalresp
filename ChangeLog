@@ -2,24 +2,26 @@
 Version 4.0.0
 
   ??-May-2015 Andrew Cooke (a.cooke@isti.com)
-  
+
   * ADDED: Support for station.xml files (evalresp -x)
 
   * ADDED: The xml2resp command to convert from station.xml to
-    response format (and man page) 
-  
-  * ADDED: Unit tests (configure --enable-check; make check)
-  
+    response format (and man page)
+
+  * ADDED: Tests (configure --enable-check; make check)
+
   * ADDED: Installation of man pages
 
   * MODIFIED: Fortran demo and associated code (works; now Fortran 95)
-  
+
   * MODIFIED: Source: removed tabs; standardised indents; fixed warnings
 
   * MODIFIED: Documentation and directory layout (autoreconf, multiple
     directories)
 
-  * REMOVED: Unsupported build files
+  * MODIFIED: To build with latest Windows environment
+
+  * REMOVED: Borland support
 
 
 Version 3.3.4

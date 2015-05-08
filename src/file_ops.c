@@ -38,13 +38,9 @@
 #include "evresp.h"
 
 #ifdef _WIN32
-#if __BORLANDC__        /* if Borland compiler then */
-#include <dir.h>        /* include header file for directory functions */
-#else                   /* if non-Borland (MS) compiler then */
 #include <io.h>         /* include header files for directory functions */
 #include <direct.h>          /* define macro used below: */
 #define S_ISDIR(m) ((m) & S_IFDIR)
-#endif
 #endif
 
 /* find_files:
@@ -283,10 +279,6 @@ int get_names(char *in_file, struct matched_files *files) {
 int get_names(char *in_file, struct matched_files *files)
 {
     struct file_list *lst_ptr, *tmp_ptr;
-#if __BORLANDC__             /* if Borland compiler then */
-    struct ffblk fblk; /* define block for 'findfirst()' fn */
-#define findclose()
-#else                        /* if non-Borland (MS) compiler then */
     struct _finddata_t fblk; /* define block for 'findfirst()' fn */
     /* setup things for Microsoft compiler compatibility: */
     int fhandval;
@@ -294,7 +286,6 @@ int get_names(char *in_file, struct matched_files *files)
 #define findfirst(name,blk,attrib) (fhandval=_findfirst(name,blk))
 #define findnext(blk) _findnext(fhandval,blk)
 #define findclose() _findclose(fhandval)
-#endif
 
     if(findfirst(in_file,&fblk,0) < 0)
     { /* no matching files found */
