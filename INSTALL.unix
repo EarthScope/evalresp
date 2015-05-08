@@ -11,7 +11,7 @@ steps:
      or similar.
 
    * To run tests, you also need the check library for C unit tests.
-     Again, this is usualyl available via a package manager.  You will
+     Again, this is usually available via a package manager.  You will
      also need to add --enable-check when running configure (see
      below).
 
