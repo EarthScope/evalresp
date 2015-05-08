@@ -1,24 +1,54 @@
 
-Using Visual Studio 12 (VS2013) in Windows 10.
+To compile evalresp from this distribution, follow these steps (these
+instructions were tested on Windows 10 with Visual Studio 12, but a
+similar approach has worked with earlier evalresp releases on earlier
+Windows):
 
-Open the command line tools by typing "Visual Studio Tools" in the
-search bar, selecting the application, and then clicking on "Developer
-Command Prompt for VS2013".
+0. Prepare the target environment.  You must have installed:
 
+   * Visual Studio 12 (VS2013) (the free community version is fine)
 
+   * The libxml2, iconv and zlib libraries and headers.  These can be
+     downloaded from http://www.zlatkovic.com/libxml.en.html
+     Each library should be unpacked in the same directory as evalresp
+     (see below), without version numbers, so the final directory tree
+     from your working directory will look like:
 
-http://marlowa.blogspot.com/2013/07/how-to-build-libxml2-on-windows-using.html
+         +-- evalresp-[version]
+         | +-- doc
+         | +-- src
+         | +-- ...
+         +-- libxml2
+         | +-- bin
+         | +-- include
+         | +-- ...
+         +-- iconv
+         | +-- bin
+         | +-- include
+         | +-- ...
+         +-- zlib
+           +-- bin
+           +-- include
+           +-- ...
 
+1. Unzip the distribution file.  The simplest way to do this is to use
+   the file explorer: right click and select "Expand all".
 
-ftp://ftp.zlatkovic.com/libxml/
+2. Open the Visual Studio command line tools by typing "Visual Studio
+   Tools" in the search bar, selecting the application, and then
+   clicking on "Developer Command Prompt for VS2013".
 
-download iconv (1.9.2), zlib (1.2.5) and libxml2 (2.7.8)
+3. In the command prompt:
 
-unzip (easiest via file explorer - right click and select "Extract all").
+   cd working\directory\evalresp-[version]\src
+   NMAKE /F Makefile.ms
 
-remove middle folder and rename to remove version and type (ie iconv,
-libxml2, zlib each contain bin, etc).
+4. This should build the executables.  You must then configure windows
+   PATH in the usual way before running them.
 
+   For example, from the command line, in the same directory where you
+   built the code, for a quick test:
 
-
+   set PATH=%PATH%;..\..\libxml2\bin;..\..\iconv\bin;..\..\zlib\bin
+   .\evalresp
 
