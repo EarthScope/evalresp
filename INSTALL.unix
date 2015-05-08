@@ -53,7 +53,7 @@ steps:
      --enable-check            Enable check (unit tests)
 
      --disable-static          Disable static library generation
-     --disbale-dynamic         Disable dynamic library generation
+     --disable-dynamic         Disable dynamic library generation
 
 3. Compile the program "evalresp".
  
