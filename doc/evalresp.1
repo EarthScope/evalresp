@@ -89,7 +89,6 @@ A user is advised to select \fB\-use\-estimate\-delay\fR option only if it is kn
 is not properly set in the RESP file.
 
 For all other filter types \fBevalresp\fR uses delay of 0 while processing decimation blockettes. 
-.fi 
 .SH "NON-LINEAR BLOCKETTE 62"
 In general, we cannot represent Blockette 62 as a Fourier response because it is intrinsically non\-linear.  See, for example, p28 of Bendat & Piersol, where they explicitly say that Fourier analysis is done on the assumption of a linear system (as defined p 26).
 
@@ -219,7 +218,6 @@ i.e. if typed setenv SEEDRESP /foo/resp_dir and no file or directory is specifie
 to search on the command line, then the current directory and the directory
 /foo/resp_dir will be searched for matching RESP files from which to calculate
 responses.
-.sp
 .HP 4
 (6) The units argument is one of the following: DIS (displacement), VEL (velocity), ACC
 (acceleration), DEF (default units), and represents the units for which the output response

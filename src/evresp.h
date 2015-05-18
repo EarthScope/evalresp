@@ -547,7 +547,7 @@ struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
 struct response *evresp_itp(char *, char *, char *, char *, char *, char *,
         char *, double *, int, char *, char *, int, int, int, int, int, double,
         int, double, int);
-int evresp_f(char *sta, char *cha, char *net, char *locid, char *datime,
+int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
         char *units, char *file, double *freqs, int nfreqs, double *resp,
         char *rtype, char *verbose, int start_stage, int stop_stage,
         int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
