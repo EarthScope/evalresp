@@ -2,8 +2,8 @@
 SUBDIRS = java fortran
 
 if USE_CHECK
-#TESTS = check_read_xml check_convert check_parse_datetime, check_response
-TESTS = check_response
+TESTS = check_read_xml check_convert check_parse_datetime, check_response
+#TESTS = check_response
 
 check_PROGRAMS = check_read_xml check_convert check_parse_datetime check_response
 

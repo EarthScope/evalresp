@@ -32,6 +32,7 @@ int main (void) {
     tcase_add_test(tc, test_read_xml);
     suite_add_tcase(s, tc);
     SRunner *sr = srunner_create(s);
+    srunner_set_xml(sr, "check-read_xml.xml");
     srunner_run_all(sr, CK_NORMAL);
     number_failed = srunner_ntests_failed(sr);
     srunner_free(sr);
