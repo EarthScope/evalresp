@@ -588,7 +588,7 @@ int check_units(char *line) {
         else if (first_flag && !strncmp(line, "CM", 2))
             unitScaleFact = 1.0e2;
         return (DIS);
-    } else if (string_match(line, "^COUNTS[^A-Z]?", "-r")
+    } else if (string_match(line, "^COUNTS?[^A-Z]?", "-r")
             || string_match(line, "^DIGITAL[^A-Z]?", "-r")) {
         return (COUNTS);
     } else if (string_match(line, "^V[^A-Z]?", "-r")
