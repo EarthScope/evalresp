@@ -14,7 +14,7 @@ Version 4.0.0
 
   * ADDED: Continuous integration at https://phase2.isti.com:8080
 
-  * ADDED: Support for COUNT unites (as well as COUNTS).
+  * ADDED: Support for COUNT units (as well as COUNTS).
 
   * ADDED: Installation of man pages.
 
