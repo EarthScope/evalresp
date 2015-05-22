@@ -1,6 +1,8 @@
 
 SUBDIRS = java fortran
 
+EXTRA_DIST = data
+
 if USE_CHECK
 TESTS = check_read_xml check_convert check_parse_datetime check_response check_count
 #TESTS = check_count

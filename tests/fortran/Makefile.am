@@ -1,5 +1,5 @@
 
-DIST_EXTRA = evtest.f run.sh
+EXTRA_DIST = evtest.f run.sh
 
 clean-local:
 	rm -f Makefile.in
