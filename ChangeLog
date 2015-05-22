@@ -1,4 +1,10 @@
 
+Version 4.0.1
+
+  22-May-2015 Andrew Cooke (a.cooke@isti.com)
+
+  * Modified Fortran demo (fix passing of double array).
+
 Version 4.0.0
 
   22-May-2015 Andrew Cooke (a.cooke@isti.com)

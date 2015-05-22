@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # compile
-gfortran evtest.f -o evtest -levresp -lx2r -lxml2
+gfortran evtest.f -g -o evtest -levresp -lx2r -lxml2
 
 # run (puts output in evtest.out)
 LD_LIBRARY_PATH=/usr/local/lib ./evtest
 
 # run equivalent evalresp (to AMP.IU.ANMO.00.VMZ and PHASE.IU.ANMO.00.VMZ)
-evalresp "*" VMZ 2010 260 0.0001 100 100 -x -f ../data/station-1.xml -b62_x 1
+evalresp "*" VMZ 2010 260 0.0001 100 100 -x -f ../data/station-1.xml -b62_x 3 -stage 1 1
 
 # paste together for comparison
 sed -i -e 's/^\s*//' evtest.out

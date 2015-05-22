@@ -90,22 +90,15 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
         char *rtype, char *verbose, int start_stage, int stop_stage,
         int stdio_flag, int useTotalSensitivityFlag, double x_for_b62, int xml_flag) {
     struct response *first = (struct response *) NULL;
-    double *dfreqs;
     int i, j;
 
-    dfreqs = alloc_double(nfreqs);
-    for (i = 0; i < nfreqs; i++)
-        dfreqs[i] = freqs[i];
+    // some eyeball checks to make sure fortran is passing things ok
+    // printf("freqs: %f-%f\n", freqs[0], freqs[nfreqs-1]);
+    // printf("x_for_b62: %f\n", x_for_b62);
 
-    /* then call evresp */
-
-    first = evresp(sta, cha, net, locid, datime, units, file, dfreqs, nfreqs,
+    first = evresp(sta, cha, net, locid, datime, units, file, freqs, nfreqs,
             rtype, verbose, start_stage, stop_stage, stdio_flag, useTotalSensitivityFlag,
             x_for_b62, xml_flag);
-
-    /* free up the frequency vector */
-
-    free(dfreqs);
 
     /* check the output.  If no response found, return 1, else if more than one response
      found, return -1 */
