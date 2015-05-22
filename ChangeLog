@@ -1,14 +1,18 @@
 
 Version 4.0.0
 
-  ??-May-2015 Andrew Cooke (a.cooke@isti.com)
+  22-May-2015 Andrew Cooke (a.cooke@isti.com)
 
-  * ADDED: Support for station.xml files (evalresp -x)
+  * ADDED: Support for station.xml files (evalresp -x).  All high level
+    functions take an additional flag indicating whether this is set.
+    NOTE: this implies a new dependency on libxml2.
 
   * ADDED: The xml2resp command to convert from station.xml to
-    response format (and man page)
+    response format (and man page), based on IRIS-WS output.
 
-  * ADDED: Tests (configure --enable-check; make check)
+  * ADDED: Tests (configure --enable-check; make check).
+
+  * ADDED: Continuous integration at https://phase2.isti.com:8080
 
   * ADDED: Installation of man pages
 
