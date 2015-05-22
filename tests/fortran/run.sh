@@ -25,5 +25,5 @@ echo "freq            amp (f)         amp (c)         phase (f)       phase (c)"
 cat tmp-all >> comparison
 rm tmp*
 
-# currently there's a difference in phase of 90 degrees :o(
+# not a great choice of responses to compare, but it seems to be working
 cat comparison
