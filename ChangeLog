@@ -14,18 +14,20 @@ Version 4.0.0
 
   * ADDED: Continuous integration at https://phase2.isti.com:8080
 
-  * ADDED: Installation of man pages
+  * ADDED: Support for COUNT unites (as well as COUNTS).
 
-  * MODIFIED: Fortran demo and associated code (works; now Fortran 95)
+  * ADDED: Installation of man pages.
+
+  * MODIFIED: Fortran demo and associated code (works; now Fortran 95).
 
   * MODIFIED: Source: removed tabs; standardised indents; fixed warnings
 
   * MODIFIED: Documentation and directory layout (autoreconf, multiple
-    directories)
+    directories).
 
-  * MODIFIED: To build with latest Windows environment
+  * MODIFIED: To build with latest Windows environment.
 
-  * REMOVED: Borland support
+  * REMOVED: Borland support.
 
 
 Version 3.3.4
