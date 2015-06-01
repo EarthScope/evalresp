@@ -78,7 +78,7 @@ struct string_array *ev_parse_line(char *line) {
     return (lcl_strings);
 }
 
-/* parse_delim_line: parses the fields on a line into seperate strings.  The definition of a field
+/* parse_delim_line: parses the fields on a line into separate strings.  The definition of a field
  There is any non-white space characters with bordering white space.  The result
  is a structure containing the number of fields on the line and an array of
  character strings (which are easier to deal with than the original line).  A second
@@ -437,7 +437,7 @@ int parse_delim_field(char *line, int fld_no, char *delim, char *return_field) {
             lcl_ptr = tmp_ptr + 1;
     }
 
-    memset(return_field, 0, sizeof(return_field));
+    // AC - removed incorrect memset here.  was already compensated for in caller.
     if (tmp_ptr)
         strncpy(return_field, lcl_ptr, (tmp_ptr - lcl_ptr));
     else
