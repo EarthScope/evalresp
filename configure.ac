@@ -1,5 +1,5 @@
 
-AC_INIT([evalresp], [4.0.1], [andrewcooke@isti.com])
+AC_INIT([evalresp], [4.0.2], [andrewcooke@isti.com])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile tests/java/Makefile tests/fortran/Makefile doc/Makefile])

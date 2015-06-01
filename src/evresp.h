@@ -74,7 +74,7 @@
 #ifdef VERSION
 #define REVNUM VERSION
 #else
-#define REVNUM "4.0.1"
+#define REVNUM "4.0.2"
 #endif
 
 #define TRUE 1
