@@ -50,12 +50,21 @@ START_TEST (test_convert_2)
 END_TEST
 
 
+START_TEST (test_convert_3)
+{
+	// this has "no data" in a stage, but still has a channel gain
+    run_test("data/station-3.xml", "data/response-3");
+}
+END_TEST
+
+
 int main (void) {
     int number_failed;
     Suite *s = suite_create("suite");
     TCase *tc = tcase_create ("case");
     tcase_add_test(tc, test_convert_1);
     tcase_add_test(tc, test_convert_2);
+    tcase_add_test(tc, test_convert_3);
     suite_add_tcase(s, tc);
     SRunner *sr = srunner_create(s);
     srunner_set_xml(sr, "check-convert.xml");

@@ -501,7 +501,7 @@ void fir_asym_trans(struct blkt *blkt_ptr, double w, struct evr_complex *out) {
     }
 
     mod = sqrt(R * R + I * I);
-    /* IGD The last member is reterned from evalresp-3.2.35 after Gabi Laske report) */
+    /* IGD The last member is returned from evalresp-3.2.35 after Gabi Laske report) */
     pha = atan2(I, R) + (w * (double) ((na - 1) / 2.0) * sint);
     R = mod * cos(pha);
     I = mod * sin(pha);

@@ -775,9 +775,9 @@ static int parse_stage(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, x2r_stage *
     xmlNodePtr decimation;
     xmlNodePtr stage_gain;
 
-    x2r_debug(log, "Parsing stage");
-
     if ((status = int_attribute(log, node, "number", NULL, &stage->number))) goto exit;
+
+    x2r_debug(log, "Parsing stage %d", stage->number);
 
     if ((status = find_xpath(log, doc, &poles_zeros, &found, node, "./stn:PolesZeros"))) goto exit;
     if (found) {
@@ -830,8 +830,7 @@ static int parse_stage(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, x2r_stage *
     }
 
     if (!stage->type) {
-        status = x2r_error(log, X2R_ERR_XML, "No content in stage");
-        goto exit;
+        x2r_warn(log, "No content in stage (during parse)");
     }
 
     if ((status = find_xpath(log, doc, &decimation, &found, node, "./stn:Decimation"))) goto exit;

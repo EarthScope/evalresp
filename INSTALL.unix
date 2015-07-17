@@ -39,10 +39,7 @@ steps:
         setenv CC acc
         ./configure
 
-     type './configure --help' for help with other options that can
-     be set on the command line when running the './configure' script
-
-  * The following ./configure options can be used during this stage:
+     The following ./configure options can be used during this stage:
     
      --enable-phase-unwrap     Unwrap phase
      --enable-lib-mode         Functions of evalresp return, not exit
@@ -54,6 +51,9 @@ steps:
 
      --disable-static          Disable static library generation
      --disable-dynamic         Disable dynamic library generation
+     
+     --prefix                  Change install location from /usr/local
+     --help                    Show even more options!
 
 3. Compile the program "evalresp".
  

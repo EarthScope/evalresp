@@ -26,7 +26,7 @@ static int parse_opts(int argc, char *argv[], x2r_log **log, FILE **in, FILE **o
     	if (argv[index][0] == '-') {
     		switch (argv[index][1]) {
             case 'v':
-                level += 1;
+                level += strlen(argv[index]) - 1;
                 break;
             case 'o':
                 output = strdup(argv[++index]);
@@ -93,7 +93,7 @@ exit:
         fprintf(stderr, "\nUsage:\n");
         fprintf(stderr, "\n  Specifying input and output files\n");
         fprintf(stderr, "  %s [-v] -o OUT.resp IN.xml\n", argv[0]);
-        fprintf(stderr, "\n  Using stding and stdout\n");
+        fprintf(stderr, "\n  Using stdin and stdout\n");
         fprintf(stderr, "  %s [-v] < IN.xml > OUT.resp\n", argv[0]);
         fprintf(stderr, "\n  Logging goes to stderr (multiple -v gives more detail)\n");
         fprintf(stderr, "  %s -vvvv -o OUT.resp < IN.xml 2> LOG\n\n", argv[0]);

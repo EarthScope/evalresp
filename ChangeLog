@@ -8,6 +8,9 @@ Version 4.0.3
     
   * FIXED: Small bug in reallocation of command line arg while addressing
     compiler warnings from -Wunused-but-set-variable.
+    
+  * MODIFIED: Handling of stages with "no data".  Now accepted, as they may
+    still have decimation and channel gain.
 
 Version 4.0.2
 

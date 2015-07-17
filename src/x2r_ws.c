@@ -513,8 +513,8 @@ static int print_stage(x2r_log *log, FILE *out, const char *net, const char *stn
                 stage->u.polynomial))) goto exit;
         break;
     default:
-        status = x2r_error(log, X2R_ERR_XML, "No content in stage");
-        goto exit;
+        x2r_warn(log, "No content in stage (during print)");
+        break;
     }
 
     if (stage->decimation) {
