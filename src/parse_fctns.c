@@ -1564,26 +1564,12 @@ int in_epoch(const char *datime, const char *beg_t, const char *end_t) {
 
 int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
         struct channel *this_channel) {
-    int test, i, len_time;
+    int test, i;
     struct scn *scn = NULL;
-    short int testSta = 0;
-    short int testChan = 0;
-    short int testNet = 0;
-    short int testLoc = 0;
-    short int testTime = 0;
 
-    len_time = strlen(datime);
     while ((test = get_channel(fptr, this_channel)) != 0) {
         for (i = 0; i < scn_lst->nscn; i++) {
             scn = scn_lst->scn_vec[i];
-            testSta = string_match(this_channel->staname, scn->station, "-g");
-            testNet = (!strlen(scn->network) && !strlen(this_channel->network))
-                    || string_match(this_channel->network, scn->network, "-g");
-            testLoc = string_match(this_channel->locid, scn->locid, "-g");
-            testChan = string_match(this_channel->chaname, scn->channel, "-g");
-            testTime = in_epoch(datime, this_channel->beg_t,
-                    this_channel->end_t);
-
             if (string_match(this_channel->staname, scn->station, "-g")
                     && ((!strlen(scn->network) && !strlen(this_channel->network))
                             || string_match(this_channel->network, scn->network,
@@ -1617,9 +1603,8 @@ int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
 
 int get_resp(FILE *fptr, struct scn *scn, char *datime,
         struct channel *this_channel) {
-    int test, len_time;
+    int test;
 
-    len_time = strlen(datime);
     while ((test = get_channel(fptr, this_channel)) != 0) {
 
         if (string_match(this_channel->staname, scn->station, "-g")

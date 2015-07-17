@@ -5,11 +5,11 @@ pushd ~
 rm -fr tmp
 mkdir tmp
 cd tmp
-unzip ~/evalresp/evalresp-4.0.1.zip
-cd evalresp-4.0.1
+unzip ~/evalresp/evalresp-4.0.3.zip
+cd evalresp-4.0.3
 ./configure --enable-check
 make check
 popd
 
-scp evalresp-4.0.1.zip andrew@love.isti.com:~/public_html
-scp evalresp-4.0.1.tar.gz andrew@love.isti.com:~/public_html
+scp evalresp-4.0.3.zip andrew@love.isti.com:~/public_html
+scp evalresp-4.0.3.tar.gz andrew@love.isti.com:~/public_html

@@ -8,7 +8,7 @@
 #include "x2r_ws.h"
 
 
-// This file generates response formatted data fro m the in-memory model of
+// This file generates response formatted data from the in-memory model of
 // the station.xml document (created in x2r_xml.c).
 
 
@@ -617,28 +617,85 @@ exit:
 }
 
 
-int x2r_xml2resp_on_flag(FILE **in, int xml_flag, int log_level) {
+static int convert_and_replace(FILE **in, int log_level) {
 
     int status = X2R_OK;
     x2r_log *log = NULL;
     x2r_fdsn_station_xml *root = NULL;
     FILE *tmp;
 
-    if (xml_flag) {
-        if ((status = x2r_alloc_log(log_level, stderr, &log))) goto exit;
-        if (!(tmp = tmpfile())) {
-            status = x2r_error(log, X2R_ERR_IO, "Could not open temporary file");
-            goto exit;
-        }
-        if ((status = x2r_station_service_load(log, *in, &root))) goto exit;
-        if ((status = x2r_resp_util_write(log, tmp, root))) goto exit;
-        rewind(tmp);
-        if (*in != stdin) fclose(*in);
-        *in = tmp;
-    }
+	if ((status = x2r_alloc_log(log_level, stderr, &log))) goto exit;
+	if (!(tmp = tmpfile())) {
+		status = x2r_error(log, X2R_ERR_IO, "Could not open temporary file");
+		goto exit;
+	}
+	if ((status = x2r_station_service_load(log, *in, &root))) goto exit;
+	if ((status = x2r_resp_util_write(log, tmp, root))) goto exit;
+	rewind(tmp);
+	if (*in != stdin) fclose(*in);
+	*in = tmp;
 
 exit:
     status = x2r_free_fdsn_station_xml(root, status);
     status = x2r_free_log(log, status);
     return status;
+}
+
+
+/**
+ * If xml_flag is set, convert the file and replace *in.
+ * Otherwise, do nothing.
+ */
+int x2r_xml2resp_on_flag(FILE **in, int xml_flag, int log_level) {
+    if (xml_flag) {
+    	return convert_and_replace(in, log_level);
+    } else {
+    	return X2R_OK;
+    }
+}
+
+
+static int detect_xml(FILE **in, int *xml_flag) {
+
+	int status = X2R_OK;
+	int character = 0;
+
+	while (character > -1) {
+		character = fgetc(*in);
+		if (character > -1) {
+			switch ((char)character) {
+			// on space or newline, keep reading
+			case ' ':
+			case '\n':
+			case '\r':
+				break;
+			// a < means xml
+			case '<':
+				*xml_flag = 1;
+				goto exit;
+			// anything else means SEED
+			default:
+				*xml_flag = 0;
+				goto exit;
+			}
+		}
+	}
+
+exit:
+	rewind(*in);
+	return status;
+}
+
+
+/**
+ * Check the given file, to see if the first character as <,
+ * and if so, convert and replace *in.
+ */
+int x2r_xml2resp_auto(FILE **in, int log_level) {
+
+	int status = X2R_OK;
+	int xml_flag = 0;
+
+	if ((status = detect_xml(in, &xml_flag))) return status;
+	return x2r_xml2resp_on_flag(in, xml_flag, log_level);
 }

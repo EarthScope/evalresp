@@ -88,7 +88,7 @@ char myLabel[20];
 int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
         char *units, char *file, double *freqs, int nfreqs, double *resp,
         char *rtype, char *verbose, int start_stage, int stop_stage,
-        int stdio_flag, int useTotalSensitivityFlag, double x_for_b62, int xml_flag) {
+        int stdio_flag, int useTotalSensitivityFlag, double x_for_b62) {
     struct response *first = (struct response *) NULL;
     int i, j;
 
@@ -98,7 +98,7 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
 
     first = evresp(sta, cha, net, locid, datime, units, file, freqs, nfreqs,
             rtype, verbose, start_stage, stop_stage, stdio_flag, useTotalSensitivityFlag,
-            x_for_b62, xml_flag);
+            x_for_b62);
 
     /* check the output.  If no response found, return 1, else if more than one response
      found, return -1 */
@@ -240,14 +240,13 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
         int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
         int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
         double listinterp_tension, int useTotalSensitivityFlag,
-        double x_for_b62, int xml_flag) {
+        double x_for_b62) {
     struct channel this_channel;
     struct scn *scn;
     struct string_array *sta_list, *chan_list;
     struct string_array *locid_list;
     // TODO - new_file assigned 0 blindly to fix compiler warning.  bug?
     int i, j, k, count = 0, which_matched, test = 1, mode, new_file = 0;
-    int locid_pos;
     int err_type;
     char out_name[MAXLINELEN], locid[LOCIDLEN + 1];
     char *locid_ptr, *end_locid_ptr;
@@ -318,7 +317,6 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
     /* remove any blank spaces from the beginning and end of the string */
 
     locid_ptr = locidlst;
-    locid_pos = 0;
     strncpy(locid, "", LOCIDLEN);
     while (*locid_ptr && *locid_ptr == ' ')
         locid_ptr++;
@@ -385,7 +383,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
     }
 
     /* convert from xml format if necessary, logging error messages to stderr. */
-    if (x2r_xml2resp_on_flag(&fptr, xml_flag, X2R_ERROR)) return NULL;
+    if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
 
     /* allocate space for the first response */
     resp = alloc_response(nfreqs);
@@ -909,9 +907,9 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
 struct response *evresp(char *stalst, char *chalst, char *net_code,
         char *locidlst, char *date_time, char *units, char *file, double *freqs,
         int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
-        int stdio_flag, int useTotalSensitivityFlag, double x_for_b62, int xml_flag) {
+        int stdio_flag, int useTotalSensitivityFlag, double x_for_b62) {
     return evresp_itp(stalst, chalst, net_code, locidlst, date_time, units,
             file, freqs, nfreqs, rtype, verbose, start_stage, stop_stage,
-            stdio_flag, 0, 0, 0.0, 0, x_for_b62, xml_flag);
+            stdio_flag, 0, 0, 0.0, 0, x_for_b62);
 }
 

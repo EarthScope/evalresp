@@ -1,5 +1,5 @@
 
-AC_INIT([evalresp], [4.0.2], [andrewcooke@isti.com])
+AC_INIT([evalresp], [4.0.3], [andrewcooke@isti.com])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile tests/java/Makefile tests/fortran/Makefile doc/Makefile])
@@ -59,7 +59,7 @@ AC_ARG_ENABLE(optimization,
 AC_ARG_ENABLE(unsafe,
   [  --enable-unsafe         remove compiler checks],
   [echo ==== Disabling -Wall -Werror options ======],
-  [CFLAGS="$CFLAGS -Wall -Werror"])
+  [CFLAGS="$CFLAGS -Wall -Werror -Wunused-but-set-variable"])
 
 AC_ARG_ENABLE(check,
   [  --enable-check          enable check (unit tests)],

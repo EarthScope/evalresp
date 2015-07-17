@@ -28,8 +28,7 @@ int main(int argc, char *argv[]) {
     int lin_typ = 0, nfreqs, i, fswidx, tmp_val, fldlen;
     int start_stage = -1, stop_stage = 0, stdio_flag = 0;
     int listinterp_out_flag = 0, listinterp_in_flag = 0;
-    int unwrap_flag = 0, xml_flag = 0;
-    ;
+    int unwrap_flag = 0;
     double listinterp_tension = 1000.0;
     char *t_o_day;
     char *datime;
@@ -224,8 +223,7 @@ int main(int argc, char *argv[]) {
             if ((++i) < argc && *argv[i] != '-') {
                 fldlen = strlen(argv[i]);
                 if (fldlen >= TODAYSIZE) {
-                    void *a;
-                    a = realloc(t_o_day, (fldlen + 1));
+                    t_o_day = realloc(t_o_day, (fldlen + 1));
                 }
                 strcpy(t_o_day, argv[i]);
             } else
@@ -274,8 +272,6 @@ int main(int argc, char *argv[]) {
                 error_exit(USAGE_ERROR, param_err_msgstr, argv[0], argv[i - 1]);
         } else if (!strcmp(argv[i], "-v"))
             verbose = argv[i];
-        else if (!strcmp(argv[i], "-x"))
-            xml_flag = 1;
         else if (argv[i] != NULL && argv[i][0] != '\0')
             fprintf(stderr, "WARNING:  Unrecognized parameter:  %s\n", argv[i]);
     }
@@ -397,7 +393,7 @@ int main(int argc, char *argv[]) {
     first = evresp_itp(sta_list, cha_list, net_code, locid, datime, units, file,
             freqs, nfreqs, rtype, verbose, start_stage, stop_stage, stdio_flag,
             listinterp_out_flag, listinterp_in_flag, listinterp_tension,
-            useTotalSensitivityFlag, x_for_b62, xml_flag);
+            useTotalSensitivityFlag, x_for_b62);
     if (!first) {
         fprintf(stderr, "EVRESP FAILED\n");
         exit(-1);

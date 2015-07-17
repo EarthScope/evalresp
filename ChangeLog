@@ -1,9 +1,25 @@
 
+Version 4.0.3
+
+  17-Jul-2015 Andrew Cooke (a.cooke@isti.com)
+
+  * REMOVED: -x flag.  Station.xml files are now detected automatically
+    (by checking if the first non-blank character is "<").
+    
+  * FIXED: Small bug in reallocation of command line arg while addressing
+    compiler warnings from -Wunused-but-set-variable.
+
+Version 4.0.2
+
+  01-Jun-2015 Andrew Cooke (a.cooke@isti.com)
+
+  * FIXED: Compiler error on OSX.
+
 Version 4.0.1
 
   22-May-2015 Andrew Cooke (a.cooke@isti.com)
 
-  * Modified Fortran demo (fix passing of double array).
+  * MODIFIED: Fortran demo (fix passing of double array).
 
 Version 4.0.0
 
