@@ -325,11 +325,10 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
         end_locid_ptr--;
     strncpy(locid, locid_ptr, (end_locid_ptr - locid_ptr + 1));
 
-    /* parse the "locidlst" string to form a list of channels  */
+    /* parse the "locidlst" string to form a list of locations  */
     locid_list = parse_delim_line(locid, ",");
 
     /* parse the "chalst" string to form a list of channels */
-
     for (i = 0; i < (int) strlen(chalst); i++) {
         if (chalst[i] == ',')
             chalst[i] = ' ';
@@ -344,11 +343,14 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
             for (k = 0; k < chan_list->nstrings; k++, count++) {
                 scn = scns->scn_vec[count];
                 strncpy(scn->station, sta_list->strings[i], STALEN);
-                if (strlen(locid_list->strings[j])
-                        == strspn(locid_list->strings[j], " "))
+                // treat '??' as '*' after long discussion w rob, ilya and eric
+                if (strlen(locid_list->strings[j]) == strspn(locid_list->strings[j], "?")) {
+                	strcpy(scn->locid, "*");
+                } else if (strlen(locid_list->strings[j]) == strspn(locid_list->strings[j], " ")) {
                     memset(scn->locid, 0, LOCIDLEN);
-                else
+                } else {
                     strncpy(scn->locid, locid_list->strings[j], LOCIDLEN);
+                }
                 strncpy(scn->channel, chan_list->strings[k], CHALEN);
                 strncpy(scn->network, net_code, NETLEN);
             }

@@ -1,16 +1,18 @@
 
 Version 4.0.3
 
-  17-Jul-2015 Andrew Cooke (a.cooke@isti.com)
+  27-Jul-2015 Andrew Cooke (a.cooke@isti.com)
 
   * REMOVED: -x flag.  Station.xml files are now detected automatically
     (by checking if the first non-blank character is "<").
-    
+
   * FIXED: Small bug in reallocation of command line arg while addressing
     compiler warnings from -Wunused-but-set-variable.
-    
+
   * MODIFIED: Handling of stages with "no data".  Now accepted, as they may
     still have decimation and channel gain.
+    
+  * MODIFIED: Handling of location ID '??' which is now equivalent to '*'.
 
 Version 4.0.2
 
