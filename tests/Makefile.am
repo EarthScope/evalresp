@@ -4,9 +4,9 @@ SUBDIRS = java fortran
 EXTRA_DIST = data
 
 if USE_CHECK
-#TESTS = check_read_xml check_convert check_parse_datetime check_response \
-#	check_count check_auto check_match
-TESTS = check_match
+TESTS = check_read_xml check_convert check_parse_datetime check_response \
+	check_count check_auto check_match
+#TESTS = check_match
 
 check_PROGRAMS = check_read_xml check_convert check_parse_datetime check_response \
 	check_count check_auto check_match

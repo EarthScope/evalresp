@@ -98,14 +98,15 @@ START_TEST (test_match)
 			tmpdir, freqs, n_freq, "AP", "-v", 0, 99, 0, 0, 0, 0, 0, 0.1)));
 	print_resp(freqs, n_freq, response, "AP", 0);
 
+	// reference files take from evalresp
 	err = max_err(data, tmpdir, "AMP.IU.ANMO.00.BHZ");
-	fail_if(err > 0.1, "Error > 10%");
+	fail_if(err > 0.01, "Error > 1%");
 	err = max_err(data, tmpdir, "PHASE.IU.ANMO.00.BHZ");
-	fail_if(err > 0.1, "Error > 10%");
+	fail_if(err > 0.01, "Error > 1%");
 	err = max_err(data, tmpdir, "AMP.IU.ANMO.10.BHZ");
-	fail_if(err > 0.1, "Error > 10%");
+	fail_if(err > 0.01, "Error > 1%");
 	err = max_err(data, tmpdir, "PHASE.IU.ANMO.10.BHZ");
-	fail_if(err > 0.1, "Error > 10%");
+	fail_if(err > 0.01, "Error > 1%");
 
 	// TODO - delete directory?
 }
