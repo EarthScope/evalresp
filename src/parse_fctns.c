@@ -1572,12 +1572,10 @@ int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
             scn = scn_lst->scn_vec[i];
             if (string_match(this_channel->staname, scn->station, "-g")
                     && ((!strlen(scn->network) && !strlen(this_channel->network))
-                            || string_match(this_channel->network, scn->network,
-                                    "-g"))
+                            || string_match(this_channel->network, scn->network, "-g"))
                     && string_match(this_channel->locid, scn->locid, "-g")
                     && string_match(this_channel->chaname, scn->channel, "-g")
-                    && in_epoch(datime, this_channel->beg_t,
-                            this_channel->end_t)) {
+                    && in_epoch(datime, this_channel->beg_t, this_channel->end_t)) {
                 scn->found = 1;
                 return (i);
             }

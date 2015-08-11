@@ -384,9 +384,6 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
         }
     }
 
-    /* convert from xml format if necessary, logging error messages to stderr. */
-    if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
-
     /* allocate space for the first response */
     resp = alloc_response(nfreqs);
 
@@ -400,7 +397,11 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
          of files (note: if input is from stdin, is one file) */
 
         if (!mode) {
-            which_matched = 0;
+
+            /* convert from xml format if necessary, logging error messages to stderr. */
+            if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
+
+        	which_matched = 0;
             while (test && which_matched >= 0) {
                 if (!(err_type = setjmp(jump_buffer))) {
                     new_file = 0;
@@ -592,11 +593,14 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                     fptr = fopen(lst_ptr->name, "r");
                 }
                 if (fptr) {
+
+                    /* convert from xml format if necessary, logging error messages to stderr. */
+                    if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
+
                     curr_file = lst_ptr->name;
                     look_again: if (!(err_type = setjmp(jump_buffer))) {
                         new_file = 0;
-                        which_matched = get_resp(fptr, scn, date_time,
-                                &this_channel);
+                        which_matched = get_resp(fptr, scn, date_time, &this_channel);
                         if (which_matched >= 0) {
 
                             /* found a station-channel-network that matched.  First construct
@@ -608,6 +612,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                             sprintf(out_name, "%s.%s.%s.%s",
                                     this_channel.network, this_channel.staname,
                                     this_channel.locid, this_channel.chaname);
+                            fprintf(stderr, "writing to %s\n", out_name);
 #ifdef LOG_LABEL
                             sprintf (myLabel, "[%s]", out_name);
 #else
@@ -640,6 +645,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                             } else
                                 new_file = 0;
 
+                            fprintf(stderr, "new file? %d\n", new_file);
                             if (new_file) {
                                 /* fill in station-channel-net information for the response */
 
