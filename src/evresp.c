@@ -612,7 +612,6 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                             sprintf(out_name, "%s.%s.%s.%s",
                                     this_channel.network, this_channel.staname,
                                     this_channel.locid, this_channel.chaname);
-                            fprintf(stderr, "writing to %s\n", out_name);
 #ifdef LOG_LABEL
                             sprintf (myLabel, "[%s]", out_name);
 #else
@@ -645,7 +644,6 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                             } else
                                 new_file = 0;
 
-                            fprintf(stderr, "new file? %d\n", new_file);
                             if (new_file) {
                                 /* fill in station-channel-net information for the response */
 
