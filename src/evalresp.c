@@ -55,89 +55,52 @@ int main(int argc, char *argv[]) {
         printf("    -s type-of-spacing   (log|lin)\n");
         printf("    -n netid             ('II'|'IU'|'G'|'*'...)\n");
         printf("    -l locid             ('01'|'AA,AB,AC'|'A?'|'*'...)\n");
-        printf(
-                "    -r resp_type         ('ap'=amp/pha | 'cs'=complex spectra |\n");
+        printf("    -r resp_type         ('ap'=amp/pha | 'cs'=complex spectra |\n");
         printf("                          'fap'=freq/amp/pha)\n");
-        printf(
-                "    -stage start [stop]  (start and stop are integer stage numbers)\n");
-        printf(
-                "    -stdio               (take input from stdin, output to stdout)\n");
-        printf(
-                "    -use-estimated-delay (use estimated delay instead of correction applied\n");
-        printf(
-                "                          in computation of ASYM FIR response)\n");
-        printf(
-                "    -il                  (interpolate List blockette output)\n");
+        printf("    -stage start [stop]  (start and stop are integer stage numbers)\n");
+        printf("    -stdio               (take input from stdin, output to stdout)\n");
+        printf("    -use-estimated-delay (use estimated delay instead of correction applied\n");
+        printf("                          in computation of ASYM FIR response)\n");
+        printf("    -il                  (interpolate List blockette output)\n");
         printf("    -ii                  (interpolate List blockette input)\n");
-        printf(
-                "    -it tension          (tension for List blockette interpolation)\n");
-        printf(
-                "    -unwrap              (unwrap phase if the output is AP) \n");
-        printf(
-                "    -ts                  (use total sensitivity from stage 0 instead of\n");
+        printf("    -it tension          (tension for List blockette interpolation)\n");
+        printf("    -unwrap              (unwrap phase if the output is AP) \n");
+        printf("    -ts                  (use total sensitivity from stage 0 instead of\n");
         printf("                          computed)\n");
-        printf(
-                "    -b62_x value         (sample value/volts where we compute response for\n");
+        printf("    -b62_x value         (sample value/volts where we compute response for\n");
         printf("                          B62)\n");
-        printf(
-                "    -v                   (verbose; list parameters on stdout)\n");
-        printf(
-                "    -x                   (xml; expect station.xml format input)\n\n");
+        printf("    -v                   (verbose; list parameters on stdout)\n");
         printf("  NOTES:\n\n");
-        printf(
-                "    (1) If the 'file' argument is a directory, that directory will be\n");
-        printf(
-                "        searched for RESP files of the form RESP.NETID.STA.CHA.  Files\n");
-        printf(
-                "        of this type are created by rdseed when it is run with the\n");
-        printf(
-                "        '-R' option or when the '-d' option is used and responses are\n");
+        printf("    (1) If the 'file' argument is a directory, that directory will be\n");
+        printf("        searched for RESP files of the form RESP.NETID.STA.CHA.  Files\n");
+        printf("        of this type are created by rdseed when it is run with the\n");
+        printf("        '-R' option or when the '-d' option is used and responses are\n");
         printf("        requested\n");
-        printf(
-                "    (2) If the 'file' argument is a file, that file is assumed to be\n");
+        printf("    (2) If the 'file' argument is a file, that file is assumed to be\n");
         printf("        output from a call to rdseed with the '-R' option\n");
-        printf(
-                "    (3) If the 'file' argument is missing, the current directory\n");
-        printf(
-                "        will be searched for RESP files of the form RESP.NETID.STA.CHA\n");
-        printf(
-                "    (4) The directory indicated by the environment variable SEEDRESP\n");
-        printf(
-                "        will also be searched for the requested files (if it is defined),\n");
-        printf(
-                "        but if matching station-channel-network values are found in\n");
-        printf(
-                "        both directories, then the local files take precedence\n");
-        printf(
-                "    (5) The NETID (above) indicates a one or two letter network code.\n");
-        printf(
-                "        If no network code exists in the SEED volume, a value of ''\n");
-        printf(
-                "        or '*' will match the 'no network' case (since the ?? string\n");
-        printf(
-                "        in the RESP file output is replaced with an empty string in\n");
+        printf("    (3) If the 'file' argument is missing, the current directory\n");
+        printf("        will be searched for RESP files of the form RESP.NETID.STA.CHA\n");
+        printf("    (4) The directory indicated by the environment variable SEEDRESP\n");
+        printf("        will also be searched for the requested files (if it is defined),\n");
+        printf("        but if matching station-channel-network values are found in\n");
+        printf("        both directories, then the local files take precedence\n");
+        printf("    (5) The NETID (above) indicates a one or two letter network code.\n");
+        printf("        If no network code exists in the SEED volume, a value of ''\n");
+        printf("        or '*' will match the 'no network' case (since the ?? string\n");
+        printf("        in the RESP file output is replaced with an empty string in\n");
         printf("        the program).\n");
-        printf(
-                "    (6) The '-stage' option allows the user to specify the range of\n");
-        printf(
-                "        stages that will be included in the calculation.  If only one\n");
-        printf(
-                "        stage number is given, a response will only be calculated for\n");
-        printf(
-                "        that stage.  If both a start and stop stage number are given,\n");
-        printf(
-                "        any stage between (and including) the start and stop stages\n");
+        printf("    (6) The '-stage' option allows the user to specify the range of\n");
+        printf("        stages that will be included in the calculation.  If only one\n");
+        printf("        stage number is given, a response will only be calculated for\n");
+        printf("        that stage.  If both a start and stop stage number are given,\n");
+        printf("        any stage between (and including) the start and stop stages\n");
         printf("        will be included in the calculation.\n");
-        printf(
-                "    (7) -b62_x defines a value in counts or volts where response is computed\n");
+        printf("    (7) -b62_x defines a value in counts or volts where response is computed\n");
         printf("        This flag only is applied to responses with B62\n\n");
         printf("  EXAMPLES:\n\n");
-        printf(
-                "    evalresp AAK,ARU,TLY VHZ 1992 21 0.001 10 100 -f /EVRESP/NEW/rdseed.out\n");
-        printf(
-                "    evalresp KONO BHN,BHE 1992 1 0.001 10 100 -f /EVRESP/NEW -t 12:31:04 -v\n");
-        printf(
-                "    evalresp FRB BHE,BHZ 1994 31 0.001 10 100 -f resp.all_stations -n '*' -v\n\n");
+        printf("    evalresp AAK,ARU,TLY VHZ 1992 21 0.001 10 100 -f /EVRESP/NEW/rdseed.out\n");
+        printf("    evalresp KONO BHN,BHE 1992 1 0.001 10 100 -f /EVRESP/NEW -t 12:31:04 -v\n");
+        printf("    evalresp FRB BHE,BHZ 1994 31 0.001 10 100 -f resp.all_stations -n '*' -v\n\n");
         exit(1);
     }
 
