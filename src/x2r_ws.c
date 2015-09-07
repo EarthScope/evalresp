@@ -682,7 +682,9 @@ static int detect_xml(FILE **in, int *xml_flag) {
 	}
 
 exit:
-	rewind(*in);
+// doesn't work well on OSX?
+//	rewind(*in);
+	fseek(*in, 0, SEEK_SET);
 	return status;
 }
 
