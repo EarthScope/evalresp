@@ -1,4 +1,13 @@
 
+Version 4.0.4
+
+  07-Sep-2015 Andrew Cooke (a.cooke@isti.com)
+  
+  * MODIFIED: Documentation, removing mentin of -x flag.
+  
+  * MODIFIED: File reset during auto-detection (from rewind to fseek)
+    in the hope of working better on OSX.
+
 Version 4.0.3
 
   27-Jul-2015 Andrew Cooke (a.cooke@isti.com)
