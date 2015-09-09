@@ -73,7 +73,7 @@ START_TEST (test_response)
 	}
 
 	fail_if(!(response = evresp("ANMO", "BH1", "IU", "00", "2015,1,00:00:00", "VEL", data, freqs, n_freq,
-			"AP", "-v", 0, 99, 0, 0, 0.1)));
+			"AP", "-v", 0, 99, 0, 0, 0.1, 1)));
 	print_resp(freqs, n_freq, response, "AP", 0);
 
 	err = max_err(cwd, "data/AMP.IU.ANMO.00.BH1", tmpdir, "AMP.IU.ANMO.00.BH1");

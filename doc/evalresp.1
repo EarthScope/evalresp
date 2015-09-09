@@ -39,14 +39,14 @@ the options.
  \-b62_x value         sample value/volts when we compute response 
                          for B62
  \-v                   verbose; list parameters on stdout
+ \-x                   xml; expect station.xml format
 
 .fi 
 .SH "WHAT IS NEW"
 See ChangeLog file from evalresp distribution.
 .SH "STATION.XML FORMAT INPUT"
-From version 4.0.3, input files in the station.xml for are auto-detected and
-converted to RESP format before processing (before that, but from 4.0.0, the
--x flag was needed).
+From version 4.0.0, input files in the station.xml for are converted 
+to RESP format before processing if the -x flag is given.
 
 The conversion is intended to be identical to that produced with the 
 IRIS-WS package, and can be checked using the \fIxml2resp\fR program

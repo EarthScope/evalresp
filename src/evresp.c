@@ -88,7 +88,8 @@ char myLabel[20];
 int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
         char *units, char *file, double *freqs, int nfreqs, double *resp,
         char *rtype, char *verbose, int start_stage, int stop_stage,
-        int stdio_flag, int useTotalSensitivityFlag, double x_for_b62) {
+        int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
+		int xml_flag) {
     struct response *first = (struct response *) NULL;
     int i, j;
 
@@ -98,7 +99,7 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
 
     first = evresp(sta, cha, net, locid, datime, units, file, freqs, nfreqs,
             rtype, verbose, start_stage, stop_stage, stdio_flag, useTotalSensitivityFlag,
-            x_for_b62);
+            x_for_b62, xml_flag);
 
     /* check the output.  If no response found, return 1, else if more than one response
      found, return -1 */
@@ -240,7 +241,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
         int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
         int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
         double listinterp_tension, int useTotalSensitivityFlag,
-        double x_for_b62) {
+        double x_for_b62, int xml_flag) {
     struct channel this_channel;
     struct scn *scn;
     struct string_array *sta_list, *chan_list;
@@ -399,7 +400,8 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
         if (!mode) {
 
             /* convert from xml format if necessary, logging error messages to stderr. */
-            if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
+        	if (x2r_xml2resp_on_flag(&fptr, xml_flag, X2R_ERROR)) return NULL;
+        	//if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
 
         	which_matched = 0;
             while (test && which_matched >= 0) {
@@ -595,7 +597,8 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                 if (fptr) {
 
                     /* convert from xml format if necessary, logging error messages to stderr. */
-                    if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
+                	if (x2r_xml2resp_on_flag(&fptr, xml_flag, X2R_ERROR)) return NULL;
+                	//if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
 
                     curr_file = lst_ptr->name;
                     look_again: if (!(err_type = setjmp(jump_buffer))) {
@@ -882,7 +885,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
         fclose(fptr); /* close input file */
 
     /* and print a list of WARNINGS about the station-channel pairs that were not
-     found in the input RESP files */
+       found in the input RESP files */
 
     for (i = 0; i < scns->nscn; i++) {
         scn = scns->scn_vec[i];
@@ -913,9 +916,10 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
 struct response *evresp(char *stalst, char *chalst, char *net_code,
         char *locidlst, char *date_time, char *units, char *file, double *freqs,
         int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
-        int stdio_flag, int useTotalSensitivityFlag, double x_for_b62) {
+        int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
+		int xml_flag) {
     return evresp_itp(stalst, chalst, net_code, locidlst, date_time, units,
             file, freqs, nfreqs, rtype, verbose, start_stage, stop_stage,
-            stdio_flag, 0, 0, 0.0, 0, x_for_b62);
+            stdio_flag, 0, 0, 0.0, 0, x_for_b62, xml_flag);
 }
 

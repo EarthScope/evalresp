@@ -692,6 +692,9 @@ exit:
 /**
  * Check the given file, to see if the first character as <,
  * and if so, convert and replace *in.
+ *
+ * DO NOT USE - rewind / fseek does not appear to work on OSX and
+ * anyway should not work on stdin (although it seems to on linux!)
  */
 int x2r_xml2resp_auto(FILE **in, int log_level) {
 

@@ -74,7 +74,7 @@
 #ifdef VERSION
 #define REVNUM VERSION
 #else
-#define REVNUM "4.0.4"
+#define REVNUM "4.0.5"
 #endif
 
 #define TRUE 1
@@ -543,14 +543,15 @@ void print_resp_itp(double *, int, struct response *, char *, int, int, double,
  frequencies requested by the user */
 
 struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
-        double *, int, char *, char *, int, int, int, int, double);
+        double *, int, char *, char *, int, int, int, int, double, int);
 struct response *evresp_itp(char *, char *, char *, char *, char *, char *,
         char *, double *, int, char *, char *, int, int, int, int, int, double,
-        int, double);
+        int, double, int);
 int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
         char *units, char *file, double *freqs, int nfreqs, double *resp,
         char *rtype, char *verbose, int start_stage, int stop_stage,
-        int stdio_flag, int useTotalSensitivityFlag, double x_for_b62);
+        int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
+		int xml_flag);
 
 /* Interpolates amplitude and phase values from the set of frequencies
  in the List blockette to the requested set of frequencies. */

@@ -1,10 +1,17 @@
 
+Version 4.0.5
+
+  09-Sep-2015
+
+  * MODIFIED: Added -x flag back; removed auto-detetcion of XML
+    (cannot guarantee that rewind/fseek works on all streams in C).
+
 Version 4.0.4
 
   07-Sep-2015 Andrew Cooke (a.cooke@isti.com)
-  
-  * MODIFIED: Documentation, removing mentin of -x flag.
-  
+
+  * MODIFIED: Documentation, removing mention of -x flag.
+
   * MODIFIED: File reset during auto-detection (from rewind to fseek)
     in the hope of working better on OSX.
 
@@ -20,7 +27,7 @@ Version 4.0.3
 
   * MODIFIED: Handling of stages with "no data".  Now accepted, as they may
     still have decimation and channel gain.
-    
+
   * MODIFIED: Handling of location ID '??' which is now equivalent to '*'.
 
 Version 4.0.2
