@@ -13,7 +13,7 @@ libevresp_la_SOURCES = regexp.c regerror.c regsub.c calc_fctns.c resp_fctns.c \
  file_ops.c evresp.c alloc_fctns.c parse_fctns.c print_fctns.c string_fctns.c \
  error_fctns.c evr_spline.c
 
-libx2r_la_SOURCES = x2r_log.c x2r_xml.c x2r_ws.c
+libx2r_la_SOURCES = x2r.c x2r_log.c x2r_xml.c x2r_ws.c
 
 include_HEADERS = evresp.h regmagic.h regexp.h evr_spline.h \
   x2r.h x2r_log.h x2r_xml.h x2r_ws.h

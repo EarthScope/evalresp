@@ -1,15 +1,18 @@
 
 sh ./MKDIST
 
-pushd ~
 rm -fr tmp
 mkdir tmp
-cd tmp
-unzip ~/evalresp/evalresp-4.0.5.zip
-cd evalresp-4.0.5
+
+pushd tmp
+unzip ../evalresp-4.0.6.zip
+
+pushd evalresp-4.0.6
 ./configure --enable-check
 make check
+
+popd
 popd
 
-scp evalresp-4.0.5.zip andrew@love.isti.com:~/public_html
-scp evalresp-4.0.5.tar.gz andrew@love.isti.com:~/public_html
+scp evalresp-4.0.6.zip andrew@love.isti.com:~/public_html
+scp evalresp-4.0.6.tar.gz andrew@love.isti.com:~/public_html
