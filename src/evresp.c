@@ -258,7 +258,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
     struct response *resp = NULL, *next_ptr = NULL;
     struct response *prev_ptr = (struct response *) NULL;
     struct response *first_resp = (struct response *) NULL;
-    struct evr_complex *output = NULL;
+    struct evresp_complex *output = NULL;
     struct scn_list *scns = NULL;
     FILE *fptr = NULL;
     double *freqs_orig = NULL; /* for saving the original frequencies */
