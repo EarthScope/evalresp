@@ -3,19 +3,6 @@ Version 4.0.6
 
   07-Oct-2015 Andrew Cooke (a.cooke@isti.com)
 
-  * MODIFIED: Added x2r_exists function so that automake projects can
-    use this library easily with code something like:
-      AC_CHECK_LIB(xml2, xmlTextReaderGetAttribute,
-	[echo "xml2 found"; LIBS="$LIBS -lxml2"],
-	[echo "missing xml2 - may cause problems with x2r/evalresp"])
-      AC_CHECK_LIB(x2r, x2r_exists,
-	[echo "x2r found"; LIBS="$LIBS -lx2r"],
-	[echo "missing x2r - may be old evalresp"])
-      AC_CHECK_LIB(evresp, alloc_pz,
-	[echo "evalresp found"; LIBS="$LIBS -levresp"],
-	[echo "missing evalresp"; exit 1])
-    which allows old versions (before XML support) to be used.
-    
   * ADDED: #define EVRESP_XML so that library code can detect the
     new functions (with xml flag).
 

@@ -17,7 +17,4 @@
 #define UNUSED
 #endif
 
-// does nothing - provided for AC_CHECK_LIB
-void x2r_exists();
-
 #endif
