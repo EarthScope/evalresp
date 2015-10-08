@@ -279,7 +279,7 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
     char filename[MAXLINELEN];
     FILE *fptr1, *fptr2;
     struct response *resp;
-    struct evresp_complex *output;
+    struct evr_complex *output;
     double *amp_arr;
     double *pha_arr;
     double *freq_arr;
