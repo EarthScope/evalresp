@@ -77,6 +77,10 @@
 #define REVNUM "4.0.6"
 #endif
 
+// once this is defined (v4.0.6 onwards), some functions take an additional
+// axml flag argument
+#define EVRESP_XML
+
 #define TRUE 1
 #define FALSE 0
 #define QUERY_DELAY -1

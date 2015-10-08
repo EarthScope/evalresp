@@ -1,7 +1,7 @@
 
 Version 4.0.6
 
-  07-Oct-2015
+  07-Oct-2015 Andrew Cooke (a.cooke@isti.com)
 
   * MODIFIED: Added x2r_exists function so that automake projects can
     use this library easily with code something like:
@@ -15,10 +15,13 @@ Version 4.0.6
 	[echo "evalresp found"; LIBS="$LIBS -levresp"],
 	[echo "missing evalresp"; exit 1])
     which allows old versions (before XML support) to be used.
+    
+  * ADDED: #define EVRESP_XML so that library code can detect the
+    new functions (with xml flag).
 
 Version 4.0.5
 
-  09-Sep-2015
+  09-Sep-2015 Andrew Cooke (a.cooke@isti.com)
 
   * MODIFIED: Added -x flag back; removed auto-detetcion of XML
     (cannot guarantee that rewind/fseek works on all streams in C).
