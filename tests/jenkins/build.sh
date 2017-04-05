@@ -11,7 +11,7 @@ if [ ! -d src ]; then
 fi
 
 rm -fr install
-mkdir m4  # needed by ancient aclocal on jenkins machine
+rm -fr m4; mkdir m4  # needed by ancient aclocal on jenkins machine
 autoreconf -fi
 ./configure -prefix `pwd`/install --enable-check
 make
@@ -19,7 +19,3 @@ make
 # this is where test output will be go
 rm -fr tests/run
 mkdir tests/run
-
-# these will be run separately in jenkins, if needed
-#make check
-#make install
