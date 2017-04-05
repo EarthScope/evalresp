@@ -10,6 +10,10 @@ autoreconf -fi
 ./configure -prefix `pwd`/install --enable-check
 make
 
+# this is where test output will be go
+rm -fr tests/run
+mkdir tests/run
+
 # these will be run separately in jenkins, if needed
 #make check
 #make install
