@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 
 # previously (in jenkins directly)
 # git clone git@github.com-evalresp:iris-edu/evalresp.git

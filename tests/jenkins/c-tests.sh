@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 
 if [ ! -d src ]; then
     echo "run this script in the top level directory"
