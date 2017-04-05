@@ -15,7 +15,4 @@ rm -fr m4; mkdir m4  # needed by ancient aclocal on jenkins machine
 autoreconf -fi
 ./configure -prefix `pwd`/install --enable-check
 make
-
-# this is where test output will be go
-rm -fr tests/run
-mkdir tests/run
+make install

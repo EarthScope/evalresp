@@ -16,3 +16,6 @@ config.*
 libtool
 stamp*
 build-aux
+
+env
+install

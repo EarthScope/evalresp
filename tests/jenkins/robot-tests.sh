@@ -14,3 +14,10 @@ pip install --upgrade robotframework
 #pushd tests/robot/lib
 #python setup.py install
 #popd
+
+export PATH="${PATH}:${WORKSPACE}/install/bin"
+cd tests/robot
+rm -fr run
+mkdir run
+cd run
+robot ../all
