@@ -1,6 +1,6 @@
 
 from __future__ import print_function
-from os import environ, chdir, mkdir, getcwd, listdir
+from os import environ, chdir, mkdir, getcwd, listdir, realpath
 from os.path import join, exists, relpath
 from shutil import copyfile
 from robot.api import logger
@@ -85,7 +85,7 @@ class Support:
         """As 'compare_two_float_cols', but inferring all arguments
         automatically."""
         # infer target path
-        dir = relpath(getcwd(), RUN)
+        dir = relpath(realpath(getcwd()), realpath(RUN))
         target = join(TARGET, dir)
         files = ','.join(listdir(target))
         self.compare_two_float_cols(dir, files)
