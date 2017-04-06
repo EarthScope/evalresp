@@ -1,7 +1,7 @@
 
 from __future__ import print_function
-from os import environ, chdir, mkdir, getcwd, listdir, realpath
-from os.path import join, exists, relpath
+from os import environ, chdir, mkdir, getcwd, listdir
+from os.path import join, exists, relpath, realpath
 from shutil import copyfile
 from robot.api import logger
 
