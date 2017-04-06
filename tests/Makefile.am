@@ -1,2 +1,3 @@
 
-SUBDIRS = c java fortran
+SUBDIRS = c java fortran robot
+

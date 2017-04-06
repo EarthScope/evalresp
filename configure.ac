@@ -2,7 +2,7 @@
 AC_INIT([evalresp], [4.0.7], [andrewcooke@isti.com])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([build-aux])
-AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile tests/c/Makefile tests/java/Makefile tests/fortran/Makefile doc/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile tests/c/Makefile tests/java/Makefile tests/fortran/Makefile tests/robot/Makefile doc/Makefile])
 AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([foreign])
 
