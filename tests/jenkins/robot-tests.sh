@@ -5,19 +5,27 @@ if [ ! -d src ]; then
     exit 1
 fi
 
-rm -fr env
-virtualenv env
-. ./env/bin/activate
-pip install --upgrade robotframework
+# install robot in a virtualenv
+# uncomment the rm below to save time by re-using if it already exists
+#rm -fr env
+if [ ! -d env ]; then
+    virtualenv env
+    . ./env/bin/activate
+    pip install --upgrade robotframework
+    pushd tests/robot/lib
+    python setup.py install
+    popd
+else
+    echo "reusing existing robot virtualenv"
+    . ./env/bin/activate
+fi    
 
-# install the library we use to extend robot
-#pushd tests/robot/lib
-#python setup.py install
-#popd
+# under jenkins, WORKSPACE is set automatically, but otherwise
+# this script will be run there anyway...
+pwd=`pwd`; WORKSPACE=${WORKSPACE:-$pwd}
+TMP=${TMP:-/tmp}
+PATH="${PATH}:${WORKSPACE}/install/bin"
 
-export PATH="${PATH}:${WORKSPACE}/install/bin"
 cd tests/robot
-rm -fr run
-mkdir run
-cd run
-robot ../all
+rm -fr run; mkdir run
+WORKSPACE=${WORKSPACE} robot all

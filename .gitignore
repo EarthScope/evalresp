@@ -19,3 +19,7 @@ build-aux
 
 env
 install
+
+log.html
+output.xml
+report.html
