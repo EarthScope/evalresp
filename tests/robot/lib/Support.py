@@ -26,6 +26,10 @@ class Support:
             raise Exception('Directory %s does not exist' % dir)
 
     def prepare(self, dir, files):
+        """Call this method before running evalresp.  It creates the
+        working directory (under 'run') and copies across the required
+        data files (which should be a comma-separated list with no 
+        spaces)."""
         run = join(RUN, dir)
         self._assert_missing_dir(run)
         mkdir(run)
@@ -37,16 +41,20 @@ class Support:
 
     def _extract_floats(self, n, line, path, index):
         if not line:
-            raise Exception('Data missing from %s at line %d' % path, index)
+            raise Exception('Data missing from %s at line %d' % (path, index))
         try:
             data = map(float, line.split())
         except FormatException:
-            raise Exception('Bad data in %s at line %d' % path, index)
+            raise Exception('Bad data in %s at line %d' % (path, index))
         if len(data) != n:
-            raise Exception('Missing data in %s at line %d' % path, index)
+            raise Exception('Missing data in %s at line %d' % (path, index))
         return data
 
     def compare_two_float_cols(self, dir, files):
+        """Call this method after running evalresp.  It checks the given
+        files (a comma-separated list with no spaces) between the working
+        directory and the target directory (both should have the same
+        relative paths)."""
         run = join(RUN, dir)
         self._assert_present_dir(run)
         target = join(TARGET, dir)
@@ -64,10 +72,10 @@ class Support:
                             a = max(abs(r), abs(t))
                             if a < TINY:
                                 if abs(r - t) > TINY:
-                                    raise Exception('%s and %s differ at line %d', result_path, target_path, index)
+                                    raise Exception('%s and %s differ at line %d' % (result_path, target_path, index))
                                     
                             else:
                                 if (abs(r-t)/a) > TINY:
-                                    raise Exception('%s and %s differ at line %d', result_path, target_path, index)
+                                    raise Exception('%s and %s differ at line %d' % (result_path, target_path, index))
                 if target_file.readline():
                     raise Exception('Missing data at end of %s' % result_path)
