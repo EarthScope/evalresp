@@ -7,7 +7,7 @@ fi
 
 # install robot in a virtualenv
 # uncomment the rm below to save time by re-using if it already exists
-#rm -fr env
+rm -fr env
 if [ ! -d env ]; then
     virtualenv env
     . ./env/bin/activate
