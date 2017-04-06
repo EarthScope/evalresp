@@ -28,4 +28,4 @@ PATH="${PATH}:${WORKSPACE}/install/bin"
 
 cd tests/robot
 rm -fr run; mkdir run
-WORKSPACE=${WORKSPACE} robot all
+WORKSPACE=${WORKSPACE} robot --loglevel DEBUG all

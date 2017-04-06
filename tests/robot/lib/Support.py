@@ -1,7 +1,7 @@
 
 from __future__ import print_function
-from os import environ, chdir, mkdir
-from os.path import join, exists
+from os import environ, chdir, mkdir, getcwd, listdir
+from os.path import join, exists, relpath
 from shutil import copyfile
 from robot.api import logger
 
@@ -62,6 +62,7 @@ class Support:
         for file in files.split(','):
             result_path = join(run, file)
             target_path = join(target, file)
+            logger.info('Comparing %s with %s' % (result_path, target_path))
             with open(target_path, 'r') as target_file:
                 with open(result_path, 'r') as result_file:
                     for (index, result_line) in enumerate(result_file.readlines()):
@@ -79,3 +80,12 @@ class Support:
                                     raise Exception('%s and %s differ at line %d' % (result_path, target_path, index))
                 if target_file.readline():
                     raise Exception('Missing data at end of %s' % result_path)
+
+    def compare_target_files_two_float_cols(self):
+        """As 'compare_two_float_cols', but inferring all arguments
+        automatically."""
+        # infer target path
+        dir = relpath(getcwd(), RUN)
+        target = join(TARGET, dir)
+        files = ','.join(listdir(target))
+        self.compare_two_float_cols(dir, files)
