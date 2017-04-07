@@ -1,8 +1,8 @@
 
 from __future__ import print_function
-from os import environ, chdir, mkdir, getcwd, listdir
+from os import environ, chdir, makedirs, getcwd, listdir, symlink
 from os.path import join, exists, relpath, realpath, isfile
-from shutil import copyfile
+#from shutil import copyfile
 from robot.api import logger
 
 WORKSPACE = environ['WORKSPACE']
@@ -41,11 +41,13 @@ class Support:
         spaces)."""
         run = join(RUN, dir)
         self._assert_missing_dir(run)
-        mkdir(run)
+        makedirs(run)
         for file in files.split(','):
             src = join(DATA, file)
             dest = join(RUN, dir, file)
-            copyfile(src, dest)
+            # link instead of copy to avoid using disk space with duplicates
+            #copyfile(src, dest)
+            symlink(src, dest)
         chdir(run)
 
     def _extract_floats(self, n, line, path, index):
@@ -59,14 +61,13 @@ class Support:
             raise Exception('Missing data in %s at line %d' % (path, index))
         return data
 
-    def compare_two_float_cols(self, dir, files):
+    def compare_two_float_cols(self, target_dir, files):
         """Call this method after running evalresp.  It checks the given
         files (a comma-separated list with no spaces) between the working
-        directory and the target directory (both should have the same
-        relative paths)."""
-        run = join(RUN, dir)
+        directory and the target directory."""
+        run = join(RUN, getcwd())
         self._assert_present_dir(run)
-        target = join(TARGET, dir)
+        target = join(TARGET, target_dir)
         self._assert_present_dir(target)
         for file in files.split(','):
             result_path = join(run, file)
@@ -84,14 +85,16 @@ class Support:
                 if target_file.readline():
                     raise Exception('Missing data at end of %s' % result_path)
 
-    def compare_target_files_two_float_cols(self):
+    def compare_target_files_two_float_cols(self, target_dir=None):
         """Call this method after running evalresp.  It checks all files
         in the target directory against those in the run directory
-        (both should have the same relative paths)."""
-        dir = relpath(realpath(getcwd()), realpath(RUN))
-        target = join(TARGET, dir)
+        (the target directory can be inferred of both have the same 
+        relative paths)."""
+        if not target_dir:
+            target_dir = relpath(realpath(getcwd()), realpath(RUN))
+        target = join(TARGET, target_dir)
         files = ','.join(listdir(target))
-        self.compare_two_float_cols(dir, files)
+        self.compare_two_float_cols(target_dir, files)
 
     def check_number_of_files(self, n):
         """Check the number of files in the run directory."""
