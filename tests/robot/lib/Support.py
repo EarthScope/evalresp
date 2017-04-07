@@ -100,8 +100,9 @@ class Support:
         """Check the number of files in the run directory."""
         n = int(n)
         found = 0
-        for file in listdir(getcwd()):
-            if isfile(join(getcwd(), file)):
+        run = getcwd()
+        for file in listdir(run):
+            if isfile(join(run, file)):
                 found += 1
         if found != n:
-            raise Exception('Found  %d files in %s, but expected %d' % (found, getcwd(), n))
+            raise Exception('Found %d files in %s, but expected %d' % (found, run, n))
