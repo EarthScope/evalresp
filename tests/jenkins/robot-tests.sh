@@ -6,8 +6,9 @@ if [ ! -d src ]; then
 fi
 
 # install robot in a virtualenv
-# uncomment the rm below to save time by re-using if it already exists
-rm -fr env
+# this directory is always removed on jenkins (if configured correctly)
+# remove manually locally if you want to rebuild the env
+#rm -fr env
 if [ ! -d env ]; then
     virtualenv env
     . ./env/bin/activate
