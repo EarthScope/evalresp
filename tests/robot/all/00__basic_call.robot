@@ -15,17 +15,17 @@ A simple call to evalresp
 
 Bad date gives no data
     Prepare  basic_call/bad_date   RESP.Z.CGV..HYZ
-    Run process  evalresp  CGV  HYZ  2009  12  0.001  10  100  -f  RESP.Z.CGV..HYZ
+    Run process  evalresp  CGV  HYZ  2009  365  0.001  10  100  -f  RESP.Z.CGV..HYZ
     Check number of files  1
 
 Bad site gives no data
     Prepare  basic_call/bad_site   RESP.Z.CGV..HYZ
-    Run process  evalresp  XXX  HYZ  2009  12  0.001  10  100  -f  RESP.Z.CGV..HYZ
+    Run process  evalresp  XXX  HYZ  2009  365  0.001  10  100  -f  RESP.Z.CGV..HYZ
     Check number of files  1
 
 Bad channel gives no data
     Prepare  basic_call/bad_channel   RESP.Z.CGV..HYZ
-    Run process  evalresp  CGV  XXX  2009  12  0.001  10  100  -f  RESP.Z.CGV..HYZ
+    Run process  evalresp  CGV  XXX  2009  365  0.001  10  100  -f  RESP.Z.CGV..HYZ
     Check number of files  1
 
 Wildcards match all data
