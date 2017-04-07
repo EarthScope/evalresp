@@ -88,7 +88,7 @@ class Support:
     def compare_target_files_two_float_cols(self, target_dir=None):
         """Call this method after running evalresp.  It checks all files
         in the target directory against those in the run directory
-        (the target directory can be inferred of both have the same 
+        (the target directory can be inferred if both have the same 
         relative paths)."""
         if not target_dir:
             target_dir = relpath(realpath(getcwd()), realpath(RUN))
