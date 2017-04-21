@@ -34,17 +34,18 @@ class Support:
             if (abs(a - b) / magnitude) > TINY:
                 raise Exception('%f and %f differ at %s' % (a, b, location))
 
-    def prepare(self, dir, files):
+    def prepare(self, dest_dir, files, data_dir='.'):
         """Call this method before running evalresp on a single set of files.
         It creates the working directory (under 'run') and copies
         across the required data files (which should be a
-        comma-separated list with no spaces)."""
-        run = join(RUN, dir)
+        comma-separated list with no spaces).  An optional final argument
+        can specify a sub directory for the data files."""
+        run = join(RUN, dest_dir)
         self._assert_missing_dir(run)
         makedirs(run)
         for file in files.split(','):
-            src = join(DATA, file)
-            dest = join(RUN, dir, file)
+            src = join(DATA, data_dir, file)
+            dest = join(run, file)
             # link instead of copy to avoid using disk space with duplicates
             #copyfile(src, dest)
             symlink(src, dest)

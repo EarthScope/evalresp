@@ -66,7 +66,7 @@ Library  Support
 *** Test Cases ***
 
 Automated call to evalresp
-    Prepare  extended/$file  $file
+    Prepare  extended/$file  $file  extended
     Run process  evalresp  *  *  2010  1  0.001  10  100  -f  $file
     Check number of files  3
 
