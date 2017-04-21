@@ -31,6 +31,6 @@ Bad channel gives no data
 Wildcards match all data
     Prepare  basic/simple/wildcards  RESP.Z.CGV..HYZ
     Run process  evalresp  *  *  2010  1  0.001  10  100  -f  RESP.Z.CGV..HYZ
-    Compare target files two float cols  basic_call/simple
+    Compare target files two float cols  basic/simple/direct
     Check number of files  3
 
