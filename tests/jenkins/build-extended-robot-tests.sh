@@ -71,7 +71,7 @@ Automated call to evalresp
     Check number of files  3
 
 EOF
-    ) > $file
+    ) > "$file.robot"
     echo "$path -> $file"
 done
 popd
