@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 if [ ! -d src ]; then
     echo "run this script in the top level directory"
@@ -9,6 +9,34 @@ if [ ! -d env ]; then
     echo "run robot-tests-basic.sh first"
     exit 1
 fi
+
+ARCHIVE="RESP-testset.zip"
+
+pushd tests/robot/data
+if [ ! -f "$ARCHIVE" ]; then
+    echo "$ARCHIVE does not exist"
+    if [ -z ${ROBOT_ARCHIVE_CACHE+x} ]; then
+	echo "ROBOT_ARCHIVE_CACHE is unset so downloading data."
+	echo "To avoid multiple downloads, place $ARCHIVE in a cache directory and set"
+	echo "ROBOT_ARCHIVE_CACHE to the absolute file location (eg /var/data/$ARCHIVE)."
+	wget "http://ds.iris.edu/files/staff/chad/$ARCHIVE"
+    else
+	echo "Copying data from cache at $ROBOT_ARCHIVE_CACHE"
+	cp "$ROBOT_ARCHIVE_CACHE" "$ARCHIVE"
+    fi
+fi
+if [ -d extended ]; then
+    echo "Wiping existing extended data"
+    rm -fr extended
+fi
+mkdir extended
+pushd extended
+# note -j below so that everything is in main directory (no subdirs)
+unzip -j "../$ARCHIVE"
+popd
+popd
+
+exit 0
 
 . ./env/bin/activate
 

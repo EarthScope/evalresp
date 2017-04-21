@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 if [ ! -d src ]; then
     echo "run this script in the top level directory"
@@ -28,5 +28,5 @@ TMP=${TMP:-/tmp}
 PATH="${PATH}:${WORKSPACE}/install/bin"
 
 cd tests/robot
-rm -fr run; mkdir run
-WORKSPACE=${WORKSPACE} robot --loglevel DEBUG all
+rm -fr run/basic; mkdir run/basic
+WORKSPACE=${WORKSPACE} robot --loglevel DEBUG all/basic

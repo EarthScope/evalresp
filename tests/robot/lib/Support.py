@@ -35,10 +35,10 @@ class Support:
                 raise Exception('%f and %f differ at %s' % (a, b, location))
 
     def prepare(self, dir, files):
-        """Call this method before running evalresp.  It creates the
-        working directory (under 'run') and copies across the required
-        data files (which should be a comma-separated list with no 
-        spaces)."""
+        """Call this method before running evalresp on a single set of files.
+        It creates the working directory (under 'run') and copies
+        across the required data files (which should be a
+        comma-separated list with no spaces)."""
         run = join(RUN, dir)
         self._assert_missing_dir(run)
         makedirs(run)
@@ -62,9 +62,10 @@ class Support:
         return data
 
     def compare_two_float_cols(self, target_dir, files):
-        """Call this method after running evalresp.  It checks the given
-        files (a comma-separated list with no spaces) between the working
-        directory and the target directory."""
+        """Call this method after running evalresp on a single set of files.
+        It checks the given files (a comma-separated list with no
+        spaces) between the working directory and the target
+        directory."""
         run = join(RUN, getcwd())
         self._assert_present_dir(run)
         target = join(TARGET, target_dir)
@@ -86,10 +87,10 @@ class Support:
                     raise Exception('Missing data at end of %s' % result_path)
 
     def compare_target_files_two_float_cols(self, target_dir=None):
-        """Call this method after running evalresp.  It checks all files
-        in the target directory against those in the run directory
-        (the target directory can be inferred if both have the same 
-        relative paths)."""
+        """Call this method after running evalresp on a single set of files.
+        It checks all files in the target directory against those in
+        the run directory (the target directory can be inferred if
+        both have the same relative paths)."""
         if not target_dir:
             target_dir = relpath(realpath(getcwd()), realpath(RUN))
         target = join(TARGET, target_dir)
