@@ -1,14 +1,22 @@
 #!/bin/bash -e
 
 if [ ! -d src ]; then
-    echo "run this script in the top level directory"
+    echo "Run this script in the top level directory"
     exit 1
 fi
 
 if [ ! -d env ]; then
-    echo "run robot-tests-basic.sh first"
+    echo "Run robot-tests-basic.sh first"
     exit 1
 fi
+
+PATTERN=${1:-*}
+echo "Will generate tests for files matching the pattern '$PATTERN'"
+echo "You can give this as an initial argument:"
+echo "  $0 '$PATTERN'"
+
+
+# copy and expand raw data
 
 ARCHIVE="RESP-testset.zip"
 
@@ -35,6 +43,18 @@ pushd extended
 unzip -j "../$ARCHIVE"
 popd
 popd
+
+
+# generate tests (we cannot do this inside robot and have N tests for
+# N files - it would be a single test, which makes reporting ugly)
+
+pushd tests/robot/all
+if [ -d extended ]; then
+    echo "Wiping existing extended tests"
+    rm -fr extended
+fi
+mkdir extended
+
 
 exit 0
 

@@ -1,14 +1,17 @@
 #!/bin/bash -e
 
 if [ ! -d src ]; then
-    echo "run this script in the top level directory"
+    echo "Run this script in the top level directory"
     exit 1
 fi
 
+
 # install robot in a virtualenv
 # this directory is always removed on jenkins (if configured correctly)
+
 # remove manually locally if you want to rebuild the env
 #rm -fr env
+
 if [ ! -d env ]; then
     virtualenv env
     . ./env/bin/activate
@@ -17,12 +20,14 @@ if [ ! -d env ]; then
     python setup.py install
     popd
 else
-    echo "reusing existing robot virtualenv"
+    echo "Reusing existing robot virtualenv"
     . ./env/bin/activate
 fi    
 
+
 # under jenkins, WORKSPACE is set automatically, but otherwise
 # this script will be run there anyway...
+
 pwd=`pwd`; WORKSPACE=${WORKSPACE:-$pwd}
 TMP=${TMP:-/tmp}
 PATH="${PATH}:${WORKSPACE}/install/bin"
