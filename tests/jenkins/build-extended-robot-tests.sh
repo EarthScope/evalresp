@@ -5,16 +5,12 @@ if [ ! -d src ]; then
     exit 1
 fi
 
-if [ ! -d env ]; then
-    echo "Run robot-tests-basic.sh first"
-    exit 1
-fi
-
 PATTERN=${1:-*}
+echo
 echo "Will generate tests for files matching the pattern '$PATTERN'"
 echo "You can give this as an initial argument:"
 echo "  $0 '$PATTERN'"
-
+echo
 
 # copy and expand raw data
 
@@ -39,8 +35,9 @@ if [ -d extended ]; then
 fi
 mkdir extended
 pushd extended
+echo "Extracting data from $ARCHIVE"
 # note -j below so that everything is in main directory (no subdirs)
-unzip -j "../$ARCHIVE"
+unzip -j "../$ARCHIVE" > /dev/null
 popd
 popd
 
@@ -54,18 +51,28 @@ if [ -d extended ]; then
     rm -fr extended
 fi
 mkdir extended
+pushd extended
+for path in `ls ../../data/extended/$PATTERN`; do
+    file=`basename $path`
+    (
+	cat <<EOF
+
+*** Settings ***
+
+Library  Process
+Library  Support
 
 
-exit 0
+*** Test Cases ***
 
-. ./env/bin/activate
+Automated call to evalresp
+    Prepare  extended/$file  $file
+    Run process  evalresp  *  *  2010  1  0.001  10  100  -f  $file
+    Check number of files  3
 
-# under jenkins, WORKSPACE is set automatically, but otherwise
-# this script will be run there anyway...
-pwd=`pwd`; WORKSPACE=${WORKSPACE:-$pwd}
-TMP=${TMP:-/tmp}
-PATH="${PATH}:${WORKSPACE}/install/bin"
-
-cd tests/robot
-rm -fr run/extended; mkdir run/extended
-WORKSPACE=${WORKSPACE} robot --loglevel DEBUG all/extended
+EOF
+    ) > $file
+    echo "$path -> $file"
+done
+popd
+popd
