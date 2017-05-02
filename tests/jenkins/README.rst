@@ -11,4 +11,4 @@ To build and run these tests outside of Jenkins do something like:
   ./tests/jenkins/run-robot-tests.sh
 
 Inside Jenkins, call the scripts in the required order during a build
-setp.
+step.

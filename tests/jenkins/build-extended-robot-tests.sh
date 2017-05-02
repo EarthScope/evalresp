@@ -21,20 +21,24 @@ function download {
     DIR="$1"
     TARBALL="$2"
     URL="$3"
-    pushd "$DIR"
+    pushd "$DIR" >> /dev/null
     if [ ! -f "$TARBALL" ]; then
 	echo "$TARBALL does not exist"
 	if [ -z ${ROBOT_ARCHIVE_CACHE+x} ]; then
-	    echo "ROBOT_ARCHIVE_CACHE is unset so downloading data."
 	    echo "To avoid multiple downloads, place $TARBALL in a cache directory and set"
 	    echo "ROBOT_ARCHIVE_CACHE to the absolute file location (eg /var/data/$ARCHIVE)."
-	    wget "$URL"
-	else
+	fi
+	if [ -n ${ROBOT_ARCHIVE_CACHE+x} ] && [ -e "$ROBOT_ARCHIVE_CACHE/$TARBALL" ]; then
 	    echo "Copying data from cache at $ROBOT_ARCHIVE_CACHE"
 	    cp "$ROBOT_ARCHIVE_CACHE/$ARCHIVE" "$ARCHIVE"
+	else
+	    wget "$URL" || {
+		echo "WARNING: Could not download $URL"
+		echo "If this file was not optional, script may fail later"
+	    }
 	fi
     fi
-    popd
+    popd >> /dev/null
 }
 
 
@@ -63,39 +67,43 @@ echo
 
 EXTENDED_INPUT="RESP-testset.zip"
 download tests/robot/data "$EXTENDED_INPUT" "http://ds.iris.edu/files/staff/chad/$EXTENDED_INPUT"
-pushd tests/robot/data
+pushd tests/robot/data >> /dev/null
 if [ -d extended ]; then
     echo "Wiping existing extended data"
     rm -fr extended
 fi
 mkdir -p extended
-pushd extended
+pushd extended >> /dev/null
 echo "Extracting data from $EXTENDED_INPUT"
 # note -j below so that everything is in main directory (no subdirs)
 unzip -j "../$EXTENDED_INPUT" > /dev/null
-popd
-popd
+popd >> /dev/null
+popd >> /dev/null
 
 
 # copy and expand target data
 
 EXTENDED_TARGET="RESP-targets-$YEAR-$DAY.zip"
 download tests/robot/target "$EXTENDED_TARGET" "http://isti.com/~andrew/$EXTENDED_TARGET"
-TARGET_DIR="tests/robot/target/$YEAR/$DAY"
-mkdir -p "$TARGET_DIR"
-pushd "$TARGET_DIR"
+mkdir -p tests/robot/target/extended
+pushd tests/robot/target/extended >> /dev/null
 echo "Extracting data from $EXTENDED_TARGET"
-unzip "../../$EXTENDED_TARGET" > /dev/null
-popd
+unzip "../$EXTENDED_TARGET" > /dev/null || {
+    echo "WARNING: No target data for $YEAR $DAY.  Tests will fail."
+    echo "Use collect-extended-targets.sh to build data after initial run."
+}
+popd >> /dev/null
 
 
 # generate tests (we cannot do this inside robot and have N tests for
 # N files - it would be a single test, which makes reporting ugly)
 
-pushd tests/robot/all
-mkdir -p extended
-pushd extended
-for path in `ls ../../data/extended/$PATTERN`; do
+RUN_DIR="tests/robot/all/extended/$YEAR/$DAY"
+mkdir -p "$RUN_DIR"
+pushd "$RUN_DIR" >> /dev/null
+echo "Generating tests.  This can take some time."
+tick=0
+for path in `ls ../../../../data/extended/$PATTERN`; do
     file=`basename $path`
     (
 	cat <<EOF
@@ -109,13 +117,18 @@ Library  Support
 *** Test Cases ***
 
 Automated call to evalresp
-    Prepare  extended/$file  $file  extended
+    Prepare  extended/$YEAR/$DAY/$file  extended  $file
     Run process  evalresp  *  *  $YEAR  $DAY  0.001  10  100  -f  $file
-    Check number of files  3
+    Count and compare target files two float cols
 
 EOF
     ) > "$file.robot"
-    echo "$path -> $file"
+    tick=$(( ( tick + 1 ) % 100 ))
+    if [ $tick -eq 0 ]; then
+	echo -n "."
+    fi
 done
-popd
-popd
+echo
+echo "Tests generated"
+popd >> /dev/null
+

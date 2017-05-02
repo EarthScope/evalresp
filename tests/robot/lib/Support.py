@@ -34,12 +34,11 @@ class Support:
             if (abs(a - b) / magnitude) > TINY:
                 raise Exception('%f and %f differ at %s' % (a, b, location))
 
-    def prepare(self, dest_dir, files, data_dir='.'):
+    def prepare(self, dest_dir, data_dir, files):
         """Call this method before running evalresp on a single set of files.
         It creates the working directory (under 'run') and copies
         across the required data files (which should be a
-        comma-separated list with no spaces).  An optional final argument
-        can specify a sub directory for the data files."""
+        comma-separated list with no spaces)."""
         run = join(RUN, dest_dir)
         self._assert_missing_dir(run)
         makedirs(run)
@@ -97,6 +96,20 @@ class Support:
         target = join(TARGET, target_dir)
         files = ','.join(listdir(target))
         self.compare_two_float_cols(target_dir, files)
+
+    def count_and_compare_target_files_two_float_cols(self, target_dir=None):
+        """Call this method after running evalresp on a single set of files.
+        It checks all files in the target directory against those in
+        the run directory (the target directory can be inferred if
+        both have the same relative paths).  No additional files can
+        be present."""
+        if not target_dir:
+            target_dir = relpath(realpath(getcwd()), realpath(RUN))
+        target = join(TARGET, target_dir)
+        files = listdir(target)
+        filelist = ','.join(files)
+        self.compare_two_float_cols(target_dir, filelist)
+        self.check_number_of_files(len(filelist)+1)
 
     def check_number_of_files(self, n):
         """Check the number of files in the run directory."""
