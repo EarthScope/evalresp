@@ -27,8 +27,10 @@ function download {
 	if [ -z ${ROBOT_ARCHIVE_CACHE+x} ]; then
 	    echo "To avoid multiple downloads, place $TARBALL in a cache directory and set"
 	    echo "ROBOT_ARCHIVE_CACHE to the absolute file location (eg /var/data/$ARCHIVE)."
+	elif [ ! -e "$ROBOT_ARCHIVE_CACHE/$TARBALL" ]; then
+	    echo "WARNING: $TARBALL not found in $ROBOT_ARCHIVE_CACHE"
 	fi
-	if [ -n ${ROBOT_ARCHIVE_CACHE+x} ] && [ -e "$ROBOT_ARCHIVE_CACHE/$TARBALL" ]; then
+	if [ "$ROBOT_ARCHIVE_CACHE" ] && [ -e "$ROBOT_ARCHIVE_CACHE/$TARBALL" ]; then
 	    echo "Copying data from cache at $ROBOT_ARCHIVE_CACHE"
 	    cp "$ROBOT_ARCHIVE_CACHE/$ARCHIVE" "$ARCHIVE"
 	else
