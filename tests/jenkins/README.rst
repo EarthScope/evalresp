@@ -13,3 +13,13 @@ To build and run these tests outside of Jenkins do something like:
 
 Inside Jenkins, call the scripts in the required order during a build
 step.
+
+To collect target data from an initial run (in which extended tests
+will have failed):
+
+  ./tests/jenkins/collect-extended-targets.sh 2017 1
+  ./tests/jenkins/collect-extended-targets.sh 2010 365
+
+This will create zip files in the target directory.
+
+
