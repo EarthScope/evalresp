@@ -19,7 +19,7 @@ Bad date gives no data
     Check number of files  1
 
 Bad site gives no data
-    Prepare  base/simple/bad_site  base  RESP.Z.CGV..HYZ  base
+    Prepare  base/simple/bad_site  base  RESP.Z.CGV..HYZ
     Run process  evalresp  XXX  HYZ  2009  365  0.001  10  100  -f  RESP.Z.CGV..HYZ
     Check number of files  1
 

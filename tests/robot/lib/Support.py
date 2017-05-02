@@ -107,9 +107,10 @@ class Support:
             target_dir = relpath(realpath(getcwd()), realpath(RUN))
         target = join(TARGET, target_dir)
         files = listdir(target)
-        filelist = ','.join(files)
-        self.compare_two_float_cols(target_dir, filelist)
-        self.check_number_of_files(len(filelist)+1)
+        if files:
+            filelist = ','.join(files)
+            self.compare_two_float_cols(target_dir, filelist)
+        self.check_number_of_files(len(files)+1)
 
     def check_number_of_files(self, n):
         """Check the number of files in the run directory."""

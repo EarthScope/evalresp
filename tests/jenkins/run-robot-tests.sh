@@ -33,5 +33,6 @@ TMP=${TMP:-/tmp}
 PATH="${PATH}:${WORKSPACE}/install/bin"
 
 cd tests/robot
-rm -fr run; mkdir run
+mkdir -p run
+rm -fr run/*
 WORKSPACE=${WORKSPACE} robot --loglevel DEBUG all
