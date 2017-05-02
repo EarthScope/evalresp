@@ -19,20 +19,20 @@ function usage {
 
 function download {
     DIR="$1"
-    TARBALL="$2"
+    ZIP="$2"
     URL="$3"
     pushd "$DIR" >> /dev/null
-    if [ ! -f "$TARBALL" ]; then
-	echo "$TARBALL does not exist"
+    if [ ! -f "$ZIP" ]; then
+	echo "$ZIP does not exist"
 	if [ -z ${ROBOT_ARCHIVE_CACHE+x} ]; then
-	    echo "To avoid multiple downloads, place $TARBALL in a cache directory and set"
+	    echo "To avoid multiple downloads, place $ZIP in a cache directory and set"
 	    echo "ROBOT_ARCHIVE_CACHE to the absolute file location (eg /var/data/$ARCHIVE)."
-	elif [ ! -e "$ROBOT_ARCHIVE_CACHE/$TARBALL" ]; then
-	    echo "WARNING: $TARBALL not found in $ROBOT_ARCHIVE_CACHE"
+	elif [ ! -e "$ROBOT_ARCHIVE_CACHE/$ZIP" ]; then
+	    echo "WARNING: $ZIP not found in $ROBOT_ARCHIVE_CACHE"
 	fi
-	if [ "$ROBOT_ARCHIVE_CACHE" ] && [ -e "$ROBOT_ARCHIVE_CACHE/$TARBALL" ]; then
+	if [ "$ROBOT_ARCHIVE_CACHE" ] && [ -e "$ROBOT_ARCHIVE_CACHE/$ZIP" ]; then
 	    echo "Copying data from cache at $ROBOT_ARCHIVE_CACHE"
-	    cp "$ROBOT_ARCHIVE_CACHE/$ARCHIVE" "$ARCHIVE"
+	    cp "$ROBOT_ARCHIVE_CACHE/$ZIP" "$ZIP"
 	else
 	    wget "$URL" || {
 		echo "WARNING: Could not download $URL"
