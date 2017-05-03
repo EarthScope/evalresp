@@ -5,6 +5,6 @@ if [ ! -d src ]; then
     exit 1
 fi
 
-tests/jenkins/clean-base-test-dirs.sh
-tests/jenkins/clean-extended-test-dirs.sh
+rm -fr tests/robot/all/extended/*
+rm -fr tests/robot/target/extended/*
 
