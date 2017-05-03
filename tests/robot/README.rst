@@ -10,7 +10,7 @@ The directory structure here is:
     data/       # input files (tarballs also cached here)
       base/       # input files used in base tests
       extended/   # files used in extended tests (unpacked tarball)
-    lib/        # support librray for robot
+    lib/        # support library for robot
     run/        # where tests are run (and output written)
       base/       # where base tests are run
         <name>/     # additional grouping of base tests
