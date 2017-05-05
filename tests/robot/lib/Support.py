@@ -55,7 +55,7 @@ class Support:
             raise Exception('Data missing from %s at line %d' % (path, index))
         try:
             data = map(float, line.split())
-        except FormatException:
+        except ValueError:
             raise Exception('Bad data in %s at line %d' % (path, index))
         if len(data) != n:
             raise Exception('Missing data in %s at line %d' % (path, index))
@@ -78,11 +78,16 @@ class Support:
                 with open(result_path, 'r') as result_file:
                     for (index, result_line) in enumerate(result_file.readlines()):
                         target_line = target_file.readline()
-                        result_data = self._extract_floats(2, result_line, result_path, index)
-                        target_data = self._extract_floats(2, target_line, target_path, index)
-                        for (r, t) in zip(result_data, target_data):
-                            location = '%s and %s at line %d' % (result_path, target_path, index)
-                            self._assert_equal_floats(r, t, location)
+                        try:
+                            result_data = self._extract_floats(2, result_line, result_path, index)
+                            target_data = self._extract_floats(2, target_line, target_path, index)
+                            for (r, t) in zip(result_data, target_data):
+                                location = '%s and %s at line %d' % (result_path, target_path, index)
+                                self._assert_equal_floats(r, t, location)
+                        except Exception, e:
+                            # try comparing as text (may be titles etc)
+                            if result_line != target_line:
+                                raise e
                 if target_file.readline():
                     raise Exception('Missing data at end of %s' % result_path)
 
