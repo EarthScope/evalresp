@@ -30,8 +30,9 @@ fi
 
 pwd=`pwd`; WORKSPACE=${WORKSPACE:-$pwd}
 TMP=${TMP:-/tmp}
-PATH="${PATH}:${WORKSPACE}/install/bin"
-LD_LIBRARY_PATH="${WORKSPACE}/install/lib"
+export PATH="${PATH}:${WORKSPACE}/install/bin"
+export LD_LIBRARY_PATH="${WORKSPACE}/install/lib"
+which evalresp
 
 cd tests/robot
 mkdir -p run
