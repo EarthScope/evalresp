@@ -42,6 +42,21 @@ Linear
     Run process  evalresp  CGV  HYZ  2010  1  0.001  10  100  -f  RESP.Z.CGV..HYZ  -s  lin
     Count and compare target files two float cols
 
+Amp/Phase
+    Prepare  base/args/amp_phase  base  RESP.Z.CGV..HYZ
+    Run process  evalresp  CGV  HYZ  2010  1  0.001  10  100  -f  RESP.Z.CGV..HYZ  -r  ap
+    Count and compare target files two float cols
+
+Freq/Amp/Phase
+    Prepare  base/args/freq_amp_phase  base  RESP.Z.CGV..HYZ
+    Run process  evalresp  CGV  HYZ  2010  1  0.001  10  100  -f  RESP.Z.CGV..HYZ  -r  fap
+    Count and compare target files n float cols  3
+
+Complex
+    Prepare  base/args/complex  base  RESP.Z.CGV..HYZ
+    Run process  evalresp  CGV  HYZ  2010  1  0.001  10  100  -f  RESP.Z.CGV..HYZ  -r  cs
+    Count and compare target files n float cols  3
+
 Net ID
     Prepare  base/args/net_id  base  RESP.Z.CGV..HYZ
     Run process  evalresp  CGV  HYZ  2010  1  0.001  10  100  -f  RESP.Z.CGV..HYZ  -n  Z

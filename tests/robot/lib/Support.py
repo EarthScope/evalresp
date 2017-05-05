@@ -61,7 +61,7 @@ class Support:
             raise Exception('Missing data in %s at line %d' % (path, index))
         return data
 
-    def compare_two_float_cols(self, target_dir, files):
+    def compare_n_float_cols(self, target_dir, ncols, files):
         """Call this method after running evalresp on a single set of files.
         It checks the given files (a comma-separated list with no
         spaces) between the working directory and the target
@@ -79,8 +79,8 @@ class Support:
                     for (index, result_line) in enumerate(result_file.readlines()):
                         target_line = target_file.readline()
                         try:
-                            result_data = self._extract_floats(2, result_line, result_path, index)
-                            target_data = self._extract_floats(2, target_line, target_path, index)
+                            result_data = self._extract_floats(ncols, result_line, result_path, index)
+                            target_data = self._extract_floats(ncols, target_line, target_path, index)
                             for (r, t) in zip(result_data, target_data):
                                 location = '%s and %s at line %d' % (result_path, target_path, index)
                                 self._assert_equal_floats(r, t, location)
@@ -90,6 +90,13 @@ class Support:
                                 raise e
                 if target_file.readline():
                     raise Exception('Missing data at end of %s' % result_path)
+
+    def compare_two_float_cols(self, target_dir, files):
+        """Call this method after running evalresp on a single set of files.
+        It checks the given files (a comma-separated list with no
+        spaces) between the working directory and the target
+        directory."""
+        self.compare_n_float_cols(target_dir, 2, files)
 
     def compare_target_files_two_float_cols(self, target_dir=None):
         """Call this method after running evalresp on a single set of files.
@@ -102,7 +109,7 @@ class Support:
         files = ','.join(listdir(target))
         self.compare_two_float_cols(target_dir, files)
 
-    def count_and_compare_target_files_two_float_cols(self, target_dir=None):
+    def count_and_compare_target_files_n_float_cols(self, ncols, target_dir=None):
         """Call this method after running evalresp on a single set of files.
         It checks all files in the target directory against those in
         the run directory (the target directory can be inferred if
@@ -114,8 +121,16 @@ class Support:
         files = listdir(target)
         if files:
             filelist = ','.join(files)
-            self.compare_two_float_cols(target_dir, filelist)
+            self.compare_n_float_cols(target_dir, ncols, filelist)
         self.check_number_of_files(len(files)+1)
+
+    def count_and_compare_target_files_two_float_cols(self, target_dir=None):
+        """Call this method after running evalresp on a single set of files.
+        It checks all files in the target directory against those in
+        the run directory (the target directory can be inferred if
+        both have the same relative paths).  No additional files can
+        be present."""
+        self.count_and_compare_target_files_n_float_cols(2, target_dir)
 
     def check_number_of_files(self, n):
         """Check the number of files in the run directory."""
