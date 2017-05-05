@@ -142,3 +142,47 @@ class Support:
                 found += 1
         if found != n:
             raise Exception('Found %d files in %s, but expected %d' % (found, run, n))
+
+    def compare_text(self, target_dir, files):
+        """Call this method to check the given files (a comma-separated 
+        list with no spaces) between the working directory and the target
+        directory."""
+        run = join(RUN, getcwd())
+        self._assert_present_dir(run)
+        target = join(TARGET, target_dir)
+        self._assert_present_dir(target)
+        for file in files.split(','):
+            result_path = join(run, file)
+            target_path = join(target, file)
+            logger.info('Comparing %s with %s' % (result_path, target_path))
+            with open(target_path, 'r') as target_file:
+                with open(result_path, 'r') as result_file:
+                    for (index, result_line) in enumerate(result_file.readlines()):
+                        target_line = target_file.readline()
+                        if result_line != target_line:
+                            raise Exception('"%s" and "%s" differ at %s and %s at line %d' % 
+                                            (result_line, target_line,
+                                            result_path, target_path, index))
+                if target_file.readline():
+                    raise Exception('Missing data at end of %s' % result_path)
+
+    def compare_target_files_text(self, target_dir=None):
+        """Call this method to check the content of all files from 
+        the target directory."""
+        if not target_dir:
+            target_dir = relpath(realpath(getcwd()), realpath(RUN))
+        target = join(TARGET, target_dir)
+        files = ','.join(listdir(target))
+        self.compare_text(target_dir, files)
+
+    def count_and_compare_target_files_text(self, target_dir=None):
+        """Call this method to check the content and number of all files 
+        from the target directory."""
+        if not target_dir:
+            target_dir = relpath(realpath(getcwd()), realpath(RUN))
+        target = join(TARGET, target_dir)
+        files = listdir(target)
+        if files:
+            filelist = ','.join(files)
+            self.compare_text(target_dir, filelist)
+        self.check_number_of_files(len(files)+1)
