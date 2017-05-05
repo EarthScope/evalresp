@@ -31,6 +31,7 @@ fi
 pwd=`pwd`; WORKSPACE=${WORKSPACE:-$pwd}
 TMP=${TMP:-/tmp}
 PATH="${PATH}:${WORKSPACE}/install/bin"
+LD_LIBRARY_PATH="${WORKSPACE}/install/lib"
 
 cd tests/robot
 mkdir -p run
