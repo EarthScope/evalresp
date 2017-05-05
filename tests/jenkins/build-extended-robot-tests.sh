@@ -79,7 +79,7 @@ pushd extended >> /dev/null
 echo "Extracting data from $EXTENDED_INPUT"
 # note -j below so that everything is in main directory (no subdirs)
 unzip -j "../$EXTENDED_INPUT" > /dev/null
-if [ ! -e "$PATTERN" ]; then
+if ! compgen -G "$PATTERN"; then
     echo "ERROR: Bad pattern '$PATTERN'"
     usage
 fi
