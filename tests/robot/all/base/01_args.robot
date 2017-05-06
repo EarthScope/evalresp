@@ -65,7 +65,7 @@ Net ID
 Bad Net ID
     Prepare  base/args/bad_net_id  base  RESP.Z.CGV..HYZ
     Run process  evalresp  CGV  HYZ  2010  1  0.001  10  100  -f  RESP.Z.CGV..HYZ  -n  XXX
-    Count and compare target files two float cols
+    Check number of files  1
 
 Location ID
     Prepare  base/args/location_id  base  RESP.IU.ANMO.00.BHZ
@@ -85,7 +85,7 @@ Location ID wildcard 2
 Bad Location ID
     Prepare  base/args/bad_location_id  base  RESP.IU.ANMO.00.BHZ
     Run process  evalresp  ANMO  BHZ  2010  1  0.001  10  100  -f  RESP.IU.ANMO.00.BHZ  -l  01
-    Count and compare target files two float cols
+    Check number of files  1
 
 Stage 3 -
     Prepare  base/args/stage_3  base  RESP.Z.CGV..HYZ
