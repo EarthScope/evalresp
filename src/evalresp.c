@@ -128,7 +128,7 @@ int main(int argc, char *argv[]) {
         {"il",                  no_argument,       &listinterp_out_flag, 1},
         {"ii",                  no_argument,       &listinterp_in_flag, 1},
         {"it",                  required_argument, 0, 'T'},
-        {"unrap",               no_argument,       &unwrap_flag, 1},
+        {"unwrap",              no_argument,       &unwrap_flag, 1},
         {"ts",                  no_argument,       &useTotalSensitivityFlag, 1},
         {"b62_x",               required_argument, 0, 'b'},
         {"verbose",             no_argument,       0, 'v'},
@@ -180,12 +180,12 @@ int main(int argc, char *argv[]) {
     }
     sprintf(t_o_day, "00:00:00");
 
-    flagc = argc - fswidx;
-    if (flagc <= 0)
+    flagc = argc - fswidx + 1;
+    if (flagc > 0)
     {
-        flagv = argv + fswidx;
+        flagv = argv + fswidx -1;
 
-        while(-1 != (opt = getopt_long_only(flagc, flagv, ":f:u:t:s:n:l:r:S:UT:b:v", cmdline_flags, &longindex)))
+        while(-1 != (opt = getopt_long_only(flagc, flagv, ":f:u:t:s:n:l:r:S:UT:b:vx", cmdline_flags, &longindex)))
         {
             switch (opt)
             {
@@ -227,9 +227,9 @@ int main(int argc, char *argv[]) {
                     } else {
                         error_exit(USAGE_ERROR, param_err_msgstr, prog_name, optarg);
                     }
-                    if (optind < argc && is_int(argv[optind]))
+                    if (optind < flagc && is_int(flagv[optind]))
                     {
-                        tmp_val = atoi(argv[optind]);
+                        tmp_val = atoi(flagv[optind]);
                         if (tmp_val > start_stage)
                         {
                             stop_stage = tmp_val;
@@ -259,6 +259,9 @@ int main(int argc, char *argv[]) {
                 case 'v':/*verbose*/
                     verbose = "-v";
                     break;
+                case 'x':
+                    xml_flag = 1;
+                    break;
                 case ':':/* invalid argument for flag */
                     if (0 != cmdline_flags[longindex].name)
                     {
@@ -270,7 +273,7 @@ int main(int argc, char *argv[]) {
                     error_exit(USAGE_ERROR, param_err_msgstr, prog_name, err);
                     break;
                 case '?': /* unrecognized flag */
-                    fprintf(stderr, "WARNING:  Unrecognized parameter:  %s\n", argv[optind-1]);
+                    fprintf(stderr, "WARNING:  Unrecognized parameter:  %s\n", flagv[optind-1]);
                     break;
             }
         }
