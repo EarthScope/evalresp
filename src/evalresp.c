@@ -189,38 +189,38 @@ int main(int argc, char *argv[]) {
         {
             switch (opt)
             {
-                case 0:
+                case 0:/* This is to handle ones that get set automatically */
                     break;
-                case 'f':
+                case 'f': /*file*/
                     file = strndup(optarg, MAXFLDLEN);
                     break;
-                case 'u':
+                case 'u': /*units*/
                     strncpy(units, optarg, MAXFLDLEN);
                     break;
-                case 't':
+                case 't': /*time*/
                     fldlen = strlen(optarg);
                     if (fldlen >= TODAYSIZE) {
                         t_o_day = realloc(t_o_day, (fldlen + 1));
                     }
                     strcpy(t_o_day, optarg);
                     break;
-                case 's':
+                case 's': /*space*/
                     if (strcmp(optarg, "lin") & strcmp(optarg, "log")) {
                         error_exit(USAGE_ERROR, "%s: option '-s' illegal type '%s'",
                                 prog_name, type);
                     }
                     type = strndup(optarg, MAXFLDLEN);
                     break;
-                case 'n':
+                case 'n':/*network*/
                     net_code = strndup(optarg, MAXFLDLEN);
                     break;
-                case 'l':
+                case 'l':/*location*/
                     locid = strndup(optarg, MAXFLDLEN);
                     break;
-                case 'r':
+                case 'r':/*response*/
                     strncpy(rtype, optarg, MAXFLDLEN);
                     break;
-                case 'S':
+                case 'S':/*stage*/
                     if (is_int(optarg))
                     {
                         start_stage = atoi(optarg);
@@ -240,10 +240,10 @@ int main(int argc, char *argv[]) {
                         optind++;
                     }
                     break;
-                case 'U':
+                case 'U':/*use-estimated-delay use-delay*/
                     use_estimated_delay(TRUE);
                     break;
-                case 'T':
+                case 'T':/*it*/
                     if (is_real(optarg))
                     {
                         listinterp_tension = atof(optarg);
@@ -253,13 +253,13 @@ int main(int argc, char *argv[]) {
                                 prog_name, optarg);
                     }
                     break;
-                case 'b':
+                case 'b':/*b62_x*/
                     x_for_b62 = atof(optarg);
                     break;
-                case 'v':
+                case 'v':/*verbose*/
                     verbose = "-v";
                     break;
-                case ':':
+                case ':':/* invalid argument for flag */
                     if (0 != cmdline_flags[longindex].name)
                     {
                         err = (char *)cmdline_flags[longindex].name;
@@ -269,7 +269,7 @@ int main(int argc, char *argv[]) {
                     }
                     error_exit(USAGE_ERROR, param_err_msgstr, prog_name, err);
                     break;
-                case '?':
+                case '?': /* unrecognized flag */
                     fprintf(stderr, "WARNING:  Unrecognized parameter:  %s\n", argv[optind-1]);
                     break;
             }
