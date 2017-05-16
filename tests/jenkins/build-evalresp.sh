@@ -13,6 +13,6 @@ fi
 rm -fr install
 rm -fr m4; mkdir m4  # needed by ancient aclocal on jenkins machine
 autoreconf -fi
-./configure -prefix `pwd`/install --enable-check
+./configure --prefix `pwd`/install --enable-check
 make
 make install

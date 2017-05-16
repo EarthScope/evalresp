@@ -141,3 +141,8 @@ XML
     Prepare  base/args/xml  base  station-1.xml
     Run process  evalresp  ANMO  BHZ  2015  1  0.001  10  100  -f  station-1.xml  -x  -l  10
     Count and compare target files two float cols
+
+B62 interpolation
+    Prepare  base/args/b62  base  RESP.IM.ATTU..BHE
+    Run process  evalresp  ATTU  BHE  1998  57  0.001  10  100  -f  RESP.IM.ATTU..BHE  -il  -b62_x_value  1
+    Count and compare target files two float cols

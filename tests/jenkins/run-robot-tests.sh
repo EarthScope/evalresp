@@ -30,7 +30,7 @@ fi
 
 pwd=`pwd`; WORKSPACE=${WORKSPACE:-$pwd}
 TMP=${TMP:-/tmp}
-export PATH="${PATH}:${WORKSPACE}/install/bin"
+export PATH="${WORKSPACE}/install/bin:${PATH}"
 export LD_LIBRARY_PATH="${WORKSPACE}/install/lib"
 which evalresp
 
