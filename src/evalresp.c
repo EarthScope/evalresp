@@ -17,9 +17,76 @@
 #include <string.h>
 #include <stdlib.h>
 #include "evresp.h"
+#include <getopt.h>
 
 #define DATIMESIZE 32
 #define TODAYSIZE 10
+
+void usage (char *prgName)
+{
+    if (prgName == NULL)
+    {
+        prgName="evalresp";
+    }
+    printf("\nEVALRESP V%s\n", REVNUM);
+    printf("\nUSAGE: %s STALST CHALST YYYY DAY MINFREQ", prgName);
+    printf(" MAXFREQ NFREQ [options]\n\n");
+    printf("  OPTIONS:\n\n");
+    printf("    -f file              (directory-name|filename)\n");
+    printf("    -u units             ('dis'|'vel'|'acc'|'def')\n");
+    printf("    -t time-of-day       (HH:MM:SS)\n");
+    printf("    -s type-of-spacing   (log|lin)\n");
+    printf("    -n netid             ('II'|'IU'|'G'|'*'...)\n");
+    printf("    -l locid             ('01'|'AA,AB,AC'|'A?'|'*'...)\n");
+    printf("    -r resp_type         ('ap'=amp/pha | 'cs'=complex spectra |\n");
+    printf("                          'fap'=freq/amp/pha)\n");
+    printf("    -stage start [stop]  (start and stop are integer stage numbers)\n");
+    printf("    -stdio               (take input from stdin, output to stdout)\n");
+    printf("    -use-estimated-delay (use estimated delay instead of correction applied\n");
+    printf("                          in computation of ASYM FIR response)\n");
+    printf("    -il                  (interpolate List blockette output)\n");
+    printf("    -ii                  (interpolate List blockette input)\n");
+    printf("    -it tension          (tension for List blockette interpolation)\n");
+    printf("    -unwrap              (unwrap phase if the output is AP) \n");
+    printf("    -ts                  (use total sensitivity from stage 0 instead of\n");
+    printf("                          computed)\n");
+    printf("    -b62_x value         (sample value/volts where we compute response for\n");
+    printf("                          B62)\n");
+    printf("    -v                   (verbose; list parameters on stdout)\n");
+    printf("    -x                   (xml; expect station.xml format)\n\n");
+    printf("  NOTES:\n\n");
+    printf("    (1) If the 'file' argument is a directory, that directory will be\n");
+    printf("        searched for files of the form RESP.NETID.STA.CHA.  Files\n");
+    printf("        of this type are created by rdseed when it is run with the\n");
+    printf("        '-R' option or when the '-d' option is used and responses are\n");
+    printf("        requested, but station.xml format files can also be read (if\n");
+    printf("        the '-x' flag is given).\n");
+    printf("    (2) If the 'file' argument is a file, that file is assumed to be\n");
+    printf("        output from a call to rdseed with the '-R' option, or a file\n");
+    printf("        in the station.xml format if '-x' is also given.\n");
+    printf("    (3) If the 'file' argument is missing, the current directory\n");
+    printf("        will be searched for files of the form RESP.NETID.STA.CHA.\n");
+    printf("    (4) The directory indicated by the environment variable SEEDRESP\n");
+    printf("        will also be searched for the requested files (if it is defined),\n");
+    printf("        but if matching station-channel-network values are found in\n");
+    printf("        both directories, then the local files take precedence.\n");
+    printf("    (5) The NETID (above) indicates a one or two letter network code.\n");
+    printf("        If no network code exists in the SEED volume, a value of '',\n");
+    printf("         '\?\?', or '*' will match the 'no network' case.\n");
+    printf("    (6) The '-stage' option allows the user to specify the range of\n");
+    printf("        stages that will be included in the calculation.  If only one\n");
+    printf("        stage number is given, a response will only be calculated for\n");
+    printf("        that stage.  If both a start and stop stage number are given,\n");
+    printf("        any stage between (and including) the start and stop stages\n");
+    printf("        will be included in the calculation.\n");
+    printf("    (7) -b62_x defines a value in counts or volts where response is\n");
+    printf("        computed. This flag only is applied to responses with B62.\n\n");
+    printf("  EXAMPLES:\n\n");
+    printf("    evalresp AAK,ARU,TLY VHZ 1992 21 0.001 10 100 -f /EVRESP/NEW/rdseed.out\n");
+    printf("    evalresp KONO BHN,BHE 1992 1 0.001 10 100 -f /EVRESP/NEW -t 12:31:04 -v\n");
+    printf("    evalresp FRB BHE,BHZ 1994 31 0.001 10 100 -f resp.all_stations -n '*' -v\n\n");
+    exit(1);
+}
 
 int main(int argc, char *argv[]) {
 
@@ -40,69 +107,43 @@ int main(int argc, char *argv[]) {
     int useTotalSensitivityFlag = 0; /* IGD 01/29/10 */
     double x_for_b62 = 0; /* IGD 10/03/13 */
 
+    char *prog_name=argv[0];
+
     curr_seq_no = -1;
 
     myLabel[0] = '\0';
+    int opt;
+    struct option cmdline_flags[] = {
+        {"file",                required_argument, 0, 'f'},
+        {"units",               required_argument, 0, 'u'},
+        {"time",                required_argument, 0, 't'},
+        {"spacing",             required_argument, 0, 's'},
+        {"network",             required_argument, 0, 'n'},
+        {"location",            required_argument, 0, 'l'},
+        {"response",            required_argument, 0, 'r'},
+        {"stage",               required_argument, 0, 'S'},
+        {"stdio",               no_argument,       &stdio_flag, 1},
+        {"use-estimated-delay", no_argument,       0, 'U'},
+        {"use-delay",           no_argument,       0, 'U'},
+        {"il",                  no_argument,       &listinterp_out_flag, 1},
+        {"ii",                  no_argument,       &listinterp_in_flag, 1},
+        {"it",                  required_argument, 0, 'T'},
+        {"unrap",               no_argument,       &unwrap_flag, 1},
+        {"ts",                  no_argument,       &useTotalSensitivityFlag, 1},
+        {"b62_x",               required_argument, 0, 'b'},
+        {"verbose",             no_argument,       0, 'v'},
+        {"xml",                 no_argument,       &xml_flag, 1},
+        {0,0,0,0}
+    };
+    int longindex;
+    int flagc;
+    char **flagv;
+    char errflag[2]={0,0};
+    char *err=NULL;
 
-    if (argc < 5) {
-        printf("\nEVALRESP V%s\n", REVNUM);
-        printf("\nUSAGE: evalresp STALST CHALST YYYY DAY MINFREQ");
-        printf(" MAXFREQ NFREQ [options]\n\n");
-        printf("  OPTIONS:\n\n");
-        printf("    -f file              (directory-name|filename)\n");
-        printf("    -u units             ('dis'|'vel'|'acc'|'def')\n");
-        printf("    -t time-of-day       (HH:MM:SS)\n");
-        printf("    -s type-of-spacing   (log|lin)\n");
-        printf("    -n netid             ('II'|'IU'|'G'|'*'...)\n");
-        printf("    -l locid             ('01'|'AA,AB,AC'|'A?'|'*'...)\n");
-        printf("    -r resp_type         ('ap'=amp/pha | 'cs'=complex spectra |\n");
-        printf("                          'fap'=freq/amp/pha)\n");
-        printf("    -stage start [stop]  (start and stop are integer stage numbers)\n");
-        printf("    -stdio               (take input from stdin, output to stdout)\n");
-        printf("    -use-estimated-delay (use estimated delay instead of correction applied\n");
-        printf("                          in computation of ASYM FIR response)\n");
-        printf("    -il                  (interpolate List blockette output)\n");
-        printf("    -ii                  (interpolate List blockette input)\n");
-        printf("    -it tension          (tension for List blockette interpolation)\n");
-        printf("    -unwrap              (unwrap phase if the output is AP) \n");
-        printf("    -ts                  (use total sensitivity from stage 0 instead of\n");
-        printf("                          computed)\n");
-        printf("    -b62_x value         (sample value/volts where we compute response for\n");
-        printf("                          B62)\n");
-        printf("    -v                   (verbose; list parameters on stdout)\n");
-        printf("    -x                   (xml; expect station.xml format)\n\n");
-        printf("  NOTES:\n\n");
-        printf("    (1) If the 'file' argument is a directory, that directory will be\n");
-        printf("        searched for files of the form RESP.NETID.STA.CHA.  Files\n");
-        printf("        of this type are created by rdseed when it is run with the\n");
-        printf("        '-R' option or when the '-d' option is used and responses are\n");
-        printf("        requested, but station.xml format files can also be read (if\n");
-        printf("        the '-x' flag is given).\n");
-        printf("    (2) If the 'file' argument is a file, that file is assumed to be\n");
-        printf("        output from a call to rdseed with the '-R' option, or a file\n");
-        printf("        in the station.xml format if '-x' is also given.\n");
-        printf("    (3) If the 'file' argument is missing, the current directory\n");
-        printf("        will be searched for files of the form RESP.NETID.STA.CHA.\n");
-        printf("    (4) The directory indicated by the environment variable SEEDRESP\n");
-        printf("        will also be searched for the requested files (if it is defined),\n");
-        printf("        but if matching station-channel-network values are found in\n");
-        printf("        both directories, then the local files take precedence.\n");
-        printf("    (5) The NETID (above) indicates a one or two letter network code.\n");
-        printf("        If no network code exists in the SEED volume, a value of '',\n");
-        printf("         '\?\?', or '*' will match the 'no network' case.\n");
-        printf("    (6) The '-stage' option allows the user to specify the range of\n");
-        printf("        stages that will be included in the calculation.  If only one\n");
-        printf("        stage number is given, a response will only be calculated for\n");
-        printf("        that stage.  If both a start and stop stage number are given,\n");
-        printf("        any stage between (and including) the start and stop stages\n");
-        printf("        will be included in the calculation.\n");
-        printf("    (7) -b62_x defines a value in counts or volts where response is\n");
-        printf("        computed. This flag only is applied to responses with B62.\n\n");
-        printf("  EXAMPLES:\n\n");
-        printf("    evalresp AAK,ARU,TLY VHZ 1992 21 0.001 10 100 -f /EVRESP/NEW/rdseed.out\n");
-        printf("    evalresp KONO BHN,BHE 1992 1 0.001 10 100 -f /EVRESP/NEW -t 12:31:04 -v\n");
-        printf("    evalresp FRB BHE,BHZ 1994 31 0.001 10 100 -f resp.all_stations -n '*' -v\n\n");
-        exit(1);
+    if (argc < 5)
+    {
+        usage(prog_name);
     }
 
     /* find index of first switch parameter */
@@ -113,8 +154,9 @@ int main(int argc, char *argv[]) {
     if (fswidx < 5) {
         error_exit(USAGE_ERROR, "Not all of the required inputs are \n\t"
                 "present (%d missing), type '%s' for usage", 8 - fswidx,
-                argv[0]);
+                prog_name);
     }
+
     /* setup min,max,num freq values; use defaults if missing */
     minfstr = (fswidx > 5) ? argv[5] : "1.0";
     maxfstr = (fswidx > 6) ? argv[6] : minfstr;
@@ -126,8 +168,8 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "WARNING:  Unrecognized parameter:  %s\n", argv[i]);
     }
 
+    /* then get the optional arguments (if any) */
     /* initialize the optional arguments */
-
     /* If user did not define -use-estimated-delay option by default it is FALSE */
     use_estimated_delay(FALSE);
 
@@ -138,110 +180,103 @@ int main(int argc, char *argv[]) {
     }
     sprintf(t_o_day, "00:00:00");
 
-    /* then get the optional arguments (if any) */
+    flagc = argc - fswidx;
+    if (flagc <= 0)
+    {
+        flagv = argv + fswidx;
 
-    for (i = fswidx; i < argc; i++) {
-        if (0 == strcmp(argv[i], "-use-estimated-delay"))
-            use_estimated_delay(TRUE);
-        else if (0 == strcmp(argv[i], "-use-delay")) /* IGD 04/29/09 Backward compatibility */
-            use_estimated_delay(TRUE);
-        else if (!strcmp(argv[i], "-u")) {
-            if ((++i) < argc && *argv[i] != '-')
-                strncpy(units, argv[i], MAXFLDLEN);
-            else
-                error_exit(USAGE_ERROR, param_err_msgstr, argv[0], argv[i - 1]);
-        } else if (!strcmp(argv[i], "-r")) {
-            if ((++i) < argc && *argv[i] != '-')
-                strncpy(rtype, argv[i], MAXFLDLEN);
-            else
-                error_exit(USAGE_ERROR, param_err_msgstr, argv[0], argv[i - 1]);
-        } else if (!strcmp(argv[i], "-stdio")) {
-            stdio_flag = 1;
-        } else if (!strcmp(argv[i], "-stage")) {
-            if ((++i) < argc && is_int(argv[i]))
-                start_stage = atoi(argv[i]);
-            else
-                error_exit(USAGE_ERROR, param_err_msgstr, argv[0], argv[i - 1]);
-            if ((++i) < argc && is_int(argv[i])) {
-                tmp_val = atoi(argv[i]);
-                if (tmp_val > start_stage)
-                    stop_stage = tmp_val;
-                else {
-                    stop_stage = start_stage;
-                    start_stage = tmp_val;
-                }
-            } else {
-                i--;
-            }
-        } else if (!strcmp(argv[i], "-n")) {
-            if ((++i) < argc && *argv[i] != '-')
-                net_code = argv[i];
-            else
-                error_exit(USAGE_ERROR, param_err_msgstr, argv[0], argv[i - 1]);
-        } else if (!strcmp(argv[i], "-l")) {
-            if ((++i) < argc && *argv[i] != '-')
-                locid = argv[i];
-            else
-                error_exit(USAGE_ERROR, param_err_msgstr, argv[0], argv[i - 1]);
-        } else if (!strcmp(argv[i], "-t")) {
-            if ((++i) < argc && *argv[i] != '-') {
-                fldlen = strlen(argv[i]);
-                if (fldlen >= TODAYSIZE) {
-                    t_o_day = realloc(t_o_day, (fldlen + 1));
-                }
-                strcpy(t_o_day, argv[i]);
-            } else
-                error_exit(USAGE_ERROR, param_err_msgstr, argv[0], argv[i - 1]);
-        } else if (!strcmp(argv[i], "-f")) {
-            if ((++i) < argc && *argv[i] != '-')
-                file = argv[i];
-            else
-                error_exit(USAGE_ERROR, param_err_msgstr, argv[0], argv[i - 1]);
-        } else if (!strcmp(argv[i], "-s")) {
-            if ((++i) < argc && *argv[i] != '-')
-                type = argv[i];
-            else
-                error_exit(USAGE_ERROR, param_err_msgstr, argv[0], argv[i - 1]);
-            if (strcmp(type, "lin") & strcmp(type, "log")) {
-                error_exit(USAGE_ERROR, "%s: option '-s' illegal type '%s'",
-                        argv[0], type);
+        while(-1 != (opt = getopt_long_only(flagc, flagv, ":f:u:t:s:n:l:r:S:UT:b:v", cmdline_flags, &longindex)))
+        {
+            switch (opt)
+            {
+                case 0:
+                    break;
+                case 'f':
+                    file = strndup(optarg, MAXFLDLEN);
+                    break;
+                case 'u':
+                    strncpy(units, optarg, MAXFLDLEN);
+                    break;
+                case 't':
+                    fldlen = strlen(optarg);
+                    if (fldlen >= TODAYSIZE) {
+                        t_o_day = realloc(t_o_day, (fldlen + 1));
+                    }
+                    strcpy(t_o_day, optarg);
+                    break;
+                case 's':
+                    if (strcmp(optarg, "lin") & strcmp(optarg, "log")) {
+                        error_exit(USAGE_ERROR, "%s: option '-s' illegal type '%s'",
+                                prog_name, type);
+                    }
+                    type = strndup(optarg, MAXFLDLEN);
+                    break;
+                case 'n':
+                    net_code = strndup(optarg, MAXFLDLEN);
+                    break;
+                case 'l':
+                    locid = strndup(optarg, MAXFLDLEN);
+                    break;
+                case 'r':
+                    strncpy(rtype, optarg, MAXFLDLEN);
+                    break;
+                case 'S':
+                    if (is_int(optarg))
+                    {
+                        start_stage = atoi(optarg);
+                    } else {
+                        error_exit(USAGE_ERROR, param_err_msgstr, prog_name, optarg);
+                    }
+                    if (optind < argc && is_int(argv[optind]))
+                    {
+                        tmp_val = atoi(argv[optind]);
+                        if (tmp_val > start_stage)
+                        {
+                            stop_stage = tmp_val;
+                        } else {
+                            stop_stage = start_stage;
+                            start_stage = tmp_val;
+                        }
+                        optind++;
+                    }
+                    break;
+                case 'U':
+                    use_estimated_delay(TRUE);
+                    break;
+                case 'T':
+                    if (is_real(optarg))
+                    {
+                        listinterp_tension = atof(optarg);
+                    } else {
+                        error_exit(USAGE_ERROR,
+                                "%s:  illegal value for 'it' parameter:  %s",
+                                prog_name, optarg);
+                    }
+                    break;
+                case 'b':
+                    x_for_b62 = atof(optarg);
+                    break;
+                case 'v':
+                    verbose = "-v";
+                    break;
+                case ':':
+                    if (0 != cmdline_flags[longindex].name)
+                    {
+                        err = (char *)cmdline_flags[longindex].name;
+                    } else {
+                        errflag[0] = optopt;
+                        err = errflag;
+                    }
+                    error_exit(USAGE_ERROR, param_err_msgstr, prog_name, err);
+                    break;
+                case '?':
+                    fprintf(stderr, "WARNING:  Unrecognized parameter:  %s\n", argv[optind-1]);
+                    break;
             }
         }
-
-        else if (!strcmp(argv[i], "-b62_x")) {
-            if ((++i) < argc && *argv[i] != '-')
-                x_for_b62 = atof(argv[i]);
-            else
-                error_exit(USAGE_ERROR, param_err_msgstr, argv[0], argv[i - 1]);
-        }
-
-        else if (!strcmp(argv[i], "-unwrap"))
-            unwrap_flag = 1;
-        else if (!strcmp(argv[i], "-ts"))
-            useTotalSensitivityFlag = 1;
-        else if (!strcmp(argv[i], "-il"))
-            listinterp_out_flag = 1;
-        else if (!strcmp(argv[i], "-ii"))
-            listinterp_in_flag = 1;
-        else if (!strcmp(argv[i], "-it")) {
-            if ((++i) < argc && *argv[i] != '-') {
-                if (is_real(argv[i]))
-                    listinterp_tension = atof(argv[i]);
-                else {
-                    error_exit(USAGE_ERROR,
-                            "%s:  illegal value for 'it' parameter:  %s",
-                            argv[0], argv[i]);
-                }
-            } else
-                error_exit(USAGE_ERROR, param_err_msgstr, argv[0], argv[i - 1]);
-        } else if (!strcmp(argv[i], "-v"))
-            verbose = argv[i];
-        else if (!strcmp(argv[i], "-x"))
-        	xml_flag = 1;
-        else if (argv[i] != NULL && argv[i][0] != '\0')
-            fprintf(stderr, "WARNING:  Unrecognized parameter:  %s\n", argv[i]);
     }
 
+    /* Get arguments */
     sta_list = argv[1];
     cha_list = argv[2];
 
