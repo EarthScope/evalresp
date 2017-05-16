@@ -144,5 +144,5 @@ XML
 
 B62 interpolation
     Prepare  base/args/b62  base  RESP.IM.ATTU..BHE
-    Run process  evalresp  ATTU  BHE  1998  57  0.001  10  100  -f  RESP.IM.ATTU..BHE  -il  -b62_x_value  1
+    Run process  evalresp  ATTU  BHE  1998  57  0.001  10  100  -f  RESP.IM.ATTU..BHE  -il  -b62_x  1
     Count and compare target files two float cols
