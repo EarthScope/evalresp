@@ -15,8 +15,8 @@ int evalresp_log_to_syslog(evalresp_log_msg_t *msg, void *data)
     if (log_opt)
     {
         ident = log_opt->ident;
-        ident = log_opt->option;
-        facilty = log_opt->facility;
+        option = log_opt->option;
+        facility = log_opt->facility;
     }
     else
     {
@@ -40,5 +40,5 @@ int evalresp_log_to_syslog(evalresp_log_msg_t *msg, void *data)
     }
     syslog(level, "%s", msg->msg);
     closelog();
-    return EXIT_SUCCESS
+    return EXIT_SUCCESS;
 }

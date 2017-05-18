@@ -8,7 +8,6 @@ typedef struct evalresp_syslog_data
 {
     int option;
     int facility;
-    int priority;
     char *ident;
 } evalresp_syslog_data_t;
 #endif /* __evalresp_log_syslog_h__*/
