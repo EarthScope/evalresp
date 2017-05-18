@@ -2,13 +2,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <getopt.h>
 #include <ctype.h>
 
 #include "x2r.h"
 #include "x2r_log.h"
 #include "x2r_ws.h"
 #include "x2r_xml.h"
+
+#include <config.h>
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>
+#else
+#include "vcs_getopt.h"
+#endif
 
 
 /**
