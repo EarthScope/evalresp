@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int evalresp_log (evalresp_log_func_t log_func, void* log_func_data, int level, int verbosity, char *fmt, ...)
+int evalresp_log (evalresp_log_func_t log_func, void *log_func_data, int level, int verbosity, char *fmt, ...)
 {
     evalresp_log_msg_t msg[1];
     char date_str[256];/*TODO this is tomany bytes*/
@@ -18,11 +18,10 @@ int evalresp_log (evalresp_log_func_t log_func, void* log_func_data, int level, 
     msg->log_level=level;
     msg->verbosity_level=verbosity;
     msg->timestamp=time(NULL);
-    msg->function_data=log_func_data;
     /* if using a api function then return that */
     if (!log_func)
     {
-        return log_func(msg);
+        return log_func(msg, log_func_data);
     }
 
     /* turn the timestamp into locale std date string */

@@ -13,10 +13,9 @@ typedef struct evalresp_log_msg
     int log_level;
     int verbosity_level;
     time_t timestamp;
-    void *function_data;
 } evalresp_log_msg_t;
 
-typedef int (*evalresp_log_func_t)(evalresp_log_msg_t *);
+typedef int (*evalresp_log_func_t)(evalresp_log_msg_t *, void *);
 
 typedef enum log_level_ref
 {
