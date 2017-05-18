@@ -35,7 +35,7 @@ static int parse_opts(int argc, char *argv[], x2r_log **log, FILE **in, FILE **o
     *in = stdin;
     *out = stdout;
 
-    while(EOF != (opt = getopt_long(argc, argv, ":v::o:", cmdline_flags, &longoptind)) && X2R_OK != status)
+    while(EOF != (opt = getopt_long(argc, argv, ":v::o:", cmdline_flags, &longoptind)) && X2R_OK == status)
     {
         switch (opt)
         {
