@@ -1,6 +1,7 @@
 #ifndef __EVALRESP_LOG_H__
 #define __EVALRESP_LOG_H__
 
+#include <time.h>
 
 #ifndef MAX_LOG_MSG_LEN 
 #define MAX_LOG_MSG_LEN 256
@@ -12,6 +13,7 @@ typedef struct evalresp_log_msg
     int log_level;
     int verbosity_level;
     time_t timestamp;
+    void *function_data;
 } evalresp_log_msg_t;
 
 typedef int (*evalresp_log_func_t)(evalresp_log_msg_t *);
@@ -25,6 +27,6 @@ typedef enum log_level_ref
 } log_level_ref_t;
 const char *log_level_strs[]={"ERROR", "WARN", "INFO", "DEBUG"};
 
-extern int evalresp_log (evalresp_log_func_t, int, int, char *, ...);
+extern int evalresp_log (evalresp_log_func_t, void *, int, int, char *, ...);
 
 #endif /* __EVALRESP_LOG_H__ */
