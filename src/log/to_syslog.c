@@ -1,7 +1,7 @@
 #include <syslog.h>
 #include "../log.h"
 #include <stdlib.h>
-#include "../log/syslog.h"
+#include "to_syslog.h"
 
 int evalresp_log_to_syslog(evalresp_log_msg_t *msg, void *data)
 {
