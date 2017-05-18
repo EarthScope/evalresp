@@ -1,6 +1,7 @@
 #include "../log.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "to_file.h"
 
 int evalresp_log_to_file(evalresp_log_msg_t *msg, void *data)
