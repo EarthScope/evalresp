@@ -2,7 +2,7 @@
 AC_INIT([evalresp], [4.0.7], [andrewcooke@isti.com])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([build-aux])
-AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile tests/c/Makefile tests/java/Makefile tests/fortran/Makefile tests/robot/Makefile doc/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile tests/c/Makefile tests/java/Makefile tests/fortran/Makefile tests/robot/Makefile doc/Makefile mxml/Makefile])
 AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([foreign])
 
@@ -71,22 +71,70 @@ if test "x$with_check" = "xyes"; then
   PKG_CHECK_MODULES([CHECK], [check >= 0.9.4])
 fi
 
-dnl allow alternative locations for libxml2
-LIBXML2_DIR="/usr/include/libxml2"
-AC_ARG_WITH(
-  [libxml2],
-  AS_HELP_STRING(
-    [--with-libxml2=DIR],
-    [libxml2 header location @<:@default DIR=/usr/include/libxml2@:>@]),
-  [LIBXML2_DIR="{withval}"],
-  [])
-AC_CHECK_HEADER(
-  ${LIBXML2_DIR}/libxml/xmlexports.h,
-  [echo "Found xmlexports.h includes in ${LIBXML2_DIR}/libxml/, good"],
-  [echo "================================================="
-   echo "libxml2 library not found; Install libxml2: yum install libxml2"
-   exit -1])
-CPPFLAGS="$CPPFLAGS -I ${LIBXML2_DIR}"
+# from mxml configure.ac
+if test x$enable_shared != xno; then
+	AC_MSG_CHECKING(for shared library support)
+	PICFLAG=1
+
+	case "$uname" in
+		SunOS* | UNIX_S*)
+			AC_MSG_RESULT(yes)
+			LIBMXML="libmxml.so.1.5"
+			DSO="\$(CC)"
+			DSOFLAGS="$DSOFLAGS -Wl,-h,libmxml.so.1 -G -R\$(libdir) \$(OPTIM)"
+			LDFLAGS="$LDFLAGS -R\$(libdir)"
+                	;;
+
+		HP-UX*)
+			AC_MSG_RESULT(yes)
+			LIBMXML="libmxml.sl.1"
+			DSO="ld"
+			DSOFLAGS="$DSOFLAGS -b -z +h libmxml.sl.1 +s +b \$(libdir)"
+			LDFLAGS="$LDFLAGS -Wl,+s,+b,\$(libdir)"
+			;;
+
+		IRIX)
+			AC_MSG_RESULT(yes)
+			LIBMXML="libmxml.so.1.5"
+			DSO="\$(CC)"
+			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
+			;;
+
+		OSF1* | Linux | GNU)
+			AC_MSG_RESULT(yes)
+			LIBMXML="libmxml.so.1.5"
+			DSO="\$(CC)"
+			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-rpath,\$(libdir) -shared \$(OPTIM)"
+                        LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
+			;;
+
+		*BSD*)
+			AC_MSG_RESULT(yes)
+			LIBMXML="libmxml.so.1.5"
+			DSO="\$(CC)"
+			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-R\$(libdir) -shared \$(OPTIM)"
+			LDFLAGS="$LDFLAGS -Wl,-R\$(libdir)"
+                        ;;
+
+		Darwin*)
+			AC_MSG_RESULT(yes)
+			LIBMXML="libmxml.1.dylib"
+			DSO="\$(CC)"
+			DSOFLAGS="$DSOFLAGS \$(RC_CFLAGS) -dynamiclib -lc"
+			;;
+
+		*)
+			AC_MSG_RESULT(no)
+			AC_MSG_WARN(shared libraries not supported on this platform.)
+			PICFLAG=0
+			LIBMXML="libmxml.a"
+			;;
+	esac
+else
+	PICFLAG=0
+	LIBMXML="libmxml.a"
+fi
+# end of inclusions from mxml
 
 AM_CONDITIONAL([USE_CHECK], [test "x$with_check" = "xyes"])
 AC_OUTPUT

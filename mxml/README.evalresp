@@ -1,0 +1,8 @@
+
+This is a direct copy of mini-xml release 2.10 with the following
+modifications:
+
+ o patch applied
+   https://github.com/michaelrsweet/mxml/commit/1272c3dfdb967f49ebb502f28ba3eb56e2360f54?diff=unified 
+
+ o autoconf section (Makefile, config.h) commented out in Makefile.in
