@@ -26,7 +26,6 @@ static int stream2doc(x2r_log *log, FILE *in, mxml_node_t **doc) {
         status = x2r_error(log, X2R_ERR_XML, "Could not parse input");
     }
 
-exit:
     return status;
 }
 
@@ -215,6 +214,7 @@ static int char_attribute(x2r_log *log, mxml_node_t *node, const char *name,
 
     return status;
 }
+
 
 /**
  * Parse an ISO yyyy-mm-ddThh:mm:ss format datetime.
@@ -662,6 +662,7 @@ static int free_response_list(x2r_response_list *response_list, int status) {
 }
 
 
+/** Parse (non-numerator/denominator) FIR data. */
 static int parse_fir_data(x2r_log *log, mxml_node_t *node, x2r_fir *fir) {
 
     int status = X2R_OK;
@@ -835,6 +836,7 @@ static int parse_gain(x2r_log *log, mxml_node_t *node, x2r_gain *gain) {
 }
 
 
+/** Set the stage type (checking it is not already set). */
 static int set_stage(x2r_log *log, x2r_stage *stage, x2r_stage_type type) {
     if (stage->type) {
         return x2r_error(log, X2R_ERR_XML, "Multiple content in a single stage");
