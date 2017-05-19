@@ -1,6 +1,7 @@
 
+#include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
-#include <libxml/xpath.h>
 
 #include "x2r.h"
 #include "x2r_log.h"

@@ -6,3 +6,9 @@ modifications:
    https://github.com/michaelrsweet/mxml/commit/1272c3dfdb967f49ebb502f28ba3eb56e2360f54?diff=unified 
 
  o autoconf section (Makefile, config.h) commented out in Makefile.in
+
+ o mxmldoc, mxml.xml and testxml removed from Makefile.in targets
+   (and install).
+
+Also, modified parent configure.ac, Makefile.ac to include this
+directory (and copied various things from configure.ac here to there).
