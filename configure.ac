@@ -55,46 +55,46 @@ if test x$enable_shared != xno; then
 	case "$uname" in
 		SunOS* | UNIX_S*)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.5"
+			LIBMXML="libmxmlev.so.1.5"
 			DSO="\$(CC)"
-			DSOFLAGS="$DSOFLAGS -Wl,-h,libmxml.so.1 -G -R\$(libdir) \$(OPTIM)"
+			DSOFLAGS="$DSOFLAGS -Wl,-h,libmxmlev.so.1 -G -R\$(libdir) \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -R\$(libdir)"
                 	;;
 
 		HP-UX*)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.sl.1"
+			LIBMXML="libmxmlev.sl.1"
 			DSO="ld"
-			DSOFLAGS="$DSOFLAGS -b -z +h libmxml.sl.1 +s +b \$(libdir)"
+			DSOFLAGS="$DSOFLAGS -b -z +h libmxmlev.sl.1 +s +b \$(libdir)"
 			LDFLAGS="$LDFLAGS -Wl,+s,+b,\$(libdir)"
 			;;
 
 		IRIX)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.5"
+			LIBMXML="libmxmlev.so.1.5"
 			DSO="\$(CC)"
-			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
+			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxmlev.so.1 -shared \$(OPTIM)"
 			;;
 
 		OSF1* | Linux | GNU)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.5"
+			LIBMXML="libmxmlev.so.1.5"
 			DSO="\$(CC)"
-			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-rpath,\$(libdir) -shared \$(OPTIM)"
+			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxmlev.so.1,-rpath,\$(libdir) -shared \$(OPTIM)"
                         LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
 			;;
 
 		*BSD*)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.5"
+			LIBMXML="libmxmlev.so.1.5"
 			DSO="\$(CC)"
-			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-R\$(libdir) -shared \$(OPTIM)"
+			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxmlev.so.1,-R\$(libdir) -shared \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -Wl,-R\$(libdir)"
                         ;;
 
 		Darwin*)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.1.dylib"
+			LIBMXML="libmxmlev.1.dylib"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS \$(RC_CFLAGS) -dynamiclib -lc"
 			;;
@@ -103,12 +103,12 @@ if test x$enable_shared != xno; then
 			AC_MSG_RESULT(no)
 			AC_MSG_WARN(shared libraries not supported on this platform.)
 			PICFLAG=0
-			LIBMXML="libmxml.a"
+			LIBMXML="libmxmlev.a"
 			;;
 	esac
 else
 	PICFLAG=0
-	LIBMXML="libmxml.a"
+	LIBMXML="libmxmlev.a"
 fi
 
 dnl Add -Wall for GCC...
@@ -227,6 +227,7 @@ if test "x$with_check" = "xyes"; then
   PKG_CHECK_MODULES([CHECK], [check >= 0.9.4])
 fi
 
+LDFLAGS="$LDFLAGS -L../mxml"
 
 AM_CONDITIONAL([USE_CHECK], [test "x$with_check" = "xyes"])
 AC_OUTPUT

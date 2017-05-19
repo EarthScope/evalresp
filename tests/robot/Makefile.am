@@ -12,6 +12,6 @@
 #		tests/jenkins/run-robot-tests.sh
 
 clean:
-	rm -fr run
+	rm -fr run/*
 	rm -fr lib/build
 	find . -name "*~" -exec rm \{} \;
