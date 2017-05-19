@@ -24,7 +24,6 @@ static int stream2doc(x2r_log *log, FILE *in, mxml_node_t **doc) {
 
     if (!(*doc = mxmlLoadFd(NULL, fileno(in), MXML_OPAQUE_CALLBACK))) {
         status = x2r_error(log, X2R_ERR_XML, "Could not parse input");
-        goto exit;
     }
 
 exit:
