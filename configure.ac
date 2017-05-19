@@ -227,7 +227,5 @@ if test "x$with_check" = "xyes"; then
   PKG_CHECK_MODULES([CHECK], [check >= 0.9.4])
 fi
 
-LDFLAGS="$LDFLAGS -L../mxml"
-
 AM_CONDITIONAL([USE_CHECK], [test "x$with_check" = "xyes"])
 AC_OUTPUT

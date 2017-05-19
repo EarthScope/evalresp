@@ -1,4 +1,6 @@
 
+LDFLAGS+="-L../mxml"
+
 bin_PROGRAMS = evalresp xml2resp
 
 evalresp_SOURCE = evalresp.c

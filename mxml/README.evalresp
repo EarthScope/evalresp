@@ -12,5 +12,14 @@ modifications:
 
  o change libmxml. to libmxmlev. in Makefile.in (to avoid conflicts)
 
+ o add libmxmlev.a to targets (was otherwise chained in via deleted
+   targets)
+
+ o removed packageconfig support (in install) (is this wise?)
+
+ o removed install of headers and man pages (unrenamed; avoid conflicts)
+
+ o added empty check target
+
 Also, modified parent configure.ac, Makefile.ac to include this
 directory (and copied various things from configure.ac here to there).
