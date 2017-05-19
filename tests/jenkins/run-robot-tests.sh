@@ -31,7 +31,7 @@ fi
 pwd=`pwd`; WORKSPACE=${WORKSPACE:-$pwd}
 TMP=${TMP:-/tmp}
 export PATH="${WORKSPACE}/install/bin:${PATH}"
-export LD_LIBRARY_PATH="${WORKSPACE}/install/lib"
+export LD_LIBRARY_PATH="${WORKSPACE}/install/lib:/usr/local/lib"
 which evalresp
 
 cd tests/robot
