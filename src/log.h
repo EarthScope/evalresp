@@ -24,7 +24,7 @@ typedef enum log_level_ref
     INFO,
     DEBUG
 } log_level_ref_t;
-const char *log_level_strs[]={"ERROR", "WARN", "INFO", "DEBUG"};
+extern const char *log_level_strs[];
 
 extern int evalresp_log (evalresp_log_func_t, void *, int, int, char *, ...);
 

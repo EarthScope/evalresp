@@ -11,12 +11,14 @@ lib_LTLIBRARIES = libevresp.la libx2r.la
 
 libevresp_la_SOURCES = regexp.c regerror.c regsub.c calc_fctns.c resp_fctns.c \
  file_ops.c evresp.c alloc_fctns.c parse_fctns.c print_fctns.c string_fctns.c \
- error_fctns.c evr_spline.c
+ error_fctns.c evr_spline.c log.c log/to_syslog.c log/to_file.c
 
 libx2r_la_SOURCES = x2r_log.c x2r_xml.c x2r_ws.c
 
 include_HEADERS = evresp.h regmagic.h regexp.h evr_spline.h \
-  x2r.h x2r_log.h x2r_xml.h x2r_ws.h
+  x2r.h x2r_log.h x2r_xml.h x2r_ws.h log.h log/to_syslog.h log/to_file.h
+
+#SUBDIRS = log
 
 EXTRA_DIST = Makefile.ms
 

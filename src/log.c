@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+const char *log_level_strs[]={"ERROR", "WARN", "INFO", "DEBUG"};
 int evalresp_log (evalresp_log_func_t log_func, void *log_func_data, int level, int verbosity, char *fmt, ...)
 {
     evalresp_log_msg_t msg[1];
@@ -19,7 +19,7 @@ int evalresp_log (evalresp_log_func_t log_func, void *log_func_data, int level, 
     msg->verbosity_level=verbosity;
     msg->timestamp=time(NULL);
     /* if using a api function then return that */
-    if (!log_func)
+    if (log_func)
     {
         return log_func(msg, log_func_data);
     }

@@ -6,7 +6,7 @@
 int evalresp_log_to_syslog(evalresp_log_msg_t *msg, void *data)
 {
     evalresp_syslog_data_t *log_opt = data;
-    int option, facility, priority, level;
+    int option, facility, level;
     char *ident;
     if (!msg)
     {
