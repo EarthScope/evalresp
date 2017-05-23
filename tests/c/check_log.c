@@ -9,7 +9,7 @@
 
 void run_test(evalresp_log_func_t log_func,  void *data, char is_syslog)
 {
-    ck_assert(EXIT_SUCCESS == evalresp_log(log_func, data, INFO, 0, "This is a TEST"));
+    ck_assert(EXIT_SUCCESS == evalresp_log_basic(log_func, data, INFO, 0, "This is a TEST"));
     if (is_syslog)
     {
         return;
