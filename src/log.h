@@ -34,8 +34,14 @@ typedef enum log_level_ref
 extern const char *log_level_strs[];
 
 
+/* log.c */
 extern int evalresp_log (evalresp_log_t*, int, int, char *, ...);
 extern int evalresp_log_basic (evalresp_log_func_t, void *, int, int, char *, ...);
 extern int evalresp_log_v (evalresp_log_func_t, void *, int, int, char *, va_list);
+
+/* log/helpers.c */
+evalresp_log_t * evalresp_log_t_alloc(evalresp_log_func_t, void *);
+void evalresp_log_t_free(evalresp_log_t *);
+int evalresp_log_t_init(evalresp_log_t *, evalresp_log_func_t, void *);
 
 #endif /* __EVALRESP_LOG_H__ */
