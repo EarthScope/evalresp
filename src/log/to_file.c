@@ -4,6 +4,17 @@
 #include <time.h>
 #include "to_file.h"
 
+int evalresp_log_intialize_log_for_file(evalresp_log_t *log, FILE *fd)
+{
+    if (!fd || !log)
+    {
+        return EXIT_FAILURE;
+    }
+    log->log_func=evalresp_log_to_file;
+    log->func_data = (void *) fd;
+    return EXIT_SUCCESS;
+}
+
 int evalresp_log_to_file(evalresp_log_msg_t *msg, void *data)
 {
     FILE *fd=data;
