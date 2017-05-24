@@ -4,7 +4,7 @@
 #include <time.h>
 #include <stdarg.h>
 
-#ifndef MAX_LOG_MSG_LEN 
+#ifndef MAX_LOG_MSG_LEN
 #define MAX_LOG_MSG_LEN 256
 #endif /* MAX_LOG_MSG_LEN  */
 
@@ -46,7 +46,7 @@ extern const char *log_level_strs[];
 /**
  * @brief send log message to log using the log struct
  *
- * example use of how to use the log, note the data is null because the 
+ * example use of how to use the log, note the data is null because the
  * log_func reqires data to be null in this case
 
  #include "log.h"
@@ -79,14 +79,14 @@ extern const char *log_level_strs[];
                                    __LINE__ - 4, retval);
     }
  }
-    
+
  *
  * @param[in] log structure containing the information for the logging function and data required to control the log
  * @param[in] level the logging level the msg is intended for
  * $param[in] verbosity the verbosity level the mesg is intended for
  * @param[in] fmt a format string that follows the printf style format
  * @param[in] ... any additional variables needed for fmt
- * @retval EXIT_SUCCESS when succesfully called 
+ * @retval EXIT_SUCCESS when succesfully called
  * @retval EXIT_FAILURE if something went wrong
  *
  * \sa { evalresp_log_t evalresp_log_t_alloc evalresp_log_t_free evalresp_log_t_init evalresp_log_basic evalresp_log_v }
@@ -95,7 +95,7 @@ extern int evalresp_log (evalresp_log_t*, int, int, char *, ...);
 /**
  * @brief send log message to log using base parameters
  *
- * example use of how to use the log, note the data is null because the 
+ * example use of how to use the log, note the data is null because the
  * log_func reqires data to be null in this case
 
  #include "log.h"
@@ -126,7 +126,7 @@ extern int evalresp_log (evalresp_log_t*, int, int, char *, ...);
                                    __LINE__ - 4, retval);
     }
  }
-    
+
  *
  * @param[in] log_func the logging function used for controlled output of log
  * @param[in] log_func_data data needed by the logging function to better control the logging function
@@ -134,7 +134,7 @@ extern int evalresp_log (evalresp_log_t*, int, int, char *, ...);
  * $param[in] verbosity verbosity the verbosity level the mesg is intended for
  * @param[in] fmt a format string that follows the printf style format
  * @param[in] ... any additional variables needed for fmt
- * @retval EXIT_SUCCESS when succesfully called 
+ * @retval EXIT_SUCCESS when succesfully called
  * @retval EXIT_FAILURE if something went wrong
  *
  * \sa { evalresp_log_t evalresp_log_t_alloc evalresp_log_t_free evalresp_log_t_init evalresp_log_basic evalresp_log_v }
@@ -143,7 +143,7 @@ extern int evalresp_log_basic (evalresp_log_func_t, void *, int, int, char *, ..
 /**
  * @brief send log message to log using base parameters and va_list instead of printf like varadic function
  *
- * this is an extension of evalresp_log_basic that takes a va_list, really should only be used by a wrap[ping function 
+ * this is an extension of evalresp_log_basic that takes a va_list, really should only be used by a wrap[ping function
  * for the logging, suchas evalresp_log and evalresp_log_basic
  *
  * @param[in] log_func the logging function used for controlled output of log
@@ -152,7 +152,7 @@ extern int evalresp_log_basic (evalresp_log_func_t, void *, int, int, char *, ..
  * $param[in] verbosity verbosity the verbosity level the mesg is intended for
  * @param[in] fmt a format string that follows the printf style format
  * @param[in] args va_list containing variables needed for fmt, follow vprintf
- * @retval EXIT_SUCCESS when succesfully called 
+ * @retval EXIT_SUCCESS when succesfully called
  * @retval EXIT_FAILURE if something went wrong
  *
  * \sa { evalresp_log_t evalresp_log_t_alloc evalresp_log_t_free evalresp_log_t_init evalresp_log_basic evalresp_log_v }
