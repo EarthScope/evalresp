@@ -11,7 +11,7 @@ lib_LTLIBRARIES = libevresp.la libx2r.la
 
 libevresp_la_SOURCES = regexp.c regerror.c regsub.c calc_fctns.c resp_fctns.c \
  file_ops.c evresp.c alloc_fctns.c parse_fctns.c print_fctns.c string_fctns.c \
- error_fctns.c evr_spline.c log.c log/to_syslog.c log/to_file.c
+ error_fctns.c evr_spline.c log.c log/to_syslog.c log/to_file.c log/helpers.c
 
 libx2r_la_SOURCES = x2r_log.c x2r_xml.c x2r_ws.c
 

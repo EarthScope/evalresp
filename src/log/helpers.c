@@ -1,7 +1,7 @@
 #include "../log.h"
 #include <stdlib.h>
 
-evalresp_log_t * evalresp_log_t_alloc(evalresp_log_func_t log_func, void *func_data)
+evalresp_log_t *evalresp_log_t_alloc(evalresp_log_func_t log_func, void *func_data)
 {
     evalresp_log_t *log = (evalresp_log_t *)calloc(1, sizeof(evalresp_log_t));
     if (evalresp_log_t_init(log, log_func, func_data))
