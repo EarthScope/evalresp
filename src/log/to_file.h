@@ -1,6 +1,10 @@
 #ifndef __evalresp_log_to_file_h__
 #define __evalresp_log_to_file_h__
 #include "../log.h"
+/** @file to_file.h
+ *  @author Dylan Thies
+ *  @ brief header for evalresp logging function api for logging to file
+ */
 
 /**
  * @brief a logging function for use with evalresp log that will log to an open FILE *

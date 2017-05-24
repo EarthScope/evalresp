@@ -2,6 +2,10 @@
 #define __evalresp_log_to_syslog_h__
 #include "log.h"
 #include <syslog.h>
+/** @file to_syslog.h
+ *  @author Dylan Thies
+ *  @ brief header for evalresp logging function api for logging to syslog
+ */
 
 /**
  * @brief a logging function for use with evalresp log that will log to syslog

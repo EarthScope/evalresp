@@ -7,6 +7,10 @@
 #ifndef MAX_LOG_MSG_LEN
 #define MAX_LOG_MSG_LEN 256
 #endif /* MAX_LOG_MSG_LEN  */
+/** @file log.h
+ *  @author Dylan Thies
+ *  @ brief header for evalresp logging function
+ */
 
 /**
  * @brief data type of the object that gets based to a logging function
@@ -89,7 +93,8 @@ extern const char *log_level_strs[];
  * @retval EXIT_SUCCESS when succesfully called
  * @retval EXIT_FAILURE if something went wrong
  *
- * \sa { evalresp_log_t evalresp_log_t_alloc evalresp_log_t_free evalresp_log_t_init evalresp_log_basic evalresp_log_v }
+ * @sa { evalresp_log_t evalresp_log_t_alloc evalresp_log_t_free evalresp_log_t_init evalresp_log_basic evalresp_log_v }
+ * @file log.c
  */
 extern int evalresp_log (evalresp_log_t*, int, int, char *, ...);
 /**
