@@ -48,11 +48,15 @@ extern const char *log_level_strs[];
 
 /* log.c */
 /**
- * @brief send log message to log using the log struct
+ * @brief  A function to send log message to log using the log structure.
  *
- * example use of how to use the log, note the data is null because the
+ * This function is used in the evalresp library to allow external developers
+ * to pass their own logging function as well as data needed for the function to operate.
+ *
+ * example use of how to use, note the data is null because the
  * log_func reqires data to be null in this case
 
+ @verbatim
  #include "log.h"
  int log_func(evalresp_log_msg_t *msg, void *data)
  {
@@ -69,7 +73,7 @@ extern const char *log_level_strs[];
     return EXIT_SUCCESS;
  }
 
- void function()
+ void evalresp_lib_function()
  {
     int retval = 0;
     evalresp_log_t log[1];
@@ -83,7 +87,43 @@ extern const char *log_level_strs[];
                                    __LINE__ - 4, retval);
     }
  }
+@endverbatim
 
+ * In this Example log_func is the user defined function that will be passed to evalresp_log. 
+ *
+ * To develop against libevalresp
+ @verbatim
+#include <log.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int my_log_func(evalresp_log_msg_t *msg, void *data)
+{
+    FILE * fd = (FILE *) data
+    if(!data)
+    {
+        fd = stdout;
+    }
+    if(msg->verbosity_level < 2)
+    {
+        fprintf(fd, "[%d]%s: %s\n", msg->timestamp, log_level_strs[msg->log_level, msg->msg);
+    }
+    return EXIT_SUCCESS;
+}
+
+int main(int argc, char *argv[])
+{
+    evalresp_log_t log[1]; // a quick way to allocate a pointer at compile time
+    FILE * fd = fopen("MyLog", "w");
+
+    evalresp_log_t_init(log, my_log_func, (void *) fd);
+
+    evalresp_function(1, 3.5, "AU", "00", "BHZ", log); //a function call to something in the evalresp library
+    return EXIT_SUCCESS
+}
+@endverbatim
+
+ * evalresp_function is a made up function but will be typical of functions that use evalresp_log
  *
  * @param[in] log structure containing the information for the logging function and data required to control the log
  * @param[in] level the logging level the msg is intended for
@@ -98,11 +138,15 @@ extern const char *log_level_strs[];
  */
 extern int evalresp_log (evalresp_log_t*, int, int, char *, ...);
 /**
- * @brief send log message to log using base parameters
+ * @brief send log message to log using explicit log function pointer and data
+ *
+ * This function is used in the evalresp library to allow external developers
+ * to pass their own logging function as well as data needed for the function to operate.
  *
  * example use of how to use the log, note the data is null because the
  * log_func reqires data to be null in this case
 
+@verbatim
  #include "log.h"
  int log_func(evalresp_log_msg_t *msg, void *data)
  {
@@ -132,6 +176,7 @@ extern int evalresp_log (evalresp_log_t*, int, int, char *, ...);
     }
  }
 
+@endverbatim
  *
  * @param[in] log_func the logging function used for controlled output of log
  * @param[in] log_func_data data needed by the logging function to better control the logging function
