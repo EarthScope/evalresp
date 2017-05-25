@@ -13,7 +13,7 @@
  */
 
 /**
- * @brief data type of the object that gets based to a logging function
+ * @brief Object created by evalresp library logging functions that will be passed to  logging function if provided.
  */
 typedef struct evalresp_log_msg
 {
@@ -23,10 +23,11 @@ typedef struct evalresp_log_msg
     time_t timestamp; /**< seconds since epoch that this message was created */
 } evalresp_log_msg_t;
 
-/** @brief data type of the logging function */
+/** @brief A convience data type of the logging function. */
 typedef int (*evalresp_log_func_t)(evalresp_log_msg_t *, void *);
 
-/** @brief data type that is for creating a persistent log object */
+/** @brief data type that is for creating a persistent log object 
+ * This while be set up by the user of the library. with the information it needs to overwrite logging */
 typedef struct evalresp_log
 {
     evalresp_log_func_t log_func; /**< the function that the loger should call back */
@@ -42,7 +43,9 @@ typedef enum log_level_ref
     DEBUG /**< level for the most information */
 } log_level_ref_t;
 
-/** const array  of the log levels  in plain text */
+/** Array  of the log levels  in plain text 
+ * Using the values from log_level_ref_t will directly corespond to the plaintext.
+ * Eg, log_level_strs[ERROR] == "DEBUG" */
 extern const char *log_level_strs[];
 
 
@@ -134,7 +137,6 @@ int main(int argc, char *argv[])
  * @retval EXIT_FAILURE if something went wrong
  *
  * @sa { evalresp_log_t evalresp_log_t_alloc evalresp_log_t_free evalresp_log_t_init evalresp_log_basic evalresp_log_v }
- * @file log.c
  */
 extern int evalresp_log (evalresp_log_t*, int, int, char *, ...);
 /**
@@ -211,7 +213,9 @@ extern int evalresp_log_v (evalresp_log_func_t, void *, int, int, char *, va_lis
 
 /* log/helpers.c */
 /**
- * @brief allocate a evalresp_log_t object and initialize it to values passed to this function
+ * @brief Allocate a evalresp_log_t object and initialize it to values passed to this function
+ *
+ * The resulting object will be created using malloc so be sure to free it
  *
  * @param[in] log_func evalresp_log_func_t or function pointer to logging function to use.
  * @param[in] func_data additional data needed to control log_func
@@ -220,13 +224,15 @@ extern int evalresp_log_v (evalresp_log_func_t, void *, int, int, char *, va_lis
  */
 extern evalresp_log_t *evalresp_log_t_alloc(evalresp_log_func_t, void *);
 /**
- * @brief free a log object
+ * @brief Free a log object.
+ *
+ * Currently a wrapper for free().
  *
  * @param[in] log
  */
 extern void evalresp_log_t_free(evalresp_log_t *);
 /**
- * @brief initalize an already allocated log with log_func and func_data
+ * @brief Initalize an already allocated evalresp_log_t object with the log_func and func_data.
  *
  * @param[in,out] log pointer to log object being initialized
  * @param[in] log_func logging function

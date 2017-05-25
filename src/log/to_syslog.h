@@ -36,7 +36,7 @@ typedef struct evalresp_syslog_data
  */
 void evalresp_log_syslog_data_free(evalresp_syslog_data_t *);
 /**
- * @brief function to allocate and initialize evalresp_syslog_data_t objects
+ * @brief Function to allocate and initialize evalresp_syslog_data_t objects.
  *
  * @param[in] ident the ident string if NULL syslog will use program name
  * @param[in] option options to syslog's openlog function
@@ -46,7 +46,7 @@ void evalresp_log_syslog_data_free(evalresp_syslog_data_t *);
  */
 evalresp_syslog_data_t * evalresp_log_syslog_data_alloc(char *, int, int);
 /**
- * @brief helper function to initialize evalresp_log_t struct for use with evalresp_log_to_syslog
+ * @brief A helper function to initialize evalresp_log_t struct for use with evalresp_log_to_syslog.
  *
  * @param[out] log allocated log evalresp_log_t pointer that will tell evalresp_log to log to syslog
  * @praram[in] data evalresp_syslog_data_t that contains parameters for the log, this can be NULL
