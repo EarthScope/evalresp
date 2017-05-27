@@ -3,7 +3,7 @@
  *
  * @section purpose Purpose
  *
- * Implements a cubic spline interpolation interface for evalresp.
+ * Implements a private cubic spline interpolation interface for evalresp.
  *
  * @section history History
  *

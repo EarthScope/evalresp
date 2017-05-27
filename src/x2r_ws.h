@@ -1,3 +1,27 @@
+/**
+ * @mainpage Introduction
+ *
+ * @section purpose Purpose
+ *
+ * Implements a private X2R formatted data interface for evalresp.
+ *
+ * @section history History
+ *
+ * Written by <a href="http://www.isti.com/">Instrumental Software
+ * Technologies, Inc.</a> (ISTI).
+ */
+
+/**
+ * @defgroup evalresp_x2r_ws evalresp Private X2RL Formatted Data Interface
+ * @ingroup evalresp_x2r
+ * @brief Private X2R formatted data interface for evalresp.
+ */
+
+/**
+ * @file
+ * @brief This file contains declarations and global structures for evalresp
+ *        X2R formatted data.
+ */
 
 #ifndef X2R_WS_H
 #define X2R_WS_H
@@ -7,8 +31,22 @@
 #include "x2r_log.h"
 #include "x2r_xml.h"
 
+/**
+ * @private
+ * @ingroup evalresp_x2r_ws
+ */
 int x2r_resp_util_write(x2r_log *log, FILE *out, const x2r_fdsn_station_xml *root);
+
+/**
+ * @private
+ * @ingroup evalresp_x2r_ws
+ */
 int x2r_xml2resp_on_flag(FILE **in, int xml_flag, int log_level);
+
+/**
+ * @private
+ * @ingroup evalresp_x2r_ws
+ */
 int x2r_xml2resp_auto(FILE **in, int log_level);
 
 #endif
