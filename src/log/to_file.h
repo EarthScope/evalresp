@@ -1,12 +1,37 @@
-#ifndef __evalresp_log_to_file_h__
-#define __evalresp_log_to_file_h__
-#include "../log.h"
-/** @file to_file.h
- *  @author Dylan Thies
- *  @ brief header for evalresp logging function api for logging to file
+/**
+ * @mainpage Introduction
+ *
+ * @section purpose Purpose
+ *
+ * Implements a private file logging interface for evalresp.
+ *
+ * @section history History
+ *
+ * Written by <a href="http://www.isti.com/">Instrumental Software
+ * Technologies, Inc.</a> (ISTI) in 2017.
  */
 
 /**
+ * @defgroup evalresp_log_file evalresp Private File Logging Interface
+ * @ingroup evalresp_log
+ * @brief Private file logging interface for evalresp.
+ * @author 2017: Dylan Thies, ISTI.
+ */
+
+/**
+ * @file
+ * @brief This file contains declarations and global structures for evalresp
+ *        file logging.
+ * @author 2017: Dylan Thies, ISTI.
+ */
+
+#ifndef __evalresp_log_to_file_h__
+#define __evalresp_log_to_file_h__
+#include "../log.h"
+
+/**
+ * @private
+ * @ingroup evalresp_log_file
  * @brief a logging function for use with evalresp log that will log to an open FILE *
  *
  * this function has the type that staisfies evalresp_log_func_t
@@ -17,7 +42,10 @@
  * @sa evalresp_log
  */
 int evalresp_log_to_file(evalresp_log_msg_t *, void *);
+
 /**
+ * @private
+ * @ingroup evalresp_log_file
  * @brief helper function to initialize evalresp_log_t struct for use with evalresp_log_to_file
  *
  * @param[out] log allocated log evalresp_log_t pointer that will tell evalresp_log to log to file

@@ -22,6 +22,7 @@ INPUT = intro_dox.h \
         evalresp_dox.h \
         ../src
 FILE_PATTERNS = *.h *.c
+RECURSIVE = YES
 EXCLUDE_PATTERNS = 
 EXAMPLE_PATH = 
 IMAGE_PATH = ./
