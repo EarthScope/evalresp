@@ -17,7 +17,7 @@ doxygen: Doxyfile mostlyclean
 
 EXTRA_DIST = evalresp.1 xml2resp.1
 
-clean-local: mostlyclean
+clean-local: mostlyclean-local
 	-rm -f evalresp.pdf
 
 mostlyclean-local:
@@ -25,4 +25,4 @@ mostlyclean-local:
 	-rm -fr latex
 
 distclean-local:
-	rm -f Makefile.in *~
+	-rm -f Makefile.in *~
