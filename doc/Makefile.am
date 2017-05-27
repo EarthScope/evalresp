@@ -1,8 +1,8 @@
 date := $(shell date +'%e %B %Y')
 
-all: pdf
+all-local: pdf-local
 
-pdf: evalresp.pdf
+pdf-local: evalresp.pdf
 
 evalresp.pdf: doxygen
 	@sed -i -e "s/{geometry}/{foobarfiefum}/" -e "s/{doxygen}/[left=1.5cm,right=1.5cm,top=3cm,bottom=3cm]{geometry}/" -e "s/{foobarfiefum}/{doxygen}/" latex/refman.tex
