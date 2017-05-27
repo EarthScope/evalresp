@@ -18,7 +18,7 @@ SORT_MEMBERS_CTORS_1ST = YES
 SORT_GROUP_NAMES = NO
 SHOW_USED_FILES = NO
 SHOW_FILES = NO
-INPUT = intro.h \
+INPUT = intro_dox.h \
         evalresp_dox.h \
         ../src
 FILE_PATTERNS = *.h *.c
