@@ -12,7 +12,7 @@
  */
 
 /**
- * @defgroup evalresp_x2r_ws evalresp Private X2RL Formatted Data Interface
+ * @defgroup evalresp_x2r_ws evalresp Private X2R Formatted Data Interface
  * @ingroup evalresp_x2r
  * @brief Private X2R formatted data interface for evalresp.
  */
