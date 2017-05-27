@@ -16,9 +16,9 @@ doxygen: Doxyfile mostlyclean
 	doxygen $< 2>doxygen.err.log >doxygen.out.log
 
 EXTRA_DIST = \
+	Doxyfile \
 	evalresp.1 \
 	evalresp_dox.h \
-	Doxyfile \
 	intro_dox.h \
 	xml2resp.1
 
