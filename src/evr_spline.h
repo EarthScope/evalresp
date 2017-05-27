@@ -44,7 +44,7 @@
  * @param[in] num_xvals Number of entries in 'xvals_arr'.
  * @param[out] p_retvals_arr Reference to ordinate "destination" array of
  *                           'double' values generated via interpolation.
- * @param[out] p_num_retvals reference to number of values returned in
+ * @param[out] p_num_retvals Reference to number of values returned in
  *                           'p_retvals_arr' (will be less than 'num_xvals' if
  *                           any new abscissa values are out of range).
  * @return @c NULL if successful; an error message string if not.
