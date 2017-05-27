@@ -12,7 +12,7 @@
  */
 
 /**
- * @defgroup evalresp_x2r_xml evalresp Private X2RL In-Memory Model Interface
+ * @defgroup evalresp_x2r_xml evalresp Private X2R In-Memory Model Interface
  * @ingroup evalresp_x2r
  * @brief Private X2R in-memory model interface for evalresp.
  */
