@@ -248,36 +248,34 @@
  */
 #define CALC_DELAY_FLAG 2
 
-/* enumeration representing the types of units encountered (Note: if default,
- then the response is just given in input units to output units, no
- interpretation is made of the units used) */
-
 /* IGD 02/03/01 New unit pressure  added */
 /* IGD 08/21/06 New units TESLA added */
 /* IGD 10/03/13 New units  CENTIGRADE added */
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
- */
+ * @brief Enumeration representing the types of units encountered.
+ * @note If default, then the response is just given in input units to output
+ *       units, no interpretation is made of the units used).
+*/
 enum units {
-    UNDEF_UNITS,  /**< FIXME. */
-    DIS,  /**< FIXME. */
-    VEL,  /**< FIXME. */
-    ACC,  /**< FIXME. */
-    COUNTS,  /**< FIXME. */
-    VOLTS,  /**< FIXME. */
-    DEFAULT,  /**< FIXME. */
-    PRESSURE,  /**< FIXME. */
-    TESLA,  /**< FIXME. */
-    CENTIGRADE  /**< FIXME. */
+    UNDEF_UNITS,  /**< Undefined. */
+    DIS,  /**< Displacement. */
+    VEL,  /**< Velocity. */
+    ACC,  /**< Acceleration. */
+    COUNTS,  /**< Counts. */
+    VOLTS,  /**< Volts. */
+    DEFAULT,  /**< Default. */
+    PRESSURE,  /**< Pressure. */
+    TESLA,  /**< Tesla. */
+    CENTIGRADE  /**< Degrees Celsius. */
 };
 
-/*  enumeration representing the types of filters encountered  */
+
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Enumeration representing the types of filters encountered.
  */
 enum filt_types {
     UNDEF_FILT,  /**< FIXME. */
@@ -297,12 +295,11 @@ enum filt_types {
     POLYNOMIAL  /**< FIXME. */
 };
 
-/* enumeration representing the types of stages that are recognized */
 /* IGD 05/15/02 Added GENERIC_TYPE */
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Enumeration representing the types of stages that are recognized.
  */
 enum stage_types {
     UNDEF_STAGE,  /**< FIXME. */
@@ -316,11 +313,10 @@ enum stage_types {
     POLYNOMIAL_TYPE  /**< FIXME. */
 };
 
-/* enumeration representing the types of error codes possible */
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Enumeration representing the types of error codes possible.
  */
 enum error_codes {
     NON_EXIST_FLD = -2,  /**< FIXME. */
@@ -346,6 +342,7 @@ enum error_codes {
 };
 
 /* define structures for the compound data types used in evalesp */
+
 /**
  * @private
  * @ingroup evalresp_private
@@ -427,12 +424,13 @@ struct scn_list {
 };
 
 /* define structures for the various types of filters defined in seed */
+
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief A Response (Poles & Zeros) blockette.
  */
-struct pole_zeroType { /* a Response (Poles & Zeros) blockette */
+struct pole_zeroType {
     int nzeros;  /**< FIXME. */ /* (blockettes [43] or [53]) */
     int npoles;  /**< FIXME. */
     double a0;  /**< FIXME. */
@@ -444,9 +442,9 @@ struct pole_zeroType { /* a Response (Poles & Zeros) blockette */
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief A Response (Coefficients) blockette.
  */
-struct coeffType { /* a Response (Coefficients) blockette */
+struct coeffType {
     int nnumer;  /**< FIXME. */ /* (blockettes [44] or [54]) */
     int ndenom;  /**< FIXME. */
     double *numer;  /**< FIXME. */
@@ -457,9 +455,9 @@ struct coeffType { /* a Response (Coefficients) blockette */
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief A Response (Coefficients) blockette.
  */
-struct polynomialType { /* a Response (Coefficients) blockette */
+struct polynomialType {
     unsigned char approximation_type;  /**< FIXME. */ /* (blockettes [42] or [62]) IGD 05/31/2013 */
     unsigned char frequency_units;  /**< FIXME. */
     double lower_freq_bound;  /**< FIXME. */
@@ -475,9 +473,9 @@ struct polynomialType { /* a Response (Coefficients) blockette */
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief A FIR Response blockette.
  */
-struct firType { /* a FIR Response blockette */
+struct firType {
     int ncoeffs;  /**< FIXME. */ /* (blockettes [41] or [61])*/
     double *coeffs;  /**< FIXME. */
     double h0;  /**< FIXME. */
@@ -486,9 +484,9 @@ struct firType { /* a FIR Response blockette */
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief A Response (List) blockette.
  */
-struct listType { /* a Response (List) blockette */
+struct listType {
     int nresp;  /**< FIXME. */ /* (blockettes [45] or [55]) */
     double *freq;  /**< FIXME. */
     double *amp;  /**< FIXME. */
@@ -498,9 +496,9 @@ struct listType { /* a Response (List) blockette */
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief A Generic Response blockette.
  */
-struct genericType { /* a Generic Response blockette */
+struct genericType {
     int ncorners;  /**< FIXME. */ /* (blockettes [46] or [56]) */
     double *corner_freq;  /**< FIXME. */
     double *corner_slope;  /**< FIXME. */
@@ -509,9 +507,9 @@ struct genericType { /* a Generic Response blockette */
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief A Decimation blockette.
  */
-struct decimationType { /* a Decimation blockette */
+struct decimationType {
     double sample_int;  /**< FIXME. */ /* (blockettes [47] or [57]) */
     int deci_fact;  /**< FIXME. */
     int deci_offset;  /**< FIXME. */
@@ -522,9 +520,9 @@ struct decimationType { /* a Decimation blockette */
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief A Channel Sensitivity/Gain blockette.
  */
-struct gainType { /* a Channel Sensitivity/Gain blockette */
+struct gainType {
     double gain;  /**< FIXME. */ /* (blockettes [48] or [58]) */
     double gain_freq;  /**< FIXME. */
 };
@@ -532,24 +530,24 @@ struct gainType { /* a Channel Sensitivity/Gain blockette */
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief A Response Reference blockette.
  */
-struct referType { /* a Response Reference blockette */
+struct referType {
     int num_stages;  /**< FIXME. */
     int stage_num;  /**< FIXME. */
     int num_responses;  /**< FIXME. */
 };
 
-/* define a blkt as a stucture containing the blockette type, a union
- (blkt_info) containing the blockette info, and a pointer to the next
- blockette in the filter sequence.  The structures will be assembled to
- form a linked list of blockettes that make up a filter, with the last
- blockette containing a '(struct blkt *)NULL' pointer in the 'next_blkt'
- position */
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Define a blkt as a stucture containing the blockette type, a union
+ *        (blkt_info) containing the blockette info, and a pointer to the
+ *        next blockette in the filter sequence.
+ * @details The structures will be assembled to form a linked list of
+ *          blockettes that make up a filter, with the last blockette
+ *          containing a '(struct blkt *)NULL' pointer in the 'next_blkt'
+ *          position.
  */
 struct blkt {
     int type;  /**< FIXME. */
@@ -567,15 +565,14 @@ struct blkt {
     struct blkt *next_blkt;  /**< FIXME. */
 };
 
-/* define a stage as a structure that contains the sequence number, the
- input and output units, a pointer to the first blockette of the filter,
- and a pointer to the next stage in the response.  Again, the last
- stage in the response will be indicated by a '(struct stage *)NULL pointer
- in the 'next_stage' position */
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Define a stage as a structure that contains the sequence number, the
+ *        input and output units, a pointer to the first blockette of the
+ *        filter, and a pointer to the next stage in the response.
+ * @details Again, the last stage in the response will be indicated by a
+ *          '(struct stage *)NULL pointer in the 'next_stage' position.
  */
 struct stage {
     int sequence_no;  /**< FIXME. */
@@ -585,30 +582,32 @@ struct stage {
     struct stage *next_stage;  /**< FIXME. */
 };
 
-/* and define a channel as a stucture containing a pointer to the head of a
- linked list of stages.  Will access the pieces one stages at a time in the
- same order that they were read from the input file, so a linked list is the
- easiest way to do this (since we don't have to worry about the time penalty
- inherent in following the chain).  As an example, if the first stage read
- was a pole-zero stage, then the parts of that stage contained in a channel
- structure called "ch" would be accessed as:
-
- struct stage *stage_ptr;
- struct blkt *blkt_ptr;
-
- stage_ptr = ch.first_stage;
- blkt_ptr = stage_ptr->first_blkt;
- if(blkt_ptr->type == LAPLACE_PZ || blkt_ptr->type == ANALOG_PZ ||
- blkt_ptr->type == IIR_PZ){
- nzeros = blkt_ptr->blkt_info.poles_zeros.nzeros;
- ........
- }
-
- */
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief And define a channel as a stucture containing a pointer to the head
+ *        of a linked list of stages.
+ * @details Will access the pieces one stages at a time in the same order that
+ *          they were read from the input file, so a linked list is the
+ *          easiest way to do this (since we don't have to worry about the
+ *          time penalty inherent in following the chain). As an example, if
+ *          the first stage read was a pole-zero stage, then the parts of that
+ *          stage contained in a channel structure called "ch" would be
+ *          accessed as:
+
+@verbatim
+struct stage *stage_ptr;
+struct blkt *blkt_ptr;
+
+stage_ptr = ch.first_stage;
+blkt_ptr = stage_ptr->first_blkt;
+if(blkt_ptr->type == LAPLACE_PZ || blkt_ptr->type == ANALOG_PZ ||
+blkt_ptr->type == IIR_PZ){
+nzeros = blkt_ptr->blkt_info.poles_zeros.nzeros;
+........
+}
+@endverbatim
+
  */
 struct channel {
     char staname[STALEN];  /**< FIXME. */
@@ -630,11 +629,10 @@ struct channel {
     struct stage *first_stage;  /**< FIXME. */
 };
 
-/* structure used for time comparisons */
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Structure used for time comparisons.
  */
 struct dateTime {
     int year;  /**< FIXME. */
@@ -1257,7 +1255,7 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs,
 
 /**
  * @private
- * @ingroup evalresp_private]
+ * @ingroup evalresp_private
  * @brief FIXME.
  */
 void convert_to_units(int, char *, struct evr_complex *, double);
@@ -1345,48 +1343,41 @@ void iir_trans(struct blkt *, double, struct evr_complex *); /* IGD for version 
  */
 int is_time(const char *);
 
-/* compare two times and determine if the first is greater, equal to, or less than the second */
-
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Compare two times and determine if the first is greater, equal to,
+ *        or less than the second.
  */
 int timecmp(struct dateTime *dt1, struct dateTime *dt2);
 
-/* print the channel info, followed by the list of filters */
-
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Print the channel info, followed by the list of filters.
  */
 void print_chan(struct channel *, int, int, int, int, int, int);
 
-/* print the response information to the output files */
-
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Print the response information to the output files.
  */
 void print_resp(double *, int, struct response *, char *, int);
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Print the response information to the output files.
  */
 void print_resp_itp(double *, int, struct response *, char *, int, int, double,
         int);
 
-/* evaluate responses for user requested station/channel/network tuple at the
- frequencies requested by the user */
-
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Evaluate responses for user requested station/channel/network tuple
+ *        at the frequencies requested by the user.
  */
 struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
         double *, int, char *, char *, int, int, int, int, double, int);
@@ -1394,7 +1385,8 @@ struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Evaluate responses for user requested station/channel/network tuple
+ *        at the frequencies requested by the user.
  */
 struct response *evresp_itp(char *, char *, char *, char *, char *, char *,
         char *, double *, int, char *, char *, int, int, int, int, int, double,
@@ -1402,7 +1394,8 @@ struct response *evresp_itp(char *, char *, char *, char *, char *, char *,
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Evaluate responses for user requested station/channel/network tuple
+ *        at the frequencies requested by the user.
  */
 int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
         char *units, char *file, double *freqs, int nfreqs, double *resp,
@@ -1410,12 +1403,11 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
         int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
 		int xml_flag);
 
-/* Interpolates amplitude and phase values from the set of frequencies
- in the List blockette to the requested set of frequencies. */
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Interpolates amplitude and phase values from the set of frequencies
+ *        in the List blockette to the requested set of frequencies.
  */
 void interpolate_list_blockette(double **freq, double **amp, double **phase,
         int *p_number_points, double *req_freq_arr, int req_num_freqs,
@@ -1428,24 +1420,27 @@ void interpolate_list_blockette(double **freq, double **amp, double **phase,
  */
 extern char SEEDUNITS[][UNITS_STR_LEN];
 
-/* define the "first line" and "first field" arguments that are used by the
- parsing routines (they are used to compensate for the fact that in
- parsing the RESP files, one extra line is always read because the
- "end" of a filter sequence cannot be determined until the first line
- of the "next" filter sequence or station-channel pair is read from the
- file */
-
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Define the "first line" and "first field" arguments that are used by
+ *        the parsing routines (they are used to compensate for the fact that
+ *        in parsing the RESP files, one extra line is always read because the
+ *        "end" of a filter sequence cannot be determined until the first line
+ *        of the "next" filter sequence or station-channel pair is read from
+ *        the file.
  */
 extern char FirstLine[];
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Define the "first line" and "first field" arguments that are used by
+ *        the parsing routines (they are used to compensate for the fact that
+ *        in parsing the RESP files, one extra line is always read because the
+ *        "end" of a filter sequence cannot be determined until the first line
+ *        of the "next" filter sequence or station-channel pair is read from
+ *        the file.
  */
 extern int FirstField;
 
@@ -1465,22 +1460,19 @@ extern double Pi;
  */
 extern double twoPi;
 
-/* define a global flag to use if using "default" units */
-
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Define a global flag to use if using "default" units.
  */
 extern int def_units_flag;
 
-/* define a pointer to a channel structure to use in determining the input and
- output units if using "default" units and for use in error output*/
-
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Define a pointer to a channel structure to use in determining the
+ *        input and output units if using "default" units and for use in error
+ *        output.
  */
 extern struct channel *GblChanPtr;
 
