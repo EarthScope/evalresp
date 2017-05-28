@@ -261,16 +261,16 @@
  * @brief FIXME.
  */
 enum units {
-    UNDEF_UNITS,
-    DIS,
-    VEL,
-    ACC,
-    COUNTS,
-    VOLTS,
-    DEFAULT,
-    PRESSURE,
-    TESLA,
-    CENTIGRADE
+    UNDEF_UNITS,  /**< FIXME. */
+    DIS,  /**< FIXME. */
+    VEL,  /**< FIXME. */
+    ACC,  /**< FIXME. */
+    COUNTS,  /**< FIXME. */
+    VOLTS,  /**< FIXME. */
+    DEFAULT,  /**< FIXME. */
+    PRESSURE,  /**< FIXME. */
+    TESLA,  /**< FIXME. */
+    CENTIGRADE  /**< FIXME. */
 };
 
 /*  enumeration representing the types of filters encountered  */
@@ -280,21 +280,21 @@ enum units {
  * @brief FIXME.
  */
 enum filt_types {
-    UNDEF_FILT,
-    LAPLACE_PZ,
-    ANALOG_PZ,
-    IIR_PZ,
-    FIR_SYM_1,
-    FIR_SYM_2,
-    FIR_ASYM,
-    LIST,
-    GENERIC,
-    DECIMATION,
-    GAIN,
-    REFERENCE,
-    FIR_COEFFS,
-    IIR_COEFFS,
-    POLYNOMIAL
+    UNDEF_FILT,  /**< FIXME. */
+    LAPLACE_PZ,  /**< FIXME. */
+    ANALOG_PZ,  /**< FIXME. */
+    IIR_PZ,  /**< FIXME. */
+    FIR_SYM_1,  /**< FIXME. */
+    FIR_SYM_2,  /**< FIXME. */
+    FIR_ASYM,  /**< FIXME. */
+    LIST,  /**< FIXME. */
+    GENERIC,  /**< FIXME. */
+    DECIMATION,  /**< FIXME. */
+    GAIN,  /**< FIXME. */
+    REFERENCE,  /**< FIXME. */
+    FIR_COEFFS,  /**< FIXME. */
+    IIR_COEFFS,  /**< FIXME. */
+    POLYNOMIAL  /**< FIXME. */
 };
 
 /* enumeration representing the types of stages that are recognized */
@@ -305,15 +305,15 @@ enum filt_types {
  * @brief FIXME.
  */
 enum stage_types {
-    UNDEF_STAGE,
-    PZ_TYPE,
-    IIR_TYPE,
-    FIR_TYPE,
-    GAIN_TYPE,
-    LIST_TYPE,
-    IIR_COEFFS_TYPE,
-    GENERIC_TYPE,
-    POLYNOMIAL_TYPE
+    UNDEF_STAGE,  /**< FIXME. */
+    PZ_TYPE,  /**< FIXME. */
+    IIR_TYPE,  /**< FIXME. */
+    FIR_TYPE,  /**< FIXME. */
+    GAIN_TYPE,  /**< FIXME. */
+    LIST_TYPE,  /**< FIXME. */
+    IIR_COEFFS_TYPE,  /**< FIXME. */
+    GENERIC_TYPE,  /**< FIXME. */
+    POLYNOMIAL_TYPE  /**< FIXME. */
 };
 
 /* enumeration representing the types of error codes possible */
@@ -323,26 +323,26 @@ enum stage_types {
  * @brief FIXME.
  */
 enum error_codes {
-    NON_EXIST_FLD = -2,
-    ILLEGAL_RESP_FORMAT = -5,
-    PARSE_ERROR = -4,
-    UNDEF_PREFIX = -3,
-    UNDEF_SEPSTR = -6,
-    OUT_OF_MEMORY = -1,
-    UNRECOG_FILTYPE = -7,
-    UNEXPECTED_EOF = -8,
-    ARRAY_BOUNDS_EXCEEDED = -9,
-    OPEN_FILE_ERROR = 2,
-    RE_COMP_FAILED = 3,
-    MERGE_ERROR = 4,
-    SWAP_FAILED = 5,
-    USAGE_ERROR = 6,
-    BAD_OUT_UNITS = 7,
-    IMPROP_DATA_TYPE = -10,
-    UNSUPPORT_FILTYPE = -11,
-    ILLEGAL_FILT_SPEC = -12,
-    NO_STAGE_MATCHED = -13,
-    UNRECOG_UNITS = -14
+    NON_EXIST_FLD = -2,  /**< FIXME. */
+    ILLEGAL_RESP_FORMAT = -5,  /**< FIXME. */
+    PARSE_ERROR = -4,  /**< FIXME. */
+    UNDEF_PREFIX = -3,  /**< FIXME. */
+    UNDEF_SEPSTR = -6,  /**< FIXME. */
+    OUT_OF_MEMORY = -1,  /**< FIXME. */
+    UNRECOG_FILTYPE = -7,  /**< FIXME. */
+    UNEXPECTED_EOF = -8,  /**< FIXME. */
+    ARRAY_BOUNDS_EXCEEDED = -9,  /**< FIXME. */
+    OPEN_FILE_ERROR = 2,  /**< FIXME. */
+    RE_COMP_FAILED = 3,  /**< FIXME. */
+    MERGE_ERROR = 4,  /**< FIXME. */
+    SWAP_FAILED = 5,  /**< FIXME. */
+    USAGE_ERROR = 6,  /**< FIXME. */
+    BAD_OUT_UNITS = 7,  /**< FIXME. */
+    IMPROP_DATA_TYPE = -10,  /**< FIXME. */
+    UNSUPPORT_FILTYPE = -11,  /**< FIXME. */
+    ILLEGAL_FILT_SPEC = -12,  /**< FIXME. */
+    NO_STAGE_MATCHED = -13,  /**< FIXME. */
+    UNRECOG_UNITS = -14  /**< FIXME. */
 };
 
 /* define structures for the compound data types used in evalesp */
@@ -352,8 +352,8 @@ enum error_codes {
  * @brief FIXME.
  */
 struct evr_complex {
-    double real;
-    double imag;
+    double real;  /**< FIXME. */
+    double imag;  /**< FIXME. */
 };
 
 /**
@@ -362,8 +362,8 @@ struct evr_complex {
  * @brief FIXME.
  */
 struct string_array {
-    int nstrings;
-    char **strings;
+    int nstrings;  /**< FIXME. */
+    char **strings;  /**< FIXME. */
 };
 
 /**
@@ -372,11 +372,11 @@ struct string_array {
  * @brief FIXME.
  */
 struct scn {
-    char *station;
-    char *network;
-    char *locid;
-    char *channel;
-    int found;
+    char *station;  /**< FIXME. */
+    char *network;  /**< FIXME. */
+    char *locid;  /**< FIXME. */
+    char *channel;  /**< FIXME. */
+    int found;  /**< FIXME. */
 };
 
 /**
@@ -385,14 +385,14 @@ struct scn {
  * @brief FIXME.
  */
 struct response {
-    char station[STALEN];
-    char network[NETLEN];
-    char locid[LOCIDLEN];
-    char channel[CHALEN];
-    struct evr_complex *rvec;
-    int nfreqs; /*Add by I.Dricker IGD to  support blockette 55 */
-    double *freqs; /*Add by I.Dricker IGD to  support blockette 55 */
-    struct response *next;
+    char station[STALEN];  /**< FIXME. */
+    char network[NETLEN];  /**< FIXME. */
+    char locid[LOCIDLEN];  /**< FIXME. */
+    char channel[CHALEN];  /**< FIXME. */
+    struct evr_complex *rvec;  /**< FIXME. */
+    int nfreqs;   /**< FIXME. */ /*Add by I.Dricker IGD to  support blockette 55 */
+    double *freqs;  /**< FIXME. */ /*Add by I.Dricker IGD to  support blockette 55 */
+    struct response *next;  /**< FIXME. */
 };
 
 /**
@@ -401,8 +401,8 @@ struct response {
  * @brief FIXME.
  */
 struct file_list {
-    char *name;
-    struct file_list *next_file;
+    char *name;  /**< FIXME. */
+    struct file_list *next_file;  /**< FIXME. */
 };
 
 /**
@@ -411,9 +411,9 @@ struct file_list {
  * @brief FIXME.
  */
 struct matched_files {
-    int nfiles;
-    struct file_list *first_list;
-    struct matched_files *ptr_next;
+    int nfiles;  /**< FIXME. */
+    struct file_list *first_list;  /**< FIXME. */
+    struct matched_files *ptr_next;  /**< FIXME. */
 };
 
 /**
@@ -422,8 +422,8 @@ struct matched_files {
  * @brief FIXME.
  */
 struct scn_list {
-    int nscn;
-    struct scn **scn_vec;
+    int nscn;  /**< FIXME. */
+    struct scn **scn_vec;  /**< FIXME. */
 };
 
 /* define structures for the various types of filters defined in seed */
@@ -433,12 +433,12 @@ struct scn_list {
  * @brief FIXME.
  */
 struct pole_zeroType { /* a Response (Poles & Zeros) blockette */
-    int nzeros; /* (blockettes [43] or [53]) */
-    int npoles;
-    double a0;
-    double a0_freq;
-    struct evr_complex *zeros;
-    struct evr_complex *poles;
+    int nzeros;  /**< FIXME. */ /* (blockettes [43] or [53]) */
+    int npoles;  /**< FIXME. */
+    double a0;  /**< FIXME. */
+    double a0_freq;  /**< FIXME. */
+    struct evr_complex *zeros;  /**< FIXME. */
+    struct evr_complex *poles;  /**< FIXME. */
 };
 
 /**
@@ -447,11 +447,11 @@ struct pole_zeroType { /* a Response (Poles & Zeros) blockette */
  * @brief FIXME.
  */
 struct coeffType { /* a Response (Coefficients) blockette */
-    int nnumer; /* (blockettes [44] or [54]) */
-    int ndenom;
-    double *numer;
-    double *denom;
-    double h0; /*IGD this field is new v 3.2.17 */
+    int nnumer;  /**< FIXME. */ /* (blockettes [44] or [54]) */
+    int ndenom;  /**< FIXME. */
+    double *numer;  /**< FIXME. */
+    double *denom;  /**< FIXME. */
+    double h0;  /**< FIXME. */ /*IGD this field is new v 3.2.17 */
 };
 
 /**
@@ -460,16 +460,16 @@ struct coeffType { /* a Response (Coefficients) blockette */
  * @brief FIXME.
  */
 struct polynomialType { /* a Response (Coefficients) blockette */
-    unsigned char approximation_type; /* (blockettes [42] or [62]) IGD 05/31/2013 */
-    unsigned char frequency_units;
-    double lower_freq_bound;
-    double upper_freq_bound;
-    double lower_approx_bound;
-    double upper_approx_bound;
-    double max_abs_error;
-    int ncoeffs;
-    double *coeffs;
-    double *coeffs_err;
+    unsigned char approximation_type;  /**< FIXME. */ /* (blockettes [42] or [62]) IGD 05/31/2013 */
+    unsigned char frequency_units;  /**< FIXME. */
+    double lower_freq_bound;  /**< FIXME. */
+    double upper_freq_bound;  /**< FIXME. */
+    double lower_approx_bound;  /**< FIXME. */
+    double upper_approx_bound;  /**< FIXME. */
+    double max_abs_error;  /**< FIXME. */
+    int ncoeffs;  /**< FIXME. */
+    double *coeffs;  /**< FIXME. */
+    double *coeffs_err;  /**< FIXME. */
 };
 
 /**
@@ -478,9 +478,9 @@ struct polynomialType { /* a Response (Coefficients) blockette */
  * @brief FIXME.
  */
 struct firType { /* a FIR Response blockette */
-    int ncoeffs; /* (blockettes [41] or [61])*/
-    double *coeffs;
-    double h0;
+    int ncoeffs;  /**< FIXME. */ /* (blockettes [41] or [61])*/
+    double *coeffs;  /**< FIXME. */
+    double h0;  /**< FIXME. */
 };
 
 /**
@@ -489,10 +489,10 @@ struct firType { /* a FIR Response blockette */
  * @brief FIXME.
  */
 struct listType { /* a Response (List) blockette */
-    int nresp; /* (blockettes [45] or [55]) */
-    double *freq;
-    double *amp;
-    double *phase;
+    int nresp;  /**< FIXME. */ /* (blockettes [45] or [55]) */
+    double *freq;  /**< FIXME. */
+    double *amp;  /**< FIXME. */
+    double *phase;  /**< FIXME. */
 };
 
 /**
@@ -501,9 +501,9 @@ struct listType { /* a Response (List) blockette */
  * @brief FIXME.
  */
 struct genericType { /* a Generic Response blockette */
-    int ncorners; /* (blockettes [46] or [56]) */
-    double *corner_freq;
-    double *corner_slope;
+    int ncorners;  /**< FIXME. */ /* (blockettes [46] or [56]) */
+    double *corner_freq;  /**< FIXME. */
+    double *corner_slope;  /**< FIXME. */
 };
 
 /**
@@ -512,11 +512,11 @@ struct genericType { /* a Generic Response blockette */
  * @brief FIXME.
  */
 struct decimationType { /* a Decimation blockette */
-    double sample_int; /* (blockettes [47] or [57]) */
-    int deci_fact;
-    int deci_offset;
-    double estim_delay;
-    double applied_corr;
+    double sample_int;  /**< FIXME. */ /* (blockettes [47] or [57]) */
+    int deci_fact;  /**< FIXME. */
+    int deci_offset;  /**< FIXME. */
+    double estim_delay;  /**< FIXME. */
+    double applied_corr;  /**< FIXME. */
 };
 
 /**
@@ -525,8 +525,8 @@ struct decimationType { /* a Decimation blockette */
  * @brief FIXME.
  */
 struct gainType { /* a Channel Sensitivity/Gain blockette */
-    double gain; /* (blockettes [48] or [58]) */
-    double gain_freq;
+    double gain;  /**< FIXME. */ /* (blockettes [48] or [58]) */
+    double gain_freq;  /**< FIXME. */
 };
 
 /**
@@ -535,9 +535,9 @@ struct gainType { /* a Channel Sensitivity/Gain blockette */
  * @brief FIXME.
  */
 struct referType { /* a Response Reference blockette */
-    int num_stages;
-    int stage_num;
-    int num_responses;
+    int num_stages;  /**< FIXME. */
+    int stage_num;  /**< FIXME. */
+    int num_responses;  /**< FIXME. */
 };
 
 /* define a blkt as a stucture containing the blockette type, a union
@@ -552,19 +552,19 @@ struct referType { /* a Response Reference blockette */
  * @brief FIXME.
  */
 struct blkt {
-    int type;
+    int type;  /**< FIXME. */
     union {
-        struct pole_zeroType pole_zero;
-        struct coeffType coeff;
-        struct firType fir;
-        struct listType list;
-        struct genericType generic;
-        struct decimationType decimation;
-        struct gainType gain;
-        struct referType reference;
-        struct polynomialType polynomial;
-    } blkt_info;
-    struct blkt *next_blkt;
+        struct pole_zeroType pole_zero;  /**< FIXME. */
+        struct coeffType coeff;  /**< FIXME. */
+        struct firType fir;  /**< FIXME. */
+        struct listType list;  /**< FIXME. */
+        struct genericType generic;  /**< FIXME. */
+        struct decimationType decimation;  /**< FIXME. */
+        struct gainType gain;  /**< FIXME. */
+        struct referType reference;  /**< FIXME. */
+        struct polynomialType polynomial;  /**< FIXME. */
+    } blkt_info;  /**< FIXME. */
+    struct blkt *next_blkt;  /**< FIXME. */
 };
 
 /* define a stage as a structure that contains the sequence number, the
@@ -578,11 +578,11 @@ struct blkt {
  * @brief FIXME.
  */
 struct stage {
-    int sequence_no;
-    int input_units;
-    int output_units;
-    struct blkt *first_blkt;
-    struct stage *next_stage;
+    int sequence_no;  /**< FIXME. */
+    int input_units;  /**< FIXME. */
+    int output_units;  /**< FIXME. */
+    struct blkt *first_blkt;  /**< FIXME. */
+    struct stage *next_stage;  /**< FIXME. */
 };
 
 /* and define a channel as a stucture containing a pointer to the head of a
@@ -611,23 +611,23 @@ struct stage {
  * @brief FIXME.
  */
 struct channel {
-    char staname[STALEN];
-    char network[NETLEN];
-    char locid[LOCIDLEN];
-    char chaname[CHALEN];
-    char beg_t[DATIMLEN];
-    char end_t[DATIMLEN];
-    char first_units[MAXLINELEN];
-    char last_units[MAXLINELEN];
-    double sensit;
-    double sensfreq;
-    double calc_sensit;
-    double calc_delay;
-    double estim_delay;
-    double applied_corr;
-    double sint;
-    int nstages;
-    struct stage *first_stage;
+    char staname[STALEN];  /**< FIXME. */
+    char network[NETLEN];  /**< FIXME. */
+    char locid[LOCIDLEN];  /**< FIXME. */
+    char chaname[CHALEN];  /**< FIXME. */
+    char beg_t[DATIMLEN];  /**< FIXME. */
+    char end_t[DATIMLEN];  /**< FIXME. */
+    char first_units[MAXLINELEN];  /**< FIXME. */
+    char last_units[MAXLINELEN];  /**< FIXME. */
+    double sensit;  /**< FIXME. */
+    double sensfreq;  /**< FIXME. */
+    double calc_sensit;  /**< FIXME. */
+    double calc_delay;  /**< FIXME. */
+    double estim_delay;  /**< FIXME. */
+    double applied_corr;  /**< FIXME. */
+    double sint;  /**< FIXME. */
+    int nstages;  /**< FIXME. */
+    struct stage *first_stage;  /**< FIXME. */
 };
 
 /* structure used for time comparisons */
@@ -637,11 +637,11 @@ struct channel {
  * @brief FIXME.
  */
 struct dateTime {
-    int year;
-    int jday;
-    int hour;
-    int min;
-    float sec;
+    int year;  /**< FIXME. */
+    int jday;  /**< FIXME. */
+    int hour;  /**< FIXME. */
+    int min;  /**< FIXME. */
+    float sec;  /**< FIXME. */
 };
 
 /* IGD 2007/02/27 */

@@ -69,8 +69,8 @@
  * @brief FIXME.
  */
 typedef struct {
-    FILE *log;
-    int level;
+    FILE *log;  /**< FIXME. */
+    int level;  /**< FIXME. */
 } x2r_log;
 
 /**

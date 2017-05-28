@@ -48,13 +48,13 @@
  * @brief FIXME.
  */
 typedef struct regexp {
-    char *startp[NSUBEXP];
-    char *endp[NSUBEXP];
-    char regstart; /* Internal use only. */
-    char reganch; /* Internal use only. */
-    char *regmust; /* Internal use only. */
-    int regmlen; /* Internal use only. */
-    char program[1]; /* Unwarranted chumminess with compiler. */
+    char *startp[NSUBEXP];  /**< FIXME. */
+    char *endp[NSUBEXP];  /**< FIXME. */
+    char regstart;  /**< FIXME. */ /* Internal use only. */
+    char reganch;  /**< FIXME. */ /* Internal use only. */
+    char *regmust;  /**< FIXME. */ /* Internal use only. */
+    int regmlen;  /**< FIXME. */ /* Internal use only. */
+    char program[1];  /**< FIXME. */ /* Unwarranted chumminess with compiler. */
 } regexp;
 
 /**
