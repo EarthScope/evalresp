@@ -12,7 +12,7 @@
  */
 
 /**
- * @defgroup evalresp_evalresp Private evalresp Interface
+ * @defgroup evalresp_private Private evalresp Interface
  * @ingroup evalresp
  * @brief Private evalresp interface.
  */
