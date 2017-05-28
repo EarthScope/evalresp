@@ -1100,7 +1100,8 @@ void free_response(struct response *);
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Wrapper function which prints a message and exits the program.
+ * @warning Do not use in library calls.
  */
 void error_exit(int, char *, ...);
 
@@ -1378,6 +1379,7 @@ void print_resp_itp(double *, int, struct response *, char *, int, int, double,
  * @ingroup evalresp_private
  * @brief Evaluate responses for user requested station/channel/network tuple
  *        at the frequencies requested by the user.
+ * @remark Calls evresp_itp() but with listinterp_tension set to 0.
  */
 struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
         double *, int, char *, char *, int, int, int, int, double, int);
@@ -1396,6 +1398,7 @@ struct response *evresp_itp(char *, char *, char *, char *, char *, char *,
  * @ingroup evalresp_private
  * @brief Evaluate responses for user requested station/channel/network tuple
  *        at the frequencies requested by the user.
+ * @remark Fortran interface.
  */
 int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
         char *units, char *file, double *freqs, int nfreqs, double *resp,
