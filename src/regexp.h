@@ -13,7 +13,7 @@
 
 /**
  * @defgroup evalresp_log evalresp Private Regular Expressions Interface
- * @ingroup evalresp
+ * @ingroup evalresp_private
  * @brief Private regular expressions interface for evalresp.
  */
 

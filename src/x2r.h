@@ -13,7 +13,7 @@
 
 /**
  * @defgroup evalresp_x2r evalresp Private X2R Interface
- * @ingroup evalresp
+ * @ingroup evalresp_private
  * @brief Private X2R interface for evalresp.
  */
 

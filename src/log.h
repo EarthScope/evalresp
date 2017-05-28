@@ -13,7 +13,7 @@
 
 /**
  * @defgroup evalresp_log evalresp Private Logging Interface
- * @ingroup evalresp
+ * @ingroup evalresp_private
  * @brief Private logging interface for evalresp.
  * @author 2017: Dylan Thies, ISTI.
  */

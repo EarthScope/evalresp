@@ -13,7 +13,7 @@
 
 /**
  * @defgroup evalresp_spline evalresp Private Spline Interpolation Interface
- * @ingroup evalresp
+ * @ingroup evalresp_private
  * @brief Private cubic spline interpolation interface for evalresp.
  */
 
