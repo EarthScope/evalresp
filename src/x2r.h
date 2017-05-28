@@ -30,48 +30,56 @@
 /**
  * @private
  * @ingroup evalresp_x2r
+ * @brief FIXME.
  */
 #define X2R_OK 0
 
 /**
  * @private
  * @ingroup evalresp_x2r
+ * @brief FIXME.
  */
 #define X2R_ERR_USER 1
 
 /**
  * @private
  * @ingroup evalresp_x2r
+ * @brief FIXME.
  */
 #define X2R_ERR_MEMORY 2
 
 /**
  * @private
  * @ingroup evalresp_x2r
+ * @brief FIXME.
  */
 #define X2R_ERR_XML2 3
 
 /**
  * @private
  * @ingroup evalresp_x2r
+ * @brief FIXME.
  */
 #define X2R_ERR_BUFFER 4
 
 /**
  * @private
  * @ingroup evalresp_x2r
+ * @brief FIXME.
  */
 #define X2R_ERR_XML 5
 
 /**
  * @private
  * @ingroup evalresp_x2r
+ * @brief FIXME.
  */
 #define X2R_ERR_IO 6
 
 /**
  * @private
  * @ingroup evalresp_x2r
+ * @brief FIXME.
  */
 #define X2R_ERR_DATE 7
 

@@ -31,36 +31,42 @@
 /**
  * @private
  * @ingroup evalresp_x2r_log
+ * @brief FIXME.
  */
 #define X2R_SILENT 0
 
 /**
  * @private
  * @ingroup evalresp_x2r_log
+ * @brief FIXME.
  */
 #define X2R_ERROR 1
 
 /**
  * @private
  * @ingroup evalresp_x2r_log
+ * @brief FIXME.
  */
 #define X2R_WARN 2
 
 /**
  * @private
  * @ingroup evalresp_x2r_log
+ * @brief FIXME.
  */
 #define X2R_INFO 3
 
 /**
  * @private
  * @ingroup evalresp_x2r_log
+ * @brief FIXME.
  */
 #define X2R_DEBUG 4
 
 /**
  * @private
  * @ingroup evalresp_x2r_log
+ * @brief FIXME.
  */
 typedef struct {
     FILE *log;
@@ -70,36 +76,42 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_log
+ * @brief FIXME.
  */
 int x2r_alloc_log(int level, FILE *file, x2r_log **log);
 
 /**
  * @private
  * @ingroup evalresp_x2r_log
+ * @brief FIXME.
  */
 int x2r_free_log(x2r_log *log, int status);
 
 /**
  * @private
  * @ingroup evalresp_x2r_log
+ * @brief FIXME.
  */
 void x2r_debug(x2r_log *log, char *template, ...);
 
 /**
  * @private
  * @ingroup evalresp_x2r_log
+ * @brief FIXME.
  */
 void x2r_info(x2r_log *log, char *template, ...);
 
 /**
  * @private
  * @ingroup evalresp_x2r_log
+ * @brief FIXME.
  */
 void x2r_warn(x2r_log *log, char *template, ...);
 
 /**
  * @private
  * @ingroup evalresp_x2r_log
+ * @brief FIXME.
  */
 int x2r_error(x2r_log *log, int status, char *template, ...);
 

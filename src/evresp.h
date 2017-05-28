@@ -108,120 +108,143 @@
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define TRUE 1
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define FALSE 0
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
+
  */
 #define QUERY_DELAY -1
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
+
  */
 #define STALEN 64
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define NETLEN 64
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
+
  */
 #define LOCIDLEN 64
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define CHALEN 64
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define OUTPUTLEN 256
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define TMPSTRLEN 64
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define UNITS_STR_LEN 16
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define DATIMLEN 23
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define UNITSLEN 20
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define BLKTSTRLEN 4
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define FLDSTRLEN 3
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define MAXFLDLEN 50
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define MAXLINELEN 256
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define FIR_NORM_TOL 0.02
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define CORRECTION_APPLIED_FLAG 0
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define ESTIMATED_DELAY_FLAG 1
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 #define CALC_DELAY_FLAG 2
 
@@ -235,6 +258,7 @@
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 enum units {
     UNDEF_UNITS,
@@ -253,6 +277,7 @@ enum units {
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 enum filt_types {
     UNDEF_FILT,
@@ -277,6 +302,7 @@ enum filt_types {
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 enum stage_types {
     UNDEF_STAGE,
@@ -294,6 +320,7 @@ enum stage_types {
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 enum error_codes {
     NON_EXIST_FLD = -2,
@@ -322,6 +349,7 @@ enum error_codes {
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct evr_complex {
     double real;
@@ -331,6 +359,7 @@ struct evr_complex {
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct string_array {
     int nstrings;
@@ -340,6 +369,7 @@ struct string_array {
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct scn {
     char *station;
@@ -352,6 +382,7 @@ struct scn {
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct response {
     char station[STALEN];
@@ -367,6 +398,7 @@ struct response {
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct file_list {
     char *name;
@@ -376,6 +408,7 @@ struct file_list {
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct matched_files {
     int nfiles;
@@ -386,6 +419,7 @@ struct matched_files {
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct scn_list {
     int nscn;
@@ -396,6 +430,7 @@ struct scn_list {
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct pole_zeroType { /* a Response (Poles & Zeros) blockette */
     int nzeros; /* (blockettes [43] or [53]) */
@@ -409,6 +444,7 @@ struct pole_zeroType { /* a Response (Poles & Zeros) blockette */
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct coeffType { /* a Response (Coefficients) blockette */
     int nnumer; /* (blockettes [44] or [54]) */
@@ -421,6 +457,7 @@ struct coeffType { /* a Response (Coefficients) blockette */
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct polynomialType { /* a Response (Coefficients) blockette */
     unsigned char approximation_type; /* (blockettes [42] or [62]) IGD 05/31/2013 */
@@ -438,6 +475,7 @@ struct polynomialType { /* a Response (Coefficients) blockette */
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct firType { /* a FIR Response blockette */
     int ncoeffs; /* (blockettes [41] or [61])*/
@@ -448,6 +486,7 @@ struct firType { /* a FIR Response blockette */
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct listType { /* a Response (List) blockette */
     int nresp; /* (blockettes [45] or [55]) */
@@ -459,6 +498,7 @@ struct listType { /* a Response (List) blockette */
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct genericType { /* a Generic Response blockette */
     int ncorners; /* (blockettes [46] or [56]) */
@@ -469,6 +509,7 @@ struct genericType { /* a Generic Response blockette */
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct decimationType { /* a Decimation blockette */
     double sample_int; /* (blockettes [47] or [57]) */
@@ -481,6 +522,7 @@ struct decimationType { /* a Decimation blockette */
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct gainType { /* a Channel Sensitivity/Gain blockette */
     double gain; /* (blockettes [48] or [58]) */
@@ -490,6 +532,7 @@ struct gainType { /* a Channel Sensitivity/Gain blockette */
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct referType { /* a Response Reference blockette */
     int num_stages;
@@ -506,6 +549,7 @@ struct referType { /* a Response Reference blockette */
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct blkt {
     int type;
@@ -531,6 +575,7 @@ struct blkt {
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct stage {
     int sequence_no;
@@ -563,6 +608,7 @@ struct stage {
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct channel {
     char staname[STALEN];
@@ -588,6 +634,7 @@ struct channel {
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct dateTime {
     int year;
@@ -601,6 +648,7 @@ struct dateTime {
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 extern char myLabel[20];
 //char myLabel[20] = "aa";
@@ -611,108 +659,126 @@ extern char myLabel[20];
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct string_array *ev_parse_line(char *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct string_array *parse_delim_line(char *, char *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int get_field(FILE *, char *, int, int, char *, int);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int test_field(FILE *, char *, int *, int *, char *, int);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int get_line(FILE *, char *, int, int, char *); /* checks blkt & fld nos */
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int next_line(FILE *, char *, int *, int *, char *); /* returns blkt & fld nos */
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int count_fields(char *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int count_delim_fields(char *, char *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int parse_field(char *, int, char *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int parse_delim_field(char *, int, char *, char *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int check_line(FILE *, int *, int *, char *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int get_int(char *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 double get_double(char *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int check_units(char *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int string_match(const char *, char *, char *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int is_int(const char *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int is_real(const char *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int is_IIR_coeffs(FILE *, int); /*IGD */
 
@@ -722,24 +788,28 @@ int is_IIR_coeffs(FILE *, int); /*IGD */
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int find_resp(FILE *, struct scn_list *, char *, struct channel *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int get_resp(FILE *, struct scn *, char *, struct channel *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int get_channel(FILE *, struct channel *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int next_resp(FILE *);
 
@@ -748,18 +818,21 @@ int next_resp(FILE *);
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct matched_files *find_files(char *, struct scn_list *, int *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int get_names(char *, struct matched_files *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int start_child(char *, FILE **, FILE **, FILE **);
 
@@ -769,60 +842,70 @@ int start_child(char *, FILE **, FILE **, FILE **);
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct evr_complex *alloc_complex(int);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct response *alloc_response(int);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct string_array *alloc_string_array(int);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct scn *alloc_scn(void);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct scn_list *alloc_scn_list(int);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct file_list *alloc_file_list(void);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct matched_files *alloc_matched_files(void);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 double *alloc_double(int);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 char *alloc_char(int);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 char **alloc_char_ptr(int);
 
@@ -831,60 +914,70 @@ char **alloc_char_ptr(int);
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct blkt *alloc_pz(void);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct blkt *alloc_coeff(void);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct blkt *alloc_fir(void);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct blkt *alloc_ref(void);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct blkt *alloc_gain(void);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct blkt *alloc_list(void);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct blkt *alloc_generic(void);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct blkt *alloc_deci(void);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct blkt *alloc_polynomial(void); /*IGD 05/31/2013 */
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct stage *alloc_stage(void);
 
@@ -894,96 +987,112 @@ struct stage *alloc_stage(void);
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void free_string_array(struct string_array *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void free_scn(struct scn *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void free_scn_list(struct scn_list *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void free_matched_files(struct matched_files *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void free_file_list(struct file_list *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void free_pz(struct blkt *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void free_coeff(struct blkt *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void free_fir(struct blkt *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void free_list(struct blkt *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void free_generic(struct blkt *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void free_gain(struct blkt *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void free_deci(struct blkt *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void free_ref(struct blkt *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void free_stages(struct stage *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void free_channel(struct channel *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void free_response(struct response *);
 
@@ -993,12 +1102,14 @@ void free_response(struct response *);
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void error_exit(int, char *, ...);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void error_return(int, char *, ...);
 
@@ -1007,6 +1118,7 @@ void error_return(int, char *, ...);
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int parse_channel(FILE *, struct channel *);
 
@@ -1015,24 +1127,28 @@ int parse_channel(FILE *, struct channel *);
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int parse_pref(int *, int *, char *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void parse_pz(FILE *, struct blkt *, struct stage *); /* pole-zero */
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void parse_coeff(FILE *, struct blkt *, struct stage *); /* fir */
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void parse_iir_coeff(FILE *, struct blkt *, struct stage *); /*I.Dricker IGD for
  2.3.17 iir */
@@ -1040,42 +1156,49 @@ void parse_iir_coeff(FILE *, struct blkt *, struct stage *); /*I.Dricker IGD for
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void parse_list(FILE *, struct blkt *, struct stage *); /* list */
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void parse_generic(FILE *, struct blkt *, struct stage *); /* generic */
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int parse_deci(FILE *, struct blkt *); /* decimation */
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int parse_gain(FILE *, struct blkt *); /* gain/sensitivity */
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void parse_fir(FILE *, struct blkt *, struct stage *); /* fir */
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void parse_ref(FILE *, struct blkt *, struct stage *); /* response reference */
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void parse_polynomial(FILE *, struct blkt *, struct stage *); /* polynomial B42 B62 IGD 05/31/2013 */
 
@@ -1085,6 +1208,7 @@ void parse_polynomial(FILE *, struct blkt *, struct stage *); /* polynomial B42 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int add_null(char *, int, char);
 
@@ -1093,12 +1217,14 @@ int add_null(char *, int, char);
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void merge_coeffs(struct blkt *, struct blkt **);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void merge_lists(struct blkt *, struct blkt **); /* Added by I.Dricker IGD for v
  3.2.17 of evalresp */
@@ -1106,12 +1232,14 @@ void merge_lists(struct blkt *, struct blkt **); /* Added by I.Dricker IGD for v
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void check_channel(struct channel *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void check_sym(struct blkt *, struct channel *);
 
@@ -1121,6 +1249,7 @@ void check_sym(struct blkt *, struct channel *);
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void calc_resp(struct channel *chan, double *freq, int nfreqs,
         struct evr_complex *output, char *out_units, int start_stage,
@@ -1128,78 +1257,91 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs,
 
 /**
  * @private
- * @ingroup evalresp_evalresp
+ * @ingroup evalresp_evalresp]
+ * @brief FIXME.
  */
 void convert_to_units(int, char *, struct evr_complex *, double);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void analog_trans(struct blkt *, double, struct evr_complex *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void fir_sym_trans(struct blkt *, double, struct evr_complex *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void fir_asym_trans(struct blkt *, double, struct evr_complex *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void iir_pz_trans(struct blkt *, double, struct evr_complex *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void calc_time_shift(double, double, struct evr_complex *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void zmul(struct evr_complex *, struct evr_complex *);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void norm_resp(struct channel *, int, int);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void calc_list(struct blkt *, int, struct evr_complex *); /*IGD i.dricker@isti.c
 om for version 3.2.17 */
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void calc_polynomial(struct blkt *, int, struct evr_complex *, double); /*IGD 06/01/2013 */
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void iir_trans(struct blkt *, double, struct evr_complex *); /* IGD for version 3.2.17 */
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int is_time(const char *);
 
@@ -1208,6 +1350,7 @@ int is_time(const char *);
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int timecmp(struct dateTime *dt1, struct dateTime *dt2);
 
@@ -1216,6 +1359,7 @@ int timecmp(struct dateTime *dt1, struct dateTime *dt2);
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void print_chan(struct channel *, int, int, int, int, int, int);
 
@@ -1224,12 +1368,14 @@ void print_chan(struct channel *, int, int, int, int, int, int);
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void print_resp(double *, int, struct response *, char *, int);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void print_resp_itp(double *, int, struct response *, char *, int, int, double,
         int);
@@ -1240,6 +1386,7 @@ void print_resp_itp(double *, int, struct response *, char *, int, int, double,
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
         double *, int, char *, char *, int, int, int, int, double, int);
@@ -1247,6 +1394,7 @@ struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 struct response *evresp_itp(char *, char *, char *, char *, char *, char *,
         char *, double *, int, char *, char *, int, int, int, int, int, double,
@@ -1254,6 +1402,7 @@ struct response *evresp_itp(char *, char *, char *, char *, char *, char *,
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
         char *units, char *file, double *freqs, int nfreqs, double *resp,
@@ -1266,6 +1415,7 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 void interpolate_list_blockette(double **freq, double **amp, double **phase,
         int *p_number_points, double *req_freq_arr, int req_num_freqs,
@@ -1274,6 +1424,7 @@ void interpolate_list_blockette(double **freq, double **amp, double **phase,
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 extern char SEEDUNITS[][UNITS_STR_LEN];
 
@@ -1287,12 +1438,14 @@ extern char SEEDUNITS[][UNITS_STR_LEN];
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 extern char FirstLine[];
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 extern int FirstField;
 
@@ -1301,12 +1454,14 @@ extern int FirstField;
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 extern double Pi;
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 extern double twoPi;
 
@@ -1315,6 +1470,7 @@ extern double twoPi;
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 extern int def_units_flag;
 
@@ -1324,12 +1480,14 @@ extern int def_units_flag;
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 extern struct channel *GblChanPtr;
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 extern float unitScaleFact;
 
@@ -1338,12 +1496,14 @@ extern float unitScaleFact;
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 extern char *curr_file;
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 extern int curr_seq_no;
 
@@ -1353,12 +1513,14 @@ extern int curr_seq_no;
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 extern jmp_buf jump_buffer;
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 double unwrap_phase(double phase, double prev_phase, double range,
         double *added_value);
@@ -1366,12 +1528,14 @@ double unwrap_phase(double phase, double prev_phase, double range,
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 double wrap_phase(double phase, double range, double *added_value);
 
 /**
  * @private
  * @ingroup evalresp_evalresp
+ * @brief FIXME.
  */
 int use_estimated_delay(int flag);
 

@@ -45,6 +45,7 @@
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     double value;
@@ -55,6 +56,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     int number;
@@ -65,6 +67,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     double frequency;
@@ -75,6 +78,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     int i;
@@ -84,6 +88,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     int number;
@@ -93,6 +98,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     char *name;
@@ -102,6 +108,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     char *pz_transfer_function_type;
@@ -118,6 +125,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     char *cf_transfer_function_type;
@@ -132,6 +140,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     x2r_units input_units;
@@ -143,6 +152,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     char *symmetry;
@@ -156,6 +166,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     char *approximation_type;
@@ -173,6 +184,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     double input_sample_rate;
@@ -185,6 +197,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     double value;
@@ -194,6 +207,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef enum {
     X2R_STAGE_UNKNOWN = 0,
@@ -207,6 +221,7 @@ typedef enum {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     int number;
@@ -225,6 +240,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     x2r_stage *stage;
@@ -236,6 +252,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     char *code;
@@ -248,6 +265,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     char *code;
@@ -258,6 +276,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     char *code;
@@ -268,6 +287,7 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 typedef struct {
     x2r_network *network;
@@ -278,18 +298,21 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 int x2r_parse_iso_datetime(x2r_log *log, const char *datetime, time_t *epoch);
 
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 int x2r_station_service_load(x2r_log *log, FILE *in, x2r_fdsn_station_xml **root);
 
 /**
  * @private
  * @ingroup evalresp_x2r_xml
+ * @brief FIXME.
  */
 int x2r_free_fdsn_station_xml(x2r_fdsn_station_xml *root, int status);
 

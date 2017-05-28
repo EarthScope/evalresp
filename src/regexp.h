@@ -38,12 +38,14 @@
 /**
  * @private
  * @ingroup evalresp_regexp
+ * @brief FIXME.
  */
 #define NSUBEXP  10
 
 /**
  * @private
  * @ingroup evalresp_regexp
+ * @brief FIXME.
  */
 typedef struct regexp {
     char *startp[NSUBEXP];
@@ -58,23 +60,27 @@ typedef struct regexp {
 /**
  * @private
  * @ingroup evalresp_regexp
+ * @brief FIXME.
  */
 regexp *evr_regcomp(char *exp);
 
 /**
  * @private
  * @ingroup evalresp_regexp
+ * @brief FIXME.
  */
 int evr_regexec(regexp *prog, char *string);
 
 /**
  * @private
  * @ingroup evalresp_regexp
+ * @brief FIXME.
  */
 void evr_regsub(regexp *prog, char *source, char *dest);
 
 /**
  * @private
  * @ingroup evalresp_regexp
+ * @brief FIXME.
  */
 void evr_regerror(char *s);
