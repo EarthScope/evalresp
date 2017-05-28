@@ -76,42 +76,44 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_log
- * @brief FIXME.
+ * @brief Create a log, with output at the given level or above to the given
+ *        stream.
  */
 int x2r_alloc_log(int level, FILE *file, x2r_log **log);
 
 /**
  * @private
  * @ingroup evalresp_x2r_log
- * @brief FIXME.
+ * @brief Release resources associated with the log.
  */
 int x2r_free_log(x2r_log *log, int status);
 
 /**
  * @private
  * @ingroup evalresp_x2r_log
- * @brief FIXME.
+ * @brief Log a debug message.
  */
 void x2r_debug(x2r_log *log, char *template, ...);
 
 /**
  * @private
  * @ingroup evalresp_x2r_log
- * @brief FIXME.
+ * @brief Log an info message.
  */
 void x2r_info(x2r_log *log, char *template, ...);
 
 /**
  * @private
  * @ingroup evalresp_x2r_log
- * @brief FIXME.
+ * @brief Log a warn message.
  */
 void x2r_warn(x2r_log *log, char *template, ...);
 
 /**
  * @private
  * @ingroup evalresp_x2r_log
- * @brief FIXME.
+ * @brief Log an error message.
+ * @details The status is returned to simplify got exit code.
  */
 int x2r_error(x2r_log *log, int status, char *template, ...);
 

@@ -298,21 +298,26 @@ typedef struct {
 /**
  * @private
  * @ingroup evalresp_x2r_xml
- * @brief FIXME.
+ * @brief Parse an ISO yyyy-mm-ddThh:mm:ss format datetime.
+ * @remarks Separated out for testing (see check_parse_datetime and also
+ *          implicit tests against the IRIS-WS code elsewhere). Originally
+ *          used strptime, but that's not available on Windows.
  */
 int x2r_parse_iso_datetime(x2r_log *log, const char *datetime, time_t *epoch);
 
 /**
  * @private
  * @ingroup evalresp_x2r_xml
- * @brief FIXME.
+ * @brief The equivalent of StationService.load() in IRIS-WS, constructing an
+ *        in-memory representation of the station.xml file read from the given
+ *        stream.
  */
 int x2r_station_service_load(x2r_log *log, FILE *in, x2r_fdsn_station_xml **root);
 
 /**
  * @private
  * @ingroup evalresp_x2r_xml
- * @brief FIXME.
+ * @brief Free an x2r_fdsn_station_xml value.
  */
 int x2r_free_fdsn_station_xml(x2r_fdsn_station_xml *root, int status);
 

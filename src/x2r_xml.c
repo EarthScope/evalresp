@@ -20,17 +20,17 @@
 #define timegm _mkgmtime
 #endif
 
-/** Support routine for stream2doc */
+/* Support routine for stream2doc */
 static int ioread(FILE *f, char * buf, int len) {
     return(fread(buf, 1, len, f));
 }
 
-/** Support routine for stream2doc */
+/* Support routine for stream2doc */
 static void ioclose(FILE UNUSED *f) {
     // we don't open or close in this lib; we just process streams
 }
 
-/** Read an XML file from the given stream and create an in-memory model. */
+/* Read an XML file from the given stream and create an in-memory model. */
 static int stream2doc(x2r_log *log, FILE *in, xmlDocPtr *doc) {
 
     int status = X2R_OK;
@@ -54,7 +54,7 @@ exit:
 }
 
 
-/** Underlying xpath search logic for routines below. */
+/* Underlying xpath search logic for routines below. */
 static int vfind_xpaths(x2r_log *log, xmlDocPtr doc, xmlXPathObjectPtr *xpath, int *count,
         xmlNodePtr from, const char *template, va_list argp) {
 
@@ -91,7 +91,7 @@ exit:
 }
 
 
-/** Find 0-many nodes matching a given xpath expression. */
+/* Find 0-many nodes matching a given xpath expression. */
 static int find_xpaths(x2r_log *log, xmlDocPtr doc, xmlXPathObjectPtr *xpath, int *count,
         xmlNodePtr from, const char *template, ...) {
 
@@ -107,7 +107,7 @@ exit:
 }
 
 
-/**
+/*
  * Find 0-1 nodes matching an xpath expression.
  *
  * If found is NULL then the xpath is assumed required, and it is an error if none
@@ -151,7 +151,7 @@ exit:
 }
 
 
-/** Read the text contents of an element as a char*. */
+/* Read the text contents of an element as a char*. */
 static int char_element(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, const char *name,
         const char *deflt, char **value) {
 
@@ -187,7 +187,7 @@ exit:
 }
 
 
-/** Read the text contents of an element as an int. */
+/* Read the text contents of an element as an int. */
 static int int_element(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, const char *name,
         const char *deflt, int *value) {
 
@@ -207,7 +207,7 @@ exit:
 }
 
 
-/** Read the text contents of an element as a double. */
+/* Read the text contents of an element as a double. */
 static int double_element(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, const char *name,
         const char *deflt, double *value) {
 
@@ -227,7 +227,7 @@ exit:
 }
 
 
-/** Read an attribute value as a char*. */
+/* Read an attribute value as a char*. */
 static int char_attribute(x2r_log *log, xmlNodePtr node, const char *name,
         const char *deflt, char **value) {
 
@@ -246,7 +246,7 @@ static int char_attribute(x2r_log *log, xmlNodePtr node, const char *name,
     }
 }
 
-/**
+/*
  * Parse an ISO yyyy-mm-ddThh:mm:ss format datetime.
  *
  * Separated out for testing (see check_parse_datetime and also implicit tests against
@@ -281,7 +281,7 @@ exit:
 }
 
 
-/** Read an attribute value as an ISO formatted epoch. */
+/* Read an attribute value as an ISO formatted epoch. */
 static int datetime_attribute(x2r_log *log, xmlNodePtr node, const char *name, time_t *epoch) {
 
     int status = X2R_OK;
@@ -296,7 +296,7 @@ exit:
 }
 
 
-/** Read an attribute value as an int. */
+/* Read an attribute value as an int. */
 static int int_attribute(x2r_log *log, xmlNodePtr node, const char *name,
         const char *deflt, int *value) {
 
@@ -316,7 +316,7 @@ exit:
 }
 
 
-/** Read an attribute value as double. */
+/* Read an attribute value as double. */
 static int double_attribute(x2r_log *log, xmlNodePtr node, const char *name, double *value) {
 
     int status = X2R_OK;
@@ -335,7 +335,7 @@ exit:
 }
 
 
-/** Read an x2r_float value from the given xpath. */
+/* Read an x2r_float value from the given xpath. */
 static int parse_float(x2r_log *log, xmlDocPtr doc, xmlNodePtr parent, const char *xpath,
         x2r_float *flt) {
 
@@ -354,7 +354,7 @@ exit:
 }
 
 
-/** Read an x2r_pole_zero value from the current node. */
+/* Read an x2r_pole_zero value from the current node. */
 static int parse_pole_zero(x2r_log *log, xmlDocPtr doc, xmlNodePtr node,
         x2r_pole_zero *pole_zero) {
 
@@ -371,7 +371,7 @@ exit:
 }
 
 
-/** Read an x2r_coefficient value from the current node. */
+/* Read an x2r_coefficient value from the current node. */
 static int parse_coefficient(x2r_log *log, xmlDocPtr doc, xmlNodePtr node,
         x2r_coefficient *coefficient) {
 
@@ -387,7 +387,7 @@ exit:
 }
 
 
-/** Read an x2r_response_list_element value from the current node. */
+/* Read an x2r_response_list_element value from the current node. */
 static int parse_response_list_element(x2r_log *log, xmlDocPtr doc, xmlNodePtr node,
         x2r_response_list_element *element) {
 
@@ -405,7 +405,7 @@ exit:
 }
 
 
-/** Read an x2r_numerator_coefficient value from the current node. */
+/* Read an x2r_numerator_coefficient value from the current node. */
 static int parse_numerator_coefficient(x2r_log *log, xmlDocPtr doc, xmlNodePtr node,
         x2r_numerator_coefficient *numerator_coefficient) {
 
@@ -425,7 +425,7 @@ exit:
 }
 
 
-/** Read an x2r_units value from the given xpath. */
+/* Read an x2r_units value from the given xpath. */
 static int parse_units(x2r_log *log, xmlDocPtr doc, xmlNodePtr parent, const char *xpath,
         x2r_units *units) {
 
@@ -443,7 +443,7 @@ exit:
 }
 
 
-/** Free an x2r_units value. */
+/* Free an x2r_units value. */
 static int free_units(x2r_units *units, int status) {
     if (units) {
         free(units->name);
@@ -453,7 +453,7 @@ static int free_units(x2r_units *units, int status) {
 }
 
 
-/** Read an x2r_poles_zeros value from the current node. */
+/* Read an x2r_poles_zeros value from the current node. */
 static int parse_poles_zeros(x2r_log *log, xmlDocPtr doc, xmlNodePtr node,
         x2r_poles_zeros *poles_zeros) {
 
@@ -503,7 +503,7 @@ exit:
 }
 
 
-/** Free an x2r_poles_zeros value. */
+/* Free an x2r_poles_zeros value. */
 static int free_poles_zeros(x2r_poles_zeros *poles_zeros, int status) {
     if (poles_zeros) {
         free(poles_zeros->zero);
@@ -516,7 +516,7 @@ static int free_poles_zeros(x2r_poles_zeros *poles_zeros, int status) {
 }
 
 
-/** Read an x2r_coefficients value from the current node. */
+/* Read an x2r_coefficients value from the current node. */
 static int parse_coefficients(x2r_log *log, xmlDocPtr doc, xmlNodePtr node,
         x2r_coefficients *coefficients) {
 
@@ -562,7 +562,7 @@ exit:
 }
 
 
-/** Free an x2r_coefficients value. */
+/* Free an x2r_coefficients value. */
 static int free_coefficients(x2r_coefficients *coefficients, int status) {
     if (coefficients) {
         free(coefficients->numerator);
@@ -575,7 +575,7 @@ static int free_coefficients(x2r_coefficients *coefficients, int status) {
 }
 
 
-/** Read an x2r_response_list value from the current node. */
+/* Read an x2r_response_list value from the current node. */
 static int parse_response_list(x2r_log *log, xmlDocPtr doc, xmlNodePtr node,
         x2r_response_list *response_list) {
 
@@ -607,7 +607,7 @@ exit:
 }
 
 
-/** Free an x2r_response_list value. */
+/* Free an x2r_response_list value. */
 static int free_response_list(x2r_response_list *response_list, int status) {
     if (response_list) {
         free(response_list->response_list_element);
@@ -616,7 +616,7 @@ static int free_response_list(x2r_response_list *response_list, int status) {
 }
 
 
-/** Read an x2r_fir value from the current node. */
+/* Read an x2r_fir value from the current node. */
 static int parse_fir(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, x2r_fir *fir) {
 
     int status = X2R_OK, i;
@@ -649,7 +649,7 @@ exit:
 }
 
 
-/** Free an x2r_fir value. */
+/* Free an x2r_fir value. */
 static int free_fir(x2r_fir *fir, int status) {
     if (fir) {
         free(fir->symmetry);
@@ -660,7 +660,7 @@ static int free_fir(x2r_fir *fir, int status) {
 }
 
 
-/** Read an x2r_polynomial value from the current node. */
+/* Read an x2r_polynomial value from the current node. */
 static int parse_polynomial(x2r_log *log, xmlDocPtr doc, xmlNodePtr node,
         x2r_polynomial *polynomial) {
 
@@ -704,7 +704,7 @@ exit:
 }
 
 
-/** Free an x2r_polynomial value. */
+/* Free an x2r_polynomial value. */
 static int free_polynomial(x2r_polynomial *polynomial, int status) {
     if (polynomial) {
         free(polynomial->coefficient);
@@ -716,7 +716,7 @@ static int free_polynomial(x2r_polynomial *polynomial, int status) {
 }
 
 
-/** Read an x2r_decimation value from the current node. */
+/* Read an x2r_decimation value from the current node. */
 static int parse_decimation(x2r_log *log, xmlDocPtr doc, xmlNodePtr node,
         x2r_decimation *decimation) {
 
@@ -740,7 +740,7 @@ exit:
 }
 
 
-/** Read an x2r_gain value from the current node. */
+/* Read an x2r_gain value from the current node. */
 static int parse_gain(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, x2r_gain *gain) {
 
     int status = X2R_OK;
@@ -763,7 +763,7 @@ static int set_stage(x2r_log *log, x2r_stage *stage, x2r_stage_type type) {
 }
 
 
-/** Read an x2r_stage value from the current node. */
+/* Read an x2r_stage value from the current node. */
 static int parse_stage(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, x2r_stage *stage) {
 
     int status = X2R_OK, found;
@@ -858,7 +858,7 @@ exit:
 }
 
 
-/** Free an x2r_stage value. */
+/* Free an x2r_stage value. */
 static int free_stage(x2r_stage *stage, int status) {
     if (stage->u.poles_zeros) {
         switch (stage->type) {
@@ -888,7 +888,7 @@ static int free_stage(x2r_stage *stage, int status) {
 }
 
 
-/** Read an x2r_response value from the current node. */
+/* Read an x2r_response value from the current node. */
 static int parse_response(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, x2r_response *response) {
 
     int status = X2R_OK, i, found;
@@ -941,7 +941,7 @@ exit:
 }
 
 
-/** Free an x2r_response value. */
+/* Free an x2r_response value. */
 static int free_response(x2r_response *response, int status) {
     int i;
     if (response) {
@@ -959,7 +959,7 @@ static int free_response(x2r_response *response, int status) {
 }
 
 
-/** Read an x2r_channel value from the current node. */
+/* Read an x2r_channel value from the current node. */
 static int parse_channel(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, x2r_channel *channel) {
 
     int status = X2R_OK;
@@ -980,7 +980,7 @@ exit:
 }
 
 
-/** Free an x2r_channel value. */
+/* Free an x2r_channel value. */
 static int free_channel(x2r_channel *channel, int status) {
     if (channel) {
         status = free_response(&channel->response, status);
@@ -991,7 +991,7 @@ static int free_channel(x2r_channel *channel, int status) {
 }
 
 
-/** Read an x2r_station value from the current node. */
+/* Read an x2r_station value from the current node. */
 static int parse_station(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, x2r_station *station) {
 
     int status = X2R_OK, i;
@@ -1020,7 +1020,7 @@ exit:
 }
 
 
-/** Free an x2r_station value. */
+/* Free an x2r_station value. */
 static int free_station(x2r_station *station, int status) {
     int i;
     if (station) {
@@ -1034,7 +1034,7 @@ static int free_station(x2r_station *station, int status) {
 }
 
 
-/** Read an x2r_network value from the current node. */
+/* Read an x2r_network value from the current node. */
 static int parse_network(x2r_log *log, xmlDocPtr doc, xmlNodePtr node, x2r_network *network) {
 
     int status = X2R_OK, i;
@@ -1063,7 +1063,7 @@ exit:
 }
 
 
-/** Free an x2r_network value. */
+/* Free an x2r_network value. */
 static int free_network(x2r_network *network, int status) {
     int i;
     if (network) {
@@ -1077,7 +1077,7 @@ static int free_network(x2r_network *network, int status) {
 }
 
 
-/** Read an x2r_fdsn_station_xml value from the current node. */
+/* Read an x2r_fdsn_station_xml value from the current node. */
 static int parse_fdsn_station_xml(x2r_log *log, xmlDocPtr doc, x2r_fdsn_station_xml **root) {
 
     int status = X2R_OK, i;
@@ -1109,7 +1109,7 @@ exit:
 }
 
 
-/** Free an x2r_fdsn_station_xml value. */
+/* Free an x2r_fdsn_station_xml value. */
 int x2r_free_fdsn_station_xml(x2r_fdsn_station_xml *root, int status) {
     int i;
     if (root) {
@@ -1123,7 +1123,7 @@ int x2r_free_fdsn_station_xml(x2r_fdsn_station_xml *root, int status) {
 }
 
 
-/**
+/*
  * The equivalent of StationService.load() in IRIS-WS, constructing an in-memory
  * representation of the station.xml file read from the given stream.
  */

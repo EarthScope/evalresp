@@ -34,21 +34,23 @@
 /**
  * @private
  * @ingroup evalresp_x2r_ws
- * @brief FIXME.
+ * @brief Print the entire response document, given the in-memory model.
  */
 int x2r_resp_util_write(x2r_log *log, FILE *out, const x2r_fdsn_station_xml *root);
 
 /**
  * @private
  * @ingroup evalresp_x2r_ws
- * @brief FIXME.
+ * @brief If xml_flag is set, convert the file and replace *in. Otherwise, do
+ *        nothing.
  */
 int x2r_xml2resp_on_flag(FILE **in, int xml_flag, int log_level);
 
 /**
  * @private
  * @ingroup evalresp_x2r_ws
- * @brief FIXME.
+ * @brief Check the given file, to see if the first character as <, and if so,
+ *        convert and replace *in.
  */
 int x2r_xml2resp_auto(FILE **in, int log_level);
 
