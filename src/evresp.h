@@ -108,29 +108,30 @@
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief True.
  */
 #define TRUE 1
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief False.
  */
 #define FALSE 0
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
-
+ * @brief Flag to query the value of the flag to use or not use the estimated
+ *        delay in response computation.
+ * @see use_estimated_delay()
  */
 #define QUERY_DELAY -1
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Maximum length of station name.
 
  */
 #define STALEN 64
@@ -138,14 +139,14 @@
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Maximum length of network name.
  */
 #define NETLEN 64
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Maximum length of location ID.
 
  */
 #define LOCIDLEN 64
@@ -153,35 +154,35 @@
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Maximum length of channel name.
  */
 #define CHALEN 64
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Maximum length of output string.
  */
 #define OUTPUTLEN 256
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Maximum length of temporary string.
  */
 #define TMPSTRLEN 64
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Maximum length of unit name strings.
  */
 #define UNITS_STR_LEN 16
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Maximum length of date-time string.
  */
 #define DATIMLEN 23
 
@@ -189,41 +190,42 @@
  * @private
  * @ingroup evalresp_private
  * @brief FIXME.
+ * @remark Not used anywhere.
  */
 #define UNITSLEN 20
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Blockette string length.
  */
 #define BLKTSTRLEN 4
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Field string length.
  */
 #define FLDSTRLEN 3
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Maximum field string length.
  */
 #define MAXFLDLEN 50
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Maximum line string length.
  */
 #define MAXLINELEN 256
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief FIR normal tolerance.
  */
 #define FIR_NORM_TOL 0.02
 
@@ -231,13 +233,15 @@
  * @private
  * @ingroup evalresp_private
  * @brief FIXME.
+ * @remark Not used anywhere.
  */
 #define CORRECTION_APPLIED_FLAG 0
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Set flag to use the estimated delay in response computation.
+ * @see use_estimated_delay()
  */
 #define ESTIMATED_DELAY_FLAG 1
 
@@ -245,18 +249,19 @@
  * @private
  * @ingroup evalresp_private
  * @brief FIXME.
+ * @remark Not used anywhere.
  */
 #define CALC_DELAY_FLAG 2
 
-/* IGD 02/03/01 New unit pressure  added */
-/* IGD 08/21/06 New units TESLA added */
-/* IGD 10/03/13 New units  CENTIGRADE added */
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Enumeration representing the types of units encountered.
  * @note If default, then the response is just given in input units to output
  *       units, no interpretation is made of the units used).
+ * @author 02/03/01: IGD: new unit pressure added.
+ * @author 08/21/06: IGD: new unit TESLA added.
+ * @author 10/03/13: IGD: new units CENTIGRADE added.
 */
 enum units {
     UNDEF_UNITS,  /**< Undefined. */
@@ -295,11 +300,11 @@ enum filt_types {
     POLYNOMIAL  /**< FIXME. */
 };
 
-/* IGD 05/15/02 Added GENERIC_TYPE */
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Enumeration representing the types of stages that are recognized.
+ * @author 05/15/02: IGD: added GENERIC_TYPE.
  */
 enum stage_types {
     UNDEF_STAGE,  /**< FIXME. */
@@ -366,61 +371,61 @@ struct string_array {
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Network-station-locid-channel object.
  */
 struct scn {
-    char *station;  /**< FIXME. */
-    char *network;  /**< FIXME. */
-    char *locid;  /**< FIXME. */
-    char *channel;  /**< FIXME. */
-    int found;  /**< FIXME. */
+    char *station;  /**< Station name. */
+    char *network;  /**< Network name. */
+    char *locid;  /**< Location ID. */
+    char *channel;  /**< Channel name. */
+    int found;  /**< Flag (true/false) if found in the input RESP files. */
 };
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Response object.
  */
 struct response {
-    char station[STALEN];  /**< FIXME. */
-    char network[NETLEN];  /**< FIXME. */
-    char locid[LOCIDLEN];  /**< FIXME. */
-    char channel[CHALEN];  /**< FIXME. */
-    struct evr_complex *rvec;  /**< FIXME. */
-    int nfreqs;   /**< FIXME. */ /*Add by I.Dricker IGD to  support blockette 55 */
-    double *freqs;  /**< FIXME. */ /*Add by I.Dricker IGD to  support blockette 55 */
-    struct response *next;  /**< FIXME. */
+    char station[STALEN];  /**< Station name. */
+    char network[NETLEN];  /**< Network name. */
+    char locid[LOCIDLEN];  /**< Location ID. */
+    char channel[CHALEN];  /**< Channel name. */
+    struct evr_complex *rvec;  /**< Output vector. */
+    int nfreqs;   /**< Number of frequencies. */ /* Add by I.Dricker IGD to support blockette 55 */
+    double *freqs;  /**< Array of frequencies. */ /* Add by I.Dricker IGD to support blockette 55 */
+    struct response *next;  /**< Pointer to next response object. */
 };
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief File list object.
  */
 struct file_list {
-    char *name;  /**< FIXME. */
-    struct file_list *next_file;  /**< FIXME. */
+    char *name;  /**< File name. */
+    struct file_list *next_file;  /**< Pointer to next file list object. */
 };
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Matches files object.
  */
 struct matched_files {
-    int nfiles;  /**< FIXME. */
-    struct file_list *first_list;  /**< FIXME. */
-    struct matched_files *ptr_next;  /**< FIXME. */
+    int nfiles;  /**< Number of files. */
+    struct file_list *first_list;  /**< Array of file list objects. */
+    struct matched_files *ptr_next;  /**< Pointer to next matches files object. */
 };
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief List of network-station-locid-channel objects.
  */
 struct scn_list {
-    int nscn;  /**< FIXME. */
-    struct scn **scn_vec;  /**< FIXME. */
+    int nscn;  /**< Number of network-station-locid-channel objects. */
+    struct scn **scn_vec;  /**< Array of network-station-locid-channel objects. */
 };
 
 /* define structures for the various types of filters defined in seed */
@@ -431,12 +436,12 @@ struct scn_list {
  * @brief A Response (Poles & Zeros) blockette.
  */
 struct pole_zeroType {
-    int nzeros;  /**< FIXME. */ /* (blockettes [43] or [53]) */
-    int npoles;  /**< FIXME. */
+    int nzeros;  /**< Number of zeros (blockettes [43] or [53]). */
+    int npoles;  /**< Number of poles. */
     double a0;  /**< FIXME. */
     double a0_freq;  /**< FIXME. */
-    struct evr_complex *zeros;  /**< FIXME. */
-    struct evr_complex *poles;  /**< FIXME. */
+    struct evr_complex *zeros;  /**< Array of zeros (complex). */
+    struct evr_complex *poles;  /**< Array of poles (comples). */
 };
 
 /**
@@ -445,11 +450,11 @@ struct pole_zeroType {
  * @brief A Response (Coefficients) blockette.
  */
 struct coeffType {
-    int nnumer;  /**< FIXME. */ /* (blockettes [44] or [54]) */
+    int nnumer;  /**< FIXME. (blockettes [44] or [54]) */
     int ndenom;  /**< FIXME. */
     double *numer;  /**< FIXME. */
     double *denom;  /**< FIXME. */
-    double h0;  /**< FIXME. */ /*IGD this field is new v 3.2.17 */
+    double h0;  /**< FIXME. */  /* IGD this field is new v 3.2.17 */
 };
 
 /**
@@ -458,7 +463,7 @@ struct coeffType {
  * @brief A Response (Coefficients) blockette.
  */
 struct polynomialType {
-    unsigned char approximation_type;  /**< FIXME. */ /* (blockettes [42] or [62]) IGD 05/31/2013 */
+    unsigned char approximation_type;  /**< FIXME. (blockettes [42] or [62]) */  /* IGD 05/31/2013 */
     unsigned char frequency_units;  /**< FIXME. */
     double lower_freq_bound;  /**< FIXME. */
     double upper_freq_bound;  /**< FIXME. */
@@ -476,8 +481,8 @@ struct polynomialType {
  * @brief A FIR Response blockette.
  */
 struct firType {
-    int ncoeffs;  /**< FIXME. */ /* (blockettes [41] or [61])*/
-    double *coeffs;  /**< FIXME. */
+    int ncoeffs;  /**< Numer of coefficients (blockettes [41] or [61]). */
+    double *coeffs;  /**< Array of coefficients. */
     double h0;  /**< FIXME. */
 };
 
@@ -487,10 +492,10 @@ struct firType {
  * @brief A Response (List) blockette.
  */
 struct listType {
-    int nresp;  /**< FIXME. */ /* (blockettes [45] or [55]) */
-    double *freq;  /**< FIXME. */
-    double *amp;  /**< FIXME. */
-    double *phase;  /**< FIXME. */
+    int nresp;  /**< Number of responses (blockettes [45] or [55]). */
+    double *freq;  /**< Array of freqencies. */
+    double *amp;  /**< Array of amplitudes. */
+    double *phase;  /**< Array of phases. */
 };
 
 /**
@@ -499,7 +504,7 @@ struct listType {
  * @brief A Generic Response blockette.
  */
 struct genericType {
-    int ncorners;  /**< FIXME. */ /* (blockettes [46] or [56]) */
+    int ncorners;  /**< FIXME. (blockettes [46] or [56]) */
     double *corner_freq;  /**< FIXME. */
     double *corner_slope;  /**< FIXME. */
 };
@@ -510,7 +515,7 @@ struct genericType {
  * @brief A Decimation blockette.
  */
 struct decimationType {
-    double sample_int;  /**< FIXME. */ /* (blockettes [47] or [57]) */
+    double sample_int;  /**< FIXME. (blockettes [47] or [57]) */
     int deci_fact;  /**< FIXME. */
     int deci_offset;  /**< FIXME. */
     double estim_delay;  /**< FIXME. */
@@ -523,7 +528,7 @@ struct decimationType {
  * @brief A Channel Sensitivity/Gain blockette.
  */
 struct gainType {
-    double gain;  /**< FIXME. */ /* (blockettes [48] or [58]) */
+    double gain;  /**< FIXME. (blockettes [48] or [58]) */
     double gain_freq;  /**< FIXME. */
 };
 
@@ -550,7 +555,7 @@ struct referType {
  *          position.
  */
 struct blkt {
-    int type;  /**< FIXME. */
+    int type;  /**< Blockette type. */
     union {
         struct pole_zeroType pole_zero;  /**< FIXME. */
         struct coeffType coeff;  /**< FIXME. */
@@ -561,8 +566,8 @@ struct blkt {
         struct gainType gain;  /**< FIXME. */
         struct referType reference;  /**< FIXME. */
         struct polynomialType polynomial;  /**< FIXME. */
-    } blkt_info;  /**< FIXME. */
-    struct blkt *next_blkt;  /**< FIXME. */
+    } blkt_info;  /**< Blockette info. */
+    struct blkt *next_blkt;  /**< Pointer to next blockette. */
 };
 
 /**
@@ -575,17 +580,17 @@ struct blkt {
  *          '(struct stage *)NULL pointer in the 'next_stage' position.
  */
 struct stage {
-    int sequence_no;  /**< FIXME. */
-    int input_units;  /**< FIXME. */
-    int output_units;  /**< FIXME. */
-    struct blkt *first_blkt;  /**< FIXME. */
-    struct stage *next_stage;  /**< FIXME. */
+    int sequence_no;  /**< Sequence number. */
+    int input_units;  /**< Input units. */
+    int output_units;  /**< Output units. */
+    struct blkt *first_blkt;  /**< Pointer to first blockette of the filter. */
+    struct stage *next_stage;  /**< Pointer to the next stage in the response. */
 };
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief And define a channel as a stucture containing a pointer to the head
+ * @brief And define a channel as a structure containing a pointer to the head
  *        of a linked list of stages.
  * @details Will access the pieces one stages at a time in the same order that
  *          they were read from the input file, so a linked list is the
@@ -626,7 +631,8 @@ struct channel {
     double applied_corr;  /**< FIXME. */
     double sint;  /**< FIXME. */
     int nstages;  /**< FIXME. */
-    struct stage *first_stage;  /**< FIXME. */
+    struct stage *first_stage;  /**< Pointer to the head of a linked list of
+                                   stage. */
 };
 
 /**
@@ -642,11 +648,11 @@ struct dateTime {
     float sec;  /**< Seconds. */
 };
 
-/* IGD 2007/02/27 */
 /**
  * @private
  * @ingroup evalresp_private
  * @brief FIXME.
+ * @author 2007/02/27: IGD.
  */
 extern char myLabel[20];
 //char myLabel[20] = "aa";
