@@ -20,6 +20,7 @@ SHOW_USED_FILES = NO
 SHOW_FILES = NO
 INPUT = intro_dox.h \
         ../src/evalresp.h \
+        ../src/evresp.h \
         ../src
 FILE_PATTERNS = *.h *.c
 RECURSIVE = YES
