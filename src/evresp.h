@@ -635,11 +635,11 @@ struct channel {
  * @brief Structure used for time comparisons.
  */
 struct dateTime {
-    int year;  /**< FIXME. */
-    int jday;  /**< FIXME. */
-    int hour;  /**< FIXME. */
-    int min;  /**< FIXME. */
-    float sec;  /**< FIXME. */
+    int year;  /**< Year. */
+    int jday;  /**< Day of year. */
+    int hour;  /**< Hour. */
+    int min;  /**< Minutes. */
+    float sec;  /**< Seconds. */
 };
 
 /* IGD 2007/02/27 */
