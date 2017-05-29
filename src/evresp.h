@@ -346,21 +346,21 @@ enum error_codes {
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Complex data type.
  */
 struct evr_complex {
-    double real;  /**< FIXME. */
-    double imag;  /**< FIXME. */
+    double real;  /**< Real part. */
+    double imag;  /**< Imaginary part. */
 };
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Array of strings.
  */
 struct string_array {
-    int nstrings;  /**< FIXME. */
-    char **strings;  /**< FIXME. */
+    int nstrings;  /**< Number of strings. */
+    char **strings;  /**< String array. */
 };
 
 /**
