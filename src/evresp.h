@@ -832,6 +832,7 @@ int check_units(char *line);
  *          - Finally, the 'regexp_pattern' argument is passed through the
  *            re_comp() routine (compiling the pattern), and the value of
  *            re_exec(string) is returned to the calling function.
+ *
  * @param[in] string Input string.
  * @param[in] expr Regularion expression or glob-style pattern expression.
  * @param[in] type_flag Type flag, @c -g or @c -r.
@@ -1296,9 +1297,19 @@ void parse_polynomial(FILE *, struct blkt *, struct stage *); /* polynomial B42 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Add a null character to the end of a string.
+ * @details @p where is a character that specifies where the null character
+ *          should be placed, the possible values are:
+ *          - @c a - remove extra spaces from end of string, then adds null
+ *                   character;
+ *          - @c e - adds null character to end of character string.
+ *
+ * @param[in,out] s String.
+ * @param[in] len Length of string.
+ * @param[in] where Where to place null character, @c a or @c e.
+ * @returns New length of string.
  */
-int add_null(char *, int, char);
+int add_null(char *s, int len, char where);
 
 /* run a sanity check on the channel's filter sequence */
 

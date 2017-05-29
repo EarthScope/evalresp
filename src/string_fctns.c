@@ -638,15 +638,6 @@ int is_time(const char *test) {
     return (string_match(test, fpattern, "-r"));
 }
 
-/* add_null:  add a null character to the end of a string
- where is a pointer to a character that specifies where
- the null character should be placed, the possible values
-
- are:
- 'a'-> removes all of spaces, then adds null character
- 'e'-> adds null character to end of character string
- */
-
 int add_null(char *s, int len, char where) {
     int len_save;
     switch (where) {
