@@ -12,7 +12,7 @@
  */
 
 /**
- * @defgroup evalresp_log evalresp Private Regular Expressions Interface
+ * @defgroup evalresp_regexp evalresp Private Regular Expressions Interface
  * @ingroup evalresp_private
  * @brief Private regular expressions interface for evalresp.
  */
@@ -38,49 +38,70 @@
 /**
  * @private
  * @ingroup evalresp_regexp
- * @brief FIXME.
+ * @brief Maximum number of subexpressions.
  */
 #define NSUBEXP  10
 
 /**
  * @private
  * @ingroup evalresp_regexp
- * @brief FIXME.
+ * @brief Regular expression data type.
  */
 typedef struct regexp {
-    char *startp[NSUBEXP];  /**< FIXME. */
-    char *endp[NSUBEXP];  /**< FIXME. */
-    char regstart;  /**< FIXME. */ /* Internal use only. */
-    char reganch;  /**< FIXME. */ /* Internal use only. */
-    char *regmust;  /**< FIXME. */ /* Internal use only. */
-    int regmlen;  /**< FIXME. */ /* Internal use only. */
-    char program[1];  /**< FIXME. */ /* Unwarranted chumminess with compiler. */
+    char *startp[NSUBEXP];  /**< Start pointers for subexpressions. */
+    char *endp[NSUBEXP];  /**< End pointers for subexpressions. */
+    char regstart;  /**< Internal use only. */
+    char reganch;  /**< Internal use only. */
+    char *regmust;  /**< Internal use only. */
+    int regmlen;  /**<  Internal use only. */
+    char program[1];  /**< Unwarranted chumminess with compiler. */
 } regexp;
 
 /**
  * @private
  * @ingroup evalresp_regexp
- * @brief FIXME.
+ * @brief Compile a regular expression into internal code.
+ * @param[in] exp Regular expression string.
+ * @returns Compiled regular expression object.
+ * @note We can't allocate space until we know how big the compiled form will
+ *       be, but we can't compile it (and thus know how big it is) until we've
+ *       got a place to put the code. So we cheat: we compile it twice, once
+ *       with code generation turned off and size counting turned on, and once
+ *       "for real". This also means that we don't allocate space until we are
+ *       sure that the thing really will compile successfully, and we never
+ *       have to move the code and thus invalidate pointers into it. (Note
+ *       that it has to be in one piece because free() must be able to free it
+ *       all.)
+ * @warning Beware that the optimization-preparation code in here knows about
+ *          some of the structure of the compiled regexp.
  */
 regexp *evr_regcomp(char *exp);
 
 /**
  * @private
  * @ingroup evalresp_regexp
- * @brief FIXME.
+ * @brief Match a regexp against a string.
+ * @param[in] prog Compiled regular expression object.
+ * @param[in] string String to match against.
+ * @returns @c 0 on error or no match.
+ * @returns Pointer to position in string if match.
  */
 int evr_regexec(regexp *prog, char *string);
 
 /**
  * @private
  * @ingroup evalresp_regexp
- * @brief FIXME.
+ * @brief Perform substitutions after a regexp match.
+ * @param[in] prog Compiled regular expression object.
+ * @param[in] source Source string.
+ * @param[out] source Destination string.
  */
 void evr_regsub(regexp *prog, char *source, char *dest);
 
 /**
  * @private
  * @ingroup evalresp_regexp
- * @brief FIXME.
+ * @brief Report regular expression error.
+ * @param[in] Error message string.
  */
 void evr_regerror(char *s);
