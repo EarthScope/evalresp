@@ -37,15 +37,6 @@
 #include "./evresp.h"
 #include "./regexp.h"
 
-/* ev_parse_line: parses the fields on a line into separate strings.  The definition of a field
-   There is any non-white space characters with bordering white space.  The result
-   is a structure containing the number of fields on the line and an array of
-   character strings (which are easier to deal with than the original line).  A second
-   argument (end_user_info) contains a string that is used to determine where to
-   start parsing the line.  The character position immediately following the
-   first occurrence of this string is used as the start of the line.  A null string
-   can be used to indicate that the start of the line should be used. */
-
 struct string_array *ev_parse_line(char *line) {
     char *lcl_line, field[MAXFLDLEN];
     int nfields, fld_len, i = 0;
@@ -77,15 +68,6 @@ struct string_array *ev_parse_line(char *line) {
     }
     return (lcl_strings);
 }
-
-/* parse_delim_line: parses the fields on a line into separate strings.  The definition of a field
- There is any non-white space characters with bordering white space.  The result
- is a structure containing the number of fields on the line and an array of
- character strings (which are easier to deal with than the original line).  A second
- argument (end_user_info) contains a string that is used to determine where to
- start parsing the line.  The character position immediately following the
- first occurrence of this string is used as the start of the line.  A null string
- can be used to indicate that the start of the line should be used. */
 
 struct string_array *parse_delim_line(char *line, char *delim) {
     char *lcl_line, field[MAXFLDLEN];
@@ -120,13 +102,6 @@ struct string_array *parse_delim_line(char *line, char *delim) {
     return (lcl_strings);
 }
 
-/* get_field:  returns the indicated field from the next 'non-comment' line from a RESP file
- (return value is the length of the resulting field if successful, exits with
- error if no non-comment lines left in file or if expected blockette and field
- numbers do not match those found in the next non-comment line.
- Note:  here a field is any string of non-white characters surrounded by
- white space */
-
 int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
         char *sep, int fld_wanted) {
     char line[MAXLINELEN];
@@ -143,13 +118,6 @@ int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
 
     return (strlen(return_field));
 }
-
-/* test_field:  returns the indicated field from the next 'non-comment' line from a RESP file
- (return value is the length of the resulting field if successful, returns with
- a value of zero if no non-comment lines left in file or if expected blockette
- and field numbers do not match those found in the next non-comment line.
- Note:  here a field is any string of non-white characters surrounded by
- white space */
 
 int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
         char *sep, int fld_wanted) {

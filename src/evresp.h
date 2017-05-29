@@ -361,7 +361,7 @@ struct evr_complex {
 /**
  * @private
  * @ingroup evalresp_private
- * @brief Array of strings.
+ * @brief Array of strings object.
  */
 struct string_array {
     int nstrings;  /**< Number of strings. */
@@ -663,31 +663,74 @@ extern char myLabel[20];
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Parses the fields on a line into separate strings.
+ * @details The definition of a field is a sequence of any non-white space
+ *          characters with bordering white space. The result is a structure
+ *          containing the number of fields on the line and an array of
+ *          character strings (which are easier to deal with than the original
+ *          line).
+ * @param[in] Line string to parse.
+ * @returns Array of strings objects.
  */
-struct string_array *ev_parse_line(char *);
+struct string_array *ev_parse_line(char *line);
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Parses the fields on a line into separate strings using delimeter.
+ * @details The definition of a field is a sequence of any non-delimeter
+ *          characters with bordering delimiter. The result is a structure
+ *          containing the number of fields on the line and an array of
+ *          character strings (which are easier to deal with than the original
+ *          line).
+ * @param[in] Line string to parse.
+ * @param[in] Delimiter string.
+ * @returns Array of strings object.
  */
 struct string_array *parse_delim_line(char *, char *);
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Returns the indicated field from the next 'non-comment' line from a
+ *        RESP file.
+ * @details Exits with error if no non-comment lines left in file or if
+ *          expected blockette and field numbers do not match those found in
+ *          the next non-comment line.
+ * @param[in] fptr FILE pointer.
+ * @param[out] return_field Return field.
+ * @param[in] blkt_no Blockette number.
+ * @param[in] fld_no Field number.
+ * @param[in] sep Field separator.
+ * @param[in] fld_wanted Field wanted.
+ * @returns Length of the resulting field if successful.
+ * @note Here a field is any string of non-white characters surrounded by
+ *       white space.
  */
-int get_field(FILE *, char *, int, int, char *, int);
+int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
+              char *sep, int fld_wanted);
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Returns the indicated field from the next 'non-comment' line from a
+ *        RESP file.
+ * @details Returns with a value of zero if no non-comment lines left in file
+ *          or if expected blockette and field numbers do not match those
+ *          found in the next non-comment line.
+ * @param[in] fptr FILE pointer.
+ * @param[out] return_field Return field.
+ * @param[in] blkt_no Blockette number.
+ * @param[in] fld_no Field number.
+ * @param[in] sep Field separator.
+ * @param[in] fld_wanted Field wanted.
+ * @returns Length of the resulting field if successful.
+ * @returns Value of zero otherwise.
+ * @note Here a field is any string of non-white characters surrounded by
+ *       white space.
  */
-int test_field(FILE *, char *, int *, int *, char *, int);
-
+int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
+               char *sep, int fld_wanted);
 /**
  * @private
  * @ingroup evalresp_private
