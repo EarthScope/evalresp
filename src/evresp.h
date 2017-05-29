@@ -783,43 +783,83 @@ int check_line(FILE *, int *, int *, char *);
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Uses get_fld() to return the integer value of the input string.
+ * @details If the requested field is not a proper representation of a number,
+ *          then 'IMPROPER DATA TYPE' error is signaled.
+ * @param[in] in_line Input string.
+ * @returns Integer value on success.
  */
-int get_int(char *);
+int get_int(char *in_line);
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Uses get_fld() to return the double-precision value of the input
+ *        string.
+ * @details If the requested field is not a proper representation of a number,
+ *          then 'IMPROPER DATA TYPE' error is signaled.
+ * @param[in] in_line Input string.
+ * @returns Double value on success.
  */
-double get_double(char *);
+double get_double(char *in_line);
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Checks an incoming line for keys that indicate the units represented
+ *        by a filter.
+ * @details If the units are not recognized, an 'UNDEFINED UNITS' error
+ *          condition is signaled. If the user specified that 'default' unit
+ *          should be used, then the line is simply saved as the value of
+ *          'SEEDUNITS[DEFAULT]' and no check of the units is made.
+ * @param[in] line Incoming line.
+ * @see units
  */
-int check_units(char *);
+int check_units(char *line);
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Compares an input string (string) with a regular expression or
+ *        glob-style "pattern" (expr) using the re_comp() and re_exec()
+ *        functions (from stdlib.h).
+ * @details - First, if the type-flag is set to the string "-g", the
+ *            glob-style 'expr' is changed so that any '*' characters are
+ *            converted to '.*' combinations and and '?' characters are
+ *            converted to '.' characters.
+ *          - If the type-flag is set to "-r" then no conversions are
+ *            necessary (the string is merely copied to the new location).
+ *          - Finally, the 'regexp_pattern' argument is passed through the
+ *            re_comp() routine (compiling the pattern), and the value of
+ *            re_exec(string) is returned to the calling function.
+ * @param[in] string Input string.
+ * @param[in] expr Regularion expression or glob-style pattern expression.
+ * @param[in] type_flag Type flag, @c -g or @c -r.
+ * @returns 0 if false.
+ * @returns >0 if true.
  */
-int string_match(const char *, char *, char *);
+int string_match(const char *string, char *expr, char *type_flag);
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief A function that tests whether a string can be converted into an
+ *        integer using string_match().
+ * @param[in] test String to test.
+ * @returns 0 if false.
+ * @returns >0 if true.
  */
-int is_int(const char *);
+int is_int(const char *test);
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
- */
+ * @brief A function that tests whether a string can be converted into an
+ *        double using string_match().
+ * @param[in] test String to test.
+ * @returns 0 if false.
+ * @returns >0 if true.
+*/
 int is_real(const char *);
 
 /**
@@ -1389,7 +1429,13 @@ void iir_trans(struct blkt *, double, struct evr_complex *); /* IGD for version 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief A function that tests whether a string looks like a time string
+ *        using string_match().
+ * @detailed Time strings must be in the format 'hh:mm:ss[.#####]', so more
+ *          than 14 characters is an error (too many digits).
+ * @param[in] test String to test.
+ * @returns 0 if false.
+ * @returns >0 if true.
  */
 int is_time(const char *);
 

@@ -466,10 +466,6 @@ int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line) {
     return (1);
 }
 
-/* get_int:  uses get_fld to return the integer value of the input string.
- If the requested field is not a proper representation of a number, then
- 'IMPROPER DATA TYPE' error is signaled */
-
 int get_int(char *in_line) {
     int value;
 
@@ -480,10 +476,6 @@ int get_int(char *in_line) {
     return (value);
 }
 
-/* get_double:  uses get_fld to return the double-precision value of the input string.
- If the requested field is not a proper representation of a number, then
- 'IMPROPER DATA TYPE' error is signaled */
-
 double get_double(char *in_line) {
     double lcl_val;
 
@@ -493,12 +485,6 @@ double get_double(char *in_line) {
     lcl_val = atof(in_line);
     return (lcl_val);
 }
-
-/* check_units:  checks an incoming line for keys that indicate the units represented by a
- filter.  If the units are not recognized, an 'UNDEFINED UNITS' error
- condition is signaled.  If the user specified that 'default' unit should
- be used, then the line is simply saved as the value of 'SEEDUNITS[DEFAULT]'
- and no check of the units is made */
 
 int check_units(char *line) {
     int i, first_flag = 0;
@@ -572,19 +558,6 @@ int check_units(char *line) {
     return (0); /*We should not reach to here */
 }
 
-/* string_match:  compares an input string (string) with a regular espression
- or glob-style "pattern" (expr) using the 're_comp()' and
- 're_exec()' functions (from stdlib.h).
- -First, if the type-flag is set to the string "-g", the
- glob-style 'expr' is changed so that any '*' characters
- are converted to '.*' combinations and and '?' characters
- are converted to '.' characters.
- -If the type-flag is set to "-r" then no conversions are
- necessary (the string is merely copied to the new location).
- -Finally, the 'regexp_pattern' argument is passed through the
- 're_comp()' routine (compiling the pattern), and the value of
- 're_exec(string)' is returned to the calling function */
-
 int string_match(const char *string, char *expr, char *type_flag) {
     char lcl_string[MAXLINELEN], regexp_pattern[MAXLINELEN];
     int i = 0, glob_type, test;
@@ -629,9 +602,6 @@ int string_match(const char *string, char *expr, char *type_flag) {
     return (test);
 }
 
-/* is_int:  a function that tests whether a string can be converted into
- an integer using string_match() */
-
 int is_int(const char *test) {
     char ipattern[MAXLINELEN];
 
@@ -642,9 +612,6 @@ int is_int(const char *test) {
     return (string_match(test, ipattern, "-r"));
 }
 
-/* is_real:  a function that tests whether a string can be converted into
- an double using string_match() */
-
 int is_real(const char *test) {
     char fpattern[MAXLINELEN];
     strncpy(fpattern, "^[-+]?[0-9]+\\.?[0-9]*[Ee][-+]?[0-9]+$", MAXLINELEN);
@@ -653,9 +620,6 @@ int is_real(const char *test) {
     strcat(fpattern, "|^[-+]?[0-9]*\\.[0-9]+$");
     return (string_match(test, fpattern, "-r"));
 }
-
-/* is_time:  a function that tests whether a string looks like a time string
- using string_match() */
 
 int is_time(const char *test) {
     char fpattern[MAXLINELEN];
