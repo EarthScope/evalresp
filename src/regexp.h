@@ -94,7 +94,7 @@ int evr_regexec(regexp *prog, char *string);
  * @brief Perform substitutions after a regexp match.
  * @param[in] prog Compiled regular expression object.
  * @param[in] source Source string.
- * @param[out] source Destination string.
+ * @param[out] dest Destination string.
  */
 void evr_regsub(regexp *prog, char *source, char *dest);
 
@@ -102,6 +102,6 @@ void evr_regsub(regexp *prog, char *source, char *dest);
  * @private
  * @ingroup evalresp_private_regexp
  * @brief Report regular expression error.
- * @param[in] Error message string.
+ * @param[in] s Error message string.
  */
 void evr_regerror(char *s);

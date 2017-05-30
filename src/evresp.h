@@ -966,7 +966,7 @@ int is_int(const char *test);
  * @returns 0 if false.
  * @returns >0 if true.
 */
-int is_real(const char *);
+int is_real(const char *test);
 
 /**
  * @private
@@ -1555,13 +1555,13 @@ void iir_trans(struct blkt *, double, struct evr_complex *); /* IGD for version 
  * @ingroup evalresp_private_string
  * @brief A function that tests whether a string looks like a time string
  *        using string_match().
- * @detailed Time strings must be in the format 'hh:mm:ss[.#####]', so more
+ * @details Time strings must be in the format 'hh:mm:ss[.#####]', so more
  *          than 14 characters is an error (too many digits).
  * @param[in] test String to test.
  * @returns 0 if false.
  * @returns >0 if true.
  */
-int is_time(const char *);
+int is_time(const char *test);
 
 /**
  * @private
