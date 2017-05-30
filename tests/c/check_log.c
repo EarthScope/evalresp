@@ -28,7 +28,7 @@ END_TEST
 START_TEST (test_log_2)
 {
     FILE *fd;
-    ck_assert( fd = fopen("log_test.txt", "a+"));
+    ck_assert(NULL != (fd = fopen("log_test.txt", "a+")));
     run_test(evalresp_log_to_file,  (void*)fd, 0);
 }
 END_TEST
