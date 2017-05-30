@@ -28,7 +28,7 @@ END_TEST
 START_TEST (test_log_2)
 {
     FILE *fd;
-    ck_assert( fd = fopen("log_test.txt", "a+"));
+    ck_assert(NULL != (fd = fopen("log_test.txt", "a+")));
     run_test(evalresp_log_to_file,  (void*)fd, 0);
 }
 END_TEST
@@ -48,8 +48,8 @@ START_TEST (test_log_4)
 {
     evalresp_log_t *log;
     evalresp_syslog_data_t *data;
-    ck_assert_ptr_ne(log = evalresp_log_t_alloc(NULL, NULL), NULL);
-    ck_assert_ptr_ne(data = evalresp_log_syslog_data_alloc("test stuff", LOG_PID, LOG_USER), NULL);
+    ck_assert(NULL != (log = evalresp_log_t_alloc(NULL, NULL)));
+    ck_assert(NULL != (data = evalresp_log_syslog_data_alloc("test stuff", LOG_PID, LOG_USER)));
     ck_assert(EXIT_SUCCESS ==  evalresp_log_intialize_log_for_syslog(log, data));
     ck_assert(EXIT_SUCCESS == evalresp_log(log, INFO, 0, "This is a bigger Test"));
     evalresp_log_t_free(log);
