@@ -328,18 +328,18 @@ enum filt_types {
 /**
  * @private
  * @ingroup evalresp_private
- * @brief Enumeration representing the types of stages that are recognized.
+ * @brief Enumeration representing the types of stages in RESP fi;es that are recognized.
  */
 enum stage_types {
-    UNDEF_STAGE,  /**< FIXME. */
-    PZ_TYPE,  /**< FIXME. */
-    IIR_TYPE,  /**< FIXME. */
-    FIR_TYPE,  /**< FIXME. */
-    GAIN_TYPE,  /**< FIXME. */
-    LIST_TYPE,  /**< FIXME. */
-    IIR_COEFFS_TYPE,  /**< FIXME. */
-    GENERIC_TYPE,  /**< FIXME. */
-    POLYNOMIAL_TYPE  /**< FIXME. */
+    UNDEF_STAGE,  /**< Undefined stage. */
+    PZ_TYPE,  /**< Polez and zeros stage. */
+    IIR_TYPE,  /**< Infinite Impulse response stage. */
+    FIR_TYPE,  /**< Finite Impulse response stage. */
+    GAIN_TYPE,  /**< Channel Sensitivity/Gain stage. */
+    LIST_TYPE,  /**< List response representation stage. */
+    IIR_COEFFS_TYPE,  /**< Infinite Impulse response in coefficient form stage. */
+    GENERIC_TYPE,  /**< Generic response stage. */
+    POLYNOMIAL_TYPE  /**< Polynomial type stage. */
 };
 
 /**
