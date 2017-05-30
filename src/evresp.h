@@ -994,16 +994,52 @@ int is_IIR_coeffs(FILE *fp, int position);
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Finds the location of a response for one of the input
+ *        station-channels at the specified date.
+ * @details If no response is available in the file pointed to by @p fptr,
+ *          then a -1 value is returned (indicating failure), otherwise the
+ *          index of the matching station-channel pair. The matching beg_t,
+ *          end_t and station info are returned as part of the input structure
+ *          @p this_channel. The pointer to the file (@p fptr) is left in
+ *          position for the parse_channel() routine to grab the response
+ *          information for that station.
+ * @param[in] fptr FILE pointer.
+ * @param[in] scn_lst List of network-station-locid-channel objects.
+ * @param[in] datime Date-time string.
+ * @param[out] this_channel Channel structure.
+ * @returns Index of the matching station-channel pair.
+ * @returns -1 on failure.
+ * @note The station information is preloaded into @p this_channel, so the
+ *       file pointer does not need to be repositioned to allow for this
+ *       information to be reread.
  */
-int find_resp(FILE *, struct scn_list *, char *, struct channel *);
+int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
+              struct channel *this_channel);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Finds the location of a response for the input station-channel
+ *        at the specified date.
+ * @details If no response is available in the file pointed to by @p fptr,
+ *          then a -1 value is returned (indicating failure), otherwise a
+ *          value of 1 is returned (indicating success). The matching beg_t,
+ *          end_t and station info are returned as part of the input
+ *          structure @p this_channel. The pointer to the file (@p fptr) is
+ *          left in position for the parse_channel() routine to grab the
+ *          response information for that station. 
+ * @param[in] fptr FILE pointer.
+ * @param[in] scnt Network-station-locid-channel object.
+ * @param[in] datime Date-time string.
+ * @param[out] this_channel Channel structure.
+ * @returns 1 on success.
+ * @returns -1 on failure.
+ * @note The station information is preloaded into @p this_channel, so the
+ *       file pointer does not need to be repositioned to allow for this
+ *       information to be reread.
  */
-int get_resp(FILE *, struct scn *, char *, struct channel *);
+int get_resp(FILE *fptr, struct scn *scn, char *datime,
+             struct channel *this_channel);
 
 /**
  * @private

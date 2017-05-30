@@ -1550,18 +1550,6 @@ int in_epoch(const char *datime, const char *beg_t, const char *end_t) {
 
 }
 
-/* find_resp:  finds the location of a response for one of the input station-channels
- at the specified date.  If no response is available in the file
- pointed to by fptr, then a -1 value is returned (indicating
- failure), otherwise the index of the matching station-channel pair.
- The matching beg_t, end_t and station info are returned as part of
- the input structure "this_channel".
- The pointer to the file (fptr) is left in position for the
- "parse_channel" routine to grab the response information for that
- station.  Note: the station information is preloaded into "this_channel",
- so the file pointer does not need to be repositioned to allow for this
- information to be reread. */
-
 int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
         struct channel *this_channel) {
     int test, i;
@@ -1586,18 +1574,6 @@ int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
     }
     return (-1);
 }
-
-/* get_resp:  finds the location of a response for the input station-channel
- at the specified date.  If no response is available in the file
- pointed to by fptr, then a -1 value is returned (indicating
- failure), otherwise a value of 1 is returned (indicating success),
- The matching beg_t, end_t and station info are returned as part of
- the input structure "this_channel".
- The pointer to the file (fptr) is left in position for the
- "parse_channel" routine to grab the response information for that
- station.  Note: the station information is preloaded into "this_channel",
- so the file pointer does not need to be repositioned to allow for this
- information to be reread. */
 
 int get_resp(FILE *fptr, struct scn *scn, char *datime,
         struct channel *this_channel) {
