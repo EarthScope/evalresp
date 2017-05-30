@@ -12,7 +12,7 @@
 // the station.xml document (created in x2r_xml.c).
 
 
-/** printf-style output with linefeed. */
+/* printf-style output with linefeed. */
 static int line(x2r_log *log, FILE *out, const char *template, ...) {
 
     int status = X2R_OK;
@@ -38,7 +38,7 @@ exit:
 }
 
 
-/** Print multiple lines, NULL terminated. */
+/* Print multiple lines, NULL terminated. */
 static int lines(x2r_log *log, FILE *out, ...) {
 
     int status = X2R_OK;
@@ -55,7 +55,7 @@ static int lines(x2r_log *log, FILE *out, ...) {
 }
 
 
-/** Format epoch as given. */
+/* Format epoch as given. */
 static int format_date(x2r_log *log, const time_t epoch, int n, char *template, char **date) {
 
     int status = X2R_OK;
@@ -80,19 +80,19 @@ exit:
 }
 
 
-/** Format epoch julian days. */
+/* Format epoch julian days. */
 static int format_date_yjhms(x2r_log *log, const time_t epoch, char **date) {
     return format_date(log, epoch, strlen("YYYY,jjj,HH:MM:SS") + 1, "%Y,%j,%H:%M:%S", date);
 }
 
 
-/** Format epoch in American date style. */
+/* Format epoch in American date style. */
 static int format_date_mdy(x2r_log *log, time_t epoch, char **date) {
     return format_date(log, epoch, strlen("mm/dd/YYYY") + 1, "%m/%d/%Y", date);
 }
 
 
-/**
+/*
  * Copy a char* to another char*, to a max of len chars, without copying the terminating \0.
  *
  * (strncpy copies the terminating \0).
@@ -105,7 +105,7 @@ static void chrncpy(char *destn, const char *source, int len) {
 }
 
 
-/** Pad the given text to the centre of the given width. */
+/* Pad the given text to the centre of the given width. */
 static int centre(x2r_log *log, const char *text, int width, char **result) {
 
     int status = X2R_OK, margin, len;
@@ -127,7 +127,7 @@ exit:
 }
 
 
-/** Format a SNCL (without dots), centred as above. */
+/* Format a SNCL (without dots), centred as above. */
 static int centre_sncl(x2r_log *log, const char *net, const char *stn, const x2r_channel *channel,
         int width, char **result) {
 
@@ -154,7 +154,7 @@ exit:
 }
 
 
-/** Convert transfer function type from station.xml for response. */
+/* Convert transfer function type from station.xml for response. */
 static char *convert_tft(const char *transfer_function_type) {
     if (!strcmp(transfer_function_type, "LAPLACE (RADIANS/SECOND)")) {
         return "A";
@@ -172,7 +172,7 @@ static char *convert_tft(const char *transfer_function_type) {
 }
 
 
-/** Convert symmetry type from station.xml to response. */
+/* Convert symmetry type from station.xml to response. */
 static char *convert_symmetry(const char *symmetry) {
     if (!strcmp(symmetry, "EVEN")) {
         return "C";
@@ -184,7 +184,7 @@ static char *convert_symmetry(const char *symmetry) {
 }
 
 
-/** Display a pretty comment box. */
+/* Display a pretty comment box. */
 static int box(x2r_log *log, FILE *out, const char *title, const char UNUSED *net, const char UNUSED *stn,
         const x2r_channel UNUSED *channel) {
 
@@ -217,7 +217,7 @@ exit:
 }
 
 
-/** Print x2r_pole_zero. */
+/* Print x2r_pole_zero. */
 static int print_pole_zero(x2r_log *log, FILE *out, const char *tag, const char *name,
         int n, x2r_pole_zero *pole_zero) {
 
@@ -239,7 +239,7 @@ exit:
 }
 
 
-/** Print x2r_poles_zeros. */
+/* Print x2r_poles_zeros. */
 static int print_poles_zeros(x2r_log *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_poles_zeros *poles_zeros) {
 
@@ -272,7 +272,7 @@ exit:
 }
 
 
-/** Print x2r_float as coefficients. */
+/* Print x2r_float as coefficients. */
 static int print_coefficient(x2r_log *log, FILE *out, const char *tag, const char *name,
         int n, x2r_float *coefficient) {
 
@@ -293,7 +293,7 @@ exit:
 }
 
 
-/** Print x2r_coefficients. */
+/* Print x2r_coefficients. */
 static int print_coefficients(x2r_log *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_coefficients *coefficients) {
 
@@ -322,7 +322,7 @@ exit:
 }
 
 
-/** Print x2r_response_list. */
+/* Print x2r_response_list. */
 static int print_response_list(x2r_log *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_response_list *response_list) {
 
@@ -353,7 +353,7 @@ exit:
 }
 
 
-/** Print x2r_fir. */
+/* Print x2r_fir. */
 static int print_fir(x2r_log *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_fir *fir) {
 
@@ -386,7 +386,7 @@ exit:
 }
 
 
-/** Print x2r_polynomial. */
+/* Print x2r_polynomial. */
 static int print_polynomial(x2r_log *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_polynomial *polynomial) {
 
@@ -431,7 +431,7 @@ exit:
 }
 
 
-/** Print x2r_decimation. */
+/* Print x2r_decimation. */
 static int print_decimation(x2r_log *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_decimation *decimation) {
 
@@ -464,7 +464,7 @@ exit:
 }
 
 
-/** Print x2r_gain. */
+/* Print x2r_gain. */
 static int print_stage_gain(x2r_log *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_gain *gain) {
 
@@ -485,7 +485,7 @@ exit:
 }
 
 
-/** Print x2r_stage. */
+/* Print x2r_stage. */
 static int print_stage(x2r_log *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, const x2r_stage *stage) {
 
@@ -532,7 +532,7 @@ exit:
 }
 
 
-/** Print x2r_response. */
+/* Print x2r_response. */
 static int print_response(x2r_log *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, const x2r_response *response) {
 
@@ -559,7 +559,7 @@ exit:
 }
 
 
-/** Print x2r_channel. */
+/* Print x2r_channel. */
 static int print_channel(x2r_log *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel) {
 
@@ -592,7 +592,7 @@ exit:
 }
 
 
-/**
+/*
  * Print the entire response document, given the in-memory model.
  */
 int x2r_resp_util_write(x2r_log *log, FILE *out, const x2r_fdsn_station_xml *root) {
@@ -642,7 +642,7 @@ exit:
 }
 
 
-/**
+/*
  * If xml_flag is set, convert the file and replace *in.
  * Otherwise, do nothing.
  */
@@ -689,7 +689,7 @@ exit:
 }
 
 
-/**
+/*
  * Check the given file, to see if the first character as <,
  * and if so, convert and replace *in.
  *
