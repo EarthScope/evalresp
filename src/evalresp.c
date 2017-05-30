@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include "evresp.h"
 #include <getopt.h>
+#include <log.h>
 
 #define DATIMESIZE 32
 #define TODAYSIZE 10
@@ -85,7 +86,7 @@ void usage (char *prgName)
     printf("    evalresp AAK,ARU,TLY VHZ 1992 21 0.001 10 100 -f /EVRESP/NEW/rdseed.out\n");
     printf("    evalresp KONO BHN,BHE 1992 1 0.001 10 100 -f /EVRESP/NEW -t 12:31:04 -v\n");
     printf("    evalresp FRB BHE,BHZ 1994 31 0.001 10 100 -f resp.all_stations -n '*' -v\n\n");
-    exit(1);
+    exit(EXIT_FAILURE);
 }
 
 int main(int argc, char *argv[]) {
@@ -106,7 +107,7 @@ int main(int argc, char *argv[]) {
     char param_err_msgstr[] = "%s: missing option to argument '%s'";
     int useTotalSensitivityFlag = 0; /* IGD 01/29/10 */
     double x_for_b62 = 0; /* IGD 10/03/13 */
-
+    evalresp_log_t *log = NULL; /* set log to NULL for future updates but crurrently print to stderr */
     char *prog_name=argv[0];
 
     curr_seq_no = -1;
@@ -152,9 +153,13 @@ int main(int argc, char *argv[]) {
     (strncmp(argv[fswidx], "-", 1) != 0 || is_real(argv[fswidx])))
         ;
     if (fswidx < 5) {
-        error_exit(USAGE_ERROR, "Not all of the required inputs are \n\t"
+        evalresp_log(log, ERROR, 0, "Not all of the required inputs are \n\t"
                 "present (%d missing), type '%s' for usage", 8 - fswidx,
                 prog_name);
+        exit(USAGE_ERROR);
+        /*XXX error_exit(USAGE_ERROR, "Not all of the required inputs are \n\t"
+                "present (%d missing), type '%s' for usage", 8 - fswidx,
+                prog_name); */
     }
 
     /* setup min,max,num freq values; use defaults if missing */
@@ -165,7 +170,10 @@ int main(int argc, char *argv[]) {
     /* warn about any unexpected non-switch parameters */
     for (i = 8; i < fswidx; ++i) {
         if (argv[i] != NULL && argv[i][0] != '\0')
-            fprintf(stderr, "WARNING:  Unrecognized parameter:  %s\n", argv[i]);
+        {
+            evalresp_log(log, WARN, 0, "Unrecognized parameter:  %s\n", argv[i]);
+            /*XXX fprintf(stderr, "WARNING:  Unrecognized parameter:  %s\n", argv[i]); */
+        }
     }
 
     /* then get the optional arguments (if any) */
@@ -206,8 +214,11 @@ int main(int argc, char *argv[]) {
                     break;
                 case 's': /*space*/
                     if (strcmp(optarg, "lin") & strcmp(optarg, "log")) {
-                        error_exit(USAGE_ERROR, "%s: option '-s' illegal type '%s'",
+                        evalresp_log(log, ERROR, 0, "%s: option '-s' illegal type '%s'",
                                 prog_name, type);
+                        exit(USAGE_ERROR);
+                        /*XXX error_exit(USAGE_ERROR, "%s: option '-s' illegal type '%s'",
+                                prog_name, type); */
                     }
                     type = strndup(optarg, MAXFLDLEN);
                     break;
@@ -225,7 +236,9 @@ int main(int argc, char *argv[]) {
                     {
                         start_stage = atoi(optarg);
                     } else {
-                        error_exit(USAGE_ERROR, param_err_msgstr, prog_name, optarg);
+                        evalresp_log(log, ERROR, 0, param_err_msgstr, prog_name, optarg);
+                        exit(USAGE_ERROR);
+                        /*XXX error_exit(USAGE_ERROR, param_err_msgstr, prog_name, optarg); */
                     }
                     if (optind < flagc && is_int(flagv[optind]))
                     {
@@ -248,9 +261,13 @@ int main(int argc, char *argv[]) {
                     {
                         listinterp_tension = atof(optarg);
                     } else {
-                        error_exit(USAGE_ERROR,
+                        evalresp_log(log, ERROR, 0,
                                 "%s:  illegal value for 'it' parameter:  %s",
                                 prog_name, optarg);
+                        exit(USAGE_ERROR);
+                        /*XXX error_exit(USAGE_ERROR,
+                                "%s:  illegal value for 'it' parameter:  %s",
+                                prog_name, optarg); */
                     }
                     break;
                 case 'b':/*b62_x*/
@@ -270,10 +287,13 @@ int main(int argc, char *argv[]) {
                         errflag[0] = optopt;
                         err = errflag;
                     }
-                    error_exit(USAGE_ERROR, param_err_msgstr, prog_name, err);
+                    evalresp_log(log, ERROR, 0, param_err_msgstr, prog_name, err);
+                    exit(USAGE_ERROR);
+                    /*XXX error_exit(USAGE_ERROR, param_err_msgstr, prog_name, err); */
                     break;
                 case '?': /* unrecognized flag */
-                    fprintf(stderr, "WARNING:  Unrecognized parameter:  %s\n", flagv[optind-1]);
+                    evalresp_log(log, WARN, 0, "Unrecognized parameter:  %s\n", flagv[optind-1]);
+                    /*XXX fprintf(stderr, "WARNING:  Unrecognized parameter:  %s\n", flagv[optind-1]); */
                     break;
             }
         }
@@ -284,14 +304,28 @@ int main(int argc, char *argv[]) {
     cha_list = argv[2];
 
     if (!is_int(argv[3]))
-        error_exit(USAGE_ERROR, "year must be an integer, found '%s'", argv[3]);
+    {
+        evalresp_log(log, ERROR, 0, "Year must be an integer, found '%s'", argv[3]);
+        exit(USAGE_ERROR);
+        //error_exit(USAGE_ERROR, "year must be an integer, found '%s'", argv[3]);
+    }
     if (!is_int(argv[4]))
-        error_exit(USAGE_ERROR, "julian day must be an integer, found '%s'",
-                argv[4]);
+    {
+        evalresp_log(log, ERROR, 0, "Julian day must be an integer, found '%s'", argv[4]);
+        exit(USAGE_ERROR);
+        //error_exit(USAGE_ERROR, "julian day must be an integer, found '%s'",
+        //        argv[4]);
+    }
     if (!is_time(t_o_day))
-        error_exit(USAGE_ERROR,
+    {
+        evalresp_log(log, ERROR, 0, "'Time of day' must have format "
+                                     "'hh[:mm[:ss[.#####]]]', found '%s'",
+                                   t_o_day);
+        exit(USAGE_ERROR);
+        /*XXX error_exit(USAGE_ERROR,
                 "'time of day' must have format 'hh[:mm[:ss[.#####]]]', found '%s'",
-                t_o_day);
+                t_o_day); */
+    }
 
     fldlen = strlen(argv[3]) + strlen(argv[4]) + strlen(t_o_day) + 3;
     if ((datime = (char *) malloc(fldlen)) == (char *) NULL) {
@@ -299,18 +333,31 @@ int main(int argc, char *argv[]) {
     sprintf(datime, "%s,%s,%s", argv[3], argv[4], t_o_day);
 
     if (!is_real(minfstr) || !is_real(maxfstr))
-        error_exit(USAGE_ERROR, "freq_lims must be real numbers, found (%s,%s)",
+    {
+        evalresp_log(log, ERROR, 0, "freq_lims must be real numbers, found (%s,%s)",
                 minfstr, maxfstr);
+        exit(USAGE_ERROR);
+        /*XXX error_exit(USAGE_ERROR, "freq_lims must be real numbers, found (%s,%s)",
+                minfstr, maxfstr); */
+    }
     freq_lims[0] = atof(minfstr);
     freq_lims[1] = atof(maxfstr);
     if ((freq_lims[0] == 0.0 || freq_lims[1] == 0.0)
             && (type == NULL || strcmp(type, "lin") != 0)) {
-        error_exit(USAGE_ERROR,
+        evalresp_log(log, ERROR, 0,
                 " freq lims can't equal 0 if log spacing is used");
+        exit(USAGE_ERROR);
+      /*XXX error_exit(USAGE_ERROR,
+                " freq lims can't equal 0 if log spacing is used");*/
     }
     if (!is_int(numfstr))
-        error_exit(USAGE_ERROR, "nfreqs must be an integer, found '%s'",
+    {
+        evalresp_log(log, ERROR, 0, "nfreqs must be an integer, found '%s'",
                 numfstr);
+        exit(USAGE_ERROR);
+        /*XXX error_exit(USAGE_ERROR, "nfreqs must be an integer, found '%s'",
+                numfstr); */
+    }
     nfreqs = atoi(numfstr);
 
     /* check the frequency input values and range */
@@ -320,8 +367,11 @@ int main(int argc, char *argv[]) {
         freq_lims[1] = freq_lims[0];
         freq_lims[0] = temp_val;
     } else if (nfreqs <= 0) {
-        error_exit(USAGE_ERROR,
+        evalresp_log(log, ERROR, 0,
                 "nfreqs value entered must be positive, entered %d", nfreqs);
+        exit(USAGE_ERROR);
+        /*XXX error_exit(USAGE_ERROR,
+                "nfreqs value entered must be positive, entered %d", nfreqs); */
     }
 
     /* depending on the type of spacing, set either a step size or a multiplication
@@ -330,55 +380,81 @@ int main(int argc, char *argv[]) {
     if (type != NULL && !strcmp(type, "lin")) {
         lin_typ = 1;
         if (nfreqs == 1)
+        {
             incr = -1.0;
-        else
+        } else {
             incr = (freq_lims[1] - freq_lims[0]) / (nfreqs - 1);
-    } else if (nfreqs == 1)
+        }
+    } else if (nfreqs == 1) {
         incr = -1.0;
-    else
+    } else {
         incr = pow((freq_lims[1] / freq_lims[0]), (1. / (nfreqs - 1)));
+    }
 
     /* if net_code not given, default to "*" value */
 
     if (net_code == (char *) NULL)
+    {
         net_code = "*";
+    }
 
     /* if locid not given, default to "*" value */
 
     if (locid == (char *) NULL)
+    {
         locid = "*";
+    }
 
     /* convert the units and response type arguments to lower case after
      checking to make sure they match one of the appropriate input values */
 
     if (strlen(rtype)) {
         for (i = 0; i < (int) strlen(rtype); i++)
+        {
             *(rtype + i) = toupper(*(rtype + i));
+        }
         if (strcmp(rtype, "CS") == 0) /* if complex-spectra output then */
+        {
             listinterp_out_flag = 0; /* force List-out-interp flag clear */
-        else if ((strcmp(rtype, "AP") != 0)) { /* if invalid value then abort */
+        } else if ((strcmp(rtype, "AP") != 0)) { /* if invalid value then abort */
             if ((strcmp(rtype, "FAP") != 0))
-                error_exit(USAGE_ERROR,
+            {
+                evalresp_log(log, ERROR, 0,
                         "evalresp; rtype entered ('%s') not a recognized string (see usage)",
                         rtype);
+                exit(USAGE_ERROR);
+                /*XXX error_exit(USAGE_ERROR,
+                        "evalresp; rtype entered ('%s') not a recognized string (see usage)",
+                        rtype);*/
+            }
         }
-    } else
+    } else {
         strncpy(rtype, "AP", MAXFLDLEN);
+    }
 
     if (strlen(units)) {
         for (i = 0; i < (int) strlen(units); i++)
+        {
             *(units + i) = toupper(*(units + i));
+        }
         if (strcmp(units, "DIS") && strcmp(units, "VEL") && strcmp(units, "ACC")
                 && strcmp(units, "DEF"))
-            error_exit(USAGE_ERROR,
+        {
+            evalresp_log(log, ERROR, 0,
                     "evalresp; units entered ('%s') not a recognized string (see usage)",
                     units);
-        else if (!strcmp(units, "DEF"))
+            exit(USAGE_ERROR);
+            /*XXX error_exit(USAGE_ERROR,
+                    "evalresp; units entered ('%s') not a recognized string (see usage)",
+                    units); */
+        } else if (!strcmp(units, "DEF")) {
             def_units_flag = 1;
-        else
+        } else {
             def_units_flag = 0;
-    } else
+        }
+    } else {
         strncpy(units, "VEL", MAXFLDLEN);
+    }
 
     /* allocate space for the frequencies and fill with appropriate values */
 
@@ -399,8 +475,9 @@ int main(int argc, char *argv[]) {
             listinterp_out_flag, listinterp_in_flag, listinterp_tension,
             useTotalSensitivityFlag, x_for_b62, xml_flag);
     if (!first) {
-        fprintf(stderr, "EVRESP FAILED\n");
-        exit(-1);
+        evalresp_log(log, WARN, 0, "EVRESP FAILED\n");
+        /*XXX fprintf(stderr, "EVRESP FAILED\n"); */
+        exit(EXIT_FAILURE);
     }
 
     /* and print the responses to a set of files */
