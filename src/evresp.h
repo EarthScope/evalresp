@@ -1086,7 +1086,7 @@ int next_resp(FILE *fptr);
  *          'names' pointer of the linked list element representing that
  *          station-channel-network pattern.
  * @param[in] file File name.
- * @param[in] scn_list List of network-station-locid-channel objects.
+ * @param[in] scn_lst List of network-station-locid-channel objects.
  * @param[out] mode 1 for directory search or 0 if file was specified.
  * @returns Pointer to the head of the linked list of matches files.
  * @returns @c NULL if no files were found that match request.
