@@ -916,9 +916,22 @@ int is_real(const char *);
 /**
  * @private
  * @ingroup evalresp_private_string
- * @brief FIXME.
+ * @brief Used to check out if we are using a FIR or IIR coefficients in
+ *        blockette 54.
+ * @details This information is contained in the 10th field of this blockette
+ *          (number of denominators); if the number of denominators is 0: we
+ *          got FIR. Otherwise, it is IIR. is_IIR_coeff() reads the text
+ *          response file; finds the proper line and decides if the response is
+ *          IIR or FIR. The text file is then fseek() to the original position
+ *          and the function returns.
+ * @param[in] fp FILE pointer.
+ * @param[in] position Position.
+ * @returns 1 if it is IIR.
+ * @returns 0 if it is not IIR.
+ * @returns 0 in case of error.
+ * @author 07/00: IGD I.Dricker ISTI i.dricker@isti.com for evalresp 3.2.17.
  */
-int is_IIR_coeffs(FILE *, int); /*IGD */
+int is_IIR_coeffs(FILE *fp, int position);
 
 /* routines used to load a channel's response information into a linked
  list of filter stages, each containing a linked list of blockettes */
