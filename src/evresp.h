@@ -747,7 +747,7 @@ struct string_array *parse_delim_line(char *line, char *delim);
  * @details Exits with error if no non-comment lines left in file or if
  *          expected blockette and field numbers do not match those found in
  *          the next non-comment line.
- * @param[in] fptr FILE pointer.
+ * @param[in,out] fptr FILE pointer.
  * @param[out] return_field Return field.
  * @param[in] blkt_no Blockette number.
  * @param[in] fld_no Field number.
@@ -768,7 +768,7 @@ int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
  * @details Returns with a value of zero if no non-comment lines left in file
  *          or if expected blockette and field numbers do not match those
  *          found in the next non-comment line.
- * @param[in] fptr FILE pointer.
+ * @param[in,out] fptr FILE pointer.
  * @param[out] return_field Return field.
  * @param[out] blkt_no Blockette number.
  * @param[out] fld_no Field number.
@@ -789,7 +789,7 @@ int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
  * @details Exits with error if no non-comment lines left in file or if
  *          expected blockette and field numbers do not match those found in
  *          the next non-comment line.
- * @param[in] fptr FILE pointer.
+ * @param[in,out] fptr FILE pointer.
  * @param[out] return_line Return line.
  * @param[in] blkt_no Blockette number.
  * @param[in] fld_no Field number.
@@ -808,7 +808,7 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep);
  * @private
  * @ingroup evalresp_private_string
  * @brief Returns the next 'non-comment' line from a RESP file.
- * @param[in] fptr FILE pointer.
+ * @param[in,out] fptr FILE pointer.
  * @param[out] return_line Return line.
  * @param[out] blkt_no Blockette number.
  * @param[out] fld_no Field number.
@@ -825,37 +825,65 @@ int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *se
 /**
  * @private
  * @ingroup evalresp_private_string
- * @brief FIXME.
+ * @brief Counts the number of white space delimited fields on a given input
+ *        line.
+ * @param[in] line Input line string.
+ * @returns Number of white space delimited fields.
  */
-int count_fields(char *);
+int count_fields(char *line);
 
 /**
  * @private
  * @ingroup evalresp_private_string
- * @brief FIXME.
+ * @brief Counts the number of fields delimited by @p delim on a given input
+ *        line.
+ * @note In this routine an empty string has one field in it... with null
+ *       length).
+ * @param[in] line Input line string.
+ * @param[in] delim Delimiter.
+ * @returns Number of fields delimated by @p delim.
  */
-int count_delim_fields(char *, char *);
+int count_delim_fields(char *line, char *delim);
 
 /**
  * @private
  * @ingroup evalresp_private_string
- * @brief FIXME.
+ * @brief Returns a field from the input line.
+ * @param[in] line Input line.
+ * @param[in] fld_no Field number.
+ * @param[out] return_field Return field.
+ * @returns Length of the resulting field if successful.
+ * @note Exits with error if no field exists with that number.
  */
-int parse_field(char *, int, char *);
+int parse_field(char *line, int fld_no, char *return_field);
 
 /**
  * @private
  * @ingroup evalresp_private_string
- * @brief FIXME.
+ * @brief Returns a field from the input line, delimited by @p delim.
+ * @param[in] line Input line.
+ * @param[in] fld_no Field number.
+ * @param[in] delim Delimiter.
+ * @param[out] return_field Return field.
+ * @returns Length of the resulting field if successful.
+ * @note Exits with error if no field exists with that number.
  */
-int parse_delim_field(char *, int, char *, char *);
+int parse_delim_field(char *line, int fld_no, char *delim, char *return_field);
 
 /**
  * @private
  * @ingroup evalresp_private_string
- * @brief FIXME.
+ * @brief Returns the blockette and field numbers in the prefix of the next
+ *        'non-comment' line from a RESP file.
+ * @param[in,out] fptr FILE pointer.
+ * @param[out] blkt_no Blockette number.
+ * @param[out] fld_no Field number.
+ * @param[out] in_line Line string.
+ * @returns 1 if a non-comment field is found.
+ * @returns @c NULL if no non-comment line is found.
+ * @author 2004.079: SBH: Added code to skip blank lines.
  */
-int check_line(FILE *, int *, int *, char *);
+int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line);
 
 /**
  * @private
@@ -940,7 +968,7 @@ int is_int(const char *test);
  * @returns 0 if false.
  * @returns >0 if true.
 */
-int is_real(const char *);
+int is_real(const char *test);
 
 /**
  * @private
@@ -953,7 +981,7 @@ int is_real(const char *);
  *          response file; finds the proper line and decides if the response is
  *          IIR or FIR. The text file is then fseek() to the original position
  *          and the function returns.
- * @param[in] fp FILE pointer.
+ * @param[in,out] fp FILE pointer.
  * @param[in] position Position.
  * @returns 1 if it is IIR.
  * @returns 0 if it is not IIR.
@@ -968,23 +996,68 @@ int is_IIR_coeffs(FILE *fp, int position);
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Finds the location of a response for one of the input
+ *        station-channels at the specified date.
+ * @details If no response is available in the file pointed to by @p fptr,
+ *          then a -1 value is returned (indicating failure), otherwise the
+ *          index of the matching station-channel pair. The matching beg_t,
+ *          end_t and station info are returned as part of the input structure
+ *          @p this_channel. The pointer to the file (@p fptr) is left in
+ *          position for the parse_channel() routine to grab the response
+ *          information for that station.
+ * @param[in,out] fptr FILE pointer.
+ * @param[in] scn_lst List of network-station-locid-channel objects.
+ * @param[in] datime Date-time string.
+ * @param[out] this_channel Channel structure.
+ * @returns Index of the matching station-channel pair.
+ * @returns -1 on failure.
+ * @note The station information is preloaded into @p this_channel, so the
+ *       file pointer does not need to be repositioned to allow for this
+ *       information to be reread.
  */
-int find_resp(FILE *, struct scn_list *, char *, struct channel *);
+int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
+              struct channel *this_channel);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Finds the location of a response for the input station-channel
+ *        at the specified date.
+ * @details If no response is available in the file pointed to by @p fptr,
+ *          then a -1 value is returned (indicating failure), otherwise a
+ *          value of 1 is returned (indicating success). The matching beg_t,
+ *          end_t and station info are returned as part of the input
+ *          structure @p this_channel. The pointer to the file (@p fptr) is
+ *          left in position for the parse_channel() routine to grab the
+ *          response information for that station. 
+ * @param[in,out] fptr FILE pointer.
+ * @param[in] scn Network-station-locid-channel object.
+ * @param[in] datime Date-time string.
+ * @param[out] this_channel Channel structure.
+ * @returns 1 on success.
+ * @returns -1 on failure.
+ * @note The station information is preloaded into @p this_channel, so the
+ *       file pointer does not need to be repositioned to allow for this
+ *       information to be reread.
  */
-int get_resp(FILE *, struct scn *, char *, struct channel *);
+int get_resp(FILE *fptr, struct scn *scn, char *datime,
+             struct channel *this_channel);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Retrieves the info from the RESP file blockettes for a channel.
+ * @details Errors cause the program to terminate. The blockette and field
+ *          numbers are checked as the file is parsed. Only the
+ *          station/channel/date info is returned. The file pointer is left at
+ *          the end of the date info, where it can be used to read the
+ *          response information into the filter structures.
+ * @param[in,out] fptr File pointer.
+ * @param[out] chan Channel structure.
+ * @returns 1 on success.
+ * @returns 0 on failure.
  */
-int get_channel(FILE *, struct channel *);
+int get_channel(FILE *fptr, struct channel* chan);
 
 /**
  * @private
@@ -1529,13 +1602,13 @@ void iir_trans(struct blkt *, double, struct evr_complex *); /* IGD for version 
  * @ingroup evalresp_private_string
  * @brief A function that tests whether a string looks like a time string
  *        using string_match().
- * @detailed Time strings must be in the format 'hh:mm:ss[.#####]', so more
+ * @details Time strings must be in the format 'hh:mm:ss[.#####]', so more
  *          than 14 characters is an error (too many digits).
  * @param[in] test String to test.
  * @returns 0 if false.
  * @returns >0 if true.
  */
-int is_time(const char *);
+int is_time(const char *test);
 
 /**
  * @private

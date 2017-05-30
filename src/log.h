@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
  *
  * @sa { evalresp_log_t evalresp_log_t_alloc evalresp_log_t_free evalresp_log_t_init evalresp_log_basic evalresp_log_v }
  */
-extern int evalresp_log (evalresp_log_t*, int, int, char *, ...);
+extern int evalresp_log (evalresp_log_t *log, int level, int verbosity, char *fmt, ...);
 
 /**
  * @private
@@ -239,7 +239,7 @@ extern int evalresp_log (evalresp_log_t*, int, int, char *, ...);
  * @param[in] log_func the logging function used for controlled output of log
  * @param[in] log_func_data data needed by the logging function to better control the logging function
  * @param[in] level level the logging level the msg is intended for
- * $param[in] verbosity verbosity the verbosity level the mesg is intended for
+ * @param[in] verbosity verbosity the verbosity level the mesg is intended for
  * @param[in] fmt a format string that follows the printf style format
  * @param[in] ... any additional variables needed for fmt
  * @retval EXIT_SUCCESS when succesfully called
@@ -247,7 +247,7 @@ extern int evalresp_log (evalresp_log_t*, int, int, char *, ...);
  *
  * \sa { evalresp_log_t evalresp_log_t_alloc evalresp_log_t_free evalresp_log_t_init evalresp_log_basic evalresp_log_v }
  */
-extern int evalresp_log_basic (evalresp_log_func_t, void *, int, int, char *, ...);
+extern int evalresp_log_basic (evalresp_log_func_t log_func, void *log_func_data, int level, int verbosity, char *fmt, ...);
 
 /**
  * @private
@@ -261,7 +261,7 @@ extern int evalresp_log_basic (evalresp_log_func_t, void *, int, int, char *, ..
  * @param[in] log_func the logging function used for controlled output of log
  * @param[in] log_func_data data needed by the logging function to better control the logging function
  * @param[in] level level the logging level the msg is intended for
- * $param[in] verbosity verbosity the verbosity level the mesg is intended for
+ * @param[in] verbosity verbosity the verbosity level the mesg is intended for
  * @param[in] fmt a format string that follows the printf style format
  * @param[in] args va_list containing variables needed for fmt, follow vprintf
  * @retval EXIT_SUCCESS when succesfully called
@@ -269,7 +269,7 @@ extern int evalresp_log_basic (evalresp_log_func_t, void *, int, int, char *, ..
  *
  * \sa { evalresp_log_t evalresp_log_t_alloc evalresp_log_t_free evalresp_log_t_init evalresp_log_basic evalresp_log_v }
  */
-extern int evalresp_log_v (evalresp_log_func_t, void *, int, int, char *, va_list);
+extern int evalresp_log_v (evalresp_log_func_t log_func, void *log_func_data, int level, int verbosity, char *fmt, va_list args);
 
 /* log/helpers.c */
 /**
@@ -285,7 +285,7 @@ extern int evalresp_log_v (evalresp_log_func_t, void *, int, int, char *, va_lis
  * @returns pointer to log object
  * @retval NULL on error
  */
-extern evalresp_log_t *evalresp_log_t_alloc(evalresp_log_func_t, void *);
+extern evalresp_log_t *evalresp_log_t_alloc(evalresp_log_func_t log_func, void *func_data);
 
 /**
  * @private
@@ -296,7 +296,7 @@ extern evalresp_log_t *evalresp_log_t_alloc(evalresp_log_func_t, void *);
  *
  * @param[in] log
  */
-extern void evalresp_log_t_free(evalresp_log_t *);
+extern void evalresp_log_t_free(evalresp_log_t *log);
 
 /**
  * @private
@@ -309,6 +309,6 @@ extern void evalresp_log_t_free(evalresp_log_t *);
  * @retval EXIT_SUCCESS if initialized successfully
  * @retval EXIT_FAILURE if failed to initialize, generaly log was NULL
  */
-extern int evalresp_log_t_init(evalresp_log_t *, evalresp_log_func_t, void *);
+extern int evalresp_log_t_init(evalresp_log_t *log, evalresp_log_func_t log_func, void *func_data);
 
 #endif /* __EVALRESP_LOG_H__ */

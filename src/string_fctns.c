@@ -286,9 +286,6 @@ int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no,
     return (*fld_no);
 }
 
-/* count_fields:  counts the number of white space delimited fields on
- a given input line */
-
 int count_fields(char *line) {
     char *lcl_ptr, *new_ptr;
     char lcl_field[50];
@@ -303,10 +300,6 @@ int count_fields(char *line) {
     }
     return (nfields);
 }
-
-/* count_delim_fields:  counts the number of fields delimited by the char "delim" on
- a given input line (note: in this routine an empty string has one
- field in it...with null length) */
 
 int count_delim_fields(char *line, char *delim) {
     const char *lcl_ptr, *tmp_ptr;
@@ -327,10 +320,6 @@ int count_delim_fields(char *line, char *delim) {
 
     return (nfields);
 }
-
-/* parse_field:  returns a field from the input line (return value is the
- length of the resulting field if successful, exits with error if no
- field exists with that number */
 
 int parse_field(char *line, int fld_no, char *return_field) {
     char *lcl_ptr, *new_ptr;
@@ -361,10 +350,6 @@ int parse_field(char *line, int fld_no, char *return_field) {
     sscanf(lcl_ptr, "%s", return_field);
     return (strlen(return_field));
 }
-
-/* parse_delim_field:  returns a field from the input line (return value is the
- length of the resulting field if successful, exits with error if no
- field exists with that number */
 
 int parse_delim_field(char *line, int fld_no, char *delim, char *return_field) {
 
@@ -400,10 +385,6 @@ int parse_delim_field(char *line, int fld_no, char *delim, char *return_field) {
     return (strlen(return_field));
 }
 
-/* check_line:  returns the blockette and field numbers in the prefix of the next 'non-comment'
- line from a RESP file (return value 1 if a non-comment field is found
- or NULL if no non-comment line is found */
-/* SBH - 2004.079 added code to skip blank lines */
 int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line) {
     char line[MAXLINELEN];
     int test;
