@@ -473,7 +473,7 @@ int main(int argc, char *argv[]) {
     first = evresp_itp(sta_list, cha_list, net_code, locid, datime, units, file,
             freqs, nfreqs, rtype, verbose, start_stage, stop_stage, stdio_flag,
             listinterp_out_flag, listinterp_in_flag, listinterp_tension,
-            useTotalSensitivityFlag, x_for_b62, xml_flag);
+            useTotalSensitivityFlag, x_for_b62, xml_flag, log);
     if (!first) {
         evalresp_log(log, WARN, 0, "EVRESP FAILED\n");
         /*XXX fprintf(stderr, "EVRESP FAILED\n"); */

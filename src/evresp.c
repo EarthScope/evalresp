@@ -66,6 +66,7 @@ Notes:
 #include "x2r_ws.h"
 #include <stdlib.h>
 #include <string.h>
+#include <log.h>
 
 /* define a global flag to use if using "default" units */
 int def_units_flag;
@@ -89,7 +90,7 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
         char *units, char *file, double *freqs, int nfreqs, double *resp,
         char *rtype, char *verbose, int start_stage, int stop_stage,
         int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
-		int xml_flag) {
+        int xml_flag, evalresp_log_t *log) {
     struct response *first = (struct response *) NULL;
     int i, j;
 
@@ -99,7 +100,7 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
 
     first = evresp(sta, cha, net, locid, datime, units, file, freqs, nfreqs,
             rtype, verbose, start_stage, stop_stage, stdio_flag, useTotalSensitivityFlag,
-            x_for_b62, xml_flag);
+            x_for_b62, xml_flag, log);
 
     /* check the output.  If no response found, return 1, else if more than one response
      found, return -1 */
@@ -232,7 +233,7 @@ int FirstField;
 /* This version of the function includes
  the 'listinterp...' parameters  */
 
-/* IGD 10/03/13 This version of the function includes x_for_b62 parameter. See comment to calc_resp() function 
+/* IGD 10/03/13 This version of the function includes x_for_b62 parameter. See comment to calc_resp() function
  for further explanation */
 
 /* IGD 09/30/13 reformatted the code */
@@ -241,7 +242,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
         int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
         int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
         double listinterp_tension, int useTotalSensitivityFlag,
-        double x_for_b62, int xml_flag) {
+        double x_for_b62, int xml_flag, evalresp_log_t *log) {
     struct channel this_channel;
     struct scn *scn;
     struct string_array *sta_list, *chan_list;
@@ -282,8 +283,9 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
     /* if the verbose flag is set, then print some diagnostic output (other than errors) */
 
     if (verbose && !strcmp(verbose, "-v")) {
-        fprintf(stderr, "<< EVALRESP RESPONSE OUTPUT V%s >>\n", REVNUM);
-        fflush(stderr);
+        evalresp_log(log, WARN, 0, "<< EVALRESP RESPONSE OUTPUT V%s >>\n", REVNUM);
+        /*XXX fprintf(stderr, "<< EVALRESP RESPONSE OUTPUT V%s >>\n", REVNUM);
+        fflush(stderr); */
     }
 
     /* first, determine the values of Pi and twoPi for use in evaluating
@@ -346,7 +348,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                 strncpy(scn->station, sta_list->strings[i], STALEN);
                 // treat '??' as '*' after long discussion w rob, ilya and eric
                 if (strlen(locid_list->strings[j]) == strspn(locid_list->strings[j], "?")) {
-                	strcpy(scn->locid, "*");
+                    strcpy(scn->locid, "*");
                 } else if (strlen(locid_list->strings[j]) == strspn(locid_list->strings[j], " ")) {
                     memset(scn->locid, 0, LOCIDLEN);
                 } else {
@@ -376,12 +378,16 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
     if (!mode && !stdio_flag) {
         curr_file = file;
         if (!(fptr = fopen(file, "r"))) {
+            evalresp_log(log, ERROR, 0, "%s failed to open file %s\n", myLabel, file);
+            return NULL;
+            /*XXX
 #ifdef LIB_MODE
             fprintf(stderr, "%s failed to open file %s\n", myLabel, file);
             return NULL;
 #else
             error_exit(OPEN_FILE_ERROR, "failed to open file %s", file);
 #endif
+*/
         }
     }
 
@@ -400,10 +406,10 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
         if (!mode) {
 
             /* convert from xml format if necessary, logging error messages to stderr. */
-        	if (x2r_xml2resp_on_flag(&fptr, xml_flag, X2R_ERROR)) return NULL;
-        	//if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
+            if (x2r_xml2resp_on_flag(&fptr, xml_flag, X2R_ERROR)) return NULL;
+            //if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
 
-        	which_matched = 0;
+            which_matched = 0;
             while (test && which_matched >= 0) {
                 if (!(err_type = setjmp(jump_buffer))) {
                     new_file = 0;
@@ -597,8 +603,8 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                 if (fptr) {
 
                     /* convert from xml format if necessary, logging error messages to stderr. */
-                	if (x2r_xml2resp_on_flag(&fptr, xml_flag, X2R_ERROR)) return NULL;
-                	//if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
+                    if (x2r_xml2resp_on_flag(&fptr, xml_flag, X2R_ERROR)) return NULL;
+                    //if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
 
                     curr_file = lst_ptr->name;
                     look_again: if (!(err_type = setjmp(jump_buffer))) {
@@ -890,11 +896,15 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
     for (i = 0; i < scns->nscn; i++) {
         scn = scns->scn_vec[i];
         if (!scn->found) {
-            fprintf(stderr,
+            evalresp_log(log, WARN, 0,
+                    "%s: no response found for NET=%s,STA=%s,LOCID=%s,CHAN=%s,DATE=%s\n",
+                    myLabel, scn->network, scn->station, scn->locid,
+                    scn->channel, date_time);
+            /*XXX fprintf(stderr,
                     "%s WARNING: no response found for NET=%s,STA=%s,LOCID=%s,CHAN=%s,DATE=%s\n",
                     myLabel, scn->network, scn->station, scn->locid,
                     scn->channel, date_time);
-            fflush(stderr);
+            fflush(stderr); */
         }
     }
     free_scn_list(scns);
@@ -917,9 +927,9 @@ struct response *evresp(char *stalst, char *chalst, char *net_code,
         char *locidlst, char *date_time, char *units, char *file, double *freqs,
         int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
         int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
-		int xml_flag) {
+        int xml_flag, evalresp_log_t *log) {
     return evresp_itp(stalst, chalst, net_code, locidlst, date_time, units,
             file, freqs, nfreqs, rtype, verbose, start_stage, stop_stage,
-            stdio_flag, 0, 0, 0.0, 0, x_for_b62, xml_flag);
+            stdio_flag, 0, 0, 0.0, 0, x_for_b62, xml_flag, log);
 }
 

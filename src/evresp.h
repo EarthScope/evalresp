@@ -134,6 +134,8 @@
 #include <setjmp.h>
 #include <stdarg.h>
 
+#include <log.h>
+
 /* if Windows compiler then redefine 'complex' to */
 /*  differentiate it from the existing struct,    */
 /*  and rename 'strcasecmp' functions:            */
@@ -1573,7 +1575,8 @@ void print_resp_itp(double *, int, struct response *, char *, int, int, double,
  * @remark Calls evresp_itp() but with listinterp_tension set to 0.
  */
 struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
-        double *, int, char *, char *, int, int, int, int, double, int);
+        double *, int, char *, char *, int, int, int, int, double, int,
+        evalresp_log_t *);
 
 /**
  * @private
@@ -1583,7 +1586,7 @@ struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
  */
 struct response *evresp_itp(char *, char *, char *, char *, char *, char *,
         char *, double *, int, char *, char *, int, int, int, int, int, double,
-        int, double, int);
+        int, double, int, evalresp_log_t *);
 /**
  * @private
  * @ingroup evalresp_private
@@ -1595,7 +1598,7 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
         char *units, char *file, double *freqs, int nfreqs, double *resp,
         char *rtype, char *verbose, int start_stage, int stop_stage,
         int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
-		int xml_flag);
+        int xml_flag, evalresp_log_t *);
 
 /**
  * @private
