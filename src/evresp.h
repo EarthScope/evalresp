@@ -823,37 +823,65 @@ int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *se
 /**
  * @private
  * @ingroup evalresp_private_string
- * @brief FIXME.
+ * @brief Counts the number of white space delimited fields on a given input
+ *        line.
+ * @param[in] line Input line string.
+ * @returns Number of white space delimited fields.
  */
-int count_fields(char *);
+int count_fields(char *line);
 
 /**
  * @private
  * @ingroup evalresp_private_string
- * @brief FIXME.
+ * @brief Counts the number of fields delimited by @p delim on a given input
+ *        line.
+ * @note In this routine an empty string has one field in it... with null
+ *       length).
+ * @param[in] line Input line string.
+ * @param[in] delim Delimiter.
+ * @returns Number of fields delimated by @p delim.
  */
-int count_delim_fields(char *, char *);
+int count_delim_fields(char *line, char *delim);
 
 /**
  * @private
  * @ingroup evalresp_private_string
- * @brief FIXME.
+ * @brief Returns a field from the input line.
+ * @param[in] line Input line.
+ * @param[in] fld_no Field number.
+ * @param[out] return_field Return field.
+ * @returns Length of the resulting field if successful.
+ * @note Exits with error if no field exists with that number.
  */
-int parse_field(char *, int, char *);
+int parse_field(char *line, int fld_no, char *return_field);
 
 /**
  * @private
  * @ingroup evalresp_private_string
- * @brief FIXME.
+ * @brief Returns a field from the input line, delimited by @p delim.
+ * @param[in] line Input line.
+ * @param[in] fld_no Field number.
+ * @param[in] delim Delimiter.
+ * @param[out] return_field Return field.
+ * @returns Length of the resulting field if successful.
+ * @note Exits with error if no field exists with that number.
  */
-int parse_delim_field(char *, int, char *, char *);
+int parse_delim_field(char *line, int fld_no, char *delim, char *return_field);
 
 /**
  * @private
  * @ingroup evalresp_private_string
- * @brief FIXME.
+ * @brief Returns the blockette and field numbers in the prefix of the next
+ *        'non-comment' line from a RESP file.
+ * @param[in] fptr FILE pointer.
+ * @param[out] blkt_no Blockette number.
+ * @param[out] fld_no Field number.
+ * @param[out] in_line Line string.
+ * @returns 1 if a non-comment field is found.
+ * @returns @c NULL if no non-comment line is found.
+ * @author 2004.079: SBH: Added code to skip blank lines.
  */
-int check_line(FILE *, int *, int *, char *);
+int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line);
 
 /**
  * @private
