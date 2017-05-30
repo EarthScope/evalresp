@@ -1104,7 +1104,7 @@ struct response *alloc_response(int);
  * @ingroup evalresp_private_alloc
  * @brief FIXME.
  */
-struct string_array *alloc_string_array(int);
+struct string_array *alloc_string_array(int, evalresp_log_t *);
 
 /**
  * @private

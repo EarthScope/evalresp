@@ -37,7 +37,7 @@
 #include "./evresp.h"
 #include "./regexp.h"
 
-struct string_array *ev_parse_line(char *line) {
+struct string_array *ev_parse_line(char *line, evalresp_log_t *log) {
     char *lcl_line, field[MAXFLDLEN];
     int nfields, fld_len, i = 0;
     struct string_array* lcl_strings;
@@ -45,24 +45,45 @@ struct string_array *ev_parse_line(char *line) {
     lcl_line = line;
     nfields = count_fields(lcl_line);
     if (nfields > 0) {
-        lcl_strings = alloc_string_array(nfields);
+        if (!(lcl_strings = alloc_string_array(nfields)))
+        {
+            return NULL;
+        }
         for (i = 0; i < nfields; i++) {
             parse_field(line, i, field);
             fld_len = strlen(field) + 1;
             if ((lcl_strings->strings[i] = (char *) malloc(
                     fld_len * sizeof(char))) == (char *) NULL) {
-                error_exit(OUT_OF_MEMORY,
+                evalresp_log(log, ERROR, 0, 
                         "ev_parse_line; malloc() failed for (char) vector");
+                for(i--; i>0; i--)
+                {
+                    free(lcl_strings->strings[i]);
+                    lcl_strings->strings[i] = NULL;
+                }
+                free(lcl_strings->strings);
+                free(lcl_strings);
+                return NULL;
+                /*XXX error_exit(OUT_OF_MEMORY,
+                        "ev_parse_line; malloc() failed for (char) vector"); */
             }
             strncpy(lcl_strings->strings[i], "", fld_len);
             strncpy(lcl_strings->strings[i], field, fld_len - 1);
         }
     } else { /* if no fields then alloc string array with empty entry */
-        lcl_strings = alloc_string_array(1);
+        if (!(lcl_strings = alloc_string_array(1)))
+        {
+            return NULL;
+        }
         if ((lcl_strings->strings[0] = (char *) malloc(sizeof(char)))
                 == (char *) NULL) {
-            error_exit(OUT_OF_MEMORY,
+            evalresp_log(log, ERROR, 0,
                     "ev_parse_line; malloc() failed for (char) vector");
+            free(lcl_strings->strings);
+            free(lcl_strings);
+            return NULL;
+            /*XXX error_exit(OUT_OF_MEMORY,
+                    "ev_parse_line; malloc() failed for (char) vector"); */
         }
         strncpy(lcl_strings->strings[0], "", 1);
     }
