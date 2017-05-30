@@ -409,7 +409,7 @@ struct evr_complex {
 /**
  * @private
  * @ingroup evalresp_private
- * @brief Array of strings object.
+ * @brief Array of string objects.
  */
 struct string_array {
     int nstrings;  /**< Number of strings. */
@@ -718,7 +718,7 @@ extern char myLabel[20];
  *          character strings (which are easier to deal with than the original
  *          line).
  * @param[in] line String to parse.
- * @returns Array of strings objects.
+ * @returns Array of string objects.
  */
 struct string_array *ev_parse_line(char *line);
 
@@ -733,7 +733,7 @@ struct string_array *ev_parse_line(char *line);
  *          line).
  * @param[in] line String to parse.
  * @param[in] delim Delimiter string.
- * @returns Array of strings object.
+ * @returns Array of string objects.
  */
 struct string_array *parse_delim_line(char *line, char *delim);
 
