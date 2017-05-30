@@ -529,7 +529,7 @@ struct polynomialType {
  * @brief A FIR Response blockette.
  */
 struct firType {
-    int ncoeffs;  /**< Numer of coefficients (blockettes [41] or [61]). */
+    int ncoeffs;  /**< Number of coefficients (blockettes [41] or [61]). */
     double *coeffs;  /**< Array of coefficients. */
     double h0;  /**< FIXME. */
 };
