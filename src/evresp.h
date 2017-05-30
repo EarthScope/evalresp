@@ -741,7 +741,7 @@ struct string_array *parse_delim_line(char *line, char *delim);
  * @private
  * @ingroup evalresp_private_string
  * @brief Returns the indicated field from the next 'non-comment' line from a
- *        RESP file.
+ *        RESP file using blockette number and field number.
  * @details Exits with error if no non-comment lines left in file or if
  *          expected blockette and field numbers do not match those found in
  *          the next non-comment line.
@@ -768,8 +768,8 @@ int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
  *          found in the next non-comment line.
  * @param[in] fptr FILE pointer.
  * @param[out] return_field Return field.
- * @param[in] blkt_no Blockette number.
- * @param[in] fld_no Field number.
+ * @param[out] blkt_no Blockette number.
+ * @param[out] fld_no Field number.
  * @param[in] sep Field separator.
  * @param[in] fld_wanted Field wanted.
  * @returns Length of the resulting field if successful.
@@ -782,16 +782,43 @@ int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
 /**
  * @private
  * @ingroup evalresp_private_string
- * @brief FIXME.
+ * @brief Returns the next 'non-comment' line from a RESP file using blockette
+ *        number and field number.
+ * @details Exits with error if no non-comment lines left in file or if
+ *          expected blockette and field numbers do not match those found in
+ *          the next non-comment line.
+ * @param[in] fptr FILE pointer.
+ * @param[out] return_line Return line.
+ * @param[in] blkt_no Blockette number.
+ * @param[in] fld_no Field number.
+ * @param[in] sep Separator.
+ * @returns length of the resulting line if successful
+ * @note Exits with error if no non-comment lines left in file or if expected
+ *       blockette and field numbers do not match those found in the next
+ *       non-comment line.
+ * @author 2004.079: SBH: Added code to skip over valid lines that we didn't
+ *                        expect. Support for SHAPE formatte RESP files, and
+ *                        to skip blank lines.
  */
-int get_line(FILE *, char *, int, int, char *); /* checks blkt & fld nos */
+int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep);
 
 /**
  * @private
  * @ingroup evalresp_private_string
- * @brief FIXME.
+ * @brief Returns the next 'non-comment' line from a RESP file.
+ * @param[in] fptr FILE pointer.
+ * @param[out] return_line Return line.
+ * @param[out] blkt_no Blockette number.
+ * @param[out] fld_no Field number.
+ * @param[in] sep Separator.
+ * @returns The fld_no of the resulting line if successful.
+ * @returns 0 if no non-comment lines left in file, regardless of the
+ *          blockette and field numbers for the line (these values are
+ *          returned as the values of the input pointer variables @p fld_no
+ *          and @p blkt_no).
+ * @author 2004.079: SBH: Added code to skip blank lines.
  */
-int next_line(FILE *, char *, int *, int *, char *); /* returns blkt & fld nos */
+int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *sep);
 
 /**
  * @private

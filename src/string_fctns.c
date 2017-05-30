@@ -137,13 +137,6 @@ int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
 
 }
 
-/* get_line:  returns the next 'non-comment' line from a RESP file (return value is the
- length of the resulting line if successful, exits with error if no
- non-comment lines left in file or if expected blockette and field numbers
- do not match those found in the next non-comment line. */
-/* SBH - 2004.079 added code to skip over valid lines that we didn't expect. 
- Support for SHAPE formatte RESP files, and to skip blank lines */
-
 int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) {
     char *lcl_ptr, line[MAXLINELEN];
     int lcl_blkt, lcl_fld, test;
@@ -237,13 +230,6 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
     strncpy(return_line, lcl_ptr, MAXLINELEN);
     return (strlen(return_line));
 }
-
-/* next_line:  returns the next 'non-comment' line from a RESP file (return value is the
- fld_no of the resulting line if successful, returns a value of 0 if no
- non-comment lines left in file), regardless of the blockette and field
- numbers for the line (these values are returned as the values of the input
- pointer variables fld_no and blkt_no). */
-/* SBH - 2004.079 added code to skip blank lines */
 
 int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no,
         char *sep) {
