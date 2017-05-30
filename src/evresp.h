@@ -234,13 +234,6 @@
  */
 #define DATIMLEN 23
 
-/**
- * @private
- * @ingroup evalresp_private
- * @brief FIXME.
- * @remark Not used anywhere.
- */
-#define UNITSLEN 20
 
 /**
  * @private
@@ -280,26 +273,10 @@
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
- * @remark Not used anywhere.
- */
-#define CORRECTION_APPLIED_FLAG 0
-
-/**
- * @private
- * @ingroup evalresp_private
  * @brief Set flag to use the estimated delay in response computation.
  * @see use_estimated_delay()
  */
 #define ESTIMATED_DELAY_FLAG 1
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief FIXME.
- * @remark Not used anywhere.
- */
-#define CALC_DELAY_FLAG 2
 
 /**
  * @private
