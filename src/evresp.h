@@ -1029,7 +1029,7 @@ int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
  *          left in position for the parse_channel() routine to grab the
  *          response information for that station. 
  * @param[in] fptr FILE pointer.
- * @param[in] scnt Network-station-locid-channel object.
+ * @param[in] scn Network-station-locid-channel object.
  * @param[in] datime Date-time string.
  * @param[out] this_channel Channel structure.
  * @returns 1 on success.
