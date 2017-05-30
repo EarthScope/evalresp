@@ -1,13 +1,38 @@
+/**
+ * @mainpage Introduction
+ *
+ * @section purpose Purpose
+ *
+ * Implements a private syslog logging interface for evalresp.
+ *
+ * @section history History
+ *
+ * Written by <a href="http://www.isti.com/">Instrumental Software
+ * Technologies, Inc.</a> (ISTI) in 2017.
+ */
+
+/**
+ * @defgroup evalresp_private_log_syslog evalresp Private Syslog Logging Interface
+ * @ingroup evalresp_private_log
+ * @brief Private syslog logging interface for evalresp.
+ * @author 2017: Dylan Thies, ISTI.
+ */
+
+/**
+ * @file
+ * @brief This file contains declarations and global structures for evalresp
+ *        syslog logging.
+ * @author 2017: Dylan Thies, ISTI.
+ */
+
 #ifndef __evalresp_log_to_syslog_h__
 #define __evalresp_log_to_syslog_h__
 #include "log.h"
 #include <syslog.h>
-/** @file to_syslog.h
- *  @author Dylan Thies
- *  @ brief header for evalresp logging function api for logging to syslog
- */
 
 /**
+ * @private
+ * @ingroup evalresp_private_log_syslog
  * @brief a logging function for use with evalresp log that will log to syslog
  *
  * this works in unix like environments only
@@ -19,23 +44,32 @@
  * @retval EXIT_FAILURE when fails to write to file
  * @sa evalresp_log
  */
-int evalresp_log_to_syslog(evalresp_log_msg_t *, void *);
+int evalresp_log_to_syslog(evalresp_log_msg_t *msg, void *data);
 
-/** datastructure  containing configuration options for syslog */
+/**
+ * @private
+ * @ingroup evalresp_private_log_syslog
+ * @brief Datastructure containing configuration options for syslog
+ */
 typedef struct evalresp_syslog_data
 {
-    int option;
-    int facility;
-    char *ident;
+    int option;  /**< FIXME. */
+    int facility;  /**< FIXME. */
+    char *ident;  /**< FIXME. */
 } evalresp_syslog_data_t;
 
 /**
+ * @private
+ * @ingroup evalresp_private_log_syslog
  * @brief function to free evalresp_syslog_data_t object
  *
  * @param[in] log_opt object to be free'd
  */
-void evalresp_log_syslog_data_free(evalresp_syslog_data_t *);
+void evalresp_log_syslog_data_free(evalresp_syslog_data_t *log_opt);
+
 /**
+ * @private
+ * @ingroup evalresp_private_log_syslog
  * @brief Function to allocate and initialize evalresp_syslog_data_t objects.
  *
  * @param[in] ident the ident string if NULL syslog will use program name
@@ -44,14 +78,18 @@ void evalresp_log_syslog_data_free(evalresp_syslog_data_t *);
  * @returns pointer to a evalresp_syslog_data_t object
  * @retval NULL on error
  */
-evalresp_syslog_data_t * evalresp_log_syslog_data_alloc(char *, int, int);
+evalresp_syslog_data_t * evalresp_log_syslog_data_alloc(char *ident, int option, int facility);
+
 /**
+ * @private
+ * @ingroup evalresp_private_log_syslog
  * @brief A helper function to initialize evalresp_log_t struct for use with evalresp_log_to_syslog.
  *
  * @param[out] log allocated log evalresp_log_t pointer that will tell evalresp_log to log to syslog
- * @praram[in] data evalresp_syslog_data_t that contains parameters for the log, this can be NULL
+ * @param[in] data evalresp_syslog_data_t that contains parameters for the log, this can be NULL
  * @retval EXIT_SUCCESS when on success
  * @retval EXIT_FAILURE when fails, typically log is NULL
  */
-int evalresp_log_intialize_log_for_syslog(evalresp_log_t *, evalresp_syslog_data_t *);
+int evalresp_log_intialize_log_for_syslog(evalresp_log_t *log, evalresp_syslog_data_t *data);
+
 #endif /* __evalresp_log_to_syslog_h__*/

@@ -37,15 +37,6 @@
 #include "./evresp.h"
 #include "./regexp.h"
 
-/* ev_parse_line: parses the fields on a line into separate strings.  The definition of a field
-   There is any non-white space characters with bordering white space.  The result
-   is a structure containing the number of fields on the line and an array of
-   character strings (which are easier to deal with than the original line).  A second
-   argument (end_user_info) contains a string that is used to determine where to
-   start parsing the line.  The character position immediately following the
-   first occurrence of this string is used as the start of the line.  A null string
-   can be used to indicate that the start of the line should be used. */
-
 struct string_array *ev_parse_line(char *line) {
     char *lcl_line, field[MAXFLDLEN];
     int nfields, fld_len, i = 0;
@@ -77,15 +68,6 @@ struct string_array *ev_parse_line(char *line) {
     }
     return (lcl_strings);
 }
-
-/* parse_delim_line: parses the fields on a line into separate strings.  The definition of a field
- There is any non-white space characters with bordering white space.  The result
- is a structure containing the number of fields on the line and an array of
- character strings (which are easier to deal with than the original line).  A second
- argument (end_user_info) contains a string that is used to determine where to
- start parsing the line.  The character position immediately following the
- first occurrence of this string is used as the start of the line.  A null string
- can be used to indicate that the start of the line should be used. */
 
 struct string_array *parse_delim_line(char *line, char *delim) {
     char *lcl_line, field[MAXFLDLEN];
@@ -120,13 +102,6 @@ struct string_array *parse_delim_line(char *line, char *delim) {
     return (lcl_strings);
 }
 
-/* get_field:  returns the indicated field from the next 'non-comment' line from a RESP file
- (return value is the length of the resulting field if successful, exits with
- error if no non-comment lines left in file or if expected blockette and field
- numbers do not match those found in the next non-comment line.
- Note:  here a field is any string of non-white characters surrounded by
- white space */
-
 int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
         char *sep, int fld_wanted) {
     char line[MAXLINELEN];
@@ -143,13 +118,6 @@ int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
 
     return (strlen(return_field));
 }
-
-/* test_field:  returns the indicated field from the next 'non-comment' line from a RESP file
- (return value is the length of the resulting field if successful, returns with
- a value of zero if no non-comment lines left in file or if expected blockette
- and field numbers do not match those found in the next non-comment line.
- Note:  here a field is any string of non-white characters surrounded by
- white space */
 
 int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
         char *sep, int fld_wanted) {
@@ -168,13 +136,6 @@ int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
     return (strlen(return_field));
 
 }
-
-/* get_line:  returns the next 'non-comment' line from a RESP file (return value is the
- length of the resulting line if successful, exits with error if no
- non-comment lines left in file or if expected blockette and field numbers
- do not match those found in the next non-comment line. */
-/* SBH - 2004.079 added code to skip over valid lines that we didn't expect. 
- Support for SHAPE formatte RESP files, and to skip blank lines */
 
 int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) {
     char *lcl_ptr, line[MAXLINELEN];
@@ -270,13 +231,6 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
     return (strlen(return_line));
 }
 
-/* next_line:  returns the next 'non-comment' line from a RESP file (return value is the
- fld_no of the resulting line if successful, returns a value of 0 if no
- non-comment lines left in file), regardless of the blockette and field
- numbers for the line (these values are returned as the values of the input
- pointer variables fld_no and blkt_no). */
-/* SBH - 2004.079 added code to skip blank lines */
-
 int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no,
         char *sep) {
     char *lcl_ptr, line[MAXLINELEN];
@@ -332,9 +286,6 @@ int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no,
     return (*fld_no);
 }
 
-/* count_fields:  counts the number of white space delimited fields on
- a given input line */
-
 int count_fields(char *line) {
     char *lcl_ptr, *new_ptr;
     char lcl_field[50];
@@ -349,10 +300,6 @@ int count_fields(char *line) {
     }
     return (nfields);
 }
-
-/* count_delim_fields:  counts the number of fields delimited by the char "delim" on
- a given input line (note: in this routine an empty string has one
- field in it...with null length) */
 
 int count_delim_fields(char *line, char *delim) {
     const char *lcl_ptr, *tmp_ptr;
@@ -373,10 +320,6 @@ int count_delim_fields(char *line, char *delim) {
 
     return (nfields);
 }
-
-/* parse_field:  returns a field from the input line (return value is the
- length of the resulting field if successful, exits with error if no
- field exists with that number */
 
 int parse_field(char *line, int fld_no, char *return_field) {
     char *lcl_ptr, *new_ptr;
@@ -407,10 +350,6 @@ int parse_field(char *line, int fld_no, char *return_field) {
     sscanf(lcl_ptr, "%s", return_field);
     return (strlen(return_field));
 }
-
-/* parse_delim_field:  returns a field from the input line (return value is the
- length of the resulting field if successful, exits with error if no
- field exists with that number */
 
 int parse_delim_field(char *line, int fld_no, char *delim, char *return_field) {
 
@@ -446,10 +385,6 @@ int parse_delim_field(char *line, int fld_no, char *delim, char *return_field) {
     return (strlen(return_field));
 }
 
-/* check_line:  returns the blockette and field numbers in the prefix of the next 'non-comment'
- line from a RESP file (return value 1 if a non-comment field is found
- or NULL if no non-comment line is found */
-/* SBH - 2004.079 added code to skip blank lines */
 int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line) {
     char line[MAXLINELEN];
     int test;
@@ -498,10 +433,6 @@ int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line) {
     return (1);
 }
 
-/* get_int:  uses get_fld to return the integer value of the input string.
- If the requested field is not a proper representation of a number, then
- 'IMPROPER DATA TYPE' error is signaled */
-
 int get_int(char *in_line) {
     int value;
 
@@ -512,10 +443,6 @@ int get_int(char *in_line) {
     return (value);
 }
 
-/* get_double:  uses get_fld to return the double-precision value of the input string.
- If the requested field is not a proper representation of a number, then
- 'IMPROPER DATA TYPE' error is signaled */
-
 double get_double(char *in_line) {
     double lcl_val;
 
@@ -525,12 +452,6 @@ double get_double(char *in_line) {
     lcl_val = atof(in_line);
     return (lcl_val);
 }
-
-/* check_units:  checks an incoming line for keys that indicate the units represented by a
- filter.  If the units are not recognized, an 'UNDEFINED UNITS' error
- condition is signaled.  If the user specified that 'default' unit should
- be used, then the line is simply saved as the value of 'SEEDUNITS[DEFAULT]'
- and no check of the units is made */
 
 int check_units(char *line) {
     int i, first_flag = 0;
@@ -604,19 +525,6 @@ int check_units(char *line) {
     return (0); /*We should not reach to here */
 }
 
-/* string_match:  compares an input string (string) with a regular espression
- or glob-style "pattern" (expr) using the 're_comp()' and
- 're_exec()' functions (from stdlib.h).
- -First, if the type-flag is set to the string "-g", the
- glob-style 'expr' is changed so that any '*' characters
- are converted to '.*' combinations and and '?' characters
- are converted to '.' characters.
- -If the type-flag is set to "-r" then no conversions are
- necessary (the string is merely copied to the new location).
- -Finally, the 'regexp_pattern' argument is passed through the
- 're_comp()' routine (compiling the pattern), and the value of
- 're_exec(string)' is returned to the calling function */
-
 int string_match(const char *string, char *expr, char *type_flag) {
     char lcl_string[MAXLINELEN], regexp_pattern[MAXLINELEN];
     int i = 0, glob_type, test;
@@ -661,9 +569,6 @@ int string_match(const char *string, char *expr, char *type_flag) {
     return (test);
 }
 
-/* is_int:  a function that tests whether a string can be converted into
- an integer using string_match() */
-
 int is_int(const char *test) {
     char ipattern[MAXLINELEN];
 
@@ -674,9 +579,6 @@ int is_int(const char *test) {
     return (string_match(test, ipattern, "-r"));
 }
 
-/* is_real:  a function that tests whether a string can be converted into
- an double using string_match() */
-
 int is_real(const char *test) {
     char fpattern[MAXLINELEN];
     strncpy(fpattern, "^[-+]?[0-9]+\\.?[0-9]*[Ee][-+]?[0-9]+$", MAXLINELEN);
@@ -685,9 +587,6 @@ int is_real(const char *test) {
     strcat(fpattern, "|^[-+]?[0-9]*\\.[0-9]+$");
     return (string_match(test, fpattern, "-r"));
 }
-
-/* is_time:  a function that tests whether a string looks like a time string
- using string_match() */
 
 int is_time(const char *test) {
     char fpattern[MAXLINELEN];
@@ -705,15 +604,6 @@ int is_time(const char *test) {
     strcat(fpattern, "|^[0-9][0-9]?:[0-9][0-9]:[0-9][0-9]\\.[0-9]*$");
     return (string_match(test, fpattern, "-r"));
 }
-
-/* add_null:  add a null character to the end of a string
- where is a pointer to a character that specifies where
- the null character should be placed, the possible values
-
- are:
- 'a'-> removes all of spaces, then adds null character
- 'e'-> adds null character to end of character string
- */
 
 int add_null(char *s, int len, char where) {
     int len_save;
