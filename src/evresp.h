@@ -1120,9 +1120,12 @@ struct matched_files *find_files(char *file, struct scn_list *scn_lst,
 /**
  * @private
  * @ingroup evalresp_private_file
- * @brief FIXME.
+ * @brief Get filenames matching the expression in @p in_file.
+ * @param[in] in_file File name matching expression.
+ * @param[out] file Pointer to the head of the linked list of matches files.
+ * @returns Number of files found matching the expression.
  */
-int get_names(char *, struct matched_files *);
+int get_names(char *in_file, struct matched_files *file);
 
 /* routines used to allocate vectors of the basic data types used in the
  filter stages */
