@@ -489,7 +489,7 @@ struct pole_zeroType {
     double a0;  /**< FIXME. */
     double a0_freq;  /**< FIXME. */
     struct evr_complex *zeros;  /**< Array of zeros (complex). */
-    struct evr_complex *poles;  /**< Array of poles (comples). */
+    struct evr_complex *poles;  /**< Array of poles (complex). */
 };
 
 /**
