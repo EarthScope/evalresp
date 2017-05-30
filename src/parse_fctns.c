@@ -1314,12 +1314,6 @@ int parse_channel(FILE *fptr, struct channel* chan) {
     return (FirstField);
 }
 
-/* get_channel:  retrieves the info from the  RESP file blockettes for a channel. Errors cause the
- program to  terminate.  The blockette and field numbers are checked as the file
- is parsed. Only the station/channel/date info is returned. The file pointer is
- left at the end of the date info, where it can be used to read the response
- information into the filter structures. */
-
 int get_channel(FILE *fptr, struct channel* chan) {
     int blkt_no, fld_no;
     char field[MAXFLDLEN], line[MAXLINELEN];

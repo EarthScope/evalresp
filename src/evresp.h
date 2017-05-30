@@ -745,7 +745,7 @@ struct string_array *parse_delim_line(char *line, char *delim);
  * @details Exits with error if no non-comment lines left in file or if
  *          expected blockette and field numbers do not match those found in
  *          the next non-comment line.
- * @param[in] fptr FILE pointer.
+ * @param[in,out] fptr FILE pointer.
  * @param[out] return_field Return field.
  * @param[in] blkt_no Blockette number.
  * @param[in] fld_no Field number.
@@ -766,7 +766,7 @@ int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
  * @details Returns with a value of zero if no non-comment lines left in file
  *          or if expected blockette and field numbers do not match those
  *          found in the next non-comment line.
- * @param[in] fptr FILE pointer.
+ * @param[in,out] fptr FILE pointer.
  * @param[out] return_field Return field.
  * @param[out] blkt_no Blockette number.
  * @param[out] fld_no Field number.
@@ -787,7 +787,7 @@ int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
  * @details Exits with error if no non-comment lines left in file or if
  *          expected blockette and field numbers do not match those found in
  *          the next non-comment line.
- * @param[in] fptr FILE pointer.
+ * @param[in,out] fptr FILE pointer.
  * @param[out] return_line Return line.
  * @param[in] blkt_no Blockette number.
  * @param[in] fld_no Field number.
@@ -806,7 +806,7 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep);
  * @private
  * @ingroup evalresp_private_string
  * @brief Returns the next 'non-comment' line from a RESP file.
- * @param[in] fptr FILE pointer.
+ * @param[in,out] fptr FILE pointer.
  * @param[out] return_line Return line.
  * @param[out] blkt_no Blockette number.
  * @param[out] fld_no Field number.
@@ -873,7 +873,7 @@ int parse_delim_field(char *line, int fld_no, char *delim, char *return_field);
  * @ingroup evalresp_private_string
  * @brief Returns the blockette and field numbers in the prefix of the next
  *        'non-comment' line from a RESP file.
- * @param[in] fptr FILE pointer.
+ * @param[in,out] fptr FILE pointer.
  * @param[out] blkt_no Blockette number.
  * @param[out] fld_no Field number.
  * @param[out] in_line Line string.
@@ -979,7 +979,7 @@ int is_real(const char *test);
  *          response file; finds the proper line and decides if the response is
  *          IIR or FIR. The text file is then fseek() to the original position
  *          and the function returns.
- * @param[in] fp FILE pointer.
+ * @param[in,out] fp FILE pointer.
  * @param[in] position Position.
  * @returns 1 if it is IIR.
  * @returns 0 if it is not IIR.
@@ -1003,7 +1003,7 @@ int is_IIR_coeffs(FILE *fp, int position);
  *          @p this_channel. The pointer to the file (@p fptr) is left in
  *          position for the parse_channel() routine to grab the response
  *          information for that station.
- * @param[in] fptr FILE pointer.
+ * @param[in,out] fptr FILE pointer.
  * @param[in] scn_lst List of network-station-locid-channel objects.
  * @param[in] datime Date-time string.
  * @param[out] this_channel Channel structure.
@@ -1028,7 +1028,7 @@ int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
  *          structure @p this_channel. The pointer to the file (@p fptr) is
  *          left in position for the parse_channel() routine to grab the
  *          response information for that station. 
- * @param[in] fptr FILE pointer.
+ * @param[in,out] fptr FILE pointer.
  * @param[in] scn Network-station-locid-channel object.
  * @param[in] datime Date-time string.
  * @param[out] this_channel Channel structure.
@@ -1044,9 +1044,18 @@ int get_resp(FILE *fptr, struct scn *scn, char *datime,
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Retrieves the info from the RESP file blockettes for a channel.
+ * @details Errors cause the program to terminate. The blockette and field
+ *          numbers are checked as the file is parsed. Only the
+ *          station/channel/date info is returned. The file pointer is left at
+ *          the end of the date info, where it can be used to read the
+ *          response information into the filter structures.
+ * @param[in,out] fptr File pointer.
+ * @param[out] chan Channel structure.
+ * @returns 1 on success.
+ * @returns 0 on failure.
  */
-int get_channel(FILE *, struct channel *);
+int get_channel(FILE *fptr, struct channel* chan);
 
 /**
  * @private
