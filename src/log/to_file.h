@@ -12,8 +12,8 @@
  */
 
 /**
- * @defgroup evalresp_log_file evalresp Private File Logging Interface
- * @ingroup evalresp_log
+ * @defgroup evalresp_private_log_file evalresp Private File Logging Interface
+ * @ingroup evalresp_private_log
  * @brief Private file logging interface for evalresp.
  * @author 2017: Dylan Thies, ISTI.
  */
@@ -31,7 +31,7 @@
 
 /**
  * @private
- * @ingroup evalresp_log_file
+ * @ingroup evalresp_private_log_file
  * @brief a logging function for use with evalresp log that will log to an open FILE *
  *
  * this function has the type that staisfies evalresp_log_func_t
@@ -45,7 +45,7 @@ int evalresp_log_to_file(evalresp_log_msg_t *, void *);
 
 /**
  * @private
- * @ingroup evalresp_log_file
+ * @ingroup evalresp_private_log_file
  * @brief helper function to initialize evalresp_log_t struct for use with evalresp_log_to_file
  *
  * @param[out] log allocated log evalresp_log_t pointer that will tell evalresp_log to log to file

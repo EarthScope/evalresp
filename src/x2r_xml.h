@@ -12,8 +12,8 @@
  */
 
 /**
- * @defgroup evalresp_x2r_xml evalresp Private X2R In-Memory Model Interface
- * @ingroup evalresp_x2r
+ * @defgroup evalresp_private_x2r_xml evalresp Private X2R In-Memory Model Interface
+ * @ingroup evalresp_private_x2r
  * @brief Private X2R in-memory model interface for evalresp.
  */
 
@@ -44,7 +44,7 @@
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -55,7 +55,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -66,7 +66,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -77,7 +77,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -87,7 +87,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -97,7 +97,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -107,7 +107,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -124,7 +124,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -139,7 +139,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -151,7 +151,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -165,7 +165,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -183,7 +183,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -196,7 +196,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -206,7 +206,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef enum {
@@ -220,7 +220,7 @@ typedef enum {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -239,7 +239,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -251,7 +251,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -264,7 +264,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -275,7 +275,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -286,7 +286,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief FIXME.
  */
 typedef struct {
@@ -297,7 +297,7 @@ typedef struct {
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief Parse an ISO yyyy-mm-ddThh:mm:ss format datetime.
  * @remarks Separated out for testing (see check_parse_datetime and also
  *          implicit tests against the IRIS-WS code elsewhere). Originally
@@ -307,7 +307,7 @@ int x2r_parse_iso_datetime(x2r_log *log, const char *datetime, time_t *epoch);
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief The equivalent of StationService.load() in IRIS-WS, constructing an
  *        in-memory representation of the station.xml file read from the given
  *        stream.
@@ -316,7 +316,7 @@ int x2r_station_service_load(x2r_log *log, FILE *in, x2r_fdsn_station_xml **root
 
 /**
  * @private
- * @ingroup evalresp_x2r_xml
+ * @ingroup evalresp_private_x2r_xml
  * @brief Free an x2r_fdsn_station_xml value.
  */
 int x2r_free_fdsn_station_xml(x2r_fdsn_station_xml *root, int status);

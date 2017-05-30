@@ -12,8 +12,8 @@
  */
 
 /**
- * @defgroup evalresp_log_syslog evalresp Private Syslog Logging Interface
- * @ingroup evalresp_log
+ * @defgroup evalresp_private_log_syslog evalresp Private Syslog Logging Interface
+ * @ingroup evalresp_private_log
  * @brief Private syslog logging interface for evalresp.
  * @author 2017: Dylan Thies, ISTI.
  */
@@ -32,7 +32,7 @@
 
 /**
  * @private
- * @ingroup evalresp_log_syslog
+ * @ingroup evalresp_private_log_syslog
  * @brief a logging function for use with evalresp log that will log to syslog
  *
  * this works in unix like environments only
@@ -48,7 +48,7 @@ int evalresp_log_to_syslog(evalresp_log_msg_t *, void *);
 
 /**
  * @private
- * @ingroup evalresp_log_syslog
+ * @ingroup evalresp_private_log_syslog
  * @brief Datastructure containing configuration options for syslog
  */
 typedef struct evalresp_syslog_data
@@ -60,7 +60,7 @@ typedef struct evalresp_syslog_data
 
 /**
  * @private
- * @ingroup evalresp_log_syslog
+ * @ingroup evalresp_private_log_syslog
  * @brief function to free evalresp_syslog_data_t object
  *
  * @param[in] log_opt object to be free'd
@@ -69,7 +69,7 @@ void evalresp_log_syslog_data_free(evalresp_syslog_data_t *);
 
 /**
  * @private
- * @ingroup evalresp_log_syslog
+ * @ingroup evalresp_private_log_syslog
  * @brief Function to allocate and initialize evalresp_syslog_data_t objects.
  *
  * @param[in] ident the ident string if NULL syslog will use program name
@@ -82,7 +82,7 @@ evalresp_syslog_data_t * evalresp_log_syslog_data_alloc(char *, int, int);
 
 /**
  * @private
- * @ingroup evalresp_log_syslog
+ * @ingroup evalresp_private_log_syslog
  * @brief A helper function to initialize evalresp_log_t struct for use with evalresp_log_to_syslog.
  *
  * @param[out] log allocated log evalresp_log_t pointer that will tell evalresp_log to log to syslog

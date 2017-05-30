@@ -12,7 +12,7 @@
  */
 
 /**
- * @defgroup evalresp_regexp evalresp Private Regular Expressions Interface
+ * @defgroup evalresp_private_regexp evalresp Private Regular Expressions Interface
  * @ingroup evalresp_private
  * @brief Private regular expressions interface for evalresp.
  */
@@ -37,14 +37,14 @@
 
 /**
  * @private
- * @ingroup evalresp_regexp
+ * @ingroup evalresp_private_regexp
  * @brief Maximum number of subexpressions.
  */
 #define NSUBEXP  10
 
 /**
  * @private
- * @ingroup evalresp_regexp
+ * @ingroup evalresp_private_regexp
  * @brief Regular expression data type.
  */
 typedef struct regexp {
@@ -59,7 +59,7 @@ typedef struct regexp {
 
 /**
  * @private
- * @ingroup evalresp_regexp
+ * @ingroup evalresp_private_regexp
  * @brief Compile a regular expression into internal code.
  * @param[in] exp Regular expression string.
  * @returns Compiled regular expression object.
@@ -79,7 +79,7 @@ regexp *evr_regcomp(char *exp);
 
 /**
  * @private
- * @ingroup evalresp_regexp
+ * @ingroup evalresp_private_regexp
  * @brief Match a regexp against a string.
  * @param[in] prog Compiled regular expression object.
  * @param[in] string String to match against.
@@ -90,7 +90,7 @@ int evr_regexec(regexp *prog, char *string);
 
 /**
  * @private
- * @ingroup evalresp_regexp
+ * @ingroup evalresp_private_regexp
  * @brief Perform substitutions after a regexp match.
  * @param[in] prog Compiled regular expression object.
  * @param[in] source Source string.
@@ -100,7 +100,7 @@ void evr_regsub(regexp *prog, char *source, char *dest);
 
 /**
  * @private
- * @ingroup evalresp_regexp
+ * @ingroup evalresp_private_regexp
  * @brief Report regular expression error.
  * @param[in] Error message string.
  */

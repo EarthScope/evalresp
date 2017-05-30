@@ -12,7 +12,7 @@
  */
 
 /**
- * @defgroup evalresp_log evalresp Private Logging Interface
+ * @defgroup evalresp_private_log evalresp Private Logging Interface
  * @ingroup evalresp_private
  * @brief Private logging interface for evalresp.
  * @author 2017: Dylan Thies, ISTI.
@@ -37,7 +37,7 @@
 
 /**
  * @private
- * @ingroup evalresp_log
+ * @ingroup evalresp_private_log
  * @brief Object created by evalresp library logging functions that will be
  *        passed to logging function if provided.
  */
@@ -51,14 +51,14 @@ typedef struct evalresp_log_msg
 
 /**
  * @private
- * @ingroup evalresp_log
+ * @ingroup evalresp_private_log
  * @brief A convience data type of the logging function.
  */
 typedef int (*evalresp_log_func_t)(evalresp_log_msg_t *, void *);
 
 /**
  * @private
- * @ingroup evalresp_log
+ * @ingroup evalresp_private_log
  * @brief Data type that is for creating a persistent log object.
  *
  * This while be set up by the user of the library. with the information it
@@ -72,7 +72,7 @@ typedef struct evalresp_log
 
 /**
  * @private
- * @ingroup evalresp_log
+ * @ingroup evalresp_private_log
  * @brief an enum of the different logging levels to expect in evalresp
  */
 typedef enum log_level_ref
@@ -85,7 +85,7 @@ typedef enum log_level_ref
 
 /**
  * @private
- * @ingroup evalresp_log
+ * @ingroup evalresp_private_log
  * @brief Array of the log levels in plain text.
  * 
  * Using the values from log_level_ref_t will directly corespond to the
@@ -97,7 +97,7 @@ extern const char *log_level_strs[];
 
 /**
  * @private
- * @ingroup evalresp_log
+ * @ingroup evalresp_private_log
  * @brief A function to send log message to log using the log structure.
  *
  * This function is used in the evalresp library to allow external developers
@@ -194,7 +194,7 @@ extern int evalresp_log (evalresp_log_t*, int, int, char *, ...);
 
 /**
  * @private
- * @ingroup evalresp_log
+ * @ingroup evalresp_private_log
  * @brief send log message to log using explicit log function pointer and data
  *
  * This function is used in the evalresp library to allow external developers
@@ -251,7 +251,7 @@ extern int evalresp_log_basic (evalresp_log_func_t, void *, int, int, char *, ..
 
 /**
  * @private
- * @ingroup evalresp_log
+ * @ingroup evalresp_private_log
  * @brief Send log message to log using base parameters and va_list instead of
  *        printf like varadic function
  *
@@ -274,7 +274,7 @@ extern int evalresp_log_v (evalresp_log_func_t, void *, int, int, char *, va_lis
 /* log/helpers.c */
 /**
  * @private
- * @ingroup evalresp_log
+ * @ingroup evalresp_private_log
  * @brief Allocate a evalresp_log_t object and initialize it to values passed
  *        to this function.
  *
@@ -289,7 +289,7 @@ extern evalresp_log_t *evalresp_log_t_alloc(evalresp_log_func_t, void *);
 
 /**
  * @private
- * @ingroup evalresp_log
+ * @ingroup evalresp_private_log
  * @brief Free a log object.
  *
  * Currently a wrapper for free().
@@ -300,7 +300,7 @@ extern void evalresp_log_t_free(evalresp_log_t *);
 
 /**
  * @private
- * @ingroup evalresp_log
+ * @ingroup evalresp_private_log
  * @brief Initalize an already allocated evalresp_log_t object with the log_func and func_data.
  *
  * @param[in,out] log pointer to log object being initialized

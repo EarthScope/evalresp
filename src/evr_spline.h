@@ -12,7 +12,7 @@
  */
 
 /**
- * @defgroup evalresp_spline evalresp Private Spline Interpolation Interface
+ * @defgroup evalresp_private_spline evalresp Private Spline Interpolation Interface
  * @ingroup evalresp_private
  * @brief Private cubic spline interpolation interface for evalresp.
  */
@@ -25,7 +25,7 @@
 
 /**
  * @private
- * @ingroup evalresp_spline
+ * @ingroup evalresp_private_spline
  * @brief Cubic spline interpolation.
  * @details Two "source" arrays (abscissa 'X' and ordinate 'Y' values) and an
  *          array of "new" abscissa values are given; an array of
