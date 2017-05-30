@@ -18,6 +18,12 @@
  */
 
 /**
+ * @defgroup evalresp_public evalresp Public Interface
+ * @ingroup evalresp
+ * @brief Public evalresp interface.
+ */
+
+/**
  * @file
  * @brief This file contains declarations and global structures for evalresp.
  */
