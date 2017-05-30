@@ -1060,18 +1060,62 @@ int get_channel(FILE *fptr, struct channel* chan);
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Finds the location of the start of the next response in the file
+ *        and positions the file pointer there.
+ * @details If no more responses are available then a zero value is returned
+ *          (indicating failure to reposition the file pointer), otherwise a
+ *          that first line is returned in the global variable FirstLine. The
+ *          pointer to the file (fptr) is left in position for the
+ *          get_channel() routine to grab the channel information.
+ * @param[in,out] fptr FILE pointer.
+ * @returns 1 on success.
+ * @returns 0 on failure.
  */
-int next_resp(FILE *);
+int next_resp(FILE *fptr);
 
 /* routines used to create a list of files matching the users request */
 
 /**
  * @private
  * @ingroup evalresp_private_file
- * @brief FIXME.
+ * @brief Creates a linked list of files to search based on the @p file name
+ *        and @p scn_lst input arguments, i.e. based on the filename (if it
+ *        is non-NULL) and the list of stations and channels.
+ * @details If the filename exists as a directory, then that directory is
+ *          searched for a list of files that look like
+ *          'RESP.NETCODE.STA.CHA'. The names of any matching files will be
+ *          placed in the linked list of file names to search for matching
+ *          response information.  If no match is found for a requested
+ *          'RESP.NETCODE.STA.CHA' file in that directory, then the search
+ *          for a matching file will stop (see discussion of SEEDRESP case
+ *          below).
+ *
+ *          If the filename is a file in the current directory, then a
+ *          (matched_files *)NULL will be returned.
+ *
+ *          If the filename is NULL the current directory and the directory
+ *          indicated by the environment variable 'SEEDRESP' will be searched
+ *          for files of the form 'RESP.NETCODE.STA.CHA'. Files in the
+ *          current directory will override matching files in the directory
+ *          pointed to by 'SEEDRESP'. The routine will behave exactly as if
+ *          the filenames contained in these two directories had been
+ *          specified.
+ *
+ *          The mode is set to zero if the user named a specific filename and
+ *          to one if the user named a directory containing RESP files (or if
+ *          the SEEDRESP environment variable was used to find RESP files.
+ *
+ *          If a pattern cannot be found, then a value of NULL is set for the
+ *          'names' pointer of the linked list element representing that
+ *          station-channel-network pattern.
+ * @param[in] file File name.
+ * @param[in] scn_list List of network-station-locid-channel objects.
+ * @param[out] mode 1 for directory search or 0 if file was specified.
+ * @returns Pointer to the head of the linked list of matches files.
+ * @returns @c NULL if no files were found that match request.
  */
-struct matched_files *find_files(char *, struct scn_list *, int *);
+struct matched_files *find_files(char *file, struct scn_list *scn_lst,
+                                 int *mode);
 
 /**
  * @private

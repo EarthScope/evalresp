@@ -1593,14 +1593,6 @@ int get_resp(FILE *fptr, struct scn *scn, char *datime,
     return (-1);
 }
 
-/* next_resp:  finds the location of the start of the next response in the file
- and positions the file pointer there. If no more responses are available
- then a zero value is returned (indicating failure to reposition the file
- pointer), otherwise the field number for that line  is returned and
- that first line is returned in the input argument "FirstLine".
- The pointer to the file (fptr) is left in position for the get_channel
- routine to grab the channel information */
-
 int next_resp(FILE *fptr) {
     int blkt_no, fld_no, test;
     char tmp_line[MAXLINELEN];
