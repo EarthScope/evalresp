@@ -305,31 +305,30 @@ enum units {
 /**
  * @private
  * @ingroup evalresp_private
- * @brief Enumeration representing the types of filters encountered.
+ * @brief Enumeration representing the types of filters encountered with corresponding SEED blockettes.
  */
 enum filt_types {
-    UNDEF_FILT,  /**< FIXME. */
-    LAPLACE_PZ,  /**< FIXME. */
-    ANALOG_PZ,  /**< FIXME. */
-    IIR_PZ,  /**< FIXME. */
-    FIR_SYM_1,  /**< FIXME. */
-    FIR_SYM_2,  /**< FIXME. */
-    FIR_ASYM,  /**< FIXME. */
-    LIST,  /**< FIXME. */
-    GENERIC,  /**< FIXME. */
-    DECIMATION,  /**< FIXME. */
-    GAIN,  /**< FIXME. */
-    REFERENCE,  /**< FIXME. */
-    FIR_COEFFS,  /**< FIXME. */
-    IIR_COEFFS,  /**< FIXME. */
-    POLYNOMIAL  /**< FIXME. */
+    UNDEF_FILT,  /**< Undefined filter. */
+    LAPLACE_PZ,  /**< Laplace transform filter: poles and zeros representation B53 . */
+    ANALOG_PZ,  /**< Analog filter: poles and zeros representation B53. */
+    IIR_PZ,  /**< Infinite Impulse Response: polez and zeros representation B53. */
+    FIR_SYM_1,  /**< Finite Impulse Response Filter (symmetrical with odd number of weights) B61. */
+    FIR_SYM_2,  /**< Finie Impulse Response Filter (symmetrical with even number of weights) B61. */
+    FIR_ASYM,  /**< Finite Impulse Response Filter (assymetrical) B54. */
+    LIST,  /**< Filter presented as a list B55 (Frequency/amplitude). */
+    GENERIC,  /**< Filter presented as a generi B56 (via Corener frequencies/slopes. */
+    DECIMATION,  /**< Decimation B57. */
+    GAIN,  /**< Channel Sensitiity/Gain B58. */
+    REFERENCE,  /**< Response Reference B60 to replace B53-58,61 with the dictionary counterparts. */
+    FIR_COEFFS,  /**< FIR response: coefficients representation B61. */
+    IIR_COEFFS,  /**< Infinite Impulse response represented in B54. */
+    POLYNOMIAL  /**< Polynomial filter via B62. */
 };
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Enumeration representing the types of stages that are recognized.
- * @author 05/15/02: IGD: added GENERIC_TYPE.
  */
 enum stage_types {
     UNDEF_STAGE,  /**< FIXME. */
