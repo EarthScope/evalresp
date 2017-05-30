@@ -44,7 +44,7 @@
  * @retval EXIT_FAILURE when fails to write to file
  * @sa evalresp_log
  */
-int evalresp_log_to_syslog(evalresp_log_msg_t *, void *);
+int evalresp_log_to_syslog(evalresp_log_msg_t *msg, void *data);
 
 /**
  * @private
@@ -53,9 +53,9 @@ int evalresp_log_to_syslog(evalresp_log_msg_t *, void *);
  */
 typedef struct evalresp_syslog_data
 {
-    int option;
-    int facility;
-    char *ident;
+    int option;  /**< FIXME. */
+    int facility;  /**< FIXME. */
+    char *ident;  /**< FIXME. */
 } evalresp_syslog_data_t;
 
 /**
@@ -65,7 +65,7 @@ typedef struct evalresp_syslog_data
  *
  * @param[in] log_opt object to be free'd
  */
-void evalresp_log_syslog_data_free(evalresp_syslog_data_t *);
+void evalresp_log_syslog_data_free(evalresp_syslog_data_t *log_opt);
 
 /**
  * @private
@@ -78,7 +78,7 @@ void evalresp_log_syslog_data_free(evalresp_syslog_data_t *);
  * @returns pointer to a evalresp_syslog_data_t object
  * @retval NULL on error
  */
-evalresp_syslog_data_t * evalresp_log_syslog_data_alloc(char *, int, int);
+evalresp_syslog_data_t * evalresp_log_syslog_data_alloc(char *ident, int option, int facility);
 
 /**
  * @private
@@ -86,10 +86,10 @@ evalresp_syslog_data_t * evalresp_log_syslog_data_alloc(char *, int, int);
  * @brief A helper function to initialize evalresp_log_t struct for use with evalresp_log_to_syslog.
  *
  * @param[out] log allocated log evalresp_log_t pointer that will tell evalresp_log to log to syslog
- * @praram[in] data evalresp_syslog_data_t that contains parameters for the log, this can be NULL
+ * @param[in] data evalresp_syslog_data_t that contains parameters for the log, this can be NULL
  * @retval EXIT_SUCCESS when on success
  * @retval EXIT_FAILURE when fails, typically log is NULL
  */
-int evalresp_log_intialize_log_for_syslog(evalresp_log_t *, evalresp_syslog_data_t *);
+int evalresp_log_intialize_log_for_syslog(evalresp_log_t *log, evalresp_syslog_data_t *data);
 
 #endif /* __evalresp_log_to_syslog_h__*/

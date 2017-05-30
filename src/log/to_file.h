@@ -41,7 +41,7 @@
  * @retval EXIT_FAILURE when fails to write to file
  * @sa evalresp_log
  */
-int evalresp_log_to_file(evalresp_log_msg_t *, void *);
+int evalresp_log_to_file(evalresp_log_msg_t *msg, void *data);
 
 /**
  * @private
@@ -49,10 +49,10 @@ int evalresp_log_to_file(evalresp_log_msg_t *, void *);
  * @brief helper function to initialize evalresp_log_t struct for use with evalresp_log_to_file
  *
  * @param[out] log allocated log evalresp_log_t pointer that will tell evalresp_log to log to file
- * @praram[in] fd open file descriptor of the file to log to
+ * @param[in] fd open file descriptor of the file to log to
  * @retval EXIT_SUCCESS when on success
  * @retval EXIT_FAILURE when fails, typically log or fd is NULL
  */
-int evalresp_log_intialize_log_for_file(evalresp_log_t *, FILE *);
+int evalresp_log_intialize_log_for_file(evalresp_log_t *log, FILE *fd);
 
 #endif /* __evalresp_log_to_file_h__*/
