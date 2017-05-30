@@ -717,7 +717,7 @@ extern char myLabel[20];
  *          containing the number of fields on the line and an array of
  *          character strings (which are easier to deal with than the original
  *          line).
- * @param[in] Line string to parse.
+ * @param[in] line String to parse.
  * @returns Array of strings objects.
  */
 struct string_array *ev_parse_line(char *line);
@@ -731,11 +731,11 @@ struct string_array *ev_parse_line(char *line);
  *          containing the number of fields on the line and an array of
  *          character strings (which are easier to deal with than the original
  *          line).
- * @param[in] Line string to parse.
- * @param[in] Delimiter string.
+ * @param[in] line String to parse.
+ * @param[in] delim Delimiter string.
  * @returns Array of strings object.
  */
-struct string_array *parse_delim_line(char *, char *);
+struct string_array *parse_delim_line(char *line, char *delim);
 
 /**
  * @private
@@ -875,8 +875,10 @@ int check_units(char *line);
  *            glob-style 'expr' is changed so that any '*' characters are
  *            converted to '.*' combinations and and '?' characters are
  *            converted to '.' characters.
+ *
  *          - If the type-flag is set to "-r" then no conversions are
  *            necessary (the string is merely copied to the new location).
+ *
  *          - Finally, the 'regexp_pattern' argument is passed through the
  *            re_comp() routine (compiling the pattern), and the value of
  *            re_exec(string) is returned to the calling function.
@@ -1341,8 +1343,10 @@ void parse_polynomial(FILE *, struct blkt *, struct stage *); /* polynomial B42 
  * @brief Add a null character to the end of a string.
  * @details @p where is a character that specifies where the null character
  *          should be placed, the possible values are:
+ *
  *          - @c a - remove extra spaces from end of string, then adds null
  *                   character;
+ *
  *          - @c e - adds null character to end of character string.
  *
  * @param[in,out] s String.
