@@ -1821,7 +1821,7 @@ void check_sym(struct blkt *f, struct channel *chan);
  */
 void calc_resp(struct channel *chan, double *freq, int nfreqs,
         struct evr_complex *output, char *out_units, int start_stage,
-        int stop_stage, int useTotalSensitivityFlag, double x_for_b62);
+        int stop_stage, int useTotalSensitivityFlag, double x_for_b62, evalresp_log_t *log);
 
 /**
  * @private
@@ -1833,7 +1833,7 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs,
  * @param[in] w Frequency.
  */
 void convert_to_units(int inp, char *out_units, struct evr_complex *data,
-                      double w);
+                      double w, evalresp_log_t *log);
 
 /**
  * @private
@@ -1904,7 +1904,7 @@ void zmul(struct evr_complex *val1, struct evr_complex *val2);
  * @param[in] start_stage Start stage.
  * @param[in] stop_stage Stop stage.
  */
-void norm_resp(struct channel *chan, int start_stage, int stop_stage);
+void norm_resp(struct channel *chan, int start_stage, int stop_stage, evalresp_log_t *log);
 
 /**
  * @private
@@ -1930,7 +1930,7 @@ void calc_list(struct blkt *blkt_ptr, int i, struct evr_complex *out);
  *         introduced in version 3.3.4 of evalresp
  */
 void calc_polynomial(struct blkt *blkt_ptr, int i, struct evr_complex *out,
-                     double x_for_b62);
+                     double x_for_b62, evalresp_log_t *log);
 
 /**
  * @private

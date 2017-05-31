@@ -537,12 +537,12 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                         }
 
                         /* normalize the response of the filter sequence */
-                        norm_resp(&this_channel, start_stage, stop_stage);
+                        norm_resp(&this_channel, start_stage, stop_stage, log);
 
                         /* calculate the response at the requested frequencies */
                         calc_resp(&this_channel, freqs, nfreqs, output, units,
                                 start_stage, stop_stage,
-                                useTotalSensitivityFlag, x_for_b62);
+                                useTotalSensitivityFlag, x_for_b62, log);
 
                         /* diagnostic output, if the user requested it */
 
@@ -803,12 +803,12 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
 
                                 /* normalize the response of the filter sequence */
                                 norm_resp(&this_channel, start_stage,
-                                        stop_stage);
+                                        stop_stage, log);
 
                                 /* calculate the response at the requested frequencies */
                                 calc_resp(&this_channel, freqs, nfreqs, output,
                                         units, start_stage, stop_stage,
-                                        useTotalSensitivityFlag, x_for_b62);
+                                        useTotalSensitivityFlag, x_for_b62, log);
 
                                 /* diagnostic output, if the user requested it */
 
