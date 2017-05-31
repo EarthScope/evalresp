@@ -43,39 +43,6 @@
 #define S_ISDIR(m) ((m) & S_IFDIR)
 #endif
 
-/* find_files:
-
-   creates a linked list of files to search based on the filename and
-   scn_lst input arguments, i.e. based on the filename (if it is non-NULL)
-   and the list of stations and channels.
-
-   If the filename exists as a directory, then that directory is searched
-   for a list of files that look like 'RESP.NETCODE.STA.CHA'.  The names of
-   any matching files will be placed in the linked list of file names to
-   search for matching response information.  If no match is found for a
-   requested 'RESP.NETCODE.STA.CHA' file in that directory, then the search
-   for a matching file will stop (see discussion of SEEDRESP case below).
-
-   If the filename is a file in the current directory, then a (matched_files *)NULL
-   will be returned
-
-   if the filename is NULL the current directory and the directory indicated
-   by the environment variable 'SEEDRESP' will be searched for files of
-   the form 'RESP.NETCODE.STA.CHA'.  Files in the current directory will
-   override matching files in the directory pointed to by 'SEEDRESP'.  The
-   routine will behave exactly as if the filenames contained in these two
-   directories had been specified
-
-   the mode is set to zero if the user named a specific filename and
-   to one if the user named a directory containing RESP files (or if the
-   SEEDRESP environment variable was used to find RESP files
-
-   if a pattern cannot be found, then a value of NULL is set for the
-   'names' pointer of the linked list element representing that station-
-   channel-network pattern.
-
-   */
-
 struct matched_files *find_files(char *file, struct scn_list *scn_lst,
         int *mode) {
     char *basedir, testdir[MAXLINELEN];

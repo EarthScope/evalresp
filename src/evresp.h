@@ -236,13 +236,6 @@
  */
 #define DATIMLEN 23
 
-/**
- * @private
- * @ingroup evalresp_private
- * @brief FIXME.
- * @remark Not used anywhere.
- */
-#define UNITSLEN 20
 
 /**
  * @private
@@ -282,26 +275,10 @@
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
- * @remark Not used anywhere.
- */
-#define CORRECTION_APPLIED_FLAG 0
-
-/**
- * @private
- * @ingroup evalresp_private
  * @brief Set flag to use the estimated delay in response computation.
  * @see use_estimated_delay()
  */
 #define ESTIMATED_DELAY_FLAG 1
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief FIXME.
- * @remark Not used anywhere.
- */
-#define CALC_DELAY_FLAG 2
 
 /**
  * @private
@@ -330,42 +307,41 @@ enum units {
 /**
  * @private
  * @ingroup evalresp_private
- * @brief Enumeration representing the types of filters encountered.
+ * @brief Enumeration representing the types of filters encountered with corresponding SEED blockettes.
  */
 enum filt_types {
-    UNDEF_FILT,  /**< FIXME. */
-    LAPLACE_PZ,  /**< FIXME. */
-    ANALOG_PZ,  /**< FIXME. */
-    IIR_PZ,  /**< FIXME. */
-    FIR_SYM_1,  /**< FIXME. */
-    FIR_SYM_2,  /**< FIXME. */
-    FIR_ASYM,  /**< FIXME. */
-    LIST,  /**< FIXME. */
-    GENERIC,  /**< FIXME. */
-    DECIMATION,  /**< FIXME. */
-    GAIN,  /**< FIXME. */
-    REFERENCE,  /**< FIXME. */
-    FIR_COEFFS,  /**< FIXME. */
-    IIR_COEFFS,  /**< FIXME. */
-    POLYNOMIAL  /**< FIXME. */
+    UNDEF_FILT,  /**< Undefined filter. */
+    LAPLACE_PZ,  /**< Laplace transform filter: poles and zeros representation B53 . */
+    ANALOG_PZ,  /**< Analog filter: poles and zeros representation B53. */
+    IIR_PZ,  /**< Infinite Impulse Response: polez and zeros representation B53. */
+    FIR_SYM_1,  /**< Finite Impulse Response Filter (symmetrical with odd number of weights) B61. */
+    FIR_SYM_2,  /**< Finie Impulse Response Filter (symmetrical with even number of weights) B61. */
+    FIR_ASYM,  /**< Finite Impulse Response Filter (assymetrical) B54. */
+    LIST,  /**< Filter presented as a list B55 (Frequency/amplitude). */
+    GENERIC,  /**< Filter presented as a generi B56 (via Corener frequencies/slopes. */
+    DECIMATION,  /**< Decimation B57. */
+    GAIN,  /**< Channel Sensitiity/Gain B58. */
+    REFERENCE,  /**< Response Reference B60 to replace B53-58,61 with the dictionary counterparts. */
+    FIR_COEFFS,  /**< FIR response: coefficients representation B61. */
+    IIR_COEFFS,  /**< Infinite Impulse response represented in B54. */
+    POLYNOMIAL  /**< Polynomial filter via B62. */
 };
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief Enumeration representing the types of stages that are recognized.
- * @author 05/15/02: IGD: added GENERIC_TYPE.
+ * @brief Enumeration representing the types of stages in RESP fi;es that are recognized.
  */
 enum stage_types {
-    UNDEF_STAGE,  /**< FIXME. */
-    PZ_TYPE,  /**< FIXME. */
-    IIR_TYPE,  /**< FIXME. */
-    FIR_TYPE,  /**< FIXME. */
-    GAIN_TYPE,  /**< FIXME. */
-    LIST_TYPE,  /**< FIXME. */
-    IIR_COEFFS_TYPE,  /**< FIXME. */
-    GENERIC_TYPE,  /**< FIXME. */
-    POLYNOMIAL_TYPE  /**< FIXME. */
+    UNDEF_STAGE,  /**< Undefined stage. */
+    PZ_TYPE,  /**< Polez and zeros stage. */
+    IIR_TYPE,  /**< Infinite Impulse response stage. */
+    FIR_TYPE,  /**< Finite Impulse response stage. */
+    GAIN_TYPE,  /**< Channel Sensitivity/Gain stage. */
+    LIST_TYPE,  /**< List response representation stage. */
+    IIR_COEFFS_TYPE,  /**< Infinite Impulse response in coefficient form stage. */
+    GENERIC_TYPE,  /**< Generic response stage. */
+    POLYNOMIAL_TYPE  /**< Polynomial type stage. */
 };
 
 /**
@@ -374,27 +350,28 @@ enum stage_types {
  * @brief Enumeration representing the types of error codes possible.
  */
 enum error_codes {
-    NON_EXIST_FLD = -2,  /**< FIXME. */
-    ILLEGAL_RESP_FORMAT = -5,  /**< FIXME. */
-    PARSE_ERROR = -4,  /**< FIXME. */
-    UNDEF_PREFIX = -3,  /**< FIXME. */
-    UNDEF_SEPSTR = -6,  /**< FIXME. */
-    OUT_OF_MEMORY = -1,  /**< FIXME. */
-    UNRECOG_FILTYPE = -7,  /**< FIXME. */
-    UNEXPECTED_EOF = -8,  /**< FIXME. */
-    ARRAY_BOUNDS_EXCEEDED = -9,  /**< FIXME. */
-    OPEN_FILE_ERROR = 2,  /**< FIXME. */
-    RE_COMP_FAILED = 3,  /**< FIXME. */
-    MERGE_ERROR = 4,  /**< FIXME. */
-    SWAP_FAILED = 5,  /**< FIXME. */
-    USAGE_ERROR = 6,  /**< FIXME. */
-    BAD_OUT_UNITS = 7,  /**< FIXME. */
-    IMPROP_DATA_TYPE = -10,  /**< FIXME. */
-    UNSUPPORT_FILTYPE = -11,  /**< FIXME. */
-    ILLEGAL_FILT_SPEC = -12,  /**< FIXME. */
-    NO_STAGE_MATCHED = -13,  /**< FIXME. */
-    UNRECOG_UNITS = -14  /**< FIXME. */
+    NON_EXIST_FLD = -2,  /**< Field does not exist. */
+    ILLEGAL_RESP_FORMAT = -5,  /**< Illegal response format. */
+    PARSE_ERROR = -4,  /**< Parse error. */
+    UNDEF_PREFIX = -3,  /**< Undefined prefix. */
+    UNDEF_SEPSTR = -6,  /**< Undefined separator. */
+    OUT_OF_MEMORY = -1,  /**< Out of memory */
+    UNRECOG_FILTYPE = -7,  /**< Unrecognized filter type */
+    UNEXPECTED_EOF = -8,  /**< Unexpected EOF. */
+    ARRAY_BOUNDS_EXCEEDED = -9,  /**< Array bound exceeded. */
+    OPEN_FILE_ERROR = 2,  /**< Failure to open the file. */
+    RE_COMP_FAILED = 3,  /**< Failure to compile the pattern. */
+    MERGE_ERROR = 4,  /**< lure to merge blockettes. */
+    SWAP_FAILED = 5,  /**< Swapping failure: not used. */
+    USAGE_ERROR = 6,  /**< User errors detencted on teh command line. */
+    BAD_OUT_UNITS = 7,  /**< Bad output units error. */
+    IMPROP_DATA_TYPE = -10,  /**< Unsupported data type. */
+    UNSUPPORT_FILTYPE = -11,  /**< Unsupported filter type. */
+    ILLEGAL_FILT_SPEC = -12,  /**< Illigal filter specs. */
+    NO_STAGE_MATCHED = -13,  /**< No stage matched error. */
+    UNRECOG_UNITS = -14  /**< Unrecognized units. */
 };
+
 
 /* define structures for the compound data types used in evalesp */
 
@@ -1062,25 +1039,72 @@ int get_channel(FILE *fptr, struct channel* chan);
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Finds the location of the start of the next response in the file
+ *        and positions the file pointer there.
+ * @details If no more responses are available then a zero value is returned
+ *          (indicating failure to reposition the file pointer), otherwise a
+ *          that first line is returned in the global variable FirstLine. The
+ *          pointer to the file (fptr) is left in position for the
+ *          get_channel() routine to grab the channel information.
+ * @param[in,out] fptr FILE pointer.
+ * @returns 1 on success.
+ * @returns 0 on failure.
  */
-int next_resp(FILE *);
+int next_resp(FILE *fptr);
 
 /* routines used to create a list of files matching the users request */
 
 /**
  * @private
  * @ingroup evalresp_private_file
- * @brief FIXME.
+ * @brief Creates a linked list of files to search based on the @p file name
+ *        and @p scn_lst input arguments, i.e. based on the filename (if it
+ *        is non-NULL) and the list of stations and channels.
+ * @details If the filename exists as a directory, then that directory is
+ *          searched for a list of files that look like
+ *          'RESP.NETCODE.STA.CHA'. The names of any matching files will be
+ *          placed in the linked list of file names to search for matching
+ *          response information.  If no match is found for a requested
+ *          'RESP.NETCODE.STA.CHA' file in that directory, then the search
+ *          for a matching file will stop (see discussion of SEEDRESP case
+ *          below).
+ *
+ *          If the filename is a file in the current directory, then a
+ *          (matched_files *)NULL will be returned.
+ *
+ *          If the filename is NULL the current directory and the directory
+ *          indicated by the environment variable 'SEEDRESP' will be searched
+ *          for files of the form 'RESP.NETCODE.STA.CHA'. Files in the
+ *          current directory will override matching files in the directory
+ *          pointed to by 'SEEDRESP'. The routine will behave exactly as if
+ *          the filenames contained in these two directories had been
+ *          specified.
+ *
+ *          The mode is set to zero if the user named a specific filename and
+ *          to one if the user named a directory containing RESP files (or if
+ *          the SEEDRESP environment variable was used to find RESP files.
+ *
+ *          If a pattern cannot be found, then a value of NULL is set for the
+ *          'names' pointer of the linked list element representing that
+ *          station-channel-network pattern.
+ * @param[in] file File name.
+ * @param[in] scn_lst List of network-station-locid-channel objects.
+ * @param[out] mode 1 for directory search or 0 if file was specified.
+ * @returns Pointer to the head of the linked list of matches files.
+ * @returns @c NULL if no files were found that match request.
  */
-struct matched_files *find_files(char *, struct scn_list *, int *);
+struct matched_files *find_files(char *file, struct scn_list *scn_lst,
+                                 int *mode);
 
 /**
  * @private
  * @ingroup evalresp_private_file
- * @brief FIXME.
+ * @brief Get filenames matching the expression in @p in_file.
+ * @param[in] in_file File name matching expression.
+ * @param[out] file Pointer to the head of the linked list of matches files.
+ * @returns Number of files found matching the expression.
  */
-int get_names(char *, struct matched_files *);
+int get_names(char *in_file, struct matched_files *file);
 
 /* routines used to allocate vectors of the basic data types used in the
  filter stages */
