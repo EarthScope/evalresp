@@ -1975,10 +1975,10 @@ int timecmp(struct dateTime *dt1, struct dateTime *dt2);
  * @param[in] chan Channel structure.
  * @param[in] start_stage Start stage.
  * @param[in] stop_stage Stop stage.
- * @param[in[ stdio_flag Flag if standard input was used.
+ * @param[in] stdio_flag Flag if standard input was used.
  * @param[in] listinterp_out_flag Flag if interpolated output was used.
  * @param[in] listinterp_in_flag Flag if interpolated input was used.
- * @param[in] useTotalSensitivyFlag Flag if reported sensitivity was used to
+ * @param[in] useTotalSensitivityFlag Flag if reported sensitivity was used to
  *                                  compute response.
  */
 void print_chan(struct channel *chan, int start_stage, int stop_stage,
@@ -2042,7 +2042,7 @@ void print_resp(double *freqs, int nfreqs, struct response *first, char *rtype,
  * @param[in] rtype Reponse type.
  * @param[in] stdio_flag Flag controlling output.
  * @param[in] listinterp_out_flag Flag if interpolated output was used.
- * @param[in] listinterp_in_flag Flag if interpolated input was used.
+ * @param[in] listinterp_tension Interpolation tension used.
  * @param[in] unwrap_flag Flag if phases are unwrapped.
  * @see print_resp().
  * @note This version of the function includes the 'listinterp...' parameters.
@@ -2056,32 +2056,100 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
  * @ingroup evalresp_private
  * @brief Evaluate responses for user requested station/channel/network tuple
  *        at the frequencies requested by the user.
+ * @param[in] stalst FIXME.
+ * @param[in] chalst FIXME.
+ * @param[in] net_code FIXME.
+ * @param[in] locidlst FIXME.
+ * @param[in] date_time FIXME.
+ * @param[in] units FIXME.
+ * @param[in] file FIXME.
+ * @param[in] freqs FIXME.
+ * @param[in] nfreqs FIXME.
+ * @param[in] rtype FIXME.
+ * @param[in] verbose FIXME.
+ * @param[in] start_stage FIXME.
+ * @param[in] stop_stage FIXME.
+ * @param[in] stdio_flag FIXME.
+ * @param[in] useTotalSensitivityFlag FIXME.
+ * @param[in] x_for_b62 FIXME.
+ * @param[in] xml_flag FIXME.
  * @remark Calls evresp_itp() but with listinterp_tension set to 0.
+ * @returns Responses.
  */
-struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
-        double *, int, char *, char *, int, int, int, int, double, int);
+struct response *evresp(char *stalst, char *chalst, char *net_code,
+                        char *locidlst, char *date_time, char *units,
+                        char *file, double *freqs, int nfreqs, char *rtype,
+                        char *verbose, int start_stage, int stop_stage,
+                        int stdio_flag, int useTotalSensitivityFlag,
+                        double x_for_b62, int xml_flag);
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Evaluate responses for user requested station/channel/network tuple
  *        at the frequencies requested by the user.
+ * @param[in] stalst FIXME.
+ * @param[in] chalst FIXME.
+ * @param[in] net_code FIXME.
+ * @param[in] locidlst FIXME.
+ * @param[in] date_time FIXME.
+ * @param[in] units FIXME.
+ * @param[in] file FIXME.
+ * @param[in] freqs FIXME.
+ * @param[in] nfreqs FIXME.
+ * @param[in] rtype FIXME.
+ * @param[in] verbose FIXME.
+ * @param[in] start_stage FIXME.
+ * @param[in] stop_stage FIXME.
+ * @param[in] stdio_flag FIXME.
+ * @param[in] listinterp_out_flag FIXME.
+ * @param[in] listinterp_in_flag FIXME.
+ * @param[in] listinterp_tension FIXME.
+ * @param[in] useTotalSensitivityFlag FIXME.
+ * @param[in] x_for_b62 FIXME.
+ * @param[in] xml_flag FIXME.
+ * @returns Responses.
  */
-struct response *evresp_itp(char *, char *, char *, char *, char *, char *,
-        char *, double *, int, char *, char *, int, int, int, int, int, double,
-        int, double, int);
+struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
+                            char *locidlst, char *date_time, char *units,
+                            char *file, double *freqs, int nfreqs,
+                            char *rtype, char *verbose, int start_stage,
+                            int stop_stage, int stdio_flag,
+                            int listinterp_out_flag, int listinterp_in_flag,
+                            double listinterp_tension,
+                            int useTotalSensitivityFlag, double x_for_b62,
+                            int xml_flag);
+
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Evaluate responses for user requested station/channel/network tuple
  *        at the frequencies requested by the user.
+ * @param[in] sta FIXME.
+ * @param[in] cha FIXME.
+ * @param[in] net FIXME.
+ * @param[in] locid FIXME.
+ * @param[in] datime FIXME.
+ * @param[in] units FIXME.
+ * @param[in] file FIXME.
+ * @param[in] freqs FIXME.
+ * @param[in] nfreqs FIXME.
+ * @param[in] resp FIXME.
+ * @param[in] rtype FIXME.
+ * @param[in] verbose FIXME.
+ * @param[in] start_stage FIXME.
+ * @param[in] stop_stage FIXME.
+ * @param[in] stdio_flag FIXME.
+ * @param[in] useTotalSensitivityFlag FIXME.
+ * @param[in] x_for_b62 FIXME.
+ * @param[in] xml_flag FIXME.
  * @remark Fortran interface.
  */
 int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
-        char *units, char *file, double *freqs, int nfreqs, double *resp,
-        char *rtype, char *verbose, int start_stage, int stop_stage,
-        int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
-		int xml_flag);
+             char *units, char *file, double *freqs, int nfreqs, double *resp,
+             char *rtype, char *verbose, int start_stage, int stop_stage,
+             int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
+             int xml_flag);
 
 /**
  * @private
