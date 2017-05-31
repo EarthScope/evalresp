@@ -29,49 +29,49 @@
 /**
  * @private
  * @ingroup evalresp_private_x2r
- * @brief FIXME.
+ * @brief Status code OK.
  */
 #define X2R_OK 0
 
 /**
  * @private
  * @ingroup evalresp_private_x2r
- * @brief FIXME.
+ * @brief Status code for user error.
  */
 #define X2R_ERR_USER 1
 
 /**
  * @private
  * @ingroup evalresp_private_x2r
- * @brief FIXME.
+ * @brief Status code for memory error.
  */
 #define X2R_ERR_MEMORY 2
 
 /**
  * @private
  * @ingroup evalresp_private_x2r
- * @brief FIXME.
+ * @brief Status code for insufficient buffer space (internal error).
  */
 #define X2R_ERR_BUFFER 3
 
 /**
  * @private
  * @ingroup evalresp_private_x2r
- * @brief FIXME.
+ * @brief Status code for error in XML.
  */
 #define X2R_ERR_XML 4
 
 /**
  * @private
  * @ingroup evalresp_private_x2r
- * @brief FIXME.
+ * @brief Status code for IO error.
  */
 #define X2R_ERR_IO 5
 
 /**
  * @private
  * @ingroup evalresp_private_x2r
- * @brief FIXME.
+ * @brief Status code for date parsing error.
  */
 #define X2R_ERR_DATE 6
 

@@ -45,253 +45,253 @@
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief A float value with associated errors.
  */
 typedef struct {
-    double value;  /**< FIXME. */
-    double plus_error;  /**< FIXME. */
-    double minus_error;  /**< FIXME. */
+    double value;  /**< The value itself. */
+    double plus_error;  /**< The positive error. */
+    double minus_error;  /**< The negative error. */
 } x2r_float;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief A pole or zero (an indexed complex value with errors).
  */
 typedef struct {
-    int number;  /**< FIXME. */
-    x2r_float real;  /**< FIXME. */
-    x2r_float imaginary;  /**< FIXME. */
+    int number;  /**< The index. */
+    x2r_float real;  /**< The real component, with errors. */
+    x2r_float imaginary;  /**< The imaginary component, with errors. */
 } x2r_pole_zero;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief A FAP value within a frequency response.
  */
 typedef struct {
-    double frequency;  /**< FIXME. */
-    x2r_float amplitude;  /**< FIXME. */
-    x2r_float phase;  /**< FIXME. */
+    double frequency;  /**< The frequency. */
+    x2r_float amplitude;  /**< The amplitude, with errors. */
+    x2r_float phase;  /**< The phase, with errors. */
 } x2r_response_list_element;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief An indexed FIR numerator coefficient.
  */
 typedef struct {
-    int i;  /**< FIXME. */
-    double value;  /**< FIXME. */
+    int i;  /**< The index. */
+    double value;  /**< The coefficient value. */
 } x2r_numerator_coefficient;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief An indexed polynomial coefficient.
  */
 typedef struct {
-    int number;  /**< FIXME. */
-    x2r_float value;  /**< FIXME. */
+    int number;  /**< The index. */
+    x2r_float value;  /**< The coefficient value, with errors. */
 } x2r_coefficient;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief Units data.
  */
 typedef struct {
-    char *name;  /**< FIXME. */
-    char *description;  /**< FIXME. */
+    char *name;  /**< Unit name. */
+    char *description;  /**< Unit description. */
 } x2r_units;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief Poles and zeros defining a response.
  */
 typedef struct {
-    char *pz_transfer_function_type;  /**< FIXME. */
-    x2r_units input_units;  /**< FIXME. */
-    x2r_units output_units;  /**< FIXME. */
-    double normalization_factor;  /**< FIXME. */
-    double normalization_frequency;  /**< FIXME. */
-    x2r_pole_zero *zero;  /**< FIXME. */
-    int n_zeros;  /**< FIXME. */
-    x2r_pole_zero *pole;  /**< FIXME. */
-    int n_poles;  /**< FIXME. */
+    char *pz_transfer_function_type;  /**< The transfer function type. */
+    x2r_units input_units;  /**< Input units. */
+    x2r_units output_units;  /**< Output units. */
+    double normalization_factor;  /**< Normalization factor. */
+    double normalization_frequency;  /**< Normalization frequency. */
+    x2r_pole_zero *zero;  /**< Array of zeros values. */
+    int n_zeros;  /**< Number of zeros values. */
+    x2r_pole_zero *pole;  /**< Array of poles values. */
+    int n_poles;  /**< Number of poles values. */
 } x2r_poles_zeros;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief Stage coefficients (for an IIR filter, I assume).
  */
 typedef struct {
-    char *cf_transfer_function_type;  /**< FIXME. */
-    x2r_units input_units;  /**< FIXME. */
-    x2r_units output_units;  /**< FIXME. */
-    x2r_float *numerator;  /**< FIXME. */
-    int n_numerators;  /**< FIXME. */
-    x2r_float *denominator;  /**< FIXME. */
-    int n_denominators;  /**< FIXME. */
+	char *cf_transfer_function_type;  /**< The transfer function type. */
+    x2r_units input_units;  /**< Input units. */
+    x2r_units output_units;  /**< Output units. */
+    x2r_float *numerator;  /**< Numerator values. */
+    int n_numerators;  /**< Number of numerator values. */
+    x2r_float *denominator;  /**< Denominator values. */
+    int n_denominators;  /**< Number of denominator values. */
 } x2r_coefficients;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief An FAP response.
  */
 typedef struct {
-    x2r_units input_units;  /**< FIXME. */
-    x2r_units output_units;  /**< FIXME. */
-    x2r_response_list_element *response_list_element;  /**< FIXME. */
-    int n_response_list_elements;  /**< FIXME. */
+    x2r_units input_units;  /**< Input units. */
+    x2r_units output_units;  /**< Output units. */
+    x2r_response_list_element *response_list_element;  /**< FAP triplets. */
+    int n_response_list_elements;  /**< The number of FAP triplets. */
 } x2r_response_list;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief Coefficients for an FIR filter.
  */
 typedef struct {
-    char *symmetry;  /**< FIXME. */
-    char *name;  /**< FIXME. */
-    x2r_units input_units;  /**< FIXME. */
-    x2r_units output_units;  /**< FIXME. */
-    x2r_numerator_coefficient *numerator_coefficient;  /**< FIXME. */
-    int n_numerator_coefficients;  /**< FIXME. */
+    char *symmetry;  /**< The filter symmetry. */
+    char *name;  /**< The filter name. */
+    x2r_units input_units;  /**< Input units. */
+    x2r_units output_units;  /**< Output units. */
+    x2r_numerator_coefficient *numerator_coefficient;  /**< Numerator coefficients. */
+    int n_numerator_coefficients;  /**< The nunber of numerator coefficients. */
 } x2r_fir;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief A polynomial response.
  */
 typedef struct {
-    char *approximation_type;  /**< FIXME. */
-    x2r_units input_units;  /**< FIXME. */
-    x2r_units output_units;  /**< FIXME. */
-    double frequency_lower_bound;  /**< FIXME. */
-    double frequency_upper_bound;  /**< FIXME. */
-    double approximation_lower_bound;  /**< FIXME. */
-    double approximation_upper_bound;  /**< FIXME. */
-    double maximum_error;  /**< FIXME. */
-    x2r_coefficient *coefficient;  /**< FIXME. */
-    int n_coefficients;  /**< FIXME. */
+    char *approximation_type;  /**< The approximation type. */
+    x2r_units input_units;  /**< Input units. */
+    x2r_units output_units;  /**< Output units. */
+    double frequency_lower_bound;  /**< Lower frequency limit. */
+    double frequency_upper_bound;  /**< Higher frequency limit. */
+    double approximation_lower_bound;  /**< Lower approximation limit. */
+    double approximation_upper_bound;  /**< Higher approximation limit. */
+    double maximum_error;  /**< The maximum error. */
+    x2r_coefficient *coefficient;  /**< The polynomial coefficients. */
+    int n_coefficients;  /**< The number of polynomial coeffcicients. */
 } x2r_polynomial;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief A decimation stage.
  */
 typedef struct {
-    double input_sample_rate;  /**< FIXME. */
-    int factor;  /**< FIXME. */
-    int offset;  /**< FIXME. */
-    double delay;  /**< FIXME. */
-    double correction;  /**< FIXME. */
+    double input_sample_rate;  /**< Input sample rate. */
+    int factor;  /**< Decimation factor. */
+    int offset;  /**< Offset. */
+    double delay;  /**< Delay. */
+    double correction;  /**< Correction. */
 } x2r_decimation;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief A gain value at a given frequency.
  */
 typedef struct {
-    double value;  /**< FIXME. */
-    double frequency;  /**< FIXME. */
+    double value;  /**< The gain. */
+    double frequency;  /**< The frequency. */
 } x2r_gain;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief Stage types.
  */
 typedef enum {
-    X2R_STAGE_UNKNOWN = 0,  /**< FIXME. */
-    X2R_STAGE_POLES_ZEROS,  /**< FIXME. */
-    X2R_STAGE_COEFFICIENTS,  /**< FIXME. */
-    X2R_STAGE_RESPONSE_LIST,  /**< FIXME. */
-    X2R_STAGE_FIR,  /**< FIXME. */
-    X2R_STAGE_POLYNOMIAL  /**< FIXME. */
+    X2R_STAGE_UNKNOWN = 0,  /**< Unknown stage type. */
+    X2R_STAGE_POLES_ZEROS,  /**< Poles and zeros stage. */
+    X2R_STAGE_COEFFICIENTS,  /**< IIR stage. */
+    X2R_STAGE_RESPONSE_LIST,  /**< FAP stage. */
+    X2R_STAGE_FIR,  /**< FIR stage. */
+    X2R_STAGE_POLYNOMIAL  /**< Polynomial stage. */
 } x2r_stage_type;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief A single stage.
  */
 typedef struct {
-    int number;  /**< FIXME. */
-    x2r_stage_type type;  /**< FIXME. */
+    int number;  /**< The index. */
+    x2r_stage_type type;  /**< The stage type (selects the correct union entry). */
     union {
-        x2r_poles_zeros *poles_zeros;  /**< FIXME. */
-        x2r_coefficients *coefficients;  /**< FIXME. */
-        x2r_response_list *response_list;  /**< FIXME. */
-        x2r_fir *fir;  /**< FIXME. */
-        x2r_polynomial *polynomial;  /**< FIXME. */
-    } u;  /**< FIXME. */
-    x2r_decimation *decimation;  /**< FIXME. */
-    x2r_gain *stage_gain;  /**< FIXME. */
+        x2r_poles_zeros *poles_zeros;  /**< Poles and zeros data. */
+        x2r_coefficients *coefficients;  /**< IIR data. */
+        x2r_response_list *response_list;  /**< FAP data. */
+        x2r_fir *fir;  /**< FIR data. */
+        x2r_polynomial *polynomial;  /**< Polynomial data. */
+    } u;  /**< The union. */
+    x2r_decimation *decimation;  /**< Associated decimation. */
+    x2r_gain *stage_gain;  /**< Associated gain. */
 } x2r_stage;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief A response consisting of stages and instrument.
  */
 typedef struct {
-    x2r_stage *stage;  /**< FIXME. */
-    int n_stages;  /**< FIXME. */
-    x2r_gain *instrument_sensitivity;  /**< FIXME. */
-    x2r_polynomial *instrument_polynomial;  /**< FIXME. */
+    x2r_stage *stage;  /**< The stages. */
+    int n_stages;  /**< The number of stages. */
+    x2r_gain *instrument_sensitivity;  /**< The instrument sensitivity. */
+    x2r_polynomial *instrument_polynomial;  /**< The instrument polynomial. */
 } x2r_response;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief A channel and response.
  */
 typedef struct {
-    char *code;  /**< FIXME. */
-    char *location_code;  /**< FIXME. */
-    time_t start_date;  /**< FIXME. */
-    time_t end_date;  /**< FIXME. */
-    x2r_response response;  /**< FIXME. */
+    char *code;  /**< Channel code. */
+    char *location_code;  /**< Location code. */
+    time_t start_date;  /**< Start date. */
+    time_t end_date;  /**< End date. */
+    x2r_response response;  /**< The associated response. */
 } x2r_channel;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief A station with channels.
  */
 typedef struct {
-    char *code;  /**< FIXME. */
-    x2r_channel *channel;  /**< FIXME. */
-    int n_channels;  /**< FIXME. */
+    char *code;  /**< Station code. */
+    x2r_channel *channel;  /**< The channels. */
+    int n_channels;  /**< The number of channels. */
 } x2r_station;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief A network with stations.
  */
 typedef struct {
-    char *code;  /**< FIXME. */
-    x2r_station *station;  /**< FIXME. */
-    int n_stations;  /**< FIXME. */
+    char *code;  /**< Network code. */
+    x2r_station *station;  /**< The stations. */
+    int n_stations;  /**< The number of stations. */
 } x2r_network;
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
- * @brief FIXME.
+ * @brief An FDSN station with networks.
  */
 typedef struct {
-    x2r_network *network;  /**< FIXME. */
-    int n_networks;  /**< FIXME. */
+    x2r_network *network;  /**< The networks. */
+    int n_networks;  /**< The number of networks. */
 } x2r_fdsn_station_xml;
 
 
