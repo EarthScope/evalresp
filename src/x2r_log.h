@@ -31,46 +31,46 @@
 /**
  * @private
  * @ingroup evalresp_private_x2r_log
- * @brief FIXME.
+ * @brief Level for a log that prints no messages.
  */
 #define X2R_SILENT 0
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_log
- * @brief FIXME.
+ * @brief Level for a log that prints error messages only
  */
 #define X2R_ERROR 1
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_log
- * @brief FIXME.
+ * @brief Level for a log that prints warning and error messages.
  */
 #define X2R_WARN 2
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_log
- * @brief FIXME.
+ * @brief Level for a log that prints informational, warning and error messages.
  */
 #define X2R_INFO 3
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_log
- * @brief FIXME.
+ * @brief Level for a log that prints all messages, including debug details.
  */
 #define X2R_DEBUG 4
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_log
- * @brief FIXME.
+ * @brief A log destination and associated threshold.
  */
 typedef struct {
-    FILE *log;  /**< FIXME. */
-    int level;  /**< FIXME. */
+    FILE *log;  /**< Output destination. */
+    int level;  /**< Threshold for display. */
 } x2r_log;
 
 /**
