@@ -680,13 +680,19 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                                         == 0) {
                                     if (strcmp(units, "VEL") != 0) {
                                         if (strcmp(units, "DEF") != 0) {
-                                            fprintf(stderr,
-                                                    "%s WARNING: OUTPUT %s does not make sense if INPUT is PRESSURE\n",
+                                            evalresp_log(log, WARN, 0,
+                                                    "%s: OUTPUT %s does not make sense if INPUT is PRESSURE\n",
                                                     myLabel, units);
+                                            /*XXX fprintf(stderr,
+                                                    "%s WARNING: OUTPUT %s does not make sense if INPUT is PRESSURE\n",
+                                                    myLabel, units); */
                                             strcpy(units, "VEL");
-                                            fprintf(stderr,
+                                            evalresp_log(log, WARN, 0,
                                                     "%s      OUTPUT units are reset and interpreted as PRESSURE\n",
                                                     myLabel);
+                                            /*XXX fprintf(stderr,
+                                                    "%s      OUTPUT units are reset and interpreted as PRESSURE\n",
+                                                    myLabel); */
                                         }
                                     }
                                 }
@@ -696,13 +702,19 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                                         == 0) {
                                     if (strcmp(units, "VEL") != 0) {
                                         if (strcmp(units, "DEF") != 0) {
-                                            fprintf(stderr,
-                                                    "%s WARNING: OUTPUT %s does not make sense if INPUT is MAGNETIC FLUX\n",
+                                            evalresp_log(log, WARN, 0,
+                                                    "%s: OUTPUT %s does not make sense if INPUT is MAGNETIC FLUX\n",
                                                     myLabel, units);
+                                            /*XXX fprintf(stderr,
+                                                    "%s WARNING: OUTPUT %s does not make sense if INPUT is MAGNETIC FLUX\n",
+                                                    myLabel, units); */
                                             strcpy(units, "VEL");
-                                            fprintf(stderr,
+                                            evalresp_log(log, WARN, 0,
                                                     "%s      OUTPUT units are reset and interpreted as TESLA\n",
                                                     myLabel);
+                                            /*XXX fprintf(stderr,
+                                                    "%s      OUTPUT units are reset and interpreted as TESLA\n",
+                                                    myLabel); */
                                         }
                                     }
                                 }
@@ -713,13 +725,19 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                                         == 0) {
                                     if (strcmp(units, "VEL") != 0) {
                                         if (strcmp(units, "DEF") != 0) {
-                                            fprintf(stderr,
-                                                    "%s WARNING: OUTPUT %s does not make sense if INPUT is TEMPERATURE\n",
+                                            evalresp_log(log, WARN, 0,
+                                                    "%s: OUTPUT %s does not make sense if INPUT is TEMPERATURE\n",
                                                     myLabel, units);
+                                            /*XXX fprintf(stderr,
+                                                    "%s WARNING: OUTPUT %s does not make sense if INPUT is TEMPERATURE\n",
+                                                    myLabel, units); */
                                             strcpy(units, "VEL");
-                                            fprintf(stderr,
+                                            evalresp_log(log, WARN, 0,
                                                     "%s      OUTPUT units are reset and interpreted as  DEGREES CENTIGRADE\n",
                                                     myLabel);
+                                            /*XXX fprintf(stderr,
+                                                    "%s      OUTPUT units are reset and interpreted as  DEGREES CENTIGRADE\n",
+                                                    myLabel); */
                                         }
                                     }
                                 }
