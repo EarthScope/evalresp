@@ -1335,114 +1335,143 @@ struct stage *alloc_stage(void);
  * @ingroup evalresp_private_alloc
  * @brief A routine that frees up the space associated with a string list type
  *        structure.
- * @param[in] lst String list type structure.
+ * @param[in,out] lst String list type structure.
  */
 void free_string_array(struct string_array *lst);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a station-channel
+ *        type structure.
+ * @param[in,out] ptr Station-channel type structure.
  */
 void free_scn(struct scn *);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a station-channel
+ *        list type structure.
+ * @param[in,out] lst Station-channel list type structure.
  */
-void free_scn_list(struct scn_list *);
+void free_scn_list(struct scn_list *lst);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a matched files
+ *        type structure.
+ * @param[in,out] lst Matched files type structure.
  */
-void free_matched_files(struct matched_files *);
+void free_matched_files(struct matched_files *lst);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a file list type
+ *        structure.
+ * @param[in,out] lst Matched files type structure.
  */
-void free_file_list(struct file_list *);
+void free_file_list(struct file_list *lst);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a pole-zero type
+ *        filter.
+ * @param[in,out] blkt_ptr Pole-zero type filter blockette structure.
  */
-void free_pz(struct blkt *);
+void free_pz(struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a coefficients
+ *        type filter.
+ * @param[in,out] blkt_ptr Coefficients type filter blockette structure.
  */
-void free_coeff(struct blkt *);
+void free_coeff(struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a fir type filter.
+ * @param[in,out] blkt_ptr Fir type filter blockette structure.
  */
-void free_fir(struct blkt *);
+void free_fir(struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a list type
+ *        filter.
+ * @param[in,out] blkt_ptr List type filter blockette structure.
  */
-void free_list(struct blkt *);
+void free_list(struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a generic type
+ *        filter.
+ * @param[in,out] blkt_ptr Generic type filter blockette structure.
  */
-void free_generic(struct blkt *);
+void free_generic(struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a gain type
+ *        filter.
+ * @param[in,out] blkt_ptr Gain type filter blockette structure.
  */
-void free_gain(struct blkt *);
+void free_gain(struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a decimation type
+ *        filter.
+ * @param[in,out] blkt_ptr Decimation type filter blockette structure.
  */
-void free_deci(struct blkt *);
+void free_deci(struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a response
+ *        reference type filter.
+ * @param[in,out] blkt_ptr Response reference type filter blockette structure.
  */
-void free_ref(struct blkt *);
+void free_ref(struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a stages in a
+ *        channel's response.
+ * @param[in,out] stage_ptr Stage structure.
  */
-void free_stages(struct stage *);
+void free_stages(struct stage *stage_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+f * @brief A routine that frees up the space associated with a channel's filter
+ *        sequence.
+ * @param[in,out] chan_ptr Channel structure.
  */
-void free_channel(struct channel *);
+void free_channel(struct channel *chan_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a linked list of
+ *        response information.
+ * @param[in,out] chan_ptr Response structure.
  */
-void free_response(struct response *);
+void free_response(struct response *resp_ptr);
 
 /* simple error handling routines to standardize the output error values and
  allow for control to return to 'evresp' if a recoverable error occurs */
@@ -1450,17 +1479,26 @@ void free_response(struct response *);
 /**
  * @private
  * @ingroup evalresp_private_error
- * @brief Wrapper function which prints a message and exits the program.
+ * @brief Prints a user supplied error message to stderr and exits with the
+ *        user supplied error condition.
+ * @param[in] cond Exit status for exit().
+ * @param[in] msg Message format string.
+ * @param[in] ... Arguments to format string.
  * @warning Do not use in library calls.
  */
-void error_exit(int, char *, ...);
+void error_exit(int cond, char *msg, ...);
 
 /**
  * @private
  * @ingroup evalresp_private_error
- * @brief FIXME.
+ * @brief Prints a user supplied error message to stderr and returns control
+ *        to the calling routine at the point that that routine calls
+ *        'setjmp(jump_buffer)'.
+ * @param[in] cond Return value from setjmp()
+ * @param[in] msg Message format string.
+ * @param[in] ... Arguments to format string.
  */
-void error_return(int, char *, ...);
+void error_return(int cond, char *msg, ...);
 
 /* a simple routine that parses the station information from the input file */
 
@@ -1476,9 +1514,18 @@ int parse_channel(FILE *, struct channel *);
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Used to parse the prefix from a non-comment RESP file line.
+ * @details Returns the blockette number and starting field number for that
+ *          line as arguments, return values are -1 for comment lines (if they
+ *          sneak through), 1 for lines that start with 'B' and zero for lines
+ *          that are not comments and don't start with a 'B'.
+ * @param[out] blkt_no Blockette number.
+ * @param[out] fld_no Starting field number.
+ * @param[in] line Non-comment RESP file line.
+ * @returns 1 on success.
+ * @returns 0 on failure.
  */
-int parse_pref(int *, int *, char *);
+int parse_pref(int *blkt_no, int *fld_no, char *line);
 
 /**
  * @private

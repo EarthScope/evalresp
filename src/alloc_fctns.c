@@ -400,9 +400,6 @@ void free_string_array(struct string_array *lst) {
     free(lst);
 }
 
-/* free_scn: a routine that frees up the space associated with a
- station-channel type structure */
-
 void free_scn(struct scn *ptr) {
 
     free(ptr->station);
@@ -411,9 +408,6 @@ void free_scn(struct scn *ptr) {
     free(ptr->channel);
 
 }
-
-/* free_scn_list: a routine that frees up the space associated with a
- station-channel list type structure */
 
 void free_scn_list(struct scn_list *lst) {
     int i;
@@ -425,9 +419,6 @@ void free_scn_list(struct scn_list *lst) {
     free(lst->scn_vec);
     free(lst);
 }
-
-/* free_matched_files: a routine that frees up the space associated with a
- matched files type structure */
 
 void free_matched_files(struct matched_files *lst) {
     if (lst != (struct matched_files *) NULL) {
@@ -441,9 +432,6 @@ void free_matched_files(struct matched_files *lst) {
     }
 }
 
-/* free_file_list: a routine that frees up the space associated with a
- file list type structure */
-
 void free_file_list(struct file_list *lst) {
 
     if (lst != (struct file_list *) NULL) {
@@ -456,9 +444,6 @@ void free_file_list(struct file_list *lst) {
 
 }
 
-/* free_pz: a routine that frees up the space associated with a pole-zero
- type filter */
-
 void free_pz(struct blkt *blkt_ptr) {
     if (blkt_ptr != (struct blkt *) NULL) {
         if (blkt_ptr->blkt_info.pole_zero.zeros != (struct evr_complex *) NULL)
@@ -468,9 +453,6 @@ void free_pz(struct blkt *blkt_ptr) {
         free(blkt_ptr);
     }
 }
-
-/* free_coeff: a routine that frees up the space associated with a coefficients
- type filter */
 
 void free_coeff(struct blkt *blkt_ptr) {
     if (blkt_ptr != (struct blkt *) NULL) {
@@ -482,9 +464,6 @@ void free_coeff(struct blkt *blkt_ptr) {
     }
 }
 
-/* free_fir: a routine that frees up the space associated with a fir
- type filter */
-
 void free_fir(struct blkt *blkt_ptr) {
     if (blkt_ptr != (struct blkt *) NULL) {
         if (blkt_ptr->blkt_info.fir.coeffs != (double *) NULL)
@@ -492,9 +471,6 @@ void free_fir(struct blkt *blkt_ptr) {
         free(blkt_ptr);
     }
 }
-
-/* free_list: a routine that frees up the space associated with a list
- type filter */
 
 void free_list(struct blkt *blkt_ptr) {
     if (blkt_ptr != (struct blkt *) NULL) {
@@ -508,9 +484,6 @@ void free_list(struct blkt *blkt_ptr) {
     }
 }
 
-/* free_generic: a routine that frees up the space associated with a generic
- type filter */
-
 void free_generic(struct blkt *blkt_ptr) {
     if (blkt_ptr != (struct blkt *) NULL) {
         if (blkt_ptr->blkt_info.generic.corner_slope != (double *) NULL)
@@ -521,17 +494,11 @@ void free_generic(struct blkt *blkt_ptr) {
     }
 }
 
-/* free_gain: a routine that frees up the space associated with a gain
- type filter */
-
 void free_gain(struct blkt *blkt_ptr) {
     if (blkt_ptr != (struct blkt *) NULL) {
         free(blkt_ptr);
     }
 }
-
-/* free_deci: a routine that frees up the space associated with a decimation
- type filter */
 
 void free_deci(struct blkt *blkt_ptr) {
     if (blkt_ptr != (struct blkt *) NULL) {
@@ -539,18 +506,12 @@ void free_deci(struct blkt *blkt_ptr) {
     }
 }
 
-/* free_ref: a routine that frees up the space associated with a response
- reference type filter */
-
 void free_ref(struct blkt *blkt_ptr) {
 
     if (blkt_ptr != (struct blkt *) NULL) {
         free(blkt_ptr);
     }
 }
-
-/* free_stages: a routine that frees up the space associated with a stages in
- a channel's response */
 
 void free_stages(struct stage *stage_ptr) {
     struct blkt *this_blkt, *next_blkt;
@@ -598,9 +559,6 @@ void free_stages(struct stage *stage_ptr) {
     }
 }
 
-/* free_channel: a routine that frees up the space associated with a channel's
- filter sequence */
-
 void free_channel(struct channel *chan_ptr) {
 
     free_stages(chan_ptr->first_stage);
@@ -613,9 +571,6 @@ void free_channel(struct channel *chan_ptr) {
     strncpy(chan_ptr->first_units, "", MAXLINELEN);
     strncpy(chan_ptr->last_units, "", MAXLINELEN);
 }
-
-/* free_response: a routine that frees up the space associated with a linked
- list of response information */
 
 void free_response(struct response *resp_ptr) {
     struct response *this_resp, *next_resp;

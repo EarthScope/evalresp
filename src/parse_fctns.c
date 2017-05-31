@@ -21,11 +21,6 @@
 #include "./evresp.h"
 double atof();
 
-/* parse_pref:  used to parse the prefix from a non-comment RESP file line (returns the blockette
- number and starting field number for that line as arguments, return values are -1
- for comment lines (if they sneak through), 1 for lines that start with 'B' and
- zero for lines that are not comments and don't start with a 'B' */
-
 int parse_pref(int *blkt_no, int *fld_no, char *line) {
     char fldstr[FLDSTRLEN], blktstr[BLKTSTRLEN];
 
