@@ -722,7 +722,7 @@ extern char myLabel[20];
  * @param[in] line String to parse.
  * @returns Array of string objects.
  */
-struct string_array *ev_parse_line(char *line);
+struct string_array *ev_parse_line(char *line, evalresp_log_t *);
 
 /**
  * @private
@@ -737,7 +737,7 @@ struct string_array *ev_parse_line(char *line);
  * @param[in] delim Delimiter string.
  * @returns Array of string objects.
  */
-struct string_array *parse_delim_line(char *line, char *delim);
+struct string_array *parse_delim_line(char *line, char *delim, evalresp_log_t *);
 
 /**
  * @private

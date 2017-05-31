@@ -315,7 +315,11 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
         if (stalst[i] == ',')
             stalst[i] = ' ';
     }
-    sta_list = ev_parse_line(stalst);
+    if (!(sta_list = ev_parse_line(stalst, log)))
+    {
+        /*TODO free things */
+        return NULL;
+    }
 
     /* remove any blank spaces from the beginning and end of the string */
 
@@ -329,14 +333,23 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
     strncpy(locid, locid_ptr, (end_locid_ptr - locid_ptr + 1));
 
     /* parse the "locidlst" string to form a list of locations  */
-    locid_list = parse_delim_line(locid, ",");
+    if (!(locid_list = parse_delim_line(locid, ",", log)))
+    {
+        /*TODO free things */
+        return NULL;
+    }
 
     /* parse the "chalst" string to form a list of channels */
     for (i = 0; i < (int) strlen(chalst); i++) {
         if (chalst[i] == ',')
             chalst[i] = ' ';
     }
-    chan_list = ev_parse_line(chalst);
+
+    if (!(chan_list = ev_parse_line(chalst, log)))
+    {
+        /*TODO free things */
+        return NULL;
+    }
 
     /* then form a set of network-station-locid-channel tuples to search for */
     scns = alloc_scn_list(

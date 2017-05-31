@@ -1,7 +1,7 @@
 /* string_fctns.c */
 
 /*
-   02/12/2005 -- [IGD] Moved parse_line() to ev_parse_line() to avoid name 
+   02/12/2005 -- [IGD] Moved parse_line() to ev_parse_line() to avoid name
                        conflict    with external libraries
    10/21/2005 -- [ET]  Modified so as not to require characters after
                        'units' specifiers like "M" and "COUNTS";
@@ -45,7 +45,7 @@ struct string_array *ev_parse_line(char *line, evalresp_log_t *log) {
     lcl_line = line;
     nfields = count_fields(lcl_line);
     if (nfields > 0) {
-        if (!(lcl_strings = alloc_string_array(nfields)))
+        if (!(lcl_strings = alloc_string_array(nfields, log)))
         {
             return NULL;
         }
@@ -54,7 +54,7 @@ struct string_array *ev_parse_line(char *line, evalresp_log_t *log) {
             fld_len = strlen(field) + 1;
             if ((lcl_strings->strings[i] = (char *) malloc(
                     fld_len * sizeof(char))) == (char *) NULL) {
-                evalresp_log(log, ERROR, 0, 
+                evalresp_log(log, ERROR, 0,
                         "ev_parse_line; malloc() failed for (char) vector");
                 for(i--; i>0; i--)
                 {
@@ -71,7 +71,7 @@ struct string_array *ev_parse_line(char *line, evalresp_log_t *log) {
             strncpy(lcl_strings->strings[i], field, fld_len - 1);
         }
     } else { /* if no fields then alloc string array with empty entry */
-        if (!(lcl_strings = alloc_string_array(1)))
+        if (!(lcl_strings = alloc_string_array(1, log)))
         {
             return NULL;
         }
@@ -90,7 +90,7 @@ struct string_array *ev_parse_line(char *line, evalresp_log_t *log) {
     return (lcl_strings);
 }
 
-struct string_array *parse_delim_line(char *line, char *delim) {
+struct string_array *parse_delim_line(char *line, char *delim, evalresp_log_t *log) {
     char *lcl_line, field[MAXFLDLEN];
     int nfields, fld_len, i = 0;
     struct string_array* lcl_strings;
@@ -98,25 +98,46 @@ struct string_array *parse_delim_line(char *line, char *delim) {
     lcl_line = line;
     nfields = count_delim_fields(lcl_line, delim);
     if (nfields > 0) {
-        lcl_strings = alloc_string_array(nfields);
+        if (!(lcl_strings = alloc_string_array(nfields, log)))
+        {
+            return NULL;
+        }
         for (i = 0; i < nfields; i++) {
             memset(field, 0, MAXFLDLEN);
             parse_delim_field(line, i, delim, field);
             fld_len = strlen(field) + 1;
             if ((lcl_strings->strings[i] = (char *) malloc(
                     fld_len * sizeof(char))) == (char *) NULL) {
-                error_exit(OUT_OF_MEMORY,
+                evalresp_log(log, ERROR, 0,
                         "parse_delim_line; malloc() failed for (char) vector");
+                for(i--; i>0; i--)
+                {
+                    free(lcl_strings->strings[i]);
+                    lcl_strings->strings[i] = NULL;
+                }
+                free(lcl_strings->strings);
+                free(lcl_strings);
+                return NULL;
+                /*XXX error_exit(OUT_OF_MEMORY,
+                        "parse_delim_line; malloc() failed for (char) vector"); */
             }
             strncpy(lcl_strings->strings[i], "", fld_len);
             strncpy(lcl_strings->strings[i], field, fld_len - 1);
         }
     } else { /* if no fields then alloc string array with empty entry */
-        lcl_strings = alloc_string_array(1);
+        if (!(lcl_strings = alloc_string_array(1, log)))
+        {
+            return NULL;
+        }
         if ((lcl_strings->strings[0] = (char *) malloc(sizeof(char)))
                 == (char *) NULL) {
-            error_exit(OUT_OF_MEMORY,
+            evalresp_log(log, ERROR, 0,
                     "parse_delim_line; malloc() failed for (char) vector");
+            free(lcl_strings->strings);
+            free(lcl_strings);
+            return NULL;
+            /*XXX error_exit(OUT_OF_MEMORY,
+                    "parse_delim_line; malloc() failed for (char) vector"); */
         }
         strncpy(lcl_strings->strings[0], "", 1);
     }
@@ -374,7 +395,7 @@ int parse_field(char *line, int fld_no, char *return_field) {
 
 int parse_delim_field(char *line, int fld_no, char *delim, char *return_field) {
 
-	// TODO - tmp_prt assignment below made blindly to fix compiler warning.  bug?
+    // TODO - tmp_prt assignment below made blindly to fix compiler warning.  bug?
     char *lcl_ptr, *tmp_ptr = NULL;
     int nfields, i;
 
