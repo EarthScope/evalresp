@@ -5,11 +5,11 @@ EXTRA_DIST = data
 
 if USE_CHECK
 TESTS = check_read_xml check_convert check_parse_datetime check_response \
-	check_count check_auto check_match
+	check_count check_auto check_match check_log
 #TESTS = check_match
 
 check_PROGRAMS = check_read_xml check_convert check_parse_datetime check_response \
-	check_count check_auto check_match
+	check_count check_auto check_match check_log
 
 check_read_xml_SOURCES = check_read_xml.c 
 check_read_xml_CFLAGS = @CHECK_CFLAGS@ -I../../src/
@@ -38,6 +38,10 @@ check_auto_LDADD = ../../src/libx2r.la ../../src/libevresp.la @CHECK_LIBS@ -lmxm
 check_match_SOURCES = check_match.c 
 check_match_CFLAGS = @CHECK_CFLAGS@ -I../../src/
 check_match_LDADD = ../../src/libx2r.la ../../src/libevresp.la @CHECK_LIBS@ -lmxmlev 
+
+check_log_SOURCES = check_log.c 
+check_log_CFLAGS = @CHECK_CFLAGS@ -I../../src/ -I../../src/log
+check_log_LDADD = ../../src/libx2r.la ../../src/libevresp.la @CHECK_LIBS@ -lmxmlev 
 endif
 
 distclean-local:
