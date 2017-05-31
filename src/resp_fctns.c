@@ -12,22 +12,6 @@
 #include "evresp.h"
 #include "evr_spline.h"
 
-/* merge_lists:
-
-   a routine that merges two lists filters (blockettes 55).
-   The frequencies, amplitudes and phases from the
-   second filter are copied into the first filter and the number of
-   coefficients in the first filter is adjusted to reflect the new
-   filter size.  Then the next_blkt pointer for the first filter is
-   reset to the value of the next_blkt pointer of the second filter
-   and the space associated with the second filter is free'd.  Finally,
-   the second filter pointer is reset to the next_blkt pointer value
-   of the first filter
-
-    Modified from merge_coeffs() by Ilya Dricker IGD
-    (i.dricker@isti.com)  07/07/00
- */
-
 void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt) {
     int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;
     double *amp1, *amp2, *phase1, *phase2, *freq1, *freq2;
@@ -99,17 +83,6 @@ void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt) {
 
 }
 
-/* merge_coeffs:
-
- a routine that merges two fir filters.  The coefficients from the
- second filter are copied into the first filter and the number of
- coefficients in the first filter is adjusted to reflect the new
- filter size.  Then the next_blkt pointer for the first filter is
- reset to the value of the next_blkt pointer of the second filter
- and the space associated with the second filter is free'd.  Finally,
- the second filter pointer is reset to the next_blkt pointer value
- of the first filter */
-
 void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt) {
     int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;
     double *coeffs1, *coeffs2;
@@ -162,29 +135,6 @@ void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt) {
     *second_blkt = first_blkt->next_blkt;
 
 }
-
-/*  check_channel: a routine that checks a channel's filter stages to
-
- (1) run a sanity check on the filter sequence.
- and that LAPLACE_PZ and ANALOG_PZ filters will be followed
- by a GAIN blockette only.
- REFERENCE blockettes are ignored (since they contain no response information)
- (2) As the routine moves through the stages in the filter sequence,
- several other checks are made.  First, the output units of this
- stage are compared with the input units of the next on to ensure
- that no stages have been skipped.  Second, the filter type of this
- blockette is compared with the filter type of the next. If they
- are the same and have the same stage-sequence number, then they
- are merged to form one filter.  At the present time this is only
- implemented for the FIR type filters (since those are the only filter
- types that typically are continued to a second filter blockette).
- The new filter will have the combined number of coefficients and a
- new vector containing the coefficients for both filters, one after
- the other.
- (3) the expected delay from the FIR filter stages in the channel's
- filter sequence is calculated and stored in the filter structure.
-
- */
 
 void check_channel(struct channel *chan) {
 	// TODO - assignments below (0 + NULL) made blindly to fix compiler warning.  bug?
@@ -474,10 +424,6 @@ void check_channel(struct channel *chan) {
   }
 }
 
-
-/* check_sym: checks to see if a FIR filter can be converted to a symmetric FIR
-              filter, if so, the conversion is made and the filter type is redefined */
-
 void check_sym(struct blkt *f, struct channel *chan) {
   int nc, n0, k;
   double sum = 0.0;
@@ -531,26 +477,10 @@ void sscdns_free_double (double *array)
 }
 */
 
-
-/**************************************************************************
- * interpolate_list_blockette:  Interpolates amplitude and phase values
- *      from the set of frequencies in the List blockette to the requested
- *      set of frequencies.  The given frequency, amplitude and phase
- *      arrays are deallocated and replaced with newly allocated arrays
- *      containing the interpolated values.  The '*p_number_points' value
- *      is also updated.
- *   frequency_ptr:  reference to array of frequency values.
- *   amplitude_ptr:  reference to array of amplitude values.
- *   phase_ptr:  reference to array of phase values.
- *   p_number_points:  reference to number of points value.
- *   req_freq_arr:  array of requested frequency values.
- *   req_num_freqs:  number values in 'req_freq_arr' array.
- *   tension - tension value for interpolation.
- **************************************************************************/
 void interpolate_list_blockette(double **frequency_ptr,
-                                 double **amplitude_ptr, double **phase_ptr,
-                                 int *p_number_points, double *req_freq_arr,
-                                          int req_num_freqs, double tension)
+                                double **amplitude_ptr, double **phase_ptr,
+                                int *p_number_points, double *req_freq_arr,
+                                int req_num_freqs, double tension)
 {
   int i, num;
   double first_freq, last_freq, val, min_ampval;

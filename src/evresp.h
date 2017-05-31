@@ -1723,35 +1723,82 @@ int add_null(char *s, int len, char where);
 /**
  * @private
  * @ingroup evalresp_private_response
- * @brief FIXME.
+ * @brief A routine that merges two fir filters.
+ * @details The coefficients from the second filter are copied into the first
+ *          filter and the number of coefficients in the first filter is
+ *          adjusted to reflect the new filter size. Then the next_blkt
+ *          pointer for the first filter is reset to the value of the
+ *          next_blkt pointer of the second filter and the space associated
+ *          with the second filter is free'd. Finally, the second filter
+ *          pointer is reset to the next_blkt pointer value of the first
+ *          filter
+ * @param[in,out] first_blkt First filter.
+ * @param[in,out] second_blkt Second filter.
  */
-void merge_coeffs(struct blkt *, struct blkt **);
+void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt);
 
 /**
  * @private
  * @ingroup evalresp_private_response
- * @brief FIXME.
+ * @brief A routine that merges two lists filters (blockettes 55).
+ * @details The frequencies, amplitudes and phases from the second filter are
+ *          copied into the first filter and the number of coefficients in the
+ *          first filter is adjusted to reflect the new filter size. Then the
+ *          next_blkt pointer for the first filter is reset to the value of
+ *          the next_blkt pointer of the second filter and the space
+ *          associated with the second filter is free'd. Finally, the second
+ *          filter pointer is reset to the next_blkt pointer value of the
+ *          first filter.
+ * @param[in,out] first_blkt First filter.
+ * @param[in,out] second_blkt Second filter.
+ * @author 07/07/00: Ilya Dricker IGD (i.dricker@isti.com): Modified from
+ *         merge_coeffs() for 3.2.17 of evalresp.
  */
-void merge_lists(struct blkt *, struct blkt **); /* Added by I.Dricker IGD for v
- 3.2.17 of evalresp */
+void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt);
 
 /**
  * @private
  * @ingroup evalresp_private_response
- * @brief FIXME.
+ * @brief A routine that checks a channel's filter stages.
+ * @details (1) Run a sanity check on the filter sequence. And that LAPLACE_PZ
+ *              and ANALOG_PZ filters will be followed by a GAIN blockette
+ *              only. REFERENCE blockettes are ignored (since they contain no
+ *              response information).
+ *
+ *          (2) As the routine moves through the stages in the filter
+ *              sequence, several other checks are made. First, the output
+ *              units of this stage are compared with the input units of the
+ *              next on to ensure that no stages have been skipped. Second,
+ *              the filter type of this blockette is compared with the filter
+ *              type of the next. If they are the same and have the same
+ *              stage-sequence number, then they are merged to form one
+ *              filter.  At the present time this is only implemented for the
+ *              FIR type filters (since those are the only filter types that
+ *              typically are continued to a second filter blockette). The new
+ *              filter will have the combined number of coefficients and a new
+ *              vector containing the coefficients for both filters, one after
+ *              the other.
+ *
+ *          (3) the expected delay from the FIR filter stages in the channel's
+ *              filter sequence is calculated and stored in the filter
+ *              structure.
+ * @param[in] chan Channel structure.
  */
-void check_channel(struct channel *);
+void check_channel(struct channel *chan);
 
 /**
  * @private
  * @ingroup evalresp_private_response
- * @brief FIXME.
+ * @brief Checks to see if a FIR filter can be converted to a symmetric FIR
+ *        filter.
+ * @details If so, the conversion is made and the filter type is redefined.
+ * @param[in,out] f FIR filter.
+ * @param[in] chan Channel structure.
  */
-void check_sym(struct blkt *, struct channel *);
+void check_sym(struct blkt *f, struct channel *chan);
 
 /* routines used to calculate the instrument responses */
 
-/*void calc_resp(struct channel *, double *, int, struct evr_complex *,char *, int, int);*/
 /**
  * @private
  * @ingroup evalresp_private_calc
@@ -1924,10 +1971,21 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
  * @ingroup evalresp_private_response
  * @brief Interpolates amplitude and phase values from the set of frequencies
  *        in the List blockette to the requested set of frequencies.
+ * @details The given frequency, amplitude and phase arrays are deallocated
+ *          and replaced with newly allocated arrays containing the
+ *          interpolated values. The @p p_number_points value is also updated.
+ * @param[in,out] frequency_ptr Reference to array of frequency values.
+ * @param[in,out]  amplitude_ptr Reference to array of amplitude values.
+ * @param[in,out] phase_ptr Reference to array of phase values.
+ * @param[in,out] p_number_points Reference to number of points value.
+ * @param[in] req_freq_arr Array of requested frequency values.
+ * @param[in] eq_num_freqs Number values in @p req_freq_arr array.
+ * @param[in] tension Tension value for interpolation.
  */
-void interpolate_list_blockette(double **freq, double **amp, double **phase,
-        int *p_number_points, double *req_freq_arr, int req_num_freqs,
-        double tension);
+void interpolate_list_blockette(double **frequency_ptr,
+                                double **amplitude_ptr, double **phase_ptr,
+                                int *p_number_points, double *req_freq_arr,
+                                int req_num_freqs, double tension);
 
 /**
  * @private
