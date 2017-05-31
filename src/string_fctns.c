@@ -104,25 +104,32 @@ struct string_array *parse_delim_line(char *line, char *delim, evalresp_log_t *l
         }
         for (i = 0; i < nfields; i++) {
             memset(field, 0, MAXFLDLEN);
-            parse_delim_field(line, i, delim, field);
+            if (0 <= parse_delim_field(line, i, delim, field, log))
+            {
+                break;
+            }
             fld_len = strlen(field) + 1;
             if ((lcl_strings->strings[i] = (char *) malloc(
                     fld_len * sizeof(char))) == (char *) NULL) {
                 evalresp_log(log, ERROR, 0,
                         "parse_delim_line; malloc() failed for (char) vector");
-                for(i--; i>0; i--)
-                {
-                    free(lcl_strings->strings[i]);
-                    lcl_strings->strings[i] = NULL;
-                }
-                free(lcl_strings->strings);
-                free(lcl_strings);
-                return NULL;
+                break;
                 /*XXX error_exit(OUT_OF_MEMORY,
                         "parse_delim_line; malloc() failed for (char) vector"); */
             }
             strncpy(lcl_strings->strings[i], "", fld_len);
             strncpy(lcl_strings->strings[i], field, fld_len - 1);
+        }
+        if (i < nfields)
+        {
+            for(i--; i>0; i--)
+            {
+                free(lcl_strings->strings[i]);
+                lcl_strings->strings[i] = NULL;
+            }
+            free(lcl_strings->strings);
+            free(lcl_strings);
+            return NULL;
         }
     } else { /* if no fields then alloc string array with empty entry */
         if (!(lcl_strings = alloc_string_array(1, log)))
@@ -393,7 +400,7 @@ int parse_field(char *line, int fld_no, char *return_field) {
     return (strlen(return_field));
 }
 
-int parse_delim_field(char *line, int fld_no, char *delim, char *return_field) {
+int parse_delim_field(char *line, int fld_no, char *delim, char *return_field, evalresp_log_t *log) {
 
     // TODO - tmp_prt assignment below made blindly to fix compiler warning.  bug?
     char *lcl_ptr, *tmp_ptr = NULL;
@@ -402,12 +409,19 @@ int parse_delim_field(char *line, int fld_no, char *delim, char *return_field) {
     nfields = count_delim_fields(line, delim);
     if (fld_no >= nfields) {
         if (nfields > 0) {
-            error_return(PARSE_ERROR, "%s%d%s%d%s",
+            evalresp_log(log, ERROR, 0, "%s%d%s%d%s",
                     "parse_delim_field; Input field number (", fld_no,
                     ") exceeds number of fields on line(", nfields, ")");
+            return PARSE_ERROR;
+            /*XXX error_return(PARSE_ERROR, "%s%d%s%d%s",
+                    "parse_delim_field; Input field number (", fld_no,
+                    ") exceeds number of fields on line(", nfields, ")"); */
         } else {
-            error_return(PARSE_ERROR, "%s",
+            evalresp_log(log, ERROR, 0, "%s",
                     "parse_delim_field; Data fields not found on line");
+            return PARSE_ERROR;
+            /*XXX error_return(PARSE_ERROR, "%s",
+                    "parse_delim_field; Data fields not found on line"); */
         }
     }
 

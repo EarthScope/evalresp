@@ -842,10 +842,11 @@ int parse_field(char *line, int fld_no, char *return_field);
  * @param[in] fld_no Field number.
  * @param[in] delim Delimiter.
  * @param[out] return_field Return field.
+ * @param[in] log Logging structure.
  * @returns Length of the resulting field if successful.
  * @note Exits with error if no field exists with that number.
  */
-int parse_delim_field(char *line, int fld_no, char *delim, char *return_field);
+int parse_delim_field(char *line, int fld_no, char *delim, char *return_field, evalresp_log_t *log);
 
 /**
  * @private
@@ -1006,7 +1007,7 @@ int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
  *          end_t and station info are returned as part of the input
  *          structure @p this_channel. The pointer to the file (@p fptr) is
  *          left in position for the parse_channel() routine to grab the
- *          response information for that station. 
+ *          response information for that station.
  * @param[in,out] fptr FILE pointer.
  * @param[in] scn Network-station-locid-channel object.
  * @param[in] datime Date-time string.
