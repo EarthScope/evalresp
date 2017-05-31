@@ -571,7 +571,7 @@ struct referType {
 /**
  * @private
  * @ingroup evalresp_private
- * @brief Define a blkt as a stucture containing the blockette type, a union
+ * @brief Define a blkt as a structure containing the blockette type, a union
  *        (blkt_info) containing the blockette info, and a pointer to the
  *        next blockette in the filter sequence.
  * @details The structures will be assembled to form a linked list of
@@ -1136,7 +1136,7 @@ struct response *alloc_response(int npts);
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for an array of strings.
- * @param[in] nstring Number of strings to allocate in array.
+ * @param[in] nstrings Number of strings to allocate in array.
  * @returns Pointer to allocated array.
  * @returns @c NULL if @p nstrings is zero.
  * @warning Exits with error if allocation fails.
@@ -1346,7 +1346,7 @@ void free_string_array(struct string_array *lst);
  *        type structure.
  * @param[in,out] ptr Station-channel type structure.
  */
-void free_scn(struct scn *);
+void free_scn(struct scn *ptr);
 
 /**
  * @private
@@ -1469,7 +1469,7 @@ void free_channel(struct channel *chan_ptr);
  * @ingroup evalresp_private_alloc
  * @brief A routine that frees up the space associated with a linked list of
  *        response information.
- * @param[in,out] chan_ptr Response structure.
+ * @param[in,out] resp_ptr Response structure.
  */
 void free_response(struct response *resp_ptr);
 
@@ -1802,7 +1802,16 @@ void check_sym(struct blkt *f, struct channel *chan);
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Calculate response.
+ * @param[in] chan Channel structure.
+ * @param[in] freq Frequency array.
+ * @param[in] nfreqs Number if numbers in @p freq.
+ * @param[in] output Output.
+ * @param[in] out_units Units of output.
+ * @param[in] start_stage Start stage.
+ * @param[in] stop_stage Stop stage.
+ * @param[in] useTotalSensitivityFlag FIXME.
+ * @param[in] x_for_b62 FIXME.
  */
 void calc_resp(struct channel *chan, double *freq, int nfreqs,
         struct evr_complex *output, char *out_units, int start_stage,
@@ -1811,85 +1820,126 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs,
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Convert response to velocity first, then to specified units.
+ * @param[in] inp Input units. See units constants.
+ * @param[in] out_units Output units. @c DEF, @c DIS, @c VEL, @c ACC.
+ * @param[in,out] data Data.
+ * @param[in] w Frequency.
  */
-void convert_to_units(int, char *, struct evr_complex *, double);
+void convert_to_units(int inp, char *out_units, struct evr_complex *data,
+                      double w);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Response of analog filter.
+ * @param[in] blkt_ptr Filter.
+ * @param[in] freq Frequency.
+ * @param[out] out Response.
  */
-void analog_trans(struct blkt *, double, struct evr_complex *);
+void analog_trans(struct blkt *blkt_ptr, double freq, struct evr_complex *out);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Response of symetrical FIR filters.
+ * @param[in] blkt_ptr Filter.
+ * @param[in] w Frequency.
+ * @param[out] out Response.
  */
-void fir_sym_trans(struct blkt *, double, struct evr_complex *);
+void fir_sym_trans(struct blkt *blkt_ptr, double w, struct evr_complex *out);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Response of asymetrical FIR filters.
+ * @param[in] blkt_ptr Filter.
+ * @param[in] w Frequency.
+ * @param[out] out Response.
  */
-void fir_asym_trans(struct blkt *, double, struct evr_complex *);
+void fir_asym_trans(struct blkt *blkt_ptr, double w, struct evr_complex *out);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Response of IIR filters.
+ * @param[in] blkt_ptr Filter.
+ * @param[in] w Frequency.
+ * @param[out] out Response.
  */
-void iir_pz_trans(struct blkt *, double, struct evr_complex *);
+void iir_pz_trans(struct blkt *blkt_ptr, double w, struct evr_complex *out);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Calculate the phase shift equivalent to the time shift.
+ * @details Delta at the frequency w (rads/sec).
+ * @param[in] delta Delta.
+ * @param[in] w Frequency.
+ * @param[out] out Phase shift equivalent.
  */
-void calc_time_shift(double, double, struct evr_complex *);
+void calc_time_shift(double delta, double w, struct evr_complex *out);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Complex multiplication.
+ * @details Complex version of val1 *= val2.
+ * @param[in,out] val1 Complex number 1.
+ * @param[in] val2 Complex number 2.
  */
-void zmul(struct evr_complex *, struct evr_complex *);
+void zmul(struct evr_complex *val1, struct evr_complex *val2);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Normalize response.
+ * @param[in,out] chan Channel structure.
+ * @param[in] start_stage Start stage.
+ * @param[in] stop_stage Stop stage.
  */
-void norm_resp(struct channel *, int, int);
+void norm_resp(struct channel *chan, int start_stage, int stop_stage);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Response of blockette 55 (Response List Blockette).
+ * @param[in] blkt_ptr Response List Blockette (55).
+ * @param[in] i FIXME.
+ * @param[out] out Response.
+ * @author 06/22/00: Ilya Dricker ISTI (.dricker@isti.com): Function
+ *         introduced in version 3.2.17 of evalresp.
  */
-void calc_list(struct blkt *, int, struct evr_complex *); /*IGD i.dricker@isti.c
-om for version 3.2.17 */
-/**
- * @private
- * @ingroup evalresp_private_calc
- * @brief FIXME.
- */
+void calc_list(struct blkt *blkt_ptr, int i, struct evr_complex *out);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Response of blockette 62 (Polynomial).
+ * @param[in] blkt_ptr Polynomial Blockette (62).
+ * @param[in] i FIXME.
+ * @param[out] out Response.
+ * @param[in] x_for_b62 FIXME.
+ * @author 06/01/13: Ilya Dricker ISTI (.dricker@isti.com): Function
+ *         introduced in version 3.3.4 of evalresp
  */
-void calc_polynomial(struct blkt *, int, struct evr_complex *, double); /*IGD 06/01/2013 */
+void calc_polynomial(struct blkt *blkt_ptr, int i, struct evr_complex *out,
+                     double x_for_b62);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Response of a digital IIR filter.
+ * @details This code is modified from the FORTRAN subroutine written and
+ *          tested by Bob Hutt (ASL USGS). Evaluates phase directly from
+ *          imaginary and real parts of IIR filter coefficients.
+ * @param[in] blkt_ptr Digital IIR filter.
+ * @param[in] wint FIXME.
+ * @param[out] out Response.
+ * @author 07/12/00: lya Dricker (ISTI), i.dricker@isti.com: C translation
+ *         from FORTRAN function. Version 0.2. For version 3.2.17.
  */
-void iir_trans(struct blkt *, double, struct evr_complex *); /* IGD for version 3.2.17 */
+void iir_trans(struct blkt *blkt_ptr, double wint, struct evr_complex *out);
 
 /**
  * @private
@@ -1909,6 +1959,11 @@ int is_time(const char *test);
  * @ingroup evalresp_private_parse
  * @brief Compare two times and determine if the first is greater, equal to,
  *        or less than the second.
+ * @param[in] dt1 Date-time 1.
+ * @param[in] dt2 Date-time 2.
+ * @returns An integer indicating whether the time in the input argument
+ *          @p dt1 is greater than (1), equal to (0), or less than (-1) the
+ *          time in the input argument @p dt2.
  */
 int timecmp(struct dateTime *dt1, struct dateTime *dt2);
 
