@@ -12,9 +12,6 @@
 
 #include "./evresp.h"
 
-/* error_exit:  prints a user supplied error message to stderr and exits with the user
- supplied error condition */
-
 void error_exit(int cond, char *msg, ...) {
     va_list ap;
     char *p, *new_p, *sval, *prob;
@@ -69,10 +66,6 @@ void error_exit(int cond, char *msg, ...) {
     fflush(stderr);
     exit(cond);
 }
-
-/* error_return:  prints a user supplied error message to stderr and returns control
- to the calling routine at the point that that routine calls
- 'setjmp(jump_buffer)' */
 
 void error_return(int cond, char *msg, ...) {
     va_list ap;

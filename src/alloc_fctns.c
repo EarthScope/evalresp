@@ -15,9 +15,6 @@
 
 #include <log.h>
 
-/* alloc_complex:  allocates space for an array of complex numbers, returns a pointer to that
- array (exits with error if fails) */
-
 struct evr_complex *alloc_complex(int npts) {
     struct evr_complex *cptr;
 
@@ -32,9 +29,6 @@ struct evr_complex *alloc_complex(int npts) {
 
     return (cptr);
 }
-
-/* alloc_string_array:  allocates space for an array of strings, returns a
- pointer to that array (return NULL when fails) */
 
 struct string_array *alloc_string_array(int nstrings, evalresp_log_t *log) {
     struct string_array *sl_ptr;
@@ -66,9 +60,6 @@ struct string_array *alloc_string_array(int nstrings, evalresp_log_t *log) {
 
     return (sl_ptr);
 }
-
-/* alloc_scn:  allocates space for a station-channel structure, returns a
- pointer to that structure (exits with error if fails) */
 
 struct scn *alloc_scn() {
     struct scn *scn_ptr;
@@ -103,11 +94,6 @@ struct scn *alloc_scn() {
     return (scn_ptr);
 }
 
-/* alloc_response:  allocates space for an array of responses, returns a pointer to that
- array (exits with error if fails).  A 'response' is a combination
- of a complex array, a station-channel-network, and a pointer to the
- next 'response' in the list */
-
 struct response *alloc_response(int npts) {
     struct response *rptr;
     struct evr_complex *cvec;
@@ -139,10 +125,6 @@ struct response *alloc_response(int npts) {
     return (rptr);
 }
 
-/* alloc_scn_list:  allocates space for an array of station/channel pairs,
- returns a pointer to that array (exits with error if
- fails) */
-
 struct scn_list *alloc_scn_list(int nscn) {
     struct scn_list *sc_ptr;
     int i;
@@ -167,10 +149,6 @@ struct scn_list *alloc_scn_list(int nscn) {
     return (sc_ptr);
 }
 
-/* alloc_file_list:  allocates space for an element of a linked list of
- filenames, returns a pointer to that structure
- (exits with error if fails) */
-
 struct file_list *alloc_file_list() {
     struct file_list *flst_ptr;
 
@@ -184,10 +162,6 @@ struct file_list *alloc_file_list() {
 
     return (flst_ptr);
 }
-
-/* alloc_matched_files:  allocates space for an element of a linked list of
- matching files, returns a pointer to that structure
- (exits with error if fails) */
 
 struct matched_files *alloc_matched_files() {
     struct matched_files *flst_ptr;
@@ -204,9 +178,6 @@ struct matched_files *alloc_matched_files() {
     return (flst_ptr);
 }
 
-/* alloc_double:  allocates space for an array of double precision numbers, returns a pointer to
- that array (exits with error if fails) */
-
 double *alloc_double(int npts) {
     double *dptr;
 
@@ -220,9 +191,6 @@ double *alloc_double(int npts) {
 
     return (dptr);
 }
-
-/* alloc_char:  allocates space for an array of characters, returns a pointer to
- that array (exits with error if fails) */
 
 char *alloc_char(int len) {
     char *cptr;
@@ -238,9 +206,6 @@ char *alloc_char(int len) {
     return (cptr);
 }
 
-/* alloc_char_ptr:  allocates space for an array of char pointers, returns a
- pointer to that array (exits with error if fails) */
-
 char **alloc_char_ptr(int len) {
     char **cptr;
 
@@ -254,12 +219,6 @@ char **alloc_char_ptr(int len) {
 
     return (cptr);
 }
-
-/* alloc_pz:  allocates space for a pole-zero type filter structure and returns a pointer to that
- structure.
- Note: the space for the complex poles and zeros is not allocated here, the space
- for these vectors must be allocated as they are read, since the number of
- poles and zeros is unknown until the blockette is partially parsed. */
 
 struct blkt *alloc_pz(void) {
     struct blkt *blkt_ptr;
@@ -279,10 +238,6 @@ struct blkt *alloc_pz(void) {
 
     return (blkt_ptr);
 }
-
-/* alloc_coeff:  allocates space for a coefficients-type filter 
- Note:  see alloc_pz for details (like alloc_pz, this does not allocate space for
- the numerators and denominators, that is left until parse_fir()) */
 
 struct blkt *alloc_coeff(void) {
     struct blkt *blkt_ptr;
@@ -304,10 +259,6 @@ struct blkt *alloc_coeff(void) {
     return (blkt_ptr);
 }
 
-/* alloc_plynomial:  allocates space for a polynomial Blockette 62 
- * IGDS 05/31/2013
- */
-
 struct blkt *alloc_polynomial(void) {
     struct blkt *blkt_ptr;
 
@@ -319,10 +270,6 @@ struct blkt *alloc_polynomial(void) {
 
     return (blkt_ptr);
 }
-
-/* alloc_fir:  allocates space for a fir-type filter 
- Note:  see alloc_pz for details (like alloc_pz, this does not allocate space for
- the numerators and denominators, that is left until parse_fir()) */
 
 struct blkt *alloc_fir() {
     struct blkt *blkt_ptr;
@@ -342,9 +289,6 @@ struct blkt *alloc_fir() {
     return (blkt_ptr);
 }
 
-/* alloc_ref:  allocates space for a response reference type filter structure and returns a pointer
- to that structure. */
-
 struct blkt *alloc_ref() {
     struct blkt *blkt_ptr;
 
@@ -363,12 +307,6 @@ struct blkt *alloc_ref() {
     return (blkt_ptr);
 }
 
-/* alloc_gain:  allocates space for a gain type filter structure and returns a pointer to that
- structure.
- Note: the space for the calibration vectors is not allocated here, the space
- for these vectors must be allocated as they are read, since the number of
- calibration points is unknown until the blockette is partially parsed. */
-
 struct blkt *alloc_gain() {
     struct blkt *blkt_ptr;
 
@@ -385,12 +323,6 @@ struct blkt *alloc_gain() {
 
     return (blkt_ptr);
 }
-
-/* alloc_list:  allocates space for a list type filter structure and returns a pointer to that
- structure.
- Note: the space for the amplitude, phase and frequency vectors is not allocated
- here the user must allocate space for these parameters once the number of
- frequencies is known */
 
 struct blkt *alloc_list() {
     struct blkt *blkt_ptr;
@@ -411,12 +343,6 @@ struct blkt *alloc_list() {
     return (blkt_ptr);
 }
 
-/* alloc_generic  allocates space for a generic type filter structure and returns a pointer to that
- structure.
- Note: the space for the corner_freq, and corner_slope vectors is not allocated
- here the user must allocate space for these parameters once the number of
- frequencies is known */
-
 struct blkt *alloc_generic() {
     struct blkt *blkt_ptr;
 
@@ -434,9 +360,6 @@ struct blkt *alloc_generic() {
 
     return (blkt_ptr);
 }
-
-/* alloc_deci:  allocates space for a decimation type filter structure and returns a pointer to that
- structure. */
 
 struct blkt *alloc_deci() {
     struct blkt *blkt_ptr;
@@ -458,9 +381,6 @@ struct blkt *alloc_deci() {
     return (blkt_ptr);
 }
 
-/* alloc_stage:  allocates space for a decimation type filter structure and returns a pointer to that
- structure. */
-
 struct stage *alloc_stage() {
     struct stage *stage_ptr;
 
@@ -478,9 +398,6 @@ struct stage *alloc_stage() {
 
     return (stage_ptr);
 }
-
-/* free_string_array: a routine that frees up the space associated with a
- string list type structure */
 
 void free_string_array(struct string_array *lst) {
     int i;
@@ -503,9 +420,6 @@ void free_string_array(struct string_array *lst) {
     }
 }
 
-/* free_scn: a routine that frees up the space associated with a
- station-channel type structure */
-
 void free_scn(struct scn *ptr) {
 
     free(ptr->station);
@@ -514,9 +428,6 @@ void free_scn(struct scn *ptr) {
     free(ptr->channel);
 
 }
-
-/* free_scn_list: a routine that frees up the space associated with a
- station-channel list type structure */
 
 void free_scn_list(struct scn_list *lst) {
     int i;
@@ -528,9 +439,6 @@ void free_scn_list(struct scn_list *lst) {
     free(lst->scn_vec);
     free(lst);
 }
-
-/* free_matched_files: a routine that frees up the space associated with a
- matched files type structure */
 
 void free_matched_files(struct matched_files *lst) {
     if (lst != (struct matched_files *) NULL) {
@@ -544,9 +452,6 @@ void free_matched_files(struct matched_files *lst) {
     }
 }
 
-/* free_file_list: a routine that frees up the space associated with a
- file list type structure */
-
 void free_file_list(struct file_list *lst) {
 
     if (lst != (struct file_list *) NULL) {
@@ -559,9 +464,6 @@ void free_file_list(struct file_list *lst) {
 
 }
 
-/* free_pz: a routine that frees up the space associated with a pole-zero
- type filter */
-
 void free_pz(struct blkt *blkt_ptr) {
     if (blkt_ptr != (struct blkt *) NULL) {
         if (blkt_ptr->blkt_info.pole_zero.zeros != (struct evr_complex *) NULL)
@@ -571,9 +473,6 @@ void free_pz(struct blkt *blkt_ptr) {
         free(blkt_ptr);
     }
 }
-
-/* free_coeff: a routine that frees up the space associated with a coefficients
- type filter */
 
 void free_coeff(struct blkt *blkt_ptr) {
     if (blkt_ptr != (struct blkt *) NULL) {
@@ -585,9 +484,6 @@ void free_coeff(struct blkt *blkt_ptr) {
     }
 }
 
-/* free_fir: a routine that frees up the space associated with a fir
- type filter */
-
 void free_fir(struct blkt *blkt_ptr) {
     if (blkt_ptr != (struct blkt *) NULL) {
         if (blkt_ptr->blkt_info.fir.coeffs != (double *) NULL)
@@ -595,9 +491,6 @@ void free_fir(struct blkt *blkt_ptr) {
         free(blkt_ptr);
     }
 }
-
-/* free_list: a routine that frees up the space associated with a list
- type filter */
 
 void free_list(struct blkt *blkt_ptr) {
     if (blkt_ptr != (struct blkt *) NULL) {
@@ -611,9 +504,6 @@ void free_list(struct blkt *blkt_ptr) {
     }
 }
 
-/* free_generic: a routine that frees up the space associated with a generic
- type filter */
-
 void free_generic(struct blkt *blkt_ptr) {
     if (blkt_ptr != (struct blkt *) NULL) {
         if (blkt_ptr->blkt_info.generic.corner_slope != (double *) NULL)
@@ -624,17 +514,11 @@ void free_generic(struct blkt *blkt_ptr) {
     }
 }
 
-/* free_gain: a routine that frees up the space associated with a gain
- type filter */
-
 void free_gain(struct blkt *blkt_ptr) {
     if (blkt_ptr != (struct blkt *) NULL) {
         free(blkt_ptr);
     }
 }
-
-/* free_deci: a routine that frees up the space associated with a decimation
- type filter */
 
 void free_deci(struct blkt *blkt_ptr) {
     if (blkt_ptr != (struct blkt *) NULL) {
@@ -642,18 +526,12 @@ void free_deci(struct blkt *blkt_ptr) {
     }
 }
 
-/* free_ref: a routine that frees up the space associated with a response
- reference type filter */
-
 void free_ref(struct blkt *blkt_ptr) {
 
     if (blkt_ptr != (struct blkt *) NULL) {
         free(blkt_ptr);
     }
 }
-
-/* free_stages: a routine that frees up the space associated with a stages in
- a channel's response */
 
 void free_stages(struct stage *stage_ptr) {
     struct blkt *this_blkt, *next_blkt;
@@ -701,9 +579,6 @@ void free_stages(struct stage *stage_ptr) {
     }
 }
 
-/* free_channel: a routine that frees up the space associated with a channel's
- filter sequence */
-
 void free_channel(struct channel *chan_ptr) {
 
     free_stages(chan_ptr->first_stage);
@@ -716,9 +591,6 @@ void free_channel(struct channel *chan_ptr) {
     strncpy(chan_ptr->first_units, "", MAXLINELEN);
     strncpy(chan_ptr->last_units, "", MAXLINELEN);
 }
-
-/* free_response: a routine that frees up the space associated with a linked
- list of response information */
 
 void free_response(struct response *resp_ptr) {
     struct response *this_resp, *next_resp;

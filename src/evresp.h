@@ -1114,142 +1114,221 @@ int get_names(char *in_file, struct matched_files *file);
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an array of complex numbers.
+ * @param[in] npts Number of complex numbers to allocate in array.
+ * @returns Pointer to allocated array.
+ * @returns @c NULL if @p npts is zero.
+ * @warning Exits with error if allocation fails.
  */
-struct evr_complex *alloc_complex(int);
+struct evr_complex *alloc_complex(int npts);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an array of responses.
+ * @details A 'response' is a combination of a complex array, a
+ *          station-channel-network, and a pointer to the next 'response' in
+ *          the list.
+ * @param[in] npts Number of responses to allocate in array.
+ * @returns Pointer to allocated array.
+ * @returns @c NULL if @p npts is zero.
+ * @warning Exits with error if allocation fails.
  */
-struct response *alloc_response(int);
+struct response *alloc_response(int npts);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an array of strings.
+ * @param[in] nstring Number of strings to allocate in array.
+ * @param[in] log Logging structure.
+ * @returns Pointer to allocated array.
+ * @returns @c NULL if @p nstrings is zero.
+ * @warning Exits with error if allocation fails.
  */
-struct string_array *alloc_string_array(int, evalresp_log_t *);
+struct string_array *alloc_string_array(int nstrings, evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a station-channel structure
+ * @returns Pointer to allocated structure.
+ * @warning Exits with error if allocation fails.
  */
 struct scn *alloc_scn(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an array of station/channel pairs.
+ * @param[in] nscn Number of station/channel pairs to allocate in array.
+ * @returns Pointer to allocated array.
+ * @returns @c NULL if @p nscn is zero.
+ * @warning Exits with error if allocation fails.
  */
-struct scn_list *alloc_scn_list(int);
+struct scn_list *alloc_scn_list(int nscn);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an element of a linked list of filenames.
+ * @returns Pointer to allocated structure.
+ * @warning Exits with error if allocation fails.
  */
 struct file_list *alloc_file_list(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an element of a linked list of matching files.
+ * @returns Pointer to allocated structure.
+ * @warning Exits with error if allocation fails.
  */
 struct matched_files *alloc_matched_files(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an array of double precision numbers
+ * @param[in] npts Number of double precision numbers to allocate in array.
+ * @returns Pointer to allocated array.
+ * @returns @c NULL if @p npts is zero.
+ * @warning Exits with error if allocation fails.
  */
-double *alloc_double(int);
+double *alloc_double(int npts);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an array of characters.
+ * @param[in] len Number of characters to allocate in array.
+ * @returns Pointer to allocated array.
+ * @returns @c NULL if @p len is zero.
+ * @warning Exits with error if allocation fails.
  */
-char *alloc_char(int);
+char *alloc_char(int len);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an array of char pointers.
+ * @param[in] len Number of char pointers to allocate in array.
+ * @returns Pointer to allocated array.
+ * @returns @c NULL if @p len is zero.
+ * @warning Exits with error if allocation fails.
  */
-char **alloc_char_ptr(int);
+char **alloc_char_ptr(int len);
 
 /* allocation routines for the various types of filters */
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a pole-zero type filter structure.
+ * @returns Pointer to allocated structure.
+ * @note The space for the complex poles and zeros is not allocated here, the
+ *       space for these vectors must be allocated as they are read, since the
+ *       number of poles and zeros is unknown until the blockette is partially
+ *       parsed.
+ * @warning Exits with error if allocation fails.
  */
 struct blkt *alloc_pz(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a coefficients-type filter.
+ * @returns Pointer to allocated structure.
+ * @note See alloc_pz() for details (like alloc_pz(), this does not allocate
+ *       space for the numerators and denominators, that is left until
+ *       parse_fir()).
+ * @warning Exits with error if allocation fails.
  */
 struct blkt *alloc_coeff(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a fir-type filter.
+ * @returns Pointer to allocated structure.
+ * @note See alloc_pz() for details (like alloc_pz(), this does not allocate
+ *       space for the numerators and denominators, that is left until
+ *       parse_fir()).
+ * @warning Exits with error if allocation fails.
  */
 struct blkt *alloc_fir(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a response reference type filter structure.
+ * @returns Pointer to allocated structure.
+ * @warning Exits with error if allocation fails.
  */
 struct blkt *alloc_ref(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a gain type filter structure.
+ * @returns Pointer to allocated structure.
+ * @note The space for the calibration vectors is not allocated here, the
+ *       space for these vectors must be allocated as they are read, since the
+ *       number of calibration points is unknown until the blockette is
+ *       partially parsed.
+ * @warning Exits with error if allocation fails.
  */
 struct blkt *alloc_gain(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a list type filter structure.
+ * @returns Pointer to allocated structure.
+ * @note The space for the amplitude, phase and frequency vectors is not
+ *       allocated here the user must allocate space for these parameters once
+ *       the number of frequencies is known.
+ * @warning Exits with error if allocation fails.
  */
 struct blkt *alloc_list(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a generic type filter structure.
+ * @returns Pointer to allocated structure.
+ * @note The space for the corner_freq, and corner_slope vectors is not
+ *       allocated here the user must allocate space for these parameters once
+ *       the number of frequencies is known.
+ * @warning Exits with error if allocation fails.
  */
 struct blkt *alloc_generic(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a decimation type filter structure.
+ * @returns Pointer to allocated structure.
+ * @warning Exits with error if allocation fails.
  */
 struct blkt *alloc_deci(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a polynomial Blockette 62.
+ * @returns Pointer to allocated structure.
+ * @warning Exits with error if allocation fails.
+ * @author 05/31/2013: IGD.
  */
-struct blkt *alloc_polynomial(void); /*IGD 05/31/2013 */
+struct blkt *alloc_polynomial(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a decimation type filter structure.
+ * @returns Pointer to allocated structure.
+ * @warning Exits with error if allocation fails.
  */
 struct stage *alloc_stage(void);
 
@@ -1259,114 +1338,145 @@ struct stage *alloc_stage(void);
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a string list type
+ *        structure.
+ * @param[in,out] lst String list type structure.
  */
-void free_string_array(struct string_array *);
+void free_string_array(struct string_array *lst);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a station-channel
+ *        type structure.
+ * @param[in,out] ptr Station-channel type structure.
  */
 void free_scn(struct scn *);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a station-channel
+ *        list type structure.
+ * @param[in,out] lst Station-channel list type structure.
  */
-void free_scn_list(struct scn_list *);
+void free_scn_list(struct scn_list *lst);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a matched files
+ *        type structure.
+ * @param[in,out] lst Matched files type structure.
  */
-void free_matched_files(struct matched_files *);
+void free_matched_files(struct matched_files *lst);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a file list type
+ *        structure.
+ * @param[in,out] lst Matched files type structure.
  */
-void free_file_list(struct file_list *);
+void free_file_list(struct file_list *lst);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a pole-zero type
+ *        filter.
+ * @param[in,out] blkt_ptr Pole-zero type filter blockette structure.
  */
-void free_pz(struct blkt *);
+void free_pz(struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a coefficients
+ *        type filter.
+ * @param[in,out] blkt_ptr Coefficients type filter blockette structure.
  */
-void free_coeff(struct blkt *);
+void free_coeff(struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a fir type filter.
+ * @param[in,out] blkt_ptr Fir type filter blockette structure.
  */
-void free_fir(struct blkt *);
+void free_fir(struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a list type
+ *        filter.
+ * @param[in,out] blkt_ptr List type filter blockette structure.
  */
-void free_list(struct blkt *);
+void free_list(struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a generic type
+ *        filter.
+ * @param[in,out] blkt_ptr Generic type filter blockette structure.
  */
-void free_generic(struct blkt *);
+void free_generic(struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a gain type
+ *        filter.
+ * @param[in,out] blkt_ptr Gain type filter blockette structure.
  */
-void free_gain(struct blkt *);
+void free_gain(struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a decimation type
+ *        filter.
+ * @param[in,out] blkt_ptr Decimation type filter blockette structure.
  */
-void free_deci(struct blkt *);
+void free_deci(struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a response
+ *        reference type filter.
+ * @param[in,out] blkt_ptr Response reference type filter blockette structure.
  */
-void free_ref(struct blkt *);
+void free_ref(struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a stages in a
+ *        channel's response.
+ * @param[in,out] stage_ptr Stage structure.
  */
-void free_stages(struct stage *);
+void free_stages(struct stage *stage_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+f * @brief A routine that frees up the space associated with a channel's filter
+ *        sequence.
+ * @param[in,out] chan_ptr Channel structure.
  */
-void free_channel(struct channel *);
+void free_channel(struct channel *chan_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a linked list of
+ *        response information.
+ * @param[in,out] chan_ptr Response structure.
  */
-void free_response(struct response *);
+void free_response(struct response *resp_ptr);
 
 /* simple error handling routines to standardize the output error values and
  allow for control to return to 'evresp' if a recoverable error occurs */
@@ -1374,109 +1484,224 @@ void free_response(struct response *);
 /**
  * @private
  * @ingroup evalresp_private_error
- * @brief Wrapper function which prints a message and exits the program.
+ * @brief Prints a user supplied error message to stderr and exits with the
+ *        user supplied error condition.
+ * @param[in] cond Exit status for exit().
+ * @param[in] msg Message format string.
+ * @param[in] ... Arguments to format string.
  * @warning Do not use in library calls.
  */
-void error_exit(int, char *, ...);
+void error_exit(int cond, char *msg, ...);
 
 /**
  * @private
  * @ingroup evalresp_private_error
- * @brief FIXME.
+ * @brief Prints a user supplied error message to stderr and returns control
+ *        to the calling routine at the point that that routine calls
+ *        'setjmp(jump_buffer)'.
+ * @param[in] cond Return value from setjmp()
+ * @param[in] msg Message format string.
+ * @param[in] ... Arguments to format string.
  */
-void error_return(int, char *, ...);
+void error_return(int cond, char *msg, ...);
 
 /* a simple routine that parses the station information from the input file */
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses the RESP file blockettes for a channel.
+ * @details Errors cause the program to terminate. The blockette and field
+ *          numbers are checked as the file is parsed. As with the filter
+ *          blockettes, the actual positions of the fields on a line will not
+ *          effect this routine. This routine constructs a linked list of
+ *          filters until a non-filter blockette (or the EOF) is found. For
+ *          this routine to work, the lines must contain evalresp-3.0 style
+ *          prefixes. Also, it is assumed that the file pointer has been
+ *          prepositioned at the end of the station/channel/time information
+ *          in the RESP file for the channel of interest, (i.e. that the next
+ *          non-comment line starts the actual response information).
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] chan Channel structure.
+ * @returns First field number.
  */
-int parse_channel(FILE *, struct channel *);
+int parse_channel(FILE *fptr, struct channel* chan);
 
 /* parsing routines for various types of filters */
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Used to parse the prefix from a non-comment RESP file line.
+ * @details Returns the blockette number and starting field number for that
+ *          line as arguments, return values are -1 for comment lines (if they
+ *          sneak through), 1 for lines that start with 'B' and zero for lines
+ *          that are not comments and don't start with a 'B'.
+ * @param[out] blkt_no Blockette number.
+ * @param[out] fld_no Starting field number.
+ * @param[in] line Non-comment RESP file line.
+ * @returns 1 on success.
+ * @returns 0 on failure.
  */
-int parse_pref(int *, int *, char *);
+int parse_pref(int *blkt_no, int *fld_no, char *line);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses RESP file poles & zeros (in a Blockette [53] or [43]).
+ * @details Errors cause program termination. The blockette and field numbers
+ *          are checked as the file is parsed. The field-format of the RESP
+ *          file is assumed to be fixed (i.e. the same number of fields per
+ *          line in the same order), but the actual positions of those fields
+ *          on the line will not effect the parsing routines. For this routine
+ *          to work, the lines must contain evalresp-3.0 style prefixes.
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] blkt_ptr Blockette structure.
+ * @param[in,out] stage_ptr Stage structure.
  */
-void parse_pz(FILE *, struct blkt *, struct stage *); /* pole-zero */
+void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses the RESP file blockettes for COEFF filters (in a Blockette
+ *        [54] or [44]).
+ * @details Errors cause the program to terminate. The blockette and field
+ *          numbers are checked as the file is parsed. As with parse_pz(), for
+ *          this routine to work, the lines must contain evalresp-3.0 style
+ *          prefixes.
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] blkt_ptr Blockette structure.
+ * @param[in,out] stage_ptr Stage structure.
  */
-void parse_coeff(FILE *, struct blkt *, struct stage *); /* fir */
+void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses the RESP file blockettes for COEFF filters (in a Blockette
+ *        [54] or [44]).
+ * @details Handles the case of a digital IIR filtering. Derived from
+ *          parse_coeff(). Errors cause the program to terminate. The
+ *          blockette and field numbers are checked as the file is parsed. As
+ *          with parse_pz(), for this routine to work,  the lines must contain
+ *          evalresp-3.0 style prefixes.
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] blkt_ptr Blockette structure.
+ * @param[in,out] stage_ptr Stage structure.
+ * @author 06/27/00: I.Dricker (i.dricker@isti.com) for 2.3.17 iir.
  */
-void parse_iir_coeff(FILE *, struct blkt *, struct stage *); /*I.Dricker IGD for
- 2.3.17 iir */
+void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses the RESP file blockettes for list filters (in a Blockette
+ *        [55] or [45]).
+ * @details Errors cause the program to terminate. The blockette and field
+ *          numbers are checked as the file is parsed. As with parse_pz(), for
+ *          this routine to work, the lines must contain evalresp-3.0 style
+ *          prefixes.
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] blkt_ptr Blockette structure.
+ * @param[in,out] stage_ptr Stage structure.
+ * @author 06/21/00: Ilya Dricker ISTI: I modify this routine to accomodate
+ *         the form of the parsed blockette 55 generated by SeismiQuery.
+ *         Since currently the blockette 55 is not supported, we do not
+ *         anticipate problems caused by this change.
  */
-void parse_list(FILE *, struct blkt *, struct stage *); /* list */
+void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses the RESP file for generic filters (in a Blockette [56] or
+ *        [46]).
+ * @details Errors cause the program to terminate. The blockette and field
+ *          numbers are checked as the file is parsed. As with parse_pz(), for
+ *          this routine to work, the lines must contain evalresp-3.0 style
+ *          prefixes.
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] blkt_ptr Blockette structure.
+ * @param[in,out] stage_ptr Stage structure.
  */
-void parse_generic(FILE *, struct blkt *, struct stage *); /* generic */
+void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses the RESP file for decimation filters (in a Blockette [57] or
+ *        [47]).
+ * @details Errors cause the program to terminate. The blockette and field
+ *          numbers are checked as the file is parsed. As with parse_pz(), for
+ *          this routine to work, the lines must contain evalresp-3.0 style
+ *          prefixes.
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] blkt_ptr Blockette structure.
+ * @returns Sequence number of the stage for verification.
  */
-int parse_deci(FILE *, struct blkt *); /* decimation */
+int parse_deci(FILE *fptr, struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses the RESP file blockettes for gain filters (in a Blockette
+ *        [58] or [48]).
+ * @details Errors cause the program to terminate. The blockette and field
+ *          numbers are checked as the file is parsed. As with parse_pz(), for
+ *          this routine to work, the lines must contain evalresp-3.0 style
+ *          prefixes.
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] blkt_ptr Blockette structure.
+ * @returns Sequence number of the stage for verification.
  */
-int parse_gain(FILE *, struct blkt *); /* gain/sensitivity */
+int parse_gain(FILE *fptr, struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses the RESP file blockettes for FIR filters (in a Blockette [61]
+ *        or [41]).
+ * @details Errors cause the program to terminate. The blockette and field
+ *          numbers are checked as the file is parsed. As with parse_pz(), for
+ *          this routine to work, the lines must contain evalresp-3.0 style
+ *          prefixes.
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] blkt_ptr Blockette structure.
+ * @param[in,out] stage_ptr Stage structure.
  */
-void parse_fir(FILE *, struct blkt *, struct stage *); /* fir */
+void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses the RESP file blockettes for Response Reference type filters
+ *        (in a Blockette [60]).
+ * @details Errors cause the program to terminate.  The blockette and field
+ *          numbers are checked as the file is parsed. As with parse_pz(), for
+ *          this routine to work, the lines must contain evalresp-3.0 style
+ *          prefixes.
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] blkt_ptr Blockette structure.
+ * @param[in,out] stage_ptr Stage structure.
  */
-void parse_ref(FILE *, struct blkt *, struct stage *); /* response reference */
+void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses the RESP file blockettes for polynomial filters (in a
+ *        Blockette [62] or [42]).
+ * @details Errors cause the program to terminate. The blockette and field
+ *          numbers are checked as the file is parsed. The lines must contain
+ *          evalresp-3.0 style prefixes
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] blkt_ptr Blockette structure.
+ * @param[in,out] stage_ptr Stage structure.
+ * @author 05/31/2013: IGD.
  */
-void parse_polynomial(FILE *, struct blkt *, struct stage *); /* polynomial B42 B62 IGD 05/31/2013 */
-
-/* remove trailing white space from (if last arg is 'a') and add null character to
- end of (if last arg is 'a' or 'e') input (FORTRAN) string */
+void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
+                      struct stage *stage_ptr);
 
 /**
  * @private
@@ -1494,6 +1719,7 @@ void parse_polynomial(FILE *, struct blkt *, struct stage *); /* polynomial B42 
  * @param[in] len Length of string.
  * @param[in] where Where to place null character, @c a or @c e.
  * @returns New length of string.
+ * @remark Practical to use with input FORTRAN strings.
  */
 int add_null(char *s, int len, char where);
 
@@ -1502,35 +1728,82 @@ int add_null(char *s, int len, char where);
 /**
  * @private
  * @ingroup evalresp_private_response
- * @brief FIXME.
+ * @brief A routine that merges two fir filters.
+ * @details The coefficients from the second filter are copied into the first
+ *          filter and the number of coefficients in the first filter is
+ *          adjusted to reflect the new filter size. Then the next_blkt
+ *          pointer for the first filter is reset to the value of the
+ *          next_blkt pointer of the second filter and the space associated
+ *          with the second filter is free'd. Finally, the second filter
+ *          pointer is reset to the next_blkt pointer value of the first
+ *          filter
+ * @param[in,out] first_blkt First filter.
+ * @param[in,out] second_blkt Second filter.
  */
-void merge_coeffs(struct blkt *, struct blkt **);
+void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt);
 
 /**
  * @private
  * @ingroup evalresp_private_response
- * @brief FIXME.
+ * @brief A routine that merges two lists filters (blockettes 55).
+ * @details The frequencies, amplitudes and phases from the second filter are
+ *          copied into the first filter and the number of coefficients in the
+ *          first filter is adjusted to reflect the new filter size. Then the
+ *          next_blkt pointer for the first filter is reset to the value of
+ *          the next_blkt pointer of the second filter and the space
+ *          associated with the second filter is free'd. Finally, the second
+ *          filter pointer is reset to the next_blkt pointer value of the
+ *          first filter.
+ * @param[in,out] first_blkt First filter.
+ * @param[in,out] second_blkt Second filter.
+ * @author 07/07/00: Ilya Dricker IGD (i.dricker@isti.com): Modified from
+ *         merge_coeffs() for 3.2.17 of evalresp.
  */
-void merge_lists(struct blkt *, struct blkt **); /* Added by I.Dricker IGD for v
- 3.2.17 of evalresp */
+void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt);
 
 /**
  * @private
  * @ingroup evalresp_private_response
- * @brief FIXME.
+ * @brief A routine that checks a channel's filter stages.
+ * @details (1) Run a sanity check on the filter sequence. And that LAPLACE_PZ
+ *              and ANALOG_PZ filters will be followed by a GAIN blockette
+ *              only. REFERENCE blockettes are ignored (since they contain no
+ *              response information).
+ *
+ *          (2) As the routine moves through the stages in the filter
+ *              sequence, several other checks are made. First, the output
+ *              units of this stage are compared with the input units of the
+ *              next on to ensure that no stages have been skipped. Second,
+ *              the filter type of this blockette is compared with the filter
+ *              type of the next. If they are the same and have the same
+ *              stage-sequence number, then they are merged to form one
+ *              filter.  At the present time this is only implemented for the
+ *              FIR type filters (since those are the only filter types that
+ *              typically are continued to a second filter blockette). The new
+ *              filter will have the combined number of coefficients and a new
+ *              vector containing the coefficients for both filters, one after
+ *              the other.
+ *
+ *          (3) the expected delay from the FIR filter stages in the channel's
+ *              filter sequence is calculated and stored in the filter
+ *              structure.
+ * @param[in] chan Channel structure.
  */
-void check_channel(struct channel *);
+void check_channel(struct channel *chan);
 
 /**
  * @private
  * @ingroup evalresp_private_response
- * @brief FIXME.
+ * @brief Checks to see if a FIR filter can be converted to a symmetric FIR
+ *        filter.
+ * @details If so, the conversion is made and the filter type is redefined.
+ * @param[in,out] f FIR filter.
+ * @param[in] chan Channel structure.
  */
-void check_sym(struct blkt *, struct channel *);
+void check_sym(struct blkt *f, struct channel *chan);
 
 /* routines used to calculate the instrument responses */
 
-/*void calc_resp(struct channel *, double *, int, struct evr_complex *,char *, int, int);*/
 /**
  * @private
  * @ingroup evalresp_private_calc
@@ -1704,10 +1977,21 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
  * @ingroup evalresp_private_response
  * @brief Interpolates amplitude and phase values from the set of frequencies
  *        in the List blockette to the requested set of frequencies.
+ * @details The given frequency, amplitude and phase arrays are deallocated
+ *          and replaced with newly allocated arrays containing the
+ *          interpolated values. The @p p_number_points value is also updated.
+ * @param[in,out] frequency_ptr Reference to array of frequency values.
+ * @param[in,out]  amplitude_ptr Reference to array of amplitude values.
+ * @param[in,out] phase_ptr Reference to array of phase values.
+ * @param[in,out] p_number_points Reference to number of points value.
+ * @param[in] req_freq_arr Array of requested frequency values.
+ * @param[in] eq_num_freqs Number values in @p req_freq_arr array.
+ * @param[in] tension Tension value for interpolation.
  */
-void interpolate_list_blockette(double **freq, double **amp, double **phase,
-        int *p_number_points, double *req_freq_arr, int req_num_freqs,
-        double tension);
+void interpolate_list_blockette(double **frequency_ptr,
+                                double **amplitude_ptr, double **phase_ptr,
+                                int *p_number_points, double *req_freq_arr,
+                                int req_num_freqs, double tension);
 
 /**
  * @private

@@ -2,7 +2,7 @@ date := $(shell date +'%e %B %Y')
 
 doxyversion := $(shell doxygen --version | cut -d . -f 1-2)
 
-all-local: pdf-local
+#all-local: pdf-local
 
 pdf-local: evalresp.pdf
 
