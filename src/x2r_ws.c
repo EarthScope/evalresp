@@ -1,6 +1,7 @@
 
+#include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
-#include <libxml/xpath.h>
 
 #include "x2r.h"
 #include "x2r_log.h"
@@ -23,17 +24,16 @@ static int line(x2r_log *log, FILE *out, const char *template, ...) {
 
     if (!(with_lf = calloc(strlen(template) + 2, sizeof(*with_lf)))) {
         status = x2r_error(log, X2R_ERR_MEMORY, "Cannot allocate buffer");
-        goto exit;
+    } else {
+		sprintf(with_lf, "%s\n", template);
+		if (vfprintf(out, with_lf, argp) < 0) {
+			status = x2r_error(log, X2R_ERR_IO, "Error printing %s", template);
+		}
     }
-    sprintf(with_lf, "%s\n", template);
 
-    if (vfprintf(out, with_lf, argp) < 0) {
-        status = x2r_error(log, X2R_ERR_IO, "Error printing %s", template);
-    }
-
-exit:
     free(with_lf);
     va_end(argp);
+
     return status;
 }
 
@@ -63,19 +63,16 @@ static int format_date(x2r_log *log, const time_t epoch, int n, char *template, 
 
     if (!(tm = gmtime(&epoch))) {
         status = x2r_error(log, X2R_ERR_DATE, "Cannot convert epoch to time");
-        goto exit;
-    }
-    if (!(*date = calloc(n, sizeof(**date)))) {
-        status = x2r_error(log, X2R_ERR_MEMORY, "Cannot alloc date");
-        goto exit;
-    }
-    if (!(strftime(*date, n, template, tm))) {
-        status = x2r_error(log, X2R_ERR_BUFFER, "Cannot format date in %d char"\
-, n);
-        goto exit;
+    } else {
+		if (!(*date = calloc(n, sizeof(**date)))) {
+			status = x2r_error(log, X2R_ERR_MEMORY, "Cannot alloc date");
+		} else {
+			if (!(strftime(*date, n, template, tm))) {
+				status = x2r_error(log, X2R_ERR_BUFFER, "Cannot format date in %d char", n);
+			}
+		}
     }
 
-exit:
     return status;
 }
 
@@ -112,17 +109,16 @@ static int centre(x2r_log *log, const char *text, int width, char **result) {
 
     if (!(*result = calloc(width + 1, sizeof(**result)))) {
         status = x2r_error(log, X2R_ERR_MEMORY, "Cannot alloc centre");
-        goto exit;
+    } else {
+
+    	len = strlen(text);
+		len = len > width ? width : len;
+		margin = (width - len) / 2;
+
+		memset(*result, ' ', width);
+		chrncpy(*result+margin, text, len);
     }
 
-    len = strlen(text);
-    len = len > width ? width : len;
-    margin = (width - len) / 2;
-
-    memset(*result, ' ', width);
-    chrncpy(*result+margin, text, len);
-
-exit:
     return status;
 }
 
@@ -135,20 +131,20 @@ static int centre_sncl(x2r_log *log, const char *net, const char *stn, const x2r
     char *sncl = NULL;
 
     len = 4 + 7 + 4 + strlen(channel->code);
+
     if (!(sncl = calloc(len + 1, sizeof(*sncl)))) {
         status = x2r_error(log, X2R_ERR_MEMORY, "Cannot alloc sncl");
-        goto exit;
+    } else {
+
+		memset(sncl, ' ', len);
+		chrncpy(sncl, net, 4);
+		chrncpy(sncl+4, stn, 7);
+		chrncpy(sncl+11, channel->location_code, 4);
+		strcpy(sncl+15, channel->code);
+
+		status = centre(log, sncl, width, result);
     }
 
-    memset(sncl, ' ', len);
-    chrncpy(sncl, net, 4);
-    chrncpy(sncl+4, stn, 7);
-    chrncpy(sncl+11, channel->location_code, 4);
-    strcpy(sncl+15, channel->code);
-
-    if ((status = centre(log, sncl, width, result))) goto exit;
-
-exit:
     free(sncl);
     return status;
 }
@@ -191,24 +187,32 @@ static int box(x2r_log *log, FILE *out, const char *title, const char UNUSED *ne
     int status = X2R_OK;
     char *ctitle = NULL, *csncl = NULL, *start = NULL, *end = NULL;
 
-    if ((status = centre(log, title, 35, &ctitle))) goto exit;
-    if ((status = centre_sncl(log, net, stn, channel, 35, &csncl))) goto exit;
-    if ((status = format_date_mdy(log, channel->start_date, &start))) goto exit;
-    if ((status = format_date_mdy(log, channel->end_date, &end))) goto exit;
+    if (!(status = centre(log, title, 35, &ctitle))) {
+    	if (!(status = centre_sncl(log, net, stn, channel, 35, &csncl))) {
+    		if (!(status = format_date_mdy(log, channel->start_date, &start))) {
+    			status = format_date_mdy(log, channel->end_date, &end);
+    		}
+    	}
+    }
 
-    if ((status = lines(log, out,
-            "#",
-            "#                  +-----------------------------------+",
-            NULL))) goto exit;
-    if ((status = line(log, out, "#                  |%s|", ctitle))) goto exit;
-    if ((status = line(log, out, "#                  |%s|", csncl))) goto exit;
-    if ((status = line(log, out, "#                  |     %s to %s      |", start, end))) goto exit;
-    if ((status = lines(log, out,
-            "#                  +-----------------------------------+",
-            "#",
-            NULL))) goto exit;
+    if (!status) {
+    	if (!(status = lines(log, out,
+    			"#",
+				"#                  +-----------------------------------+",
+				NULL))) {
+    		if (!(status = line(log, out, "#                  |%s|", ctitle))) {
+    			if (!(status = line(log, out, "#                  |%s|", csncl))) {
+    				if (!(status = line(log, out, "#                  |     %s to %s      |", start, end))) {
+    					status = lines(log, out,
+    							"#                  +-----------------------------------+",
+								"#",
+								NULL);
+    				}
+    			}
+    		}
+    	}
+    }
 
-exit:
     free(csncl);
     free(ctitle);
     free(start);
@@ -224,17 +228,17 @@ static int print_pole_zero(x2r_log *log, FILE *out, const char *tag, const char 
     int status = X2R_OK, i;
 
     if (n) {
-        if ((status = line(log, out, "#              Complex %s:", name))) goto exit;
-        if ((status = line(log, out, "#              i  real          imag          real_error    imag_error"))) goto exit;
-        for (i = 0; i < n; ++i) {
+        if (!(status = line(log, out, "#              Complex %s:", name))) {
+        	status = line(log, out, "#              i  real          imag          real_error    imag_error");
+        }
+        for (i = 0; !status && i < n; ++i) {
             x2r_pole_zero pz = pole_zero[i];
-            if ((status = line(log, out, "%s%6d  %+9.5E  %+9.5E  %+9.5E  %+9.5E",
-                    tag, pz.number, pz.real.value, pz.imaginary.value,
-                    pz.real.minus_error, pz.imaginary.minus_error))) goto exit;
+            status = line(log, out, "%s%6d  %+9.5E  %+9.5E  %+9.5E  %+9.5E",
+            		tag, pz.number, pz.real.value, pz.imaginary.value,
+					pz.real.minus_error, pz.imaginary.minus_error);
         }
     }
 
-exit:
     return status;
 }
 
@@ -245,29 +249,41 @@ static int print_poles_zeros(x2r_log *log, FILE *out, const char *net, const cha
 
     int status = X2R_OK;
 
-    if ((status = box(log, out, "Response (Poles and Zeros)", net, stn, channel))) goto exit;
-    if ((status = line(log, out, "B053F03     Transfer function type:                %s",
-            convert_tft(poles_zeros->pz_transfer_function_type)))) goto exit;
-    if ((status = line(log, out, "B053F04     Stage sequence number:                 %d",
-            stage))) goto exit;
-    if ((status = line(log, out, "B053F05     Response in units lookup:              %s - %s",
-            poles_zeros->input_units.name, poles_zeros->input_units.description))) goto exit;
-    if ((status = line(log, out, "B053F06     Response out units lookup:             %s - %s",
-            poles_zeros->output_units.name, poles_zeros->output_units.description))) goto exit;
-    if ((status = line(log, out, "B053F07     A0 normalization factor:               %+9.5E",
-            poles_zeros->normalization_factor))) goto exit;
-    if ((status = line(log, out, "B053F08     Normalization frequency:               %+9.5E",
-            poles_zeros->normalization_frequency))) goto exit;
-    if ((status = line(log, out, "B053F09     Number of zeroes:                      %d",
-            poles_zeros->n_zeros))) goto exit;
-    if ((status = line(log, out, "B053F14     Number of poles:                       %d",
-            poles_zeros->n_poles))) goto exit;
-    if ((status = print_pole_zero(log, out, "B053F10-13", "zeroes",
-            poles_zeros->n_zeros, poles_zeros->zero))) goto exit;
-    if ((status = print_pole_zero(log, out, "B053F15-18", "poles",
-            poles_zeros->n_poles, poles_zeros->pole))) goto exit;
+    if (!(status = box(log, out, "Response (Poles and Zeros)", net, stn, channel))) {
+    	if (!(status = line(log, out, "B053F03     Transfer function type:                %s",
+    			convert_tft(poles_zeros->pz_transfer_function_type)))) {
+    		if (!(status = line(log, out, "B053F04     Stage sequence number:                 %d",
+    				stage))) {
+    			status = line(log, out, "B053F05     Response in units lookup:              %s - %s",
+    					poles_zeros->input_units.name, poles_zeros->input_units.description);
+    		}
+    	}
+    }
+    if (!status) {
+    	if (!(status = line(log, out, "B053F06     Response out units lookup:             %s - %s",
+    			poles_zeros->output_units.name, poles_zeros->output_units.description))) {
+    		if (!(status = line(log, out, "B053F07     A0 normalization factor:               %+9.5E",
+    				poles_zeros->normalization_factor))) {
+    			status = line(log, out, "B053F08     Normalization frequency:               %+9.5E",
+    					poles_zeros->normalization_frequency);
+    		}
+    	}
+    }
+    if (!status) {
+    	if (!(status = line(log, out, "B053F09     Number of zeroes:                      %d",
+    			poles_zeros->n_zeros))) {
+    		if (!(status = line(log, out, "B053F14     Number of poles:                       %d",
+    				poles_zeros->n_poles))) {
+    			status = print_pole_zero(log, out, "B053F10-13", "zeroes",
+    					poles_zeros->n_zeros, poles_zeros->zero);
+    		}
+    	}
+    }
+    if (!status) {
+    	status = print_pole_zero(log, out, "B053F15-18", "poles",
+            poles_zeros->n_poles, poles_zeros->pole);
+    }
 
-exit:
     return status;
 }
 
@@ -279,16 +295,17 @@ static int print_coefficient(x2r_log *log, FILE *out, const char *tag, const cha
     int status = X2R_OK, i;
 
     if (n) {
-        if ((status = line(log, out, "#              %s coefficients:", name))) goto exit;
-        if ((status = line(log, out, "#              i  coefficient   error"))) goto exit;
-        for (i = 0; i < n; ++i) {
-            x2r_float cf = coefficient[i];
-            if ((status = line(log, out, "%s%6d  %+9.5E  %+9.5E",
-                    tag, i, cf.value, cf.minus_error))) goto exit;
+        if (!(status = line(log, out, "#              %s coefficients:", name))) {
+        	if (!(status = line(log, out, "#              i  coefficient   error"))) {
+        		for (i = 0; !status && i < n; ++i) {
+        			x2r_float cf = coefficient[i];
+        			status = line(log, out, "%s%6d  %+9.5E  %+9.5E",
+        					tag, i, cf.value, cf.minus_error);
+        		}
+        	}
         }
     }
 
-exit:
     return status;
 }
 
@@ -299,25 +316,34 @@ static int print_coefficients(x2r_log *log, FILE *out, const char *net, const ch
 
     int status = X2R_OK;
 
-    if ((status = box(log, out, "Response (Coefficients)", net, stn, channel))) goto exit;
-    if ((status = line(log, out, "B054F03     Transfer function type:                %s",
-            convert_tft(coefficients->cf_transfer_function_type)))) goto exit;
-    if ((status = line(log, out, "B054F04     Stage sequence number:                 %d",
-            stage))) goto exit;
-    if ((status = line(log, out, "B054F05     Response in units lookup:              %s - %s",
-            coefficients->input_units.name, coefficients->input_units.description))) goto exit;
-    if ((status = line(log, out, "B054F06     Response out units lookup:             %s - %s",
-            coefficients->output_units.name, coefficients->output_units.description))) goto exit;
-    if ((status = line(log, out, "B054F07     Number of numerators:                  %d",
-            coefficients->n_numerators))) goto exit;
-    if ((status = line(log, out, "B054F10     Number of denominators:                %d",
-            coefficients->n_denominators))) goto exit;
-    if ((status = print_coefficient(log, out, "B054F08-09", "Numerator",
-            coefficients->n_numerators, coefficients->numerator))) goto exit;
-    if ((status = print_coefficient(log, out, "B054F11-12", "Denominator",
-            coefficients->n_denominators, coefficients->denominator))) goto exit;
+    if (!(status = box(log, out, "Response (Coefficients)", net, stn, channel))) {
+    	if (!(status = line(log, out, "B054F03     Transfer function type:                %s",
+    			convert_tft(coefficients->cf_transfer_function_type)))) {
+    		if (!(status = line(log, out, "B054F04     Stage sequence number:                 %d",
+    				stage))) {
+    			status = line(log, out, "B054F05     Response in units lookup:              %s - %s",
+    					coefficients->input_units.name, coefficients->input_units.description);
+    		}
+    	}
+    }
+    if (!status) {
+    	if (!(status = line(log, out, "B054F06     Response out units lookup:             %s - %s",
+    			coefficients->output_units.name, coefficients->output_units.description))) {
+    		if (!(status = line(log, out, "B054F07     Number of numerators:                  %d",
+    				coefficients->n_numerators))) {
+    			status = line(log, out, "B054F10     Number of denominators:                %d",
+    					coefficients->n_denominators);
+    		}
+    	}
+    }
+    if (!status) {
+    	if (!(status = print_coefficient(log, out, "B054F08-09", "Numerator",
+    			coefficients->n_numerators, coefficients->numerator))) {
+    		status = print_coefficient(log, out, "B054F11-12", "Denominator",
+    				coefficients->n_denominators, coefficients->denominator);
+    	}
+    }
 
-exit:
     return status;
 }
 
@@ -328,27 +354,30 @@ static int print_response_list(x2r_log *log, FILE *out, const char *net, const c
 
     int status = X2R_OK, i;
 
-    if ((status = box(log, out, "Response List", net, stn, channel))) goto exit;
-    if ((status = line(log, out, "B055F03     Stage sequence number:                 %d",
-            stage))) goto exit;
-    if ((status = line(log, out, "B055F04     Response in units lookup:              %s - %s",
-            response_list->input_units.name, response_list->input_units.description))) goto exit;
-    if ((status = line(log, out, "B055F05     Response out units lookup:             %s - %s",
-            response_list->output_units.name, response_list->output_units.description))) goto exit;
-    if ((status = line(log, out, "B055F06     Number of responses listed:            %d",
-            response_list->n_response_list_elements))) goto exit;
-
-    if (response_list->n_response_list_elements) {
-        if ((status = line(log, out, "#              i  frequency     amplitude     amplitude err phase angle   phase err"))) goto exit;
-        for (i = 0; i < response_list->n_response_list_elements; ++i) {
-            x2r_response_list_element elt = response_list->response_list_element[i];
-            if ((status = line(log, out, "B055F07-11     %-4d%+9.5E  %+9.5E  %+9.5E  %+9.5E  %+9.5E",
-                    i+1, elt.frequency, elt.amplitude.value, elt.amplitude.minus_error,
-                    elt.phase.value, elt.phase.minus_error))) goto exit;
+    if (!(status = box(log, out, "Response List", net, stn, channel))) {
+    	if (!(status = line(log, out, "B055F03     Stage sequence number:                 %d",
+    			stage))) {
+    		if (!(status = line(log, out, "B055F04     Response in units lookup:              %s - %s",
+    				response_list->input_units.name, response_list->input_units.description))) {
+    			status = line(log, out, "B055F05     Response out units lookup:             %s - %s",
+    					response_list->output_units.name, response_list->output_units.description);
+    		}
+    	}
+    }
+    if (!status) {
+    	status = line(log, out, "B055F06     Number of responses listed:            %d",
+    			response_list->n_response_list_elements);
+    	if (!status && response_list->n_response_list_elements) {
+    		status = line(log, out, "#              i  frequency     amplitude     amplitude err phase angle   phase err");
+    		for (i = 0; !status && i < response_list->n_response_list_elements; ++i) {
+    			x2r_response_list_element elt = response_list->response_list_element[i];
+    			status = line(log, out, "B055F07-11     %-4d%+9.5E  %+9.5E  %+9.5E  %+9.5E  %+9.5E",
+    					i+1, elt.frequency, elt.amplitude.value, elt.amplitude.minus_error,
+						elt.phase.value, elt.phase.minus_error);
+    		}
         }
     }
 
-exit:
     return status;
 }
 
@@ -359,29 +388,34 @@ static int print_fir(x2r_log *log, FILE *out, const char *net, const char *stn,
 
     int status = X2R_OK, i;
 
-    if ((status = box(log, out, "FIR Response", net, stn, channel))) goto exit;
-    if ((status = line(log, out, "B061F03     Stage sequence number:                 %d",
-            stage))) goto exit;
-    if ((status = line(log, out, "B061F04     Response Name:                         %s",
-            fir->name))) goto exit;
-    if ((status = line(log, out, "B061F05     Symmetry Code:                         %s",
-            convert_symmetry(fir->symmetry)))) goto exit;
-    if ((status = line(log, out, "B061F06     Response in units lookup:              %s - %s",
-            fir->input_units.name, fir->input_units.description))) goto exit;
-    if ((status = line(log, out, "B061F07     Response out units lookup:             %s - %s",
-            fir->output_units.name, fir->output_units.description))) goto exit;
-    if ((status = line(log, out, "B061F08     Number of Coefficients:                %d",
-            fir->n_numerator_coefficients))) goto exit;
-
-    if (fir->n_numerator_coefficients) {
-        if ((status = line(log, out, "#              i  FIR Coefficient"))) goto exit;
-        for (i = 0; i < fir->n_numerator_coefficients; ++i) {
+    if (!(status = box(log, out, "FIR Response", net, stn, channel))) {
+    	if (!(status = line(log, out, "B061F03     Stage sequence number:                 %d",
+    			stage))) {
+    		if (!(status = line(log, out, "B061F04     Response Name:                         %s",
+    				fir->name))) {
+    			status = line(log, out, "B061F05     Symmetry Code:                         %s",
+    					convert_symmetry(fir->symmetry));
+    		}
+    	}
+    }
+    if (!status) {
+    	if (!(status = line(log, out, "B061F06     Response in units lookup:              %s - %s",
+    			fir->input_units.name, fir->input_units.description))) {
+    		if (!(status = line(log, out, "B061F07     Response out units lookup:             %s - %s",
+    				fir->output_units.name, fir->output_units.description))) {
+    			status = line(log, out, "B061F08     Number of Coefficients:                %d",
+    					fir->n_numerator_coefficients);
+    		}
+    	}
+    }
+    if (!status && fir->n_numerator_coefficients) {
+        status = line(log, out, "#              i  FIR Coefficient");
+        for (i = 0; !status && i < fir->n_numerator_coefficients; ++i) {
             x2r_numerator_coefficient nc = fir->numerator_coefficient[i];
-            if ((status = line(log, out, "B061F09%6d  %+9.5E", i, nc.value))) goto exit;
+            status = line(log, out, "B061F09%6d  %+9.5E", i, nc.value);
         }
     }
 
-exit:
     return status;
 }
 
@@ -392,41 +426,56 @@ static int print_polynomial(x2r_log *log, FILE *out, const char *net, const char
 
     int status = X2R_OK, i;
 
-    if ((status = box(log, out, "Response (Polynomial)", net, stn, channel))) goto exit;
-    if ((status = line(log, out, "B062F03     Transfer function type:                P"))) goto exit;
-    if ((status = line(log, out, "B062F04     Stage sequence number:                 %d",
-            stage))) goto exit;
-    if ((status = line(log, out, "B062F05     Response in units lookup:              %s - %s",
-            polynomial->input_units.name, polynomial->input_units.description))) goto exit;
-    if ((status = line(log, out, "B062F06     Response out units lookup:             %s - %s",
-            polynomial->output_units.name, polynomial->output_units.description))) goto exit;
-    if ((status = line(log, out, "B062F07     Polynomial Approximation Type:         M"))) goto exit;
-    if ((status = line(log, out, "B062F08     Valid Frequency Units:                 B"))) goto exit;
-    if ((status = line(log, out, "B062F09     Lower Valid Frequency Bound:           %+9.5E",
-            polynomial->frequency_lower_bound))) goto exit;
-    if ((status = line(log, out, "B062F10     Upper Valid Frequency Bound:           %+9.5E",
-            polynomial->frequency_upper_bound))) goto exit;
-    if ((status = line(log, out, "B062F11     Lower Bound of Approximation:          %+9.5E",
-            polynomial->approximation_lower_bound))) goto exit;
-    if ((status = line(log, out, "B062F12     Upper Bound of Approximation:          %+9.5E",
-            polynomial->approximation_upper_bound))) goto exit;
-    if ((status = line(log, out, "B062F13     Maximum Absolute Error:                %+9.5E",
-            polynomial->maximum_error))) goto exit;
-    if ((status = line(log, out, "B062F14     Number of Coefficients:                %d",
-            polynomial->n_coefficients))) goto exit;
+    if (!(status = box(log, out, "Response (Polynomial)", net, stn, channel))) {
+    	if (!(status = line(log, out, "B062F03     Transfer function type:                P"))) {
+    		if (!(status = line(log, out, "B062F04     Stage sequence number:                 %d",
+    				stage))) {
+    			status = line(log, out, "B062F05     Response in units lookup:              %s - %s",
+    					polynomial->input_units.name, polynomial->input_units.description);
+    		}
+    	}
+    }
+    if (!status) {
+    	if (!(status = line(log, out, "B062F06     Response out units lookup:             %s - %s",
+    			polynomial->output_units.name, polynomial->output_units.description))) {
+    		if (!(status = line(log, out, "B062F07     Polynomial Approximation Type:         M"))) {
+    			status = line(log, out, "B062F08     Valid Frequency Units:                 B");
+    		}
+    	}
+    }
+    if (!status) {
+    	if (!(status = line(log, out, "B062F09     Lower Valid Frequency Bound:           %+9.5E",
+    			polynomial->frequency_lower_bound))) {
+    		if (!(status = line(log, out, "B062F10     Upper Valid Frequency Bound:           %+9.5E",
+    				polynomial->frequency_upper_bound))) {
+    			status = line(log, out, "B062F11     Lower Bound of Approximation:          %+9.5E",
+    					polynomial->approximation_lower_bound);
+    		}
+    	}
+    }
+    if (!status) {
+    	if (!(status = line(log, out, "B062F12     Upper Bound of Approximation:          %+9.5E",
+    			polynomial->approximation_upper_bound))) {
+    		if (!(status = line(log, out, "B062F13     Maximum Absolute Error:                %+9.5E",
+    				polynomial->maximum_error))) {
+    			status = line(log, out, "B062F14     Number of Coefficients:                %d",
+    					polynomial->n_coefficients);
+    		}
+    	}
+    }
 
     // there are subtle differences with print_coefficient, as in IRIS_WS
-    if (polynomial->n_coefficients) {
-        if ((status = line(log, out, "#              Polynomial coefficients:"))) goto exit;
-        if ((status = line(log, out, "#              i, coefficient,  error"))) goto exit;
-        for (i = 0; i < polynomial->n_coefficients; ++i) {
-            x2r_coefficient cf = polynomial->coefficient[i];
-            if ((status = line(log, out, "B062F15-16%6d   %+9.5E  %+9.5E",
-                    cf.number, cf.value.value, cf.value.minus_error))) goto exit;
+    if (!status && polynomial->n_coefficients) {
+        if (!(status = line(log, out, "#              Polynomial coefficients:"))) {
+        	status = line(log, out, "#              i, coefficient,  error");
+        	for (i = 0; !status && i < polynomial->n_coefficients; ++i) {
+        		x2r_coefficient cf = polynomial->coefficient[i];
+        		status = line(log, out, "B062F15-16%6d   %+9.5E  %+9.5E",
+        				cf.number, cf.value.value, cf.value.minus_error);
+        	}
         }
     }
 
-exit:
     return status;
 }
 
@@ -437,29 +486,36 @@ static int print_decimation(x2r_log *log, FILE *out, const char *net, const char
 
     int status = X2R_OK;
 
-    if ((status = box(log, out, "Decimation", net, stn, channel))) goto exit;
-    // extra spacing below is in IRIS-WS
-    if ((status = line(log, out, "B057F03     Stage sequence number:                  %d",
-            stage))) goto exit;
-    // unusual format below is in IRIS-WS
-    if ((status = line(log, out, "B057F04     Input sample rate (HZ):                 %8.4E",
-            decimation->input_sample_rate))) goto exit;
-    // again, in IRIS-WS
-    if (decimation->factor) {
-        if ((status = line(log, out, "B057F05     Decimation factor:                      %05d",
-                decimation->factor))) goto exit;
-    } else {
-        if ((status = line(log, out, "B057F05     Decimation factor:                      %d",
-                decimation->factor))) goto exit;
+    if (!(status = box(log, out, "Decimation", net, stn, channel))) {
+    	// extra spacing below is in IRIS-WS
+    	if (!(status = line(log, out, "B057F03     Stage sequence number:                  %d",
+    			stage))) {
+    		// unusual format below is in IRIS-WS
+    		status = line(log, out, "B057F04     Input sample rate (HZ):                 %8.4E",
+    				decimation->input_sample_rate);
+    	}
     }
-    if ((status = line(log, out, "B057F06     Decimation offset:                      %05d",
-            decimation->offset))) goto exit;
-    if ((status = line(log, out, "B057F07     Estimated delay (seconds):             %+8.4E",
-            decimation->delay))) goto exit;
-    if ((status = line(log, out, "B057F08     Correction applied (seconds):          %+8.4E",
-            decimation->correction))) goto exit;
+    if (!status) {
+        // again, in IRIS-WS
+    	if (decimation->factor) {
+    		status = line(log, out, "B057F05     Decimation factor:                      %05d",
+    				decimation->factor);
+    	} else {
+    		status = line(log, out, "B057F05     Decimation factor:                      %d",
+                decimation->factor);
+    	}
+    }
+    if (!status) {
+    	if (!(status = line(log, out, "B057F06     Decimation offset:                      %05d",
+    			decimation->offset))) {
+    		if (!(status = line(log, out, "B057F07     Estimated delay (seconds):             %+8.4E",
+    				decimation->delay))) {
+    			status = line(log, out, "B057F08     Correction applied (seconds):          %+8.4E",
+    					decimation->correction);
+    		}
+    	}
+    }
 
-exit:
     return status;
 }
 
@@ -471,16 +527,20 @@ static int print_stage_gain(x2r_log *log, FILE *out, const char *net, const char
     int status = X2R_OK;
 
     // leading space below is in IRIS-WS
-    if ((status = box(log, out, " Channel Sensitivity/Gain", net, stn, channel))) goto exit;
-    if ((status = line(log, out, "B058F03     Stage sequence number:                 %d",
-            stage))) goto exit;
-    if ((status = line(log, out, "B058F04     Sensitivity:                           %+9.5E",
-            gain->value))) goto exit;
-    if ((status = line(log, out, "B058F05     Frequency of sensitivity:              %+9.5E",
-            gain->frequency))) goto exit;
-    if ((status = line(log, out, "B058F06     Number of calibrations:                0"))) goto exit;
+    if (!(status = box(log, out, " Channel Sensitivity/Gain", net, stn, channel))) {
+    	if (!(status = line(log, out, "B058F03     Stage sequence number:                 %d",
+    			stage))) {
+    		status = line(log, out, "B058F04     Sensitivity:                           %+9.5E",
+    				gain->value);
+    	}
+    }
+    if (!status) {
+    	if (!(status = line(log, out, "B058F05     Frequency of sensitivity:              %+9.5E",
+    			gain->frequency))) {
+    		status = line(log, out, "B058F06     Number of calibrations:                0");
+    	}
+    }
 
-exit:
     return status;
 }
 
@@ -493,41 +553,39 @@ static int print_stage(x2r_log *log, FILE *out, const char *net, const char *stn
 
     switch (stage->type) {
     case X2R_STAGE_POLES_ZEROS:
-        if ((status = print_poles_zeros(log, out, net, stn, channel, stage->number,
-                stage->u.poles_zeros))) goto exit;
+    	status = print_poles_zeros(log, out, net, stn, channel, stage->number,
+                stage->u.poles_zeros);
         break;
     case X2R_STAGE_COEFFICIENTS:
-        if ((status = print_coefficients(log, out, net, stn, channel, stage->number,
-                stage->u.coefficients))) goto exit;
+        status = print_coefficients(log, out, net, stn, channel, stage->number,
+                stage->u.coefficients);
         break;
     case X2R_STAGE_RESPONSE_LIST:
-        if ((status = print_response_list(log, out, net, stn, channel, stage->number,
-                stage->u.response_list))) goto exit;
+        status = print_response_list(log, out, net, stn, channel, stage->number,
+                stage->u.response_list);
         break;
     case X2R_STAGE_FIR:
-        if ((status = print_fir(log, out, net, stn, channel, stage->number,
-                stage->u.fir))) goto exit;
+        status = print_fir(log, out, net, stn, channel, stage->number, stage->u.fir);
         break;
     case X2R_STAGE_POLYNOMIAL:
-        if ((status = print_polynomial(log, out, net, stn, channel, stage->number,
-                stage->u.polynomial))) goto exit;
+        status = print_polynomial(log, out, net, stn, channel, stage->number,
+        		stage->u.polynomial);
         break;
     default:
         x2r_warn(log, "No content in stage (during print)");
         break;
     }
 
-    if (stage->decimation) {
-        if ((status = print_decimation(log, out, net, stn, channel, stage->number,
-                stage->decimation))) goto exit;
+    if (!status && stage->decimation) {
+        status = print_decimation(log, out, net, stn, channel, stage->number,
+        		stage->decimation);
     }
 
-    if (stage->stage_gain) {
-        if ((status = print_stage_gain(log, out, net, stn, channel, stage->number,
-                stage->stage_gain))) goto exit;
+    if (!status && stage->stage_gain) {
+        status = print_stage_gain(log, out, net, stn, channel, stage->number,
+        		stage->stage_gain);
     }
 
-exit:
     return status;
 }
 
@@ -538,23 +596,22 @@ static int print_response(x2r_log *log, FILE *out, const char *net, const char *
 
     int status = X2R_OK, i;
 
-    for (i = 0; i < response->n_stages; ++i) {
-        if ((status = print_stage(log, out, net, stn, channel, &response->stage[i]))) goto exit;
+    for (i = 0; !status && i < response->n_stages; ++i) {
+        status = print_stage(log, out, net, stn, channel, &response->stage[i]);
     }
 
     // the check on value is not in the IRIS-WS code, but the logic appears to be there
     // perhaps there's a failure to unserialize when the value is missing?
-    if (response->instrument_sensitivity && response->instrument_sensitivity->value != 0) {
-        if ((status = print_stage_gain(log, out, net, stn, channel, 0,
-                response->instrument_sensitivity))) goto exit;
+    if (!status && response->instrument_sensitivity && response->instrument_sensitivity->value != 0) {
+        status = print_stage_gain(log, out, net, stn, channel, 0,
+        		response->instrument_sensitivity);
     }
 
-    if (response->instrument_polynomial) {
-        if ((status = print_polynomial(log, out, net, stn, channel, 0,
-                response->instrument_polynomial))) goto exit;
+    if (!status && response->instrument_polynomial) {
+        status = print_polynomial(log, out, net, stn, channel, 0,
+        		response->instrument_polynomial);
     }
 
-exit:
     return status;
 }
 
@@ -566,26 +623,35 @@ static int print_channel(x2r_log *log, FILE *out, const char *net, const char *s
     int status = X2R_OK;
     char *start = NULL, *end = NULL;
 
-    if ((status = lines(log, out,
+    if (!(status = lines(log, out,
             "#",
             "###################################################################################",
             "#",
             NULL
-            ))) goto exit;
-    if ((status = line(log, out, "B050F03     Station:     %s", stn))) goto exit;
-    if ((status = line(log, out, "B050F16     Network:     %s", net))) goto exit;
-    if ((status = line(log, out, "B052F03     Location:    %s",
-            (!(strcmp(channel->location_code, "  ") && strcmp(channel->location_code, ""))) ?
-                    "??" : channel->location_code))) goto exit;
-    if ((status = line(log, out, "B052F04     Channel:     %s", channel->code))) goto exit;
-    if ((status = format_date_yjhms(log, channel->start_date, &start))) goto exit;
-    if ((status = line(log, out, "B052F22     Start date:  %s", start))) goto exit;
-    if ((status = format_date_yjhms(log, channel->end_date, &end))) goto exit;
-    if ((status = line(log, out, "B052F23     End date:    %s", end))) goto exit;
+            ))) {
+    	if (!(status = line(log, out, "B050F03     Station:     %s", stn))) {
+    		if (!(status = line(log, out, "B050F16     Network:     %s", net))) {
+    			status = line(log, out, "B052F03     Location:    %s",
+    					(!(strcmp(channel->location_code, "  ") && strcmp(channel->location_code, ""))) ?
+    							"??" : channel->location_code);
+    		}
+    	}
+    }
+    if (!status) {
+    	if (!(status = line(log, out, "B052F04     Channel:     %s", channel->code))) {
+    		if (!(status = format_date_yjhms(log, channel->start_date, &start))) {
+    			status = line(log, out, "B052F22     Start date:  %s", start);
+    		}
+    	}
+    }
+    if (!status) {
+    	if (!(status = format_date_yjhms(log, channel->end_date, &end))) {
+    		if (!(status = line(log, out, "B052F23     End date:    %s", end))) {
+    			status = print_response(log, out, net, stn, channel, &channel->response);
+    		}
+    	}
+    }
 
-    if ((status = print_response(log, out, net, stn, channel, &channel->response))) goto exit;
-
-exit:
     free(start);
     free(end);
     return status;
@@ -601,18 +667,17 @@ int x2r_resp_util_write(x2r_log *log, FILE *out, const x2r_fdsn_station_xml *roo
     x2r_network network;
     x2r_station station;
 
-    for (i = 0; i < root->n_networks; ++i) {
+    for (i = 0; !status && i < root->n_networks; ++i) {
         network = root->network[i];
-        for (j = 0; j < network.n_stations; ++j) {
+        for (j = 0; !status && j < network.n_stations; ++j) {
             station = network.station[j];
-            for (k = 0; k < station.n_channels; ++k) {
-                if ((status = print_channel(log, out, network.code, station.code,
-                        &station.channel[k]))) goto exit;
+            for (k = 0; !status && k < station.n_channels; ++k) {
+                status = print_channel(log, out, network.code, station.code,
+                		&station.channel[k]);
             }
         }
     }
 
-exit:
     return status;
 }
 
@@ -624,18 +689,20 @@ static int convert_and_replace(FILE **in, int log_level) {
     x2r_fdsn_station_xml *root = NULL;
     FILE *tmp;
 
-	if ((status = x2r_alloc_log(log_level, stderr, &log))) goto exit;
-	if (!(tmp = tmpfile())) {
-		status = x2r_error(log, X2R_ERR_IO, "Could not open temporary file");
-		goto exit;
+	if (!(status = x2r_alloc_log(log_level, stderr, &log))) {
+		if (!(tmp = tmpfile())) {
+			status = x2r_error(log, X2R_ERR_IO, "Could not open temporary file");
+		} else {
+			if (!(status = x2r_station_service_load(log, *in, &root))) {
+				if (!(status = x2r_resp_util_write(log, tmp, root))) {
+					rewind(tmp);
+					if (*in != stdin) fclose(*in);
+					*in = tmp;
+				}
+			}
+		}
 	}
-	if ((status = x2r_station_service_load(log, *in, &root))) goto exit;
-	if ((status = x2r_resp_util_write(log, tmp, root))) goto exit;
-	rewind(tmp);
-	if (*in != stdin) fclose(*in);
-	*in = tmp;
 
-exit:
     status = x2r_free_fdsn_station_xml(root, status);
     status = x2r_free_log(log, status);
     return status;
@@ -672,16 +739,17 @@ static int detect_xml(FILE **in, int *xml_flag) {
 			// a < means xml
 			case '<':
 				*xml_flag = 1;
-				goto exit;
+				character = -1;
+				break;
 			// anything else means SEED
 			default:
 				*xml_flag = 0;
-				goto exit;
+				character = -1;
+				break;
 			}
 		}
 	}
 
-exit:
 // doesn't work well on OSX?
 //	rewind(*in);
 	fseek(*in, 0, SEEK_SET);

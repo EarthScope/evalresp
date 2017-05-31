@@ -26,7 +26,6 @@
 #ifndef X2R_H
 #define X2R_H
 
-
 /**
  * @private
  * @ingroup evalresp_private_x2r
@@ -53,35 +52,28 @@
  * @ingroup evalresp_private_x2r
  * @brief FIXME.
  */
-#define X2R_ERR_XML2 3
+#define X2R_ERR_BUFFER 3
 
 /**
  * @private
  * @ingroup evalresp_private_x2r
  * @brief FIXME.
  */
-#define X2R_ERR_BUFFER 4
+#define X2R_ERR_XML 4
 
 /**
  * @private
  * @ingroup evalresp_private_x2r
  * @brief FIXME.
  */
-#define X2R_ERR_XML 5
+#define X2R_ERR_IO 5
 
 /**
  * @private
  * @ingroup evalresp_private_x2r
  * @brief FIXME.
  */
-#define X2R_ERR_IO 6
-
-/**
- * @private
- * @ingroup evalresp_private_x2r
- * @brief FIXME.
- */
-#define X2R_ERR_DATE 7
+#define X2R_ERR_DATE 6
 
 #ifdef __GNUC__
 #define UNUSED __attribute__((unused))
