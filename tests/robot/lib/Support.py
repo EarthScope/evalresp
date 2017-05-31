@@ -25,13 +25,13 @@ class Support:
         if not exists(dir):
             raise Exception('Directory %s does not exist' % dir)
 
-    def _assert_equal_floats(self, a, b, location):
+    def _assert_equal_floats(self, a, b, tol, location):
         magnitude = max(abs(a), abs(b))
-        if magnitude < TINY:
-            if abs(a - b) > TINY:
+        if magnitude < tol:
+            if abs(a - b) > tol:
                 raise Exception('%f and %f differ at %s' % (a, b, location))
         else:
-            if (abs(a - b) / magnitude) > TINY:
+            if (abs(a - b) / magnitude) > tol:
                 raise Exception('%f and %f differ at %s' % (a, b, location))
 
     def prepare(self, dest_dir, data_dir, files):
@@ -61,7 +61,7 @@ class Support:
             raise Exception('Missing data in %s at line %d' % (path, index))
         return data
 
-    def compare_n_float_cols(self, target_dir, ncols, files):
+    def compare_n_float_cols(self, target_dir, ncols, tol, files):
         """Call this method after running evalresp on a single set of files.
         It checks the given files (a comma-separated list with no
         spaces) between the working directory and the target
@@ -83,7 +83,7 @@ class Support:
                             target_data = self._extract_floats(ncols, target_line, target_path, index)
                             for (r, t) in zip(result_data, target_data):
                                 location = '%s and %s at line %d' % (result_path, target_path, index)
-                                self._assert_equal_floats(r, t, location)
+                                self._assert_equal_floats(r, t, tol, location)
                         except Exception, e:
                             # try comparing as text (may be titles etc)
                             if result_line != target_line:
@@ -91,25 +91,30 @@ class Support:
                 if target_file.readline():
                     raise Exception('Missing data at end of %s' % result_path)
 
-    def compare_two_float_cols(self, target_dir, files):
+    def compare_two_float_cols(self, target_dir, tol, files):
         """Call this method after running evalresp on a single set of files.
         It checks the given files (a comma-separated list with no
         spaces) between the working directory and the target
         directory."""
-        self.compare_n_float_cols(target_dir, 2, files)
+        self.compare_n_float_cols(target_dir, 2, tol, files)
 
-    def compare_target_files_two_float_cols(self, target_dir=None):
+    def compare_target_files_two_float_cols(self, target_dir=None, tol=None):
         """Call this method after running evalresp on a single set of files.
         It checks all files in the target directory against those in
         the run directory (the target directory can be inferred if
         both have the same relative paths)."""
         if not target_dir:
             target_dir = relpath(realpath(getcwd()), realpath(RUN))
+        if tol:
+            tol = float(tol)
+        else:
+            tol = TINY
         target = join(TARGET, target_dir)
         files = ','.join(listdir(target))
-        self.compare_two_float_cols(target_dir, files)
+        self.compare_two_float_cols(target_dir, tol, files)
 
-    def count_and_compare_target_files_n_float_cols(self, ncols, target_dir=None):
+    def count_and_compare_target_files_n_float_cols(
+            self, ncols, target_dir=None, tol=None):
         """Call this method after running evalresp on a single set of files.
         It checks all files in the target directory against those in
         the run directory (the target directory can be inferred if
@@ -117,20 +122,25 @@ class Support:
         be present."""
         if not target_dir:
             target_dir = relpath(realpath(getcwd()), realpath(RUN))
+        if tol:
+            tol = float(tol)
+        else:
+            tol = TINY
         target = join(TARGET, target_dir)
         files = listdir(target)
         if files:
             filelist = ','.join(files)
-            self.compare_n_float_cols(target_dir, ncols, filelist)
+            self.compare_n_float_cols(target_dir, ncols, tol, filelist)
         self.check_number_of_files(len(files)+1)
 
-    def count_and_compare_target_files_two_float_cols(self, target_dir=None):
+    def count_and_compare_target_files_two_float_cols(
+            self, target_dir=None, tol=None):
         """Call this method after running evalresp on a single set of files.
         It checks all files in the target directory against those in
         the run directory (the target directory can be inferred if
         both have the same relative paths).  No additional files can
         be present."""
-        self.count_and_compare_target_files_n_float_cols(2, target_dir)
+        self.count_and_compare_target_files_n_float_cols(2, target_dir, tol)
 
     def check_number_of_files(self, n):
         """Check the number of files in the run directory."""

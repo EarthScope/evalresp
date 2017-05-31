@@ -1787,10 +1787,6 @@ int get_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log) {
 
 }
 
-/* timecmp:  returns an integer indicating whether the time in the input argument
- "dt1" is greater than (1), equal to (0), or less than (-1) the time
- in the input argument "dt2" */
-
 int timecmp(struct dateTime *dt1, struct dateTime *dt2) {
 
     /* check year */

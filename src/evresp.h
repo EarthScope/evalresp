@@ -573,7 +573,7 @@ struct referType {
 /**
  * @private
  * @ingroup evalresp_private
- * @brief Define a blkt as a stucture containing the blockette type, a union
+ * @brief Define a blkt as a structure containing the blockette type, a union
  *        (blkt_info) containing the blockette info, and a pointer to the
  *        next blockette in the filter sequence.
  * @details The structures will be assembled to form a linked list of
@@ -1140,7 +1140,7 @@ struct response *alloc_response(int npts);
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for an array of strings.
- * @param[in] nstring Number of strings to allocate in array.
+ * @param[in] nstrings Number of strings to allocate in array.
  * @param[in] log Logging structure.
  * @returns Pointer to allocated array.
  * @returns @c NULL if @p nstrings is zero.
@@ -1351,7 +1351,7 @@ void free_string_array(struct string_array *lst);
  *        type structure.
  * @param[in,out] ptr Station-channel type structure.
  */
-void free_scn(struct scn *);
+void free_scn(struct scn *ptr);
 
 /**
  * @private
@@ -1474,7 +1474,7 @@ void free_channel(struct channel *chan_ptr);
  * @ingroup evalresp_private_alloc
  * @brief A routine that frees up the space associated with a linked list of
  *        response information.
- * @param[in,out] chan_ptr Response structure.
+ * @param[in,out] resp_ptr Response structure.
  */
 void free_response(struct response *resp_ptr);
 
@@ -1807,7 +1807,17 @@ void check_sym(struct blkt *f, struct channel *chan);
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Calculate response.
+ * @param[in] chan Channel structure.
+ * @param[in] freq Frequency array.
+ * @param[in] nfreqs Number if numbers in @p freq.
+ * @param[in] output Output.
+ * @param[in] out_units Units of output.
+ * @param[in] start_stage Start stage.
+ * @param[in] stop_stage Stop stage.
+ * @param[in] useTotalSensitivityFlag Use reported sensitivity to compute
+ *                                    response.
+ * @param[in] x_for_b62 FIXME.
  */
 void calc_resp(struct channel *chan, double *freq, int nfreqs,
         struct evr_complex *output, char *out_units, int start_stage,
@@ -1816,85 +1826,126 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs,
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Convert response to velocity first, then to specified units.
+ * @param[in] inp Input units. See units constants.
+ * @param[in] out_units Output units. @c DEF, @c DIS, @c VEL, @c ACC.
+ * @param[in,out] data Data.
+ * @param[in] w Frequency.
  */
-void convert_to_units(int, char *, struct evr_complex *, double);
+void convert_to_units(int inp, char *out_units, struct evr_complex *data,
+                      double w);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Response of analog filter.
+ * @param[in] blkt_ptr Filter.
+ * @param[in] freq Frequency.
+ * @param[out] out Response.
  */
-void analog_trans(struct blkt *, double, struct evr_complex *);
+void analog_trans(struct blkt *blkt_ptr, double freq, struct evr_complex *out);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Response of symetrical FIR filters.
+ * @param[in] blkt_ptr Filter.
+ * @param[in] w Frequency.
+ * @param[out] out Response.
  */
-void fir_sym_trans(struct blkt *, double, struct evr_complex *);
+void fir_sym_trans(struct blkt *blkt_ptr, double w, struct evr_complex *out);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Response of asymetrical FIR filters.
+ * @param[in] blkt_ptr Filter.
+ * @param[in] w Frequency.
+ * @param[out] out Response.
  */
-void fir_asym_trans(struct blkt *, double, struct evr_complex *);
+void fir_asym_trans(struct blkt *blkt_ptr, double w, struct evr_complex *out);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Response of IIR filters.
+ * @param[in] blkt_ptr Filter.
+ * @param[in] w Frequency.
+ * @param[out] out Response.
  */
-void iir_pz_trans(struct blkt *, double, struct evr_complex *);
+void iir_pz_trans(struct blkt *blkt_ptr, double w, struct evr_complex *out);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Calculate the phase shift equivalent to the time shift.
+ * @details Delta at the frequency w (rads/sec).
+ * @param[in] delta Delta.
+ * @param[in] w Frequency.
+ * @param[out] out Phase shift equivalent.
  */
-void calc_time_shift(double, double, struct evr_complex *);
+void calc_time_shift(double delta, double w, struct evr_complex *out);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Complex multiplication.
+ * @details Complex version of val1 *= val2.
+ * @param[in,out] val1 Complex number 1.
+ * @param[in] val2 Complex number 2.
  */
-void zmul(struct evr_complex *, struct evr_complex *);
+void zmul(struct evr_complex *val1, struct evr_complex *val2);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Normalize response.
+ * @param[in,out] chan Channel structure.
+ * @param[in] start_stage Start stage.
+ * @param[in] stop_stage Stop stage.
  */
-void norm_resp(struct channel *, int, int);
+void norm_resp(struct channel *chan, int start_stage, int stop_stage);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Response of blockette 55 (Response List Blockette).
+ * @param[in] blkt_ptr Response List Blockette (55).
+ * @param[in] i FIXME.
+ * @param[out] out Response.
+ * @author 06/22/00: Ilya Dricker ISTI (.dricker@isti.com): Function
+ *         introduced in version 3.2.17 of evalresp.
  */
-void calc_list(struct blkt *, int, struct evr_complex *); /*IGD i.dricker@isti.c
-om for version 3.2.17 */
-/**
- * @private
- * @ingroup evalresp_private_calc
- * @brief FIXME.
- */
+void calc_list(struct blkt *blkt_ptr, int i, struct evr_complex *out);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Response of blockette 62 (Polynomial).
+ * @param[in] blkt_ptr Polynomial Blockette (62).
+ * @param[in] i FIXME.
+ * @param[out] out Response.
+ * @param[in] x_for_b62 FIXME.
+ * @author 06/01/13: Ilya Dricker ISTI (.dricker@isti.com): Function
+ *         introduced in version 3.3.4 of evalresp
  */
-void calc_polynomial(struct blkt *, int, struct evr_complex *, double); /*IGD 06/01/2013 */
+void calc_polynomial(struct blkt *blkt_ptr, int i, struct evr_complex *out,
+                     double x_for_b62);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Response of a digital IIR filter.
+ * @details This code is modified from the FORTRAN subroutine written and
+ *          tested by Bob Hutt (ASL USGS). Evaluates phase directly from
+ *          imaginary and real parts of IIR filter coefficients.
+ * @param[in] blkt_ptr Digital IIR filter.
+ * @param[in] wint FIXME.
+ * @param[out] out Response.
+ * @author 07/12/00: lya Dricker (ISTI), i.dricker@isti.com: C translation
+ *         from FORTRAN function. Version 0.2. For version 3.2.17.
  */
-void iir_trans(struct blkt *, double, struct evr_complex *); /* IGD for version 3.2.17 */
+void iir_trans(struct blkt *blkt_ptr, double wint, struct evr_complex *out);
 
 /**
  * @private
@@ -1914,6 +1965,11 @@ int is_time(const char *test);
  * @ingroup evalresp_private_parse
  * @brief Compare two times and determine if the first is greater, equal to,
  *        or less than the second.
+ * @param[in] dt1 Date-time 1.
+ * @param[in] dt2 Date-time 2.
+ * @returns An integer indicating whether the time in the input argument
+ *          @p dt1 is greater than (1), equal to (0), or less than (-1) the
+ *          time in the input argument @p dt2.
  */
 int timecmp(struct dateTime *dt1, struct dateTime *dt2);
 
@@ -1921,56 +1977,184 @@ int timecmp(struct dateTime *dt1, struct dateTime *dt2);
  * @private
  * @ingroup evalresp_private_print
  * @brief Print the channel info, followed by the list of filters.
+ * @param[in] chan Channel structure.
+ * @param[in] start_stage Start stage.
+ * @param[in] stop_stage Stop stage.
+ * @param[in] stdio_flag Flag if standard input was used.
+ * @param[in] listinterp_out_flag Flag if interpolated output was used.
+ * @param[in] listinterp_in_flag Flag if interpolated input was used.
+ * @param[in] useTotalSensitivityFlag Flag if reported sensitivity was used to
+ *                                  compute response.
  */
-void print_chan(struct channel *, int, int, int, int, int, int);
+void print_chan(struct channel *chan, int start_stage, int stop_stage,
+                int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
+                int useTotalSensitivityFlag);
 
 /**
  * @private
  * @ingroup evalresp_private_print
  * @brief Print the response information to the output files.
+ * @details Prints the response information in the fashion that the user
+ *          requested it.  The response is either in the form of a complex
+ *          spectra (freq, real_resp, imag_resp) to the file
+ *          SPECTRA.NETID.STANAME.CHANAME (if rtype = "cs") or in the form of
+ *          seperate amplitude and phase files (if rtype = "ap") with names
+ *          like AMP.NETID.STANAME.CHANAME and PHASE.NETID.STANAME.CHANAME. In
+ *          all cases, the pointer to the channel is used to obtain the NETID,
+ *          STANAME, and CHANAME values. If the 'stdio_flag' is set to 1, then
+ *          the response information will be output to stdout, prefixed by a
+ *          header that includes the NETID, STANAME, and CHANAME, as well as
+ *          whether the response given is in amplitude/phase or complex
+ *          response (real/imaginary) values. If either case, the output to
+ *          stdout will be in the form of three columns of real numbers, in
+ *          the former case they will be freq/amp/phase tuples, in the latter
+ *          case freq/real/imaginary tuples.
+ * @param[in] freqs Array of frequencies.
+ * @param[in] nfreqs Number of frequencies.
+ * @param[in] first Pointer to first response in chain.
+ * @param[in] rtype Reponse type.
+ * @param[in] stdio_flag Flag controlling output.
+ * @see print_resp_itp().
+ * @note This version of the function does not include the 'listinterp...'
+ *       parameters.
  */
-void print_resp(double *, int, struct response *, char *, int);
+void print_resp(double *freqs, int nfreqs, struct response *first, char *rtype,
+                int stdio_flag);
 
 /**
  * @private
  * @ingroup evalresp_private_print
  * @brief Print the response information to the output files.
+ * @details Prints the response information in the fashion that the user
+ *          requested it. The response is either in the form of a complex
+ *          spectra (freq, real_resp, imag_resp) to the file
+ *          SPECTRA.NETID.STANAME.CHANAME (if rtype = "cs") or in the form of
+ *          seperate amplitude and phase files (if rtype = "ap") with names
+ *          like AMP.NETID.STANAME.CHANAME and PHASE.NETID.STANAME.CHANAME.
+ *          In all cases, the pointer to the channel is used to obtain the
+ *          NETID, STANAME, and CHANAME values. If the 'stdio_flag' is set to
+ *          1, then the response information will be output to stdout,
+ *          prefixed by a header that includes the NETID, STANAME, and
+ *          CHANAME, as well as whether the response given is in
+ *          amplitude/phase or complex response (real/imaginary) values. If
+ *          either case, the output to stdout will be in the form of three
+ *          columns of real numbers, in the former case they will be
+ *          freq/amp/phase tuples, in the latter case freq/real/imaginary
+ *          tuples.
+ * @param[in] freqs Array of frequencies.
+ * @param[in] nfreqs Number of frequencies.
+ * @param[in] first Pointer to first response in chain.
+ * @param[in] rtype Reponse type.
+ * @param[in] stdio_flag Flag controlling output.
+ * @param[in] listinterp_out_flag Flag if interpolated output was used.
+ * @param[in] listinterp_tension Interpolation tension used.
+ * @param[in] unwrap_flag Flag if phases are unwrapped.
+ * @see print_resp().
+ * @note This version of the function includes the 'listinterp...' parameters.
  */
-void print_resp_itp(double *, int, struct response *, char *, int, int, double,
-        int);
+void print_resp_itp(double *freqs, int nfreqs, struct response *first,
+                    char *rtype, int stdio_flag, int listinterp_out_flag,
+                    double listinterp_tension, int unwrap_flag);
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Evaluate responses for user requested station/channel/network tuple
  *        at the frequencies requested by the user.
+ * @param[in] stalst FIXME.
+ * @param[in] chalst FIXME.
+ * @param[in] net_code FIXME.
+ * @param[in] locidlst FIXME.
+ * @param[in] date_time FIXME.
+ * @param[in] units FIXME.
+ * @param[in] file FIXME.
+ * @param[in] freqs FIXME.
+ * @param[in] nfreqs FIXME.
+ * @param[in] rtype FIXME.
+ * @param[in] verbose FIXME.
+ * @param[in] start_stage FIXME.
+ * @param[in] stop_stage FIXME.
+ * @param[in] stdio_flag FIXME.
+ * @param[in] useTotalSensitivityFlag FIXME.
+ * @param[in] x_for_b62 FIXME.
+ * @param[in] xml_flag FIXME.
  * @remark Calls evresp_itp() but with listinterp_tension set to 0.
+ * @returns Responses.
  */
-struct response *evresp(char *, char *, char *, char *, char *, char *, char *,
-        double *, int, char *, char *, int, int, int, int, double, int,
-        evalresp_log_t *);
+struct response *evresp(char *stalst, char *chalst, char *net_code,
+                        char *locidlst, char *date_time, char *units,
+                        char *file, double *freqs, int nfreqs, char *rtype,
+                        char *verbose, int start_stage, int stop_stage,
+                        int stdio_flag, int useTotalSensitivityFlag,
+                        double x_for_b62, int xml_flag, evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Evaluate responses for user requested station/channel/network tuple
  *        at the frequencies requested by the user.
+ * @param[in] stalst FIXME.
+ * @param[in] chalst FIXME.
+ * @param[in] net_code FIXME.
+ * @param[in] locidlst FIXME.
+ * @param[in] date_time FIXME.
+ * @param[in] units FIXME.
+ * @param[in] file FIXME.
+ * @param[in] freqs FIXME.
+ * @param[in] nfreqs FIXME.
+ * @param[in] rtype FIXME.
+ * @param[in] verbose FIXME.
+ * @param[in] start_stage FIXME.
+ * @param[in] stop_stage FIXME.
+ * @param[in] stdio_flag FIXME.
+ * @param[in] listinterp_out_flag FIXME.
+ * @param[in] listinterp_in_flag FIXME.
+ * @param[in] listinterp_tension FIXME.
+ * @param[in] useTotalSensitivityFlag FIXME.
+ * @param[in] x_for_b62 FIXME.
+ * @param[in] xml_flag FIXME.
+ * @returns Responses.
  */
-struct response *evresp_itp(char *, char *, char *, char *, char *, char *,
-        char *, double *, int, char *, char *, int, int, int, int, int, double,
-        int, double, int, evalresp_log_t *);
+struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
+                            char *locidlst, char *date_time, char *units,
+                            char *file, double *freqs, int nfreqs,
+                            char *rtype, char *verbose, int start_stage,
+                            int stop_stage, int stdio_flag,
+                            int listinterp_out_flag, int listinterp_in_flag,
+                            double listinterp_tension,
+                            int useTotalSensitivityFlag, double x_for_b62,
+                            int xml_flag, evalresp_log_t *log);
+
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Evaluate responses for user requested station/channel/network tuple
  *        at the frequencies requested by the user.
+ * @param[in] sta FIXME.
+ * @param[in] cha FIXME.
+ * @param[in] net FIXME.
+ * @param[in] locid FIXME.
+ * @param[in] datime FIXME.
+ * @param[in] units FIXME.
+ * @param[in] file FIXME.
+ * @param[in] freqs FIXME.
+ * @param[in] nfreqs FIXME.
+ * @param[in] resp FIXME.
+ * @param[in] rtype FIXME.
+ * @param[in] verbose FIXME.
+ * @param[in] start_stage FIXME.
+ * @param[in] stop_stage FIXME.
+ * @param[in] stdio_flag FIXME.
+ * @param[in] useTotalSensitivityFlag FIXME.
+ * @param[in] x_for_b62 FIXME.
+ * @param[in] xml_flag FIXME.
  * @remark Fortran interface.
  */
 int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
-        char *units, char *file, double *freqs, int nfreqs, double *resp,
-        char *rtype, char *verbose, int start_stage, int stop_stage,
-        int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
-        int xml_flag, evalresp_log_t *);
+             char *units, char *file, double *freqs, int nfreqs, double *resp,
+             char *rtype, char *verbose, int start_stage, int stop_stage,
+             int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
+             int xml_flag, evalresp_log_t* log);
 
 /**
  * @private
@@ -2092,22 +2276,43 @@ extern jmp_buf jump_buffer;
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Phase unwrapping function.
+ * @details It works only inside a loop over phases.
+ * @param[in] phase Phase value to process.
+ * @param[in] prev_phase Previous phase.
+ * @param[in] range Range value to use.
+ * @param[in,out] added_value Pointer to offset value used for each call.
+ * @returns "Unwrapped" version of the given phase value.
+ * @author 04/05/04: IGD.
  */
 double unwrap_phase(double phase, double prev_phase, double range,
-        double *added_value);
+                    double *added_value);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Wraps a set of phase values so that all of the values are between
+ *        "-range" and "+range" (inclusive).
+ * @details This function is called iteratively, once for each phase value.
+ * @param[in] phase Phase value to process.
+ * @param[in] range Range value to use.
+ * @param[in,out] added_value Pointer to offset value used for each call.
+ * @returns "Wrapped" version of the given phase value.
  */
 double wrap_phase(double phase, double range, double *added_value);
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Small function to set and return a static flag to use or not use
+ *        the estimated delay in response computation.
+ * @details The reason we want to use this global variable is because we don't
+u *          want to change the number of arguments in evresp() function which
+ *          is used in users programs.
+ * @param[in] flag NEGATIVE means that we want to query the value of the flag
+ *                 TRUE or FALSE means that we want to set corresponding
+ *                 values.
+ * @author 03/01/05: IGD.
  */
 int use_estimated_delay(int flag);
 

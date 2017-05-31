@@ -129,15 +129,6 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
     return (0);
 }
 
-/* IGD 03/01/05 Small function to set and return
- * a static flag to use or not use the estimated delay in
- * response computation
- * Input: NEGATIVE means that we want to query the value of the flag
- *        TRUE or FALSE means that we want to set corresponding values
- * The reason we want to use this global variable is because we don't
- * want to change the number of arguments in evresp() function which
- * is used in users programs
- */
 /* 2/6/2006 -- [ET]  Moved from 'evalresp.c' to 'evresp.c' */
 int use_estimated_delay(int flag) {
     /* WE USE THOSE WEIRD magic numbers here because
