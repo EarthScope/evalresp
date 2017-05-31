@@ -483,7 +483,7 @@ int main(int argc, char *argv[]) {
     /* and print the responses to a set of files */
 
     print_resp_itp(freqs, nfreqs, first, rtype, stdio_flag, listinterp_out_flag,
-            listinterp_tension, unwrap_flag);
+            listinterp_tension, unwrap_flag, log);
 
     free_response(first);
     free(freqs); /* added 3/28/2006 -- [ET] */

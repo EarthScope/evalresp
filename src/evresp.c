@@ -488,11 +488,11 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                                     &(this_channel.first_stage->first_blkt->blkt_info.list.amp),
                                     &(this_channel.first_stage->first_blkt->blkt_info.list.phase),
                                     &(this_channel.first_stage->first_blkt->blkt_info.list.nresp),
-                                    freqs, nfreqs, listinterp_tension);
+                                    freqs, nfreqs, listinterp_tension, log);
                         }
 
                         /* check the filter sequence that was just read */
-                        check_channel(&this_channel);
+                        check_channel(&this_channel, log);
 
                         /* If we process blockette 55, we should recompute resp->rvec */
                         /* because the number of output responses is generally different from */
@@ -751,11 +751,11 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                                             &(this_channel.first_stage->first_blkt->blkt_info.list.amp),
                                             &(this_channel.first_stage->first_blkt->blkt_info.list.phase),
                                             &(this_channel.first_stage->first_blkt->blkt_info.list.nresp),
-                                            freqs, nfreqs, listinterp_tension);
+                                            freqs, nfreqs, listinterp_tension, log);
                                 }
 
                                 /* check the filter sequence that was just read */
-                                check_channel(&this_channel);
+                                check_channel(&this_channel, log);
 
                                 /* If we process blockette 55, we should recompute resp->rvec */
                                 /* because the number of output responses is generally different from */

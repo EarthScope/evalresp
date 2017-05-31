@@ -1740,7 +1740,7 @@ int add_null(char *s, int len, char where);
  * @param[in,out] first_blkt First filter.
  * @param[in,out] second_blkt Second filter.
  */
-void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt);
+void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t *log);
 
 /**
  * @private
@@ -1759,7 +1759,7 @@ void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt);
  * @author 07/07/00: Ilya Dricker IGD (i.dricker@isti.com): Modified from
  *         merge_coeffs() for 3.2.17 of evalresp.
  */
-void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt);
+void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t *log);
 
 /**
  * @private
@@ -1789,7 +1789,7 @@ void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt);
  *              structure.
  * @param[in] chan Channel structure.
  */
-void check_channel(struct channel *chan);
+void check_channel(struct channel *chan, evalresp_log_t *log);
 
 /**
  * @private
@@ -1800,7 +1800,7 @@ void check_channel(struct channel *chan);
  * @param[in,out] f FIR filter.
  * @param[in] chan Channel structure.
  */
-void check_sym(struct blkt *f, struct channel *chan);
+void check_sym(struct blkt *f, struct channel *chan, evalresp_log_t *log);
 
 /* routines used to calculate the instrument responses */
 
@@ -2019,7 +2019,7 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
  *       parameters.
  */
 void print_resp(double *freqs, int nfreqs, struct response *first, char *rtype,
-                int stdio_flag);
+                int stdio_flag, evalresp_log_t *log);
 
 /**
  * @private
@@ -2054,7 +2054,7 @@ void print_resp(double *freqs, int nfreqs, struct response *first, char *rtype,
  */
 void print_resp_itp(double *freqs, int nfreqs, struct response *first,
                     char *rtype, int stdio_flag, int listinterp_out_flag,
-                    double listinterp_tension, int unwrap_flag);
+                    double listinterp_tension, int unwrap_flag, evalresp_log_t *log);
 
 /**
  * @private
@@ -2175,7 +2175,7 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
 void interpolate_list_blockette(double **frequency_ptr,
                                 double **amplitude_ptr, double **phase_ptr,
                                 int *p_number_points, double *req_freq_arr,
-                                int req_num_freqs, double tension);
+                                int req_num_freqs, double tension, evalresp_log_t *log);
 
 /**
  * @private
