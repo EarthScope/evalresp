@@ -38,7 +38,7 @@
 // so perhaps have avoided writing an intermediate response file.  But that
 // would have made the system much harder to debug.
 
-// Name below correspond, in general, to edu.iris.dmc.fdsn.station.model classes
+// Names below correspond, in general, to edu.iris.dmc.fdsn.station.model classes
 // in the IRIS-WS source.
 
 
