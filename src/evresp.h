@@ -1110,142 +1110,220 @@ int get_names(char *in_file, struct matched_files *file);
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an array of complex numbers.
+ * @param[in] npts Number of complex numbers to allocate in array.
+ * @returns Pointer to allocated array.
+ * @returns @c NULL if @p npts is zero.
+ * @warning Exits with error if allocation fails.
  */
-struct evr_complex *alloc_complex(int);
+struct evr_complex *alloc_complex(int npts);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an array of responses.
+ * @details A 'response' is a combination of a complex array, a
+ *          station-channel-network, and a pointer to the next 'response' in
+ *          the list.
+ * @param[in] npts Number of responses to allocate in array.
+ * @returns Pointer to allocated array.
+ * @returns @c NULL if @p npts is zero.
+ * @warning Exits with error if allocation fails.
  */
-struct response *alloc_response(int);
+struct response *alloc_response(int npts);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an array of strings.
+ * @param[in] nstring Number of strings to allocate in array.
+ * @returns Pointer to allocated array.
+ * @returns @c NULL if @p nstrings is zero.
+ * @warning Exits with error if allocation fails.
  */
-struct string_array *alloc_string_array(int);
+struct string_array *alloc_string_array(int nstrings);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a station-channel structure
+ * @returns Pointer to allocated structure.
+ * @warning Exits with error if allocation fails.
  */
 struct scn *alloc_scn(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an array of station/channel pairs.
+ * @param[in] nscn Number of station/channel pairs to allocate in array.
+ * @returns Pointer to allocated array.
+ * @returns @c NULL if @p nscn is zero.
+ * @warning Exits with error if allocation fails.
  */
-struct scn_list *alloc_scn_list(int);
+struct scn_list *alloc_scn_list(int nscn);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an element of a linked list of filenames.
+ * @returns Pointer to allocated structure.
+ * @warning Exits with error if allocation fails.
  */
 struct file_list *alloc_file_list(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an element of a linked list of matching files.
+ * @returns Pointer to allocated structure.
+ * @warning Exits with error if allocation fails.
  */
 struct matched_files *alloc_matched_files(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an array of double precision numbers
+ * @param[in] npts Number of double precision numbers to allocate in array.
+ * @returns Pointer to allocated array.
+ * @returns @c NULL if @p npts is zero.
+ * @warning Exits with error if allocation fails.
  */
-double *alloc_double(int);
+double *alloc_double(int npts);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an array of characters.
+ * @param[in] len Number of characters to allocate in array.
+ * @returns Pointer to allocated array.
+ * @returns @c NULL if @p len is zero.
+ * @warning Exits with error if allocation fails.
  */
-char *alloc_char(int);
+char *alloc_char(int len);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for an array of char pointers.
+ * @param[in] len Number of char pointers to allocate in array.
+ * @returns Pointer to allocated array.
+ * @returns @c NULL if @p len is zero.
+ * @warning Exits with error if allocation fails.
  */
-char **alloc_char_ptr(int);
+char **alloc_char_ptr(int len);
 
 /* allocation routines for the various types of filters */
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a pole-zero type filter structure.
+ * @returns Pointer to allocated structure.
+ * @note The space for the complex poles and zeros is not allocated here, the
+ *       space for these vectors must be allocated as they are read, since the
+ *       number of poles and zeros is unknown until the blockette is partially
+ *       parsed.
+ * @warning Exits with error if allocation fails.
  */
 struct blkt *alloc_pz(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a coefficients-type filter.
+ * @returns Pointer to allocated structure.
+ * @note See alloc_pz() for details (like alloc_pz(), this does not allocate
+ *       space for the numerators and denominators, that is left until
+ *       parse_fir()).
+ * @warning Exits with error if allocation fails.
  */
 struct blkt *alloc_coeff(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a fir-type filter.
+ * @returns Pointer to allocated structure.
+ * @note See alloc_pz() for details (like alloc_pz(), this does not allocate
+ *       space for the numerators and denominators, that is left until
+ *       parse_fir()).
+ * @warning Exits with error if allocation fails.
  */
 struct blkt *alloc_fir(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a response reference type filter structure.
+ * @returns Pointer to allocated structure.
+ * @warning Exits with error if allocation fails.
  */
 struct blkt *alloc_ref(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a gain type filter structure.
+ * @returns Pointer to allocated structure.
+ * @note The space for the calibration vectors is not allocated here, the
+ *       space for these vectors must be allocated as they are read, since the
+ *       number of calibration points is unknown until the blockette is
+ *       partially parsed.
+ * @warning Exits with error if allocation fails.
  */
 struct blkt *alloc_gain(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a list type filter structure.
+ * @returns Pointer to allocated structure.
+ * @note The space for the amplitude, phase and frequency vectors is not
+ *       allocated here the user must allocate space for these parameters once
+ *       the number of frequencies is known.
+ * @warning Exits with error if allocation fails.
  */
 struct blkt *alloc_list(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a generic type filter structure.
+ * @returns Pointer to allocated structure.
+ * @note The space for the corner_freq, and corner_slope vectors is not
+ *       allocated here the user must allocate space for these parameters once
+ *       the number of frequencies is known.
+ * @warning Exits with error if allocation fails.
  */
 struct blkt *alloc_generic(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a decimation type filter structure.
+ * @returns Pointer to allocated structure.
+ * @warning Exits with error if allocation fails.
  */
 struct blkt *alloc_deci(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a polynomial Blockette 62.
+ * @returns Pointer to allocated structure.
+ * @warning Exits with error if allocation fails.
+ * @author 05/31/2013: IGD.
  */
-struct blkt *alloc_polynomial(void); /*IGD 05/31/2013 */
+struct blkt *alloc_polynomial(void);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief Allocates space for a decimation type filter structure.
+ * @returns Pointer to allocated structure.
+ * @warning Exits with error if allocation fails.
  */
 struct stage *alloc_stage(void);
 
@@ -1255,9 +1333,11 @@ struct stage *alloc_stage(void);
 /**
  * @private
  * @ingroup evalresp_private_alloc
- * @brief FIXME.
+ * @brief A routine that frees up the space associated with a string list type
+ *        structure.
+ * @param[in] lst String list type structure.
  */
-void free_string_array(struct string_array *);
+void free_string_array(struct string_array *lst);
 
 /**
  * @private

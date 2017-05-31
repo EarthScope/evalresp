@@ -13,9 +13,6 @@
 
 #include <string.h>
 
-/* alloc_complex:  allocates space for an array of complex numbers, returns a pointer to that
- array (exits with error if fails) */
-
 struct evr_complex *alloc_complex(int npts) {
     struct evr_complex *cptr;
 
@@ -30,9 +27,6 @@ struct evr_complex *alloc_complex(int npts) {
 
     return (cptr);
 }
-
-/* alloc_string_array:  allocates space for an array of strings, returns a
- pointer to that array (exits with error if fails) */
 
 struct string_array *alloc_string_array(int nstrings) {
     struct string_array *sl_ptr;
@@ -57,9 +51,6 @@ struct string_array *alloc_string_array(int nstrings) {
 
     return (sl_ptr);
 }
-
-/* alloc_scn:  allocates space for a station-channel structure, returns a
- pointer to that structure (exits with error if fails) */
 
 struct scn *alloc_scn() {
     struct scn *scn_ptr;
@@ -94,11 +85,6 @@ struct scn *alloc_scn() {
     return (scn_ptr);
 }
 
-/* alloc_response:  allocates space for an array of responses, returns a pointer to that
- array (exits with error if fails).  A 'response' is a combination
- of a complex array, a station-channel-network, and a pointer to the
- next 'response' in the list */
-
 struct response *alloc_response(int npts) {
     struct response *rptr;
     struct evr_complex *cvec;
@@ -130,10 +116,6 @@ struct response *alloc_response(int npts) {
     return (rptr);
 }
 
-/* alloc_scn_list:  allocates space for an array of station/channel pairs,
- returns a pointer to that array (exits with error if
- fails) */
-
 struct scn_list *alloc_scn_list(int nscn) {
     struct scn_list *sc_ptr;
     int i;
@@ -158,10 +140,6 @@ struct scn_list *alloc_scn_list(int nscn) {
     return (sc_ptr);
 }
 
-/* alloc_file_list:  allocates space for an element of a linked list of
- filenames, returns a pointer to that structure
- (exits with error if fails) */
-
 struct file_list *alloc_file_list() {
     struct file_list *flst_ptr;
 
@@ -175,10 +153,6 @@ struct file_list *alloc_file_list() {
 
     return (flst_ptr);
 }
-
-/* alloc_matched_files:  allocates space for an element of a linked list of
- matching files, returns a pointer to that structure
- (exits with error if fails) */
 
 struct matched_files *alloc_matched_files() {
     struct matched_files *flst_ptr;
@@ -195,9 +169,6 @@ struct matched_files *alloc_matched_files() {
     return (flst_ptr);
 }
 
-/* alloc_double:  allocates space for an array of double precision numbers, returns a pointer to
- that array (exits with error if fails) */
-
 double *alloc_double(int npts) {
     double *dptr;
 
@@ -211,9 +182,6 @@ double *alloc_double(int npts) {
 
     return (dptr);
 }
-
-/* alloc_char:  allocates space for an array of characters, returns a pointer to
- that array (exits with error if fails) */
 
 char *alloc_char(int len) {
     char *cptr;
@@ -229,9 +197,6 @@ char *alloc_char(int len) {
     return (cptr);
 }
 
-/* alloc_char_ptr:  allocates space for an array of char pointers, returns a
- pointer to that array (exits with error if fails) */
-
 char **alloc_char_ptr(int len) {
     char **cptr;
 
@@ -245,12 +210,6 @@ char **alloc_char_ptr(int len) {
 
     return (cptr);
 }
-
-/* alloc_pz:  allocates space for a pole-zero type filter structure and returns a pointer to that
- structure.
- Note: the space for the complex poles and zeros is not allocated here, the space
- for these vectors must be allocated as they are read, since the number of
- poles and zeros is unknown until the blockette is partially parsed. */
 
 struct blkt *alloc_pz(void) {
     struct blkt *blkt_ptr;
@@ -270,10 +229,6 @@ struct blkt *alloc_pz(void) {
 
     return (blkt_ptr);
 }
-
-/* alloc_coeff:  allocates space for a coefficients-type filter 
- Note:  see alloc_pz for details (like alloc_pz, this does not allocate space for
- the numerators and denominators, that is left until parse_fir()) */
 
 struct blkt *alloc_coeff(void) {
     struct blkt *blkt_ptr;
@@ -295,10 +250,6 @@ struct blkt *alloc_coeff(void) {
     return (blkt_ptr);
 }
 
-/* alloc_plynomial:  allocates space for a polynomial Blockette 62 
- * IGDS 05/31/2013
- */
-
 struct blkt *alloc_polynomial(void) {
     struct blkt *blkt_ptr;
 
@@ -310,10 +261,6 @@ struct blkt *alloc_polynomial(void) {
 
     return (blkt_ptr);
 }
-
-/* alloc_fir:  allocates space for a fir-type filter 
- Note:  see alloc_pz for details (like alloc_pz, this does not allocate space for
- the numerators and denominators, that is left until parse_fir()) */
 
 struct blkt *alloc_fir() {
     struct blkt *blkt_ptr;
@@ -333,9 +280,6 @@ struct blkt *alloc_fir() {
     return (blkt_ptr);
 }
 
-/* alloc_ref:  allocates space for a response reference type filter structure and returns a pointer
- to that structure. */
-
 struct blkt *alloc_ref() {
     struct blkt *blkt_ptr;
 
@@ -354,12 +298,6 @@ struct blkt *alloc_ref() {
     return (blkt_ptr);
 }
 
-/* alloc_gain:  allocates space for a gain type filter structure and returns a pointer to that
- structure.
- Note: the space for the calibration vectors is not allocated here, the space
- for these vectors must be allocated as they are read, since the number of
- calibration points is unknown until the blockette is partially parsed. */
-
 struct blkt *alloc_gain() {
     struct blkt *blkt_ptr;
 
@@ -376,12 +314,6 @@ struct blkt *alloc_gain() {
 
     return (blkt_ptr);
 }
-
-/* alloc_list:  allocates space for a list type filter structure and returns a pointer to that
- structure.
- Note: the space for the amplitude, phase and frequency vectors is not allocated
- here the user must allocate space for these parameters once the number of
- frequencies is known */
 
 struct blkt *alloc_list() {
     struct blkt *blkt_ptr;
@@ -402,12 +334,6 @@ struct blkt *alloc_list() {
     return (blkt_ptr);
 }
 
-/* alloc_generic  allocates space for a generic type filter structure and returns a pointer to that
- structure.
- Note: the space for the corner_freq, and corner_slope vectors is not allocated
- here the user must allocate space for these parameters once the number of
- frequencies is known */
-
 struct blkt *alloc_generic() {
     struct blkt *blkt_ptr;
 
@@ -425,9 +351,6 @@ struct blkt *alloc_generic() {
 
     return (blkt_ptr);
 }
-
-/* alloc_deci:  allocates space for a decimation type filter structure and returns a pointer to that
- structure. */
 
 struct blkt *alloc_deci() {
     struct blkt *blkt_ptr;
@@ -449,9 +372,6 @@ struct blkt *alloc_deci() {
     return (blkt_ptr);
 }
 
-/* alloc_stage:  allocates space for a decimation type filter structure and returns a pointer to that
- structure. */
-
 struct stage *alloc_stage() {
     struct stage *stage_ptr;
 
@@ -469,9 +389,6 @@ struct stage *alloc_stage() {
 
     return (stage_ptr);
 }
-
-/* free_string_array: a routine that frees up the space associated with a
- string list type structure */
 
 void free_string_array(struct string_array *lst) {
     int i;
