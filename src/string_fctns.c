@@ -50,25 +50,32 @@ struct string_array *ev_parse_line(char *line, evalresp_log_t *log) {
             return NULL;
         }
         for (i = 0; i < nfields; i++) {
-            parse_field(line, i, field);
+            if (0 > parse_field(line, i, field, log))
+            {
+                break;
+            }
             fld_len = strlen(field) + 1;
             if ((lcl_strings->strings[i] = (char *) malloc(
                     fld_len * sizeof(char))) == (char *) NULL) {
                 evalresp_log(log, ERROR, 0,
                         "ev_parse_line; malloc() failed for (char) vector");
-                for(i--; i>0; i--)
-                {
-                    free(lcl_strings->strings[i]);
-                    lcl_strings->strings[i] = NULL;
-                }
-                free(lcl_strings->strings);
-                free(lcl_strings);
-                return NULL;
+                break;
                 /*XXX error_exit(OUT_OF_MEMORY,
                         "ev_parse_line; malloc() failed for (char) vector"); */
             }
             strncpy(lcl_strings->strings[i], "", fld_len);
             strncpy(lcl_strings->strings[i], field, fld_len - 1);
+        }
+        if (i < nfields)
+        {
+            for(i--; i>0; i--)
+            {
+                free(lcl_strings->strings[i]);
+                lcl_strings->strings[i] = NULL;
+            }
+            free(lcl_strings->strings);
+            free(lcl_strings);
+            return NULL;
         }
     } else { /* if no fields then alloc string array with empty entry */
         if (!(lcl_strings = alloc_string_array(1, log)))
@@ -104,7 +111,7 @@ struct string_array *parse_delim_line(char *line, char *delim, evalresp_log_t *l
         }
         for (i = 0; i < nfields; i++) {
             memset(field, 0, MAXFLDLEN);
-            if (0 <= parse_delim_field(line, i, delim, field, log))
+            if (0 > parse_delim_field(line, i, delim, field, log))
             {
                 break;
             }
@@ -152,7 +159,7 @@ struct string_array *parse_delim_line(char *line, char *delim, evalresp_log_t *l
 }
 
 int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
-        char *sep, int fld_wanted) {
+        char *sep, int fld_wanted, evalresp_log_t *log) {
     char line[MAXLINELEN];
 
     /* first get the next non-comment line */
@@ -161,15 +168,16 @@ int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
 
     /* then parse the field that the user wanted from the line get_line returned */
 
-    parse_field(line, fld_wanted, return_field);
+    return (parse_field(line, fld_wanted, return_field, log));
 
     /* and return the length of the field */
 
-    return (strlen(return_field));
+    /*XXX this is the same as what parse_field returns
+    return (strlen(return_field)); */
 }
 
 int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
-        char *sep, int fld_wanted) {
+        char *sep, int fld_wanted, evalresp_log_t *log) {
     char line[MAXLINELEN];
 
     /* first get the next non-comment line */
@@ -178,11 +186,11 @@ int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
 
     /* then parse the field that the user wanted from the line get_line returned */
 
-    parse_field(line, fld_wanted, return_field);
-
+    return (parse_field(line, fld_wanted, return_field, log));
     /* and return the length of the field */
 
-    return (strlen(return_field));
+    /*XXX this is the same as what parse_field returns
+    return (strlen(return_field)); */
 
 }
 
@@ -370,7 +378,7 @@ int count_delim_fields(char *line, char *delim) {
     return (nfields);
 }
 
-int parse_field(char *line, int fld_no, char *return_field) {
+int parse_field(char *line, int fld_no, char *return_field, evalresp_log_t *log) {
     char *lcl_ptr, *new_ptr;
     char lcl_field[MAXFLDLEN];
     int nfields, i;
@@ -378,13 +386,19 @@ int parse_field(char *line, int fld_no, char *return_field) {
     nfields = count_fields(line);
     if (fld_no >= nfields) {
         if (nfields > 0) {
-            error_return(PARSE_ERROR, "%s%d%s%d%s",
+            evalresp_log(log, ERROR, 0, "%s%d%s%d%s",
                     "parse_field; Input field number (", fld_no,
                     ") exceeds number of fields on line(", nfields, ")");
+            /*XXX error_return(PARSE_ERROR, "%s%d%s%d%s",
+                    "parse_field; Input field number (", fld_no,
+                    ") exceeds number of fields on line(", nfields, ")"); */
         } else {
-            error_return(PARSE_ERROR, "%s",
+            evalresp_log(log, ERROR, 0, "%s",
                     "parse_field; Data fields not found on line");
+            /*XXX error_return(PARSE_ERROR, "%s",
+                    "parse_field; Data fields not found on line"); */
         }
+        return PARSE_ERROR;
     }
 
     lcl_ptr = line;

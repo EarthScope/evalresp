@@ -829,10 +829,11 @@ int count_delim_fields(char *line, char *delim);
  * @param[in] line Input line.
  * @param[in] fld_no Field number.
  * @param[out] return_field Return field.
+ * @param[in] log Logging structure.
  * @returns Length of the resulting field if successful.
  * @note Exits with error if no field exists with that number.
  */
-int parse_field(char *line, int fld_no, char *return_field);
+int parse_field(char *line, int fld_no, char *return_field, evalresp_log_t *log);
 
 /**
  * @private
