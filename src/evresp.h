@@ -735,7 +735,7 @@ struct string_array *parse_delim_line(char *line, char *delim, evalresp_log_t *)
  *       white space.
  */
 int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
-              char *sep, int fld_wanted);
+              char *sep, int fld_wanted, evalresp_log_t *log);
 
 /**
  * @private
@@ -757,7 +757,7 @@ int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
  *       white space.
  */
 int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
-               char *sep, int fld_wanted);
+               char *sep, int fld_wanted, evalresp_log_t *log);
 /**
  * @private
  * @ingroup evalresp_private_string
@@ -995,7 +995,7 @@ int is_IIR_coeffs(FILE *fp, int position);
  *       information to be reread.
  */
 int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
-              struct channel *this_channel);
+              struct channel *this_channel, evalresp_log_t *log);
 
 /**
  * @private
@@ -1020,7 +1020,7 @@ int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
  *       information to be reread.
  */
 int get_resp(FILE *fptr, struct scn *scn, char *datime,
-             struct channel *this_channel);
+             struct channel *this_channel, evalresp_log_t *log);
 
 /**
  * @private
@@ -1036,7 +1036,7 @@ int get_resp(FILE *fptr, struct scn *scn, char *datime,
  * @returns 1 on success.
  * @returns 0 on failure.
  */
-int get_channel(FILE *fptr, struct channel* chan);
+int get_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log);
 
 /**
  * @private
@@ -1052,7 +1052,7 @@ int get_channel(FILE *fptr, struct channel* chan);
  * @returns 1 on success.
  * @returns 0 on failure.
  */
-int next_resp(FILE *fptr);
+int next_resp(FILE *fptr, evalresp_log_t *log);
 
 /* routines used to create a list of files matching the users request */
 
@@ -1525,7 +1525,7 @@ void error_return(int cond, char *msg, ...);
  * @param[in,out] chan Channel structure.
  * @returns First field number.
  */
-int parse_channel(FILE *fptr, struct channel* chan);
+int parse_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log);
 
 /* parsing routines for various types of filters */
 
@@ -1559,7 +1559,7 @@ int parse_pref(int *blkt_no, int *fld_no, char *line);
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  */
-void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1574,7 +1574,7 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  */
-void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1586,12 +1586,12 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  *          blockette and field numbers are checked as the file is parsed. As
  *          with parse_pz(), for this routine to work,  the lines must contain
  *          evalresp-3.0 style prefixes.
- * @param[in,out] fptr FILE pointer.
+ * @param[in,out] fptr FILE pointer, evalresp_log_t *log.
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  * @author 06/27/00: I.Dricker (i.dricker@isti.com) for 2.3.17 iir.
  */
-void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1610,7 +1610,7 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr)
  *         Since currently the blockette 55 is not supported, we do not
  *         anticipate problems caused by this change.
  */
-void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1625,7 +1625,7 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  */
-void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1640,7 +1640,7 @@ void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @returns Sequence number of the stage for verification.
  */
-int parse_deci(FILE *fptr, struct blkt *blkt_ptr);
+int parse_deci(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1655,7 +1655,7 @@ int parse_deci(FILE *fptr, struct blkt *blkt_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @returns Sequence number of the stage for verification.
  */
-int parse_gain(FILE *fptr, struct blkt *blkt_ptr);
+int parse_gain(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1670,7 +1670,7 @@ int parse_gain(FILE *fptr, struct blkt *blkt_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  */
-void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1685,7 +1685,7 @@ void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  */
-void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1701,7 +1701,7 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  * @author 05/31/2013: IGD.
  */
 void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
-                      struct stage *stage_ptr);
+                      struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private

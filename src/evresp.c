@@ -427,7 +427,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                 if (!(err_type = setjmp(jump_buffer))) {
                     new_file = 0;
                     which_matched = find_resp(fptr, scns, date_time,
-                            &this_channel);
+                            &this_channel, log);
 
                     /* found a station-channel-network that matched.  First construct
                      an output filename and compare to other output files. If this
@@ -487,7 +487,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                         /* found a station channel pair that matched a response, so parse
                          the response into a channel/filter list */
 
-                        test = parse_channel(fptr, &this_channel);
+                        test = parse_channel(fptr, &this_channel, log);
 
                         if (listinterp_in_flag
                                 && this_channel.first_stage->first_blkt->type
@@ -577,7 +577,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                         resp = next_ptr;
                     } else {
                         strncpy(FirstLine, "", MAXLINELEN);
-                        test = next_resp(fptr);
+                        test = next_resp(fptr, log);
                     }
                 } else {
                     if (new_file)
@@ -590,7 +590,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                             || err_type == RE_COMP_FAILED
                             || err_type == UNRECOG_UNITS) {
                         strncpy(FirstLine, "", MAXLINELEN);
-                        test = next_resp(fptr);
+                        test = next_resp(fptr, log);
                     } else if (err_type == UNDEF_PREFIX) {
                         test = 0;
                     }
@@ -622,7 +622,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                     curr_file = lst_ptr->name;
                     look_again: if (!(err_type = setjmp(jump_buffer))) {
                         new_file = 0;
-                        which_matched = get_resp(fptr, scn, date_time, &this_channel);
+                        which_matched = get_resp(fptr, scn, date_time, &this_channel, log);
                         if (which_matched >= 0) {
 
                             /* found a station-channel-network that matched.  First construct
@@ -681,7 +681,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
 
                                 /* parse the response into a channel/filter list */
 
-                                test = parse_channel(fptr, &this_channel);
+                                test = parse_channel(fptr, &this_channel, log);
 
                                 /* IGD 01/04/01 Add code preventing a user from defining output units as DIS and ACC if
                                  the input units are PRESSURE after */
@@ -833,7 +833,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                             }
                         } else {
                             strncpy(FirstLine, "", MAXLINELEN);
-                            test = next_resp(fptr);
+                            test = next_resp(fptr, log);
                             if (!test) {
                                 if (!stdio_flag) {
                                     fclose(fptr);
@@ -857,7 +857,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                                 || err_type == RE_COMP_FAILED
                                 || err_type == UNRECOG_UNITS) {
                             strncpy(FirstLine, "", MAXLINELEN);
-                            test = next_resp(fptr);
+                            test = next_resp(fptr, log);
                         } else if (err_type == UNDEF_PREFIX) {
                             test = 0;
                         }
