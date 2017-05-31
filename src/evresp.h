@@ -1810,7 +1810,8 @@ void check_sym(struct blkt *f, struct channel *chan);
  * @param[in] out_units Units of output.
  * @param[in] start_stage Start stage.
  * @param[in] stop_stage Stop stage.
- * @param[in] useTotalSensitivityFlag FIXME.
+ * @param[in] useTotalSensitivityFlag Use reported sensitivity to compute
+ *                                    response.
  * @param[in] x_for_b62 FIXME.
  */
 void calc_resp(struct channel *chan, double *freq, int nfreqs,
@@ -1971,23 +1972,84 @@ int timecmp(struct dateTime *dt1, struct dateTime *dt2);
  * @private
  * @ingroup evalresp_private_print
  * @brief Print the channel info, followed by the list of filters.
+ * @param[in] chan Channel structure.
+ * @param[in] start_stage Start stage.
+ * @param[in] stop_stage Stop stage.
+ * @param[in[ stdio_flag Flag if standard input was used.
+ * @param[in] listinterp_out_flag Flag if interpolated output was used.
+ * @param[in] listinterp_in_flag Flag if interpolated input was used.
+ * @param[in] useTotalSensitivyFlag Flag if reported sensitivity was used to
+ *                                  compute response.
  */
-void print_chan(struct channel *, int, int, int, int, int, int);
+void print_chan(struct channel *chan, int start_stage, int stop_stage,
+                int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
+                int useTotalSensitivityFlag);
 
 /**
  * @private
  * @ingroup evalresp_private_print
  * @brief Print the response information to the output files.
+ * @details Prints the response information in the fashion that the user
+ *          requested it.  The response is either in the form of a complex
+ *          spectra (freq, real_resp, imag_resp) to the file
+ *          SPECTRA.NETID.STANAME.CHANAME (if rtype = "cs") or in the form of
+ *          seperate amplitude and phase files (if rtype = "ap") with names
+ *          like AMP.NETID.STANAME.CHANAME and PHASE.NETID.STANAME.CHANAME. In
+ *          all cases, the pointer to the channel is used to obtain the NETID,
+ *          STANAME, and CHANAME values. If the 'stdio_flag' is set to 1, then
+ *          the response information will be output to stdout, prefixed by a
+ *          header that includes the NETID, STANAME, and CHANAME, as well as
+ *          whether the response given is in amplitude/phase or complex
+ *          response (real/imaginary) values. If either case, the output to
+ *          stdout will be in the form of three columns of real numbers, in
+ *          the former case they will be freq/amp/phase tuples, in the latter
+ *          case freq/real/imaginary tuples.
+ * @param[in] freqs Array of frequencies.
+ * @param[in] nfreqs Number of frequencies.
+ * @param[in] first Pointer to first response in chain.
+ * @param[in] rtype Reponse type.
+ * @param[in] stdio_flag Flag controlling output.
+ * @see print_resp_itp().
+ * @note This version of the function does not include the 'listinterp...'
+ *       parameters.
  */
-void print_resp(double *, int, struct response *, char *, int);
+void print_resp(double *freqs, int nfreqs, struct response *first, char *rtype,
+                int stdio_flag);
 
 /**
  * @private
  * @ingroup evalresp_private_print
  * @brief Print the response information to the output files.
+ * @details Prints the response information in the fashion that the user
+ *          requested it. The response is either in the form of a complex
+ *          spectra (freq, real_resp, imag_resp) to the file
+ *          SPECTRA.NETID.STANAME.CHANAME (if rtype = "cs") or in the form of
+ *          seperate amplitude and phase files (if rtype = "ap") with names
+ *          like AMP.NETID.STANAME.CHANAME and PHASE.NETID.STANAME.CHANAME.
+ *          In all cases, the pointer to the channel is used to obtain the
+ *          NETID, STANAME, and CHANAME values. If the 'stdio_flag' is set to
+ *          1, then the response information will be output to stdout,
+ *          prefixed by a header that includes the NETID, STANAME, and
+ *          CHANAME, as well as whether the response given is in
+ *          amplitude/phase or complex response (real/imaginary) values. If
+ *          either case, the output to stdout will be in the form of three
+ *          columns of real numbers, in the former case they will be
+ *          freq/amp/phase tuples, in the latter case freq/real/imaginary
+ *          tuples.
+ * @param[in] freqs Array of frequencies.
+ * @param[in] nfreqs Number of frequencies.
+ * @param[in] first Pointer to first response in chain.
+ * @param[in] rtype Reponse type.
+ * @param[in] stdio_flag Flag controlling output.
+ * @param[in] listinterp_out_flag Flag if interpolated output was used.
+ * @param[in] listinterp_in_flag Flag if interpolated input was used.
+ * @param[in] unwrap_flag Flag if phases are unwrapped.
+ * @see print_resp().
+ * @note This version of the function includes the 'listinterp...' parameters.
  */
-void print_resp_itp(double *, int, struct response *, char *, int, int, double,
-        int);
+void print_resp_itp(double *freqs, int nfreqs, struct response *first,
+                    char *rtype, int stdio_flag, int listinterp_out_flag,
+                    double listinterp_tension, int unwrap_flag);
 
 /**
  * @private
@@ -2141,22 +2203,43 @@ extern jmp_buf jump_buffer;
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Phase unwrapping function.
+ * @details It works only inside a loop over phases.
+ * @param[in] phase Phase value to process.
+ * @param[in] prev_phase Previous phase.
+ * @param[in] range Range value to use.
+ * @param[in,out] added_value Pointer to offset value used for each call.
+ * @returns "Unwrapped" version of the given phase value.
+ * @author 04/05/04: IGD.
  */
 double unwrap_phase(double phase, double prev_phase, double range,
-        double *added_value);
+                    double *added_value);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief FIXME.
+ * @brief Wraps a set of phase values so that all of the values are between
+ *        "-range" and "+range" (inclusive).
+ * @details This function is called iteratively, once for each phase value.
+ * @param[in] phase Phase value to process.
+ * @param[in] range Range value to use.
+ * @param[in,out] added_value Pointer to offset value used for each call.
+ * @returns "Wrapped" version of the given phase value.
  */
 double wrap_phase(double phase, double range, double *added_value);
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Small function to set and return a static flag to use or not use
+ *        the estimated delay in response computation.
+ * @details The reason we want to use this global variable is because we don't
+u *          want to change the number of arguments in evresp() function which
+ *          is used in users programs.
+ * @param[in] flag NEGATIVE means that we want to query the value of the flag
+ *                 TRUE or FALSE means that we want to set corresponding
+ *                 values.
+ * @author 03/01/05: IGD.
  */
 int use_estimated_delay(int flag);
 

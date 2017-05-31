@@ -23,8 +23,6 @@ int arrays_equal(double *arr1, double *arr2, int arr_size);
 void evresp_adjust_phase(double *pha, int len, double min, double max);
 int evresp_vector_minmax(double *pha, int len, double *min, double *max);
 
-/* print_chan:  prints a summary of the channel's response information to stderr */
-
 void print_chan(struct channel *chan, int start_stage, int stop_stage,
         int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
         int useTotalSensitivityFlag) {
@@ -252,25 +250,6 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
     fflush(stderr);
 }
 
-/* print_resp:  prints the response information in the fashion that the
- user requested it.  The response is either in the form of
- a complex spectra (freq, real_resp, imag_resp) to the
- file SPECTRA.NETID.STANAME.CHANAME (if rtype = "cs")
- or in the form of seperate amplitude and phase files
- (if rtype = "ap") with names like AMP.NETID.STANAME.CHANAME
- and PHASE.NETID.STANAME.CHANAME.  In all cases, the pointer to
- the channel is used to obtain the NETID, STANAME, and CHANAME
- values.  If the 'stdio_flag' is set to 1, then the response
- information will be output to stdout, prefixed by a header that
- includes the NETID, STANAME, and CHANAME, as well as whether
- the response given is in amplitude/phase or complex response
- (real/imaginary) values.  If either case, the output to stdout
- will be in the form of three columns of real numbers, in the
- former case they will be freq/amp/phase tuples, in the latter
- case freq/real/imaginary tuples.
- This version of the function includes the 'listinterp...'
- parameters */
-
 void print_resp_itp(double *freqs, int nfreqs, struct response *first,
         char *rtype, int stdio_flag, int listinterp_out_flag,
         double listinterp_tension, int unwrap_flag) {
@@ -465,25 +444,6 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
         resp = resp->next;
     }
 }
-
-/* print_resp:  prints the response information in the fashion that the
- user requested it.  The response is either in the form of
- a complex spectra (freq, real_resp, imag_resp) to the
- file SPECTRA.NETID.STANAME.CHANAME (if rtype = "cs")
- or in the form of seperate amplitude and phase files
- (if rtype = "ap") with names like AMP.NETID.STANAME.CHANAME
- and PHASE.NETID.STANAME.CHANAME.  In all cases, the pointer to
- the channel is used to obtain the NETID, STANAME, and CHANAME
- values.  If the 'stdio_flag' is set to 1, then the response
- information will be output to stdout, prefixed by a header that
- includes the NETID, STANAME, and CHANAME, as well as whether
- the response given is in amplitude/phase or complex response
- (real/imaginary) values.  If either case, the output to stdout
- will be in the form of three columns of real numbers, in the
- former case they will be freq/amp/phase tuples, in the latter
- case freq/real/imaginary tuples.
- This version of the function does not include the
- 'listinterp...' parameters */
 
 void print_resp(double *freqs, int nfreqs, struct response *first, char *rtype,
         int stdio_flag) {
