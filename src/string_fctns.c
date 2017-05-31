@@ -531,27 +531,35 @@ int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_lo
     return (1);
 }
 
-int get_int(char *in_line) {
+int get_int(char *in_line, evalresp_log_t *log) {
     int value;
 
-    if (!is_int(in_line))
-        error_return(IMPROP_DATA_TYPE, "get_int; '%s' is not an integer",
+    if (!is_int(in_line, log))
+    {
+        evalresp_log(log, ERROR, 0, "get_int; '%s' is not an integer",
                 in_line);
+        /*XXX error_return(IMPROP_DATA_TYPE, "get_int; '%s' is not an integer",
+                in_line); */
+    }
     value = atoi(in_line);
     return (value);
 }
 
-double get_double(char *in_line) {
+double get_double(char *in_line, evalresp_log_t *log) {
     double lcl_val;
 
-    if (!is_real(in_line))
-        error_return(IMPROP_DATA_TYPE, "get_double; '%s' is not a real number",
+    if (!is_real(in_line, log))
+    {
+        evalresp_log(log, ERROR, 0, "get_double; '%s' is not a real number",
                 in_line);
+        /*XXX error_return(IMPROP_DATA_TYPE, "get_double; '%s' is not a real number",
+                in_line); */
+    }
     lcl_val = atof(in_line);
     return (lcl_val);
 }
 
-int check_units(char *line) {
+int check_units(char *line, evalresp_log_t *log) {
     int i, first_flag = 0;
 
     if (!strlen(GblChanPtr->first_units)) {
@@ -566,7 +574,9 @@ int check_units(char *line) {
     }
 
     for (i = 0; i < (int) strlen(line); i++)
+    {
         line[i] = toupper(line[i]);
+    }
 
     /* IGD 02/03/01 a restricted case of pessure data is added
      * We will play with string_match ater if more requests show
@@ -583,7 +593,7 @@ int check_units(char *line) {
     if (strncasecmp(line, "C -", 3) == 0)
         return (CENTIGRADE);
 
-    if (string_match(line, "^[CNM]?M/S\\*\\*2|^[CNM]?M/SEC\\*\\*2", "-r")) {
+    if (string_match(line, "^[CNM]?M/S\\*\\*2|^[CNM]?M/SEC\\*\\*2", "-r", log)) {
         if (first_flag && !strncmp("NM", line, (size_t) 2))
             unitScaleFact = 1.0e9;
         else if (first_flag && !strncmp("MM", line, (size_t) 2))
@@ -591,7 +601,7 @@ int check_units(char *line) {
         else if (first_flag && !strncmp("CM", line, (size_t) 2))
             unitScaleFact = 1.0e2;
         return (ACC);
-    } else if (string_match(line, "^[CNM]?M/S|^[CNM]?M/SEC", "-r")) {
+    } else if (string_match(line, "^[CNM]?M/S|^[CNM]?M/SEC", "-r", log)) {
         if (first_flag && !strncmp(line, "NM", 2))
             unitScaleFact = 1.0e9;
         else if (first_flag && !strncmp(line, "MM", 2))
@@ -599,7 +609,7 @@ int check_units(char *line) {
         else if (first_flag && !strncmp(line, "CM", 2))
             unitScaleFact = 1.0e2;
         return (VEL);
-    } else if (string_match(line, "^[CNM]?M[^A-Z/]?", "-r")) {
+    } else if (string_match(line, "^[CNM]?M[^A-Z/]?", "-r", log)) {
         if (first_flag && !strncmp(line, "NM", 2))
             unitScaleFact = 1.0e9;
         else if (first_flag && !strncmp(line, "MM", 2))
@@ -607,23 +617,26 @@ int check_units(char *line) {
         else if (first_flag && !strncmp(line, "CM", 2))
             unitScaleFact = 1.0e2;
         return (DIS);
-    } else if (string_match(line, "^COUNTS?[^A-Z]?", "-r")
-            || string_match(line, "^DIGITAL[^A-Z]?", "-r")) {
+    } else if (string_match(line, "^COUNTS?[^A-Z]?", "-r", log)
+            || string_match(line, "^DIGITAL[^A-Z]?", "-r", log)) {
         return (COUNTS);
-    } else if (string_match(line, "^V[^A-Z]?", "-r")
-            || string_match(line, "^VOLTS[^A-Z]?", "-r")) {
+    } else if (string_match(line, "^V[^A-Z]?", "-r", log)
+            || string_match(line, "^VOLTS[^A-Z]?", "-r", log)) {
         return (VOLTS);
     }
 #ifdef LIB_MODE
     return (DEFAULT);
 #else
-    error_return(UNRECOG_UNITS,
+    evalresp_log(log, ERROR, 0,
             "check_units; units found ('%s') are not supported", line);
+    return (DEFAULT);
+    /*XXX error_return(UNRECOG_UNITS,
+            "check_units; units found ('%s') are not supported", line); */
 #endif
-    return (0); /*We should not reach to here */
+    //XXX return (0); /*We should not reach to here */
 }
 
-int string_match(const char *string, char *expr, char *type_flag) {
+int string_match(const char *string, char *expr, char *type_flag, evalresp_log_t *log) {
     char lcl_string[MAXLINELEN], regexp_pattern[MAXLINELEN];
     int i = 0, glob_type, test;
     register regexp *prog;
@@ -638,10 +651,13 @@ int string_match(const char *string, char *expr, char *type_flag) {
     else if (!strcmp(type_flag, "-g"))
         glob_type = 1;
     else {
-        fprintf(stderr, "%s string_match; improper pattern type (%s)\n",
+        evalresp_log(log, ERROR, 0, "%s string_match; improper pattern type (%s)\n",
+                myLabel, type_flag);
+        return 0; /*TODO better error */
+        /*XXX fprintf(stderr, "%s string_match; improper pattern type (%s)\n",
                 myLabel, type_flag);
         fflush(stderr);
-        exit(2);
+        exit(2); */
     }
     while (*lcl_ptr && i < (MAXLINELEN - 1)) {
         if (glob_type && *lcl_ptr == '?') {
@@ -657,8 +673,11 @@ int string_match(const char *string, char *expr, char *type_flag) {
     regexp_pattern[i] = '\0';
 
     if ((prog = evr_regcomp(regexp_pattern)) == NULL) {
-        error_return(RE_COMP_FAILED,
+        evalresp_log(log, ERROR, 0,
                 "string_match; pattern '%s' didn't compile", regexp_pattern);
+        return 0; /*TODO RE_COMP_FAILED*/
+        /*XXX error_return(RE_COMP_FAILED,
+                "string_match; pattern '%s' didn't compile", regexp_pattern); */
     }
     lcl_ptr = lcl_string;
     test = evr_regexec(prog, lcl_ptr);
@@ -667,32 +686,32 @@ int string_match(const char *string, char *expr, char *type_flag) {
     return (test);
 }
 
-int is_int(const char *test) {
+int is_int(const char *test, evalresp_log_t *log) {
     char ipattern[MAXLINELEN];
 
     /* first check to see if is an integer prefixed by a plus or minus.  If not
      then check to see if is simply an integer */
 
     strncpy(ipattern, "^[-+]?[0-9]+$", MAXLINELEN);
-    return (string_match(test, ipattern, "-r"));
+    return (string_match(test, ipattern, "-r", log));
 }
 
-int is_real(const char *test) {
+int is_real(const char *test, evalresp_log_t *log) {
     char fpattern[MAXLINELEN];
     strncpy(fpattern, "^[-+]?[0-9]+\\.?[0-9]*[Ee][-+]?[0-9]+$", MAXLINELEN);
     strcat(fpattern, "|^[-+]?[0-9]*\\.[0-9]+[Ee][-+]?[0-9]+$");
     strcat(fpattern, "|^[-+]?[0-9]+\\.?[0-9]*$");
     strcat(fpattern, "|^[-+]?[0-9]*\\.[0-9]+$");
-    return (string_match(test, fpattern, "-r"));
+    return (string_match(test, fpattern, "-r", log));
 }
 
-int is_time(const char *test) {
+int is_time(const char *test, evalresp_log_t *log) {
     char fpattern[MAXLINELEN];
 
     /* time strings must be in the format 'hh:mm:ss[.#####]', so more than 14
      characters is an error (too many digits) */
 
-    if (is_int(test) && atoi(test) < 24)
+    if (is_int(test, log) && atoi(test) < 24)
         return (1);
 
     /* if gets this far, just check without the decimal, then with the decimal */
@@ -700,7 +719,7 @@ int is_time(const char *test) {
     strncpy(fpattern, "^[0-9][0-9]?:[0-9][0-9]$", MAXLINELEN);
     strcat(fpattern, "|^[0-9][0-9]?:[0-9][0-9]:[0-9][0-9]$");
     strcat(fpattern, "|^[0-9][0-9]?:[0-9][0-9]:[0-9][0-9]\\.[0-9]*$");
-    return (string_match(test, fpattern, "-r"));
+    return (string_match(test, fpattern, "-r", log));
 }
 
 int add_null(char *s, int len, char where) {

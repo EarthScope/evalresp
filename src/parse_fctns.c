@@ -34,7 +34,7 @@ int parse_pref(int *blkt_no, int *fld_no, char *line, evalresp_log_t *log) {
     *(blktstr + 3) = '\0';
     *(fldstr + 2) = '\0';
 
-    if (!is_int(blktstr))
+    if (!is_int(blktstr, log))
     {
         evalresp_log(log, ERROR, 0, "parse_pref; prefix '%s' cannot be %s",
                 blktstr, "converted to a blockette number");
@@ -43,7 +43,7 @@ int parse_pref(int *blkt_no, int *fld_no, char *line, evalresp_log_t *log) {
                 blktstr, "converted to a blockette number"); */
     }
     *blkt_no = atoi(blktstr);
-    if (!is_int(fldstr))
+    if (!is_int(fldstr, log))
     {
         evalresp_log(log, ERROR, 0, "parse_pref; prefix '%s' cannot be %s",
                 fldstr, "converted to a blockette number");
@@ -127,7 +127,7 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalre
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        stage_ptr->sequence_no = get_int(field);
+        stage_ptr->sequence_no = get_int(field, log);
         curr_seq_no = stage_ptr->sequence_no;
     }
 
@@ -137,13 +137,13 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalre
     {
         return; /*TODO */
     }
-    stage_ptr->input_units = check_units(line);
+    stage_ptr->input_units = check_units(line, log);
 
     if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
     {
         return; /*TODO */
     }
-    stage_ptr->output_units = check_units(line);
+    stage_ptr->output_units = check_units(line, log);
 
     /* then the A0 normalization factor */
 
@@ -151,7 +151,7 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalre
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    blkt_ptr->blkt_info.pole_zero.a0 = get_double(field);
+    blkt_ptr->blkt_info.pole_zero.a0 = get_double(field, log);
 
     /* the A0 normalization frequency */
 
@@ -159,7 +159,7 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalre
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    blkt_ptr->blkt_info.pole_zero.a0_freq = get_double(field);
+    blkt_ptr->blkt_info.pole_zero.a0_freq = get_double(field, log);
 
     /* the number of zeros */
 
@@ -167,7 +167,7 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalre
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    nzeros = get_int(field);
+    nzeros = get_int(field, log);
     blkt_ptr->blkt_info.pole_zero.nzeros = nzeros;
 
     /* remember to allocate enough space for the number of zeros to follow */
@@ -185,7 +185,7 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalre
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    npoles = get_int(field);
+    npoles = get_int(field, log);
     blkt_ptr->blkt_info.pole_zero.npoles = npoles;
 
     /* remember to allocate enough space for the number of poles to follow */
@@ -208,7 +208,7 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalre
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        if (!is_real(field))
+        if (!is_real(field, log))
         {
             evalresp_log(log, ERROR, 0, "parse_pz: %s%s%s",
                     "zeros must be real numbers (found '", field, "')");
@@ -221,7 +221,7 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalre
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        if (!is_real(field))
+        if (!is_real(field, log))
         {
             evalresp_log(log, ERROR, 0, "parse_pz: %s%s%s",
                     "zeros must be real numbers (found '", field, "')");
@@ -248,7 +248,7 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalre
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        if (!is_real(field))
+        if (!is_real(field, log))
         {
             evalresp_log(log, ERROR, 0, "parse_pz: %s%s%s",
                     "poles must be real numbers (found '", field, "')");
@@ -261,7 +261,7 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalre
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        if (!is_real(field))
+        if (!is_real(field, log))
         {
             evalresp_log(log, ERROR, 0, "parse_pz: %s%s%s",
                     "poles must be real numbers (found '", field, "')");
@@ -341,7 +341,7 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr,
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        stage_ptr->sequence_no = get_int(field);
+        stage_ptr->sequence_no = get_int(field, log);
         curr_seq_no = stage_ptr->sequence_no;
     }
 
@@ -351,13 +351,13 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr,
     {
         return; /*TODO */
     }
-    stage_ptr->input_units = check_units(line);
+    stage_ptr->input_units = check_units(line, log);
 
     if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
     {
         return; /*TODO */
     }
-    stage_ptr->output_units = check_units(line);
+    stage_ptr->output_units = check_units(line, log);
 
     /* the number of coefficients */
 
@@ -365,7 +365,7 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr,
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    ncoeffs = get_int(field);
+    ncoeffs = get_int(field, log);
     blkt_ptr->blkt_info.coeff.nnumer = ncoeffs;
 
     /* remember to allocate enough space for the number of coefficients to follow */
@@ -383,7 +383,7 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr,
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    ndenom = get_int(field);
+    ndenom = get_int(field, log);
 
     /* if the number of denominators is zero, then is not an IIR filter. */
 
@@ -414,7 +414,7 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr,
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        if (!is_real(field))
+        if (!is_real(field, log))
         {
             evalresp_log(log, ERROR, 0, "parse_coeff: %s%s%s",
                     "numerators must be real numbers (found '", field, "')");
@@ -432,7 +432,7 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr,
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        if (!is_real(field))
+        if (!is_real(field, log))
         {
             evalresp_log(log, ERROR, 0, "parse_coeff: %s%s%s",
                     "denominators must be real numbers (found '", field, "')");
@@ -512,7 +512,7 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eva
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        stage_ptr->sequence_no = get_int(field);
+        stage_ptr->sequence_no = get_int(field, log);
         curr_seq_no = stage_ptr->sequence_no;
     }
 
@@ -522,13 +522,13 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eva
     {
         return; /*TODO */
     }
-    stage_ptr->input_units = check_units(line);
+    stage_ptr->input_units = check_units(line, log);
 
     if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
     {
         return; /*TODO */
     }
-    stage_ptr->output_units = check_units(line);
+    stage_ptr->output_units = check_units(line, log);
 
     /* the number of coefficients */
 
@@ -536,7 +536,7 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eva
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    ncoeffs = get_int(field);
+    ncoeffs = get_int(field, log);
     blkt_ptr->blkt_info.fir.ncoeffs = ncoeffs;
 
     /* remember to allocate enough space for the number of coefficients to follow */
@@ -554,7 +554,7 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eva
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    ndenom = get_int(field);
+    ndenom = get_int(field, log);
 
     /* if the number of denominators is not zero, then is not a FIR filter.
      evalresp cannot evaluate IIR and Analog filters that are represented
@@ -585,7 +585,7 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eva
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        if (!is_real(field))
+        if (!is_real(field, log))
         {
             evalresp_log(log, ERROR, 0, "parse_coeff: %s%s%s",
                     "coeffs must be real numbers (found '", field, "')");
@@ -639,7 +639,7 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eval
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        stage_ptr->sequence_no = get_int(field);
+        stage_ptr->sequence_no = get_int(field, log);
         curr_seq_no = stage_ptr->sequence_no;
         check_fld++;
         if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
@@ -653,13 +653,13 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eval
 
     /* the units (in first, then out) */
 
-    stage_ptr->input_units = check_units(line);
+    stage_ptr->input_units = check_units(line, log);
 
     if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
     {
         return; /*TODO */
     }
-    stage_ptr->output_units = check_units(line);
+    stage_ptr->output_units = check_units(line, log);
 
     /* the number of responses */
 
@@ -667,7 +667,7 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eval
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    nresp = get_int(field);
+    nresp = get_int(field, log);
     blkt_ptr->blkt_info.list.nresp = nresp;
 
     /* remember to allocate enough space for the number frequency, amplitude, phase tuples
@@ -708,7 +708,7 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eval
             {
                 return /*TODO PARSE_ERROR should be returned */;
             }
-            if (!is_real(field))
+            if (!is_real(field, log))
             {
                 evalresp_log(log, ERROR, 0, "parse_list: %s%s%s",
                         "freq vals must be real numbers (found '", field, "')");
@@ -721,7 +721,7 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eval
             {
                 return /*TODO PARSE_ERROR should be returned */;
             }
-            if (!is_real(field))
+            if (!is_real(field, log))
             {
                 evalresp_log(log, ERROR, 0, "parse_list: %s%s%s",
                         "amp vals must be real numbers (found '", field, "')");
@@ -734,7 +734,7 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eval
             {
                 return /*TODO PARSE_ERROR should be returned */;
             }
-            if (!is_real(field))
+            if (!is_real(field, log))
             {
                 evalresp_log(log, ERROR, 0, "parse_list: %s%s%s",
                         "phase vals must be real numbers (found '", field,
@@ -756,7 +756,7 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eval
             {
                 return /*TODO PARSE_ERROR should be returned */;
             }
-            if (!is_real(field))
+            if (!is_real(field, log))
             {
                 evalresp_log(log, ERROR, 0, "parse_list: %s%s%s",
                         "freq vals must be real numbers (found '", field, "')");
@@ -769,7 +769,7 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eval
             {
                 return /*TODO PARSE_ERROR should be returned */;
             }
-            if (!is_real(field))
+            if (!is_real(field, log))
             {
                 evalresp_log(log, ERROR, 0, "parse_list: %s%s%s",
                         "amp vals must be real numbers (found '", field, "')");
@@ -782,7 +782,7 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eval
             {
                 return /*TODO PARSE_ERROR should be returned */;
             }
-            if (!is_real(field))
+            if (!is_real(field, log))
             {
                 evalresp_log(log, ERROR, 0, "parse_list: %s%s%s",
                         "phase vals must be real numbers (found '", field,
@@ -837,7 +837,7 @@ void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, e
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        stage_ptr->sequence_no = get_int(field);
+        stage_ptr->sequence_no = get_int(field, log);
         curr_seq_no = stage_ptr->sequence_no;
         check_fld++;
         if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
@@ -851,13 +851,13 @@ void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, e
 
     /* next (from the file) should be the units (in first, then out) */
 
-    stage_ptr->input_units = check_units(line);
+    stage_ptr->input_units = check_units(line, log);
 
     if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
     {
         return; /*TODO */
     }
-    stage_ptr->output_units = check_units(line);
+    stage_ptr->output_units = check_units(line, log);
 
     /* the number of responses */
 
@@ -865,7 +865,7 @@ void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, e
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    ncorners = get_int(field);
+    ncorners = get_int(field, log);
     blkt_ptr->blkt_info.generic.ncorners = ncorners;
 
     /* remember to allocate enough space for the number corner_frequency, corner_slope pairs
@@ -885,7 +885,7 @@ void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, e
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        if (!is_real(field))
+        if (!is_real(field, log))
         {
             evalresp_log(log, ERROR, 0, "parse_generic: %s%s%s",
                     "corner_freqs must be real numbers (found '", field, "')");
@@ -898,7 +898,7 @@ void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, e
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        if (!is_real(field))
+        if (!is_real(field, log))
         {
             evalresp_log(log, ERROR, 0, "parse_generic: %s%s%s",
                     "corner_slopes must be real numbers (found '", field, "')");
@@ -953,7 +953,7 @@ int parse_deci(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log) {
         {
             return PARSE_ERROR;
         }
-        sequence_no = get_int(field);
+        sequence_no = get_int(field, log);
         check_fld++;
         if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
         {
@@ -969,7 +969,7 @@ int parse_deci(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log) {
 
     /* next (from the file) input sample rate, convert to input sample interval */
 
-    srate = get_double(field);
+    srate = get_double(field, log);
     if (srate)
     {
         blkt_ptr->blkt_info.decimation.sample_int = 1.0 / srate;
@@ -981,12 +981,12 @@ int parse_deci(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log) {
     {
         return PARSE_ERROR;
     }
-    blkt_ptr->blkt_info.decimation.deci_fact = get_int(field);
+    blkt_ptr->blkt_info.decimation.deci_fact = get_int(field, log);
     if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
     {
         return PARSE_ERROR;
     }
-    blkt_ptr->blkt_info.decimation.deci_offset = get_int(field);
+    blkt_ptr->blkt_info.decimation.deci_offset = get_int(field, log);
 
     /* the estimated delay */
 
@@ -994,7 +994,7 @@ int parse_deci(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log) {
     {
         return PARSE_ERROR;
     }
-    blkt_ptr->blkt_info.decimation.estim_delay = get_double(field);
+    blkt_ptr->blkt_info.decimation.estim_delay = get_double(field, log);
 
     /* and, finally, the applied correction.  Note:  the calculated delay is left undefined
      by this routine, although space does exist in this filter type for this parameter */
@@ -1003,7 +1003,7 @@ int parse_deci(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log) {
     {
         return PARSE_ERROR;
     }
-    blkt_ptr->blkt_info.decimation.applied_corr = get_double(field);
+    blkt_ptr->blkt_info.decimation.applied_corr = get_double(field, log);
 
     /* return the sequence number of the stage for verification */
 
@@ -1055,7 +1055,7 @@ int parse_gain(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log) {
         {
             return PARSE_ERROR;
         }
-        sequence_no = get_int(field);
+        sequence_no = get_int(field, log);
         check_fld++;
         if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
         {
@@ -1072,12 +1072,12 @@ int parse_gain(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log) {
     /* then get the gain and frequency of gain (these correspond to sensitivity and frequency of
      sensitivity for stage 0 Sensitivity/Gain filters) */
 
-    blkt_ptr->blkt_info.gain.gain = get_double(field);
+    blkt_ptr->blkt_info.gain.gain = get_double(field, log);
     if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
     {
         return PARSE_ERROR;
     }
-    blkt_ptr->blkt_info.gain.gain_freq = get_double(field);
+    blkt_ptr->blkt_info.gain.gain_freq = get_double(field, log);
 
     /* if there is a history, skip it. First determine number of lines to skip */
 
@@ -1085,7 +1085,7 @@ int parse_gain(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log) {
     {
         return PARSE_ERROR;
     }
-    nhist = get_int(field);
+    nhist = get_int(field, log);
 
     /* then skip them  */
 
@@ -1165,7 +1165,7 @@ void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        stage_ptr->sequence_no = get_int(field);
+        stage_ptr->sequence_no = get_int(field, log);
         curr_seq_no = stage_ptr->sequence_no;
     }
 
@@ -1175,13 +1175,13 @@ void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
     {
         return; /*TODO */
     }
-    stage_ptr->input_units = check_units(line);
+    stage_ptr->input_units = check_units(line, log);
 
     if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
     {
         return; /*TODO */
     }
-    stage_ptr->output_units = check_units(line);
+    stage_ptr->output_units = check_units(line, log);
 
     /* Polynomial Approximation Type */
     if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
@@ -1202,35 +1202,35 @@ void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    blkt_ptr->blkt_info.polynomial.lower_freq_bound = get_double(field);
+    blkt_ptr->blkt_info.polynomial.lower_freq_bound = get_double(field, log);
 
     /* Upper Valid Frequency Bound */
     if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    blkt_ptr->blkt_info.polynomial.upper_freq_bound = get_double(field);
+    blkt_ptr->blkt_info.polynomial.upper_freq_bound = get_double(field, log);
 
     /* Lower Bound of Approximation */
     if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    blkt_ptr->blkt_info.polynomial.lower_approx_bound = get_double(field);
+    blkt_ptr->blkt_info.polynomial.lower_approx_bound = get_double(field, log);
 
     /* Upper Bound of Approximation */
     if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    blkt_ptr->blkt_info.polynomial.upper_approx_bound = get_double(field);
+    blkt_ptr->blkt_info.polynomial.upper_approx_bound = get_double(field, log);
 
     /* Maximum Absolute Error */
     if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    blkt_ptr->blkt_info.polynomial.max_abs_error = get_double(field);
+    blkt_ptr->blkt_info.polynomial.max_abs_error = get_double(field, log);
 
     /* the number of coefficients */
 
@@ -1238,7 +1238,7 @@ void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    ncoeffs = get_int(field);
+    ncoeffs = get_int(field, log);
     blkt_ptr->blkt_info.polynomial.ncoeffs = ncoeffs;
 
     /* remember to allocate enough space for the number of coeffs */
@@ -1259,7 +1259,7 @@ void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        if (!is_real(field))
+        if (!is_real(field, log))
         {
             evalresp_log(log, ERROR, 0, "polynomial: %s%s%s",
                     "coeffs must be real numbers (found '", field, "')");
@@ -1272,7 +1272,7 @@ void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        if (!is_real(field))
+        if (!is_real(field, log))
         {
             evalresp_log(log, ERROR, 0, "polynomial: %s%s%s",
                     "coeffs errors must be real numbers (found '", field, "')");
@@ -1323,7 +1323,7 @@ void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalr
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        stage_ptr->sequence_no = get_int(field);
+        stage_ptr->sequence_no = get_int(field, log);
         curr_seq_no = stage_ptr->sequence_no;
         check_fld += 2;
         if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
@@ -1375,13 +1375,13 @@ void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalr
     {
         return; /*TODO */
     }
-    stage_ptr->input_units = check_units(line);
+    stage_ptr->input_units = check_units(line, log);
 
     if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
     {
         return; /*TODO */
     }
-    stage_ptr->output_units = check_units(line);
+    stage_ptr->output_units = check_units(line, log);
 
     /* the number of coefficients */
 
@@ -1389,7 +1389,7 @@ void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalr
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    ncoeffs = get_int(field);
+    ncoeffs = get_int(field, log);
     blkt_ptr->blkt_info.fir.ncoeffs = ncoeffs;
 
     /* remember to allocate enough space for the number of coefficients to follow */
@@ -1403,7 +1403,7 @@ void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalr
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        if (!is_real(field))
+        if (!is_real(field, log))
         {
             evalresp_log(log, ERROR, 0, "parse_fir: %s%s%s",
                     "coeffs must be real numbers (found '", field, "')");
@@ -1448,7 +1448,7 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalr
     {
         return /*TODO PARSE_ERROR should be returned */;
     }
-    if (!is_int(field))
+    if (!is_int(field, log))
     {
         evalresp_log(log, ERROR, 0, "parse_ref; value '%s' %s", field,
                 " cannot be converted to the number of stages");
@@ -1469,7 +1469,7 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalr
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        if (!is_int(field))
+        if (!is_int(field, log))
         {
             evalresp_log(log, ERROR, 0, "parse_ref; value '%s' %s", field,
                     " cannot be converted to the stage sequence number");
@@ -1491,7 +1491,7 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalr
         {
             return /*TODO PARSE_ERROR should be returned */;
         }
-        if (!is_int(field))
+        if (!is_int(field, log))
         {
             evalresp_log(log, ERROR, 0, "parse_ref; value '%s' %s", field,
                     " cannot be converted to the number of responses");
@@ -1584,7 +1584,7 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalr
             {
                 return /*TODO PARSE_ERROR should be returned */;
             }
-            if (!is_int(field))
+            if (!is_int(field, log))
             {
                 evalresp_log(log, ERROR, 0, "parse_ref; value '%s' %s", field,
                         " cannot be converted to the new stage sequence number");
@@ -2026,11 +2026,11 @@ int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
     while ((test = get_channel(fptr, this_channel, log)) != 0) {
         for (i = 0; i < scn_lst->nscn; i++) {
             scn = scn_lst->scn_vec[i];
-            if (string_match(this_channel->staname, scn->station, "-g")
+            if (string_match(this_channel->staname, scn->station, "-g", log)
                     && ((!strlen(scn->network) && !strlen(this_channel->network))
-                            || string_match(this_channel->network, scn->network, "-g"))
-                    && string_match(this_channel->locid, scn->locid, "-g")
-                    && string_match(this_channel->chaname, scn->channel, "-g")
+                            || string_match(this_channel->network, scn->network, "-g", log))
+                    && string_match(this_channel->locid, scn->locid, "-g", log)
+                    && string_match(this_channel->chaname, scn->channel, "-g", log)
                     && in_epoch(datime, this_channel->beg_t, this_channel->end_t)) {
                 scn->found = 1;
                 return (i);
@@ -2049,12 +2049,12 @@ int get_resp(FILE *fptr, struct scn *scn, char *datime,
 
     while ((test = get_channel(fptr, this_channel, log)) != 0) {
 
-        if (string_match(this_channel->staname, scn->station, "-g")
+        if (string_match(this_channel->staname, scn->station, "-g", log)
                 && ((!strlen(scn->network) && !strlen(this_channel->network))
                         || string_match(this_channel->network, scn->network,
-                                "-g"))
-                && string_match(this_channel->locid, scn->locid, "-g")
-                && string_match(this_channel->chaname, scn->channel, "-g")
+                                "-g", log))
+                && string_match(this_channel->locid, scn->locid, "-g", log)
+                && string_match(this_channel->chaname, scn->channel, "-g", log)
                 && in_epoch(datime, this_channel->beg_t, this_channel->end_t)) {
             scn->found = 1;
             return (1);

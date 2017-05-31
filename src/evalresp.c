@@ -150,7 +150,7 @@ int main(int argc, char *argv[]) {
     /* find index of first switch parameter */
     fswidx = 0; /* loop until switch param found (if any) */
     while (++fswidx < argc && /*  (check if switch param or real #) */
-    (strncmp(argv[fswidx], "-", 1) != 0 || is_real(argv[fswidx])))
+    (strncmp(argv[fswidx], "-", 1) != 0 || is_real(argv[fswidx], log)))
         ;
     if (fswidx < 5) {
         evalresp_log(log, ERROR, 0, "Not all of the required inputs are \n\t"
@@ -232,7 +232,7 @@ int main(int argc, char *argv[]) {
                     strncpy(rtype, optarg, MAXFLDLEN);
                     break;
                 case 'S':/*stage*/
-                    if (is_int(optarg))
+                    if (is_int(optarg, log))
                     {
                         start_stage = atoi(optarg);
                     } else {
@@ -240,7 +240,7 @@ int main(int argc, char *argv[]) {
                         exit(USAGE_ERROR);
                         /*XXX error_exit(USAGE_ERROR, param_err_msgstr, prog_name, optarg); */
                     }
-                    if (optind < flagc && is_int(flagv[optind]))
+                    if (optind < flagc && is_int(flagv[optind], log))
                     {
                         tmp_val = atoi(flagv[optind]);
                         if (tmp_val > start_stage)
@@ -257,7 +257,7 @@ int main(int argc, char *argv[]) {
                     use_estimated_delay(TRUE);
                     break;
                 case 'T':/*it*/
-                    if (is_real(optarg))
+                    if (is_real(optarg, log))
                     {
                         listinterp_tension = atof(optarg);
                     } else {
@@ -303,20 +303,20 @@ int main(int argc, char *argv[]) {
     sta_list = argv[1];
     cha_list = argv[2];
 
-    if (!is_int(argv[3]))
+    if (!is_int(argv[3], log))
     {
         evalresp_log(log, ERROR, 0, "Year must be an integer, found '%s'", argv[3]);
         exit(USAGE_ERROR);
         //error_exit(USAGE_ERROR, "year must be an integer, found '%s'", argv[3]);
     }
-    if (!is_int(argv[4]))
+    if (!is_int(argv[4], log))
     {
         evalresp_log(log, ERROR, 0, "Julian day must be an integer, found '%s'", argv[4]);
         exit(USAGE_ERROR);
         //error_exit(USAGE_ERROR, "julian day must be an integer, found '%s'",
         //        argv[4]);
     }
-    if (!is_time(t_o_day))
+    if (!is_time(t_o_day, log))
     {
         evalresp_log(log, ERROR, 0, "'Time of day' must have format "
                                      "'hh[:mm[:ss[.#####]]]', found '%s'",
@@ -332,7 +332,7 @@ int main(int argc, char *argv[]) {
     }
     sprintf(datime, "%s,%s,%s", argv[3], argv[4], t_o_day);
 
-    if (!is_real(minfstr) || !is_real(maxfstr))
+    if (!is_real(minfstr, log) || !is_real(maxfstr, log))
     {
         evalresp_log(log, ERROR, 0, "freq_lims must be real numbers, found (%s,%s)",
                 minfstr, maxfstr);
@@ -350,7 +350,7 @@ int main(int argc, char *argv[]) {
       /*XXX error_exit(USAGE_ERROR,
                 " freq lims can't equal 0 if log spacing is used");*/
     }
-    if (!is_int(numfstr))
+    if (!is_int(numfstr, log))
     {
         evalresp_log(log, ERROR, 0, "nfreqs must be an integer, found '%s'",
                 numfstr);

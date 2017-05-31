@@ -873,7 +873,7 @@ int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_lo
  * @param[in] in_line Input string.
  * @returns Integer value on success.
  */
-int get_int(char *in_line);
+int get_int(char *in_line, evalresp_log_t *log);
 
 /**
  * @private
@@ -885,7 +885,7 @@ int get_int(char *in_line);
  * @param[in] in_line Input string.
  * @returns Double value on success.
  */
-double get_double(char *in_line);
+double get_double(char *in_line, evalresp_log_t *log);
 
 /**
  * @private
@@ -899,7 +899,7 @@ double get_double(char *in_line);
  * @param[in] line Incoming line.
  * @see units
  */
-int check_units(char *line);
+int check_units(char *line, evalresp_log_t *log);
 
 /**
  * @private
@@ -925,7 +925,7 @@ int check_units(char *line);
  * @returns 0 if false.
  * @returns >0 if true.
  */
-int string_match(const char *string, char *expr, char *type_flag);
+int string_match(const char *string, char *expr, char *type_flag, evalresp_log_t *log);
 
 /**
  * @private
@@ -936,7 +936,7 @@ int string_match(const char *string, char *expr, char *type_flag);
  * @returns 0 if false.
  * @returns >0 if true.
  */
-int is_int(const char *test);
+int is_int(const char *test, evalresp_log_t *log);
 
 /**
  * @private
@@ -947,7 +947,7 @@ int is_int(const char *test);
  * @returns 0 if false.
  * @returns >0 if true.
 */
-int is_real(const char *test);
+int is_real(const char *test, evalresp_log_t *log);
 
 /**
  * @private
@@ -1958,7 +1958,7 @@ void iir_trans(struct blkt *blkt_ptr, double wint, struct evr_complex *out);
  * @returns 0 if false.
  * @returns >0 if true.
  */
-int is_time(const char *test);
+int is_time(const char *test, evalresp_log_t *log);
 
 /**
  * @private
