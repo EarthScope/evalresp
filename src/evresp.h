@@ -779,7 +779,7 @@ int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
  *                        expect. Support for SHAPE formatte RESP files, and
  *                        to skip blank lines.
  */
-int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep);
+int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, evalresp_log_t *log);
 
 /**
  * @private
@@ -797,7 +797,7 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep);
  *          and @p blkt_no).
  * @author 2004.079: SBH: Added code to skip blank lines.
  */
-int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *sep);
+int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *sep, evalresp_log_t *log);
 
 /**
  * @private
@@ -862,7 +862,7 @@ int parse_delim_field(char *line, int fld_no, char *delim, char *return_field, e
  * @returns @c NULL if no non-comment line is found.
  * @author 2004.079: SBH: Added code to skip blank lines.
  */
-int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line);
+int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_log_t *log);
 
 /**
  * @private
@@ -1543,7 +1543,7 @@ int parse_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log);
  * @returns 1 on success.
  * @returns 0 on failure.
  */
-int parse_pref(int *blkt_no, int *fld_no, char *line);
+int parse_pref(int *blkt_no, int *fld_no, char *line, evalresp_log_t *log);
 
 /**
  * @private

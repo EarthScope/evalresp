@@ -164,7 +164,7 @@ int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
 
     /* first get the next non-comment line */
 
-    get_line(fptr, line, blkt_no, fld_no, sep);
+    get_line(fptr, line, blkt_no, fld_no, sep, log);
 
     /* then parse the field that the user wanted from the line get_line returned */
 
@@ -182,7 +182,10 @@ int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
 
     /* first get the next non-comment line */
 
-    next_line(fptr, line, blkt_no, fld_no, sep);
+    if (0 >= next_line(fptr, line, blkt_no, fld_no, sep, log))
+    {
+        return 0; /*TODO carry retval */
+    }
 
     /* then parse the field that the user wanted from the line get_line returned */
 
@@ -194,7 +197,7 @@ int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
 
 }
 
-int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) {
+int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, evalresp_log_t *log) {
     char *lcl_ptr, line[MAXLINELEN];
     int lcl_blkt, lcl_fld, test;
     int tmpint;
@@ -224,7 +227,7 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
         tmpint = sscanf(line, "%s", tmpstr);
 
         if (tmpint == EOF) {
-            return get_line(fptr, return_line, blkt_no, fld_no, sep);
+            return get_line(fptr, return_line, blkt_no, fld_no, sep, log);
         }
 
         tmpint = strlen(line); /* strip any trailing CR or LF chars */
@@ -235,18 +238,22 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
     /*if(!line)
      error_return(UNEXPECTED_EOF, "get_line; no more non-comment lines found in file");*/
 
-    test = parse_pref(&lcl_blkt, &lcl_fld, line);
+    test = parse_pref(&lcl_blkt, &lcl_fld, line, log);
     if (!test) {
-        error_return(UNDEF_PREFIX,
+        evalresp_log(log, ERROR, 0,
                 "get_line; unrecogn. prefix on the following line:\n\t  '%s'",
                 line);
+        return UNDEF_PREFIX;
+        /*XXX error_return(UNDEF_PREFIX,
+                "get_line; unrecogn. prefix on the following line:\n\t  '%s'",
+                line); */
     }
 
     /* check the blockette and field numbers found on the line versus the expected values */
 
     if (blkt_no != lcl_blkt) {
         /* try to parse the next line */
-        return get_line(fptr, return_line, blkt_no, fld_no, sep);
+        return get_line(fptr, return_line, blkt_no, fld_no, sep, log);
         /*
          removed by SBH 2004.079
          if(fld_no != lcl_fld) {
@@ -258,7 +265,7 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
          */
     } else if (fld_no != lcl_fld) {
         /* try to parse the next line */
-        return get_line(fptr, return_line, blkt_no, fld_no, sep);
+        return get_line(fptr, return_line, blkt_no, fld_no, sep, log);
         /*
          removed by SBH 2004.079
          error_return(PARSE_ERROR,"get_line (parsing blockette [%3.3d]); %s%2.2d%s%2.2d",
@@ -268,10 +275,15 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
     }
 
     if ((lcl_ptr = strstr(line, sep)) == (char *) NULL) {
-        error_return(UNDEF_SEPSTR, "get_line; seperator string not found");
+        evalresp_log(log, ERROR, 0, "get_line; seperator string not found");
+        return UNDEF_SEPSTR;
+        /*XXX error_return(UNDEF_SEPSTR, "get_line; seperator string not found"); */
     } else if ((lcl_ptr - line) > (int) (strlen(line) - 1)) {
-        error_return(UNDEF_SEPSTR,
+        evalresp_log(log, ERROR, 0,
                 "get_line; nothing to parse after seperator string");
+        return UNDEF_SEPSTR;
+        /*XXX error_return(UNDEF_SEPSTR,
+                "get_line; nothing to parse after seperator string"); */
     }
 
     lcl_ptr++;
@@ -280,8 +292,11 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
     }
 
     if ((lcl_ptr - line) > (int) strlen(line)) {
-        error_return(UNDEF_SEPSTR,
+        evalresp_log(log, ERROR, 0,
                 "get_line; no non-white space after seperator string");
+        return UNDEF_SEPSTR;
+        /*XXX error_return(UNDEF_SEPSTR,
+                "get_line; no non-white space after seperator string"); */
     }
 
     strncpy(return_line, lcl_ptr, MAXLINELEN);
@@ -289,7 +304,7 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep) 
 }
 
 int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no,
-        char *sep) {
+        char *sep, evalresp_log_t *log) {
     char *lcl_ptr, line[MAXLINELEN];
     int test;
     int tmpint;
@@ -317,21 +332,30 @@ int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no,
     tmpint = sscanf(line, "%s", tmpstr);
 
     if (tmpint == EOF) {
-        return next_line(fptr, return_line, blkt_no, fld_no, sep);
+        return next_line(fptr, return_line, blkt_no, fld_no, sep, log);
     }
 
-    test = parse_pref(blkt_no, fld_no, line);
+    test = parse_pref(blkt_no, fld_no, line, log);
     if (!test) {
-        error_return(UNDEF_PREFIX,
+        evalresp_log(log, ERROR, 0,
                 "get_field; unrecogn. prefix on the following line:\n\t  '%s'",
                 line);
+        return 0 /*TODO UNDEF_PREFIX */;
+        /*XXX error_return(UNDEF_PREFIX,
+                "get_field; unrecogn. prefix on the following line:\n\t  '%s'",
+                line); */
     }
 
     if ((lcl_ptr = strstr(line, sep)) == (char *) NULL) {
-        error_return(UNDEF_SEPSTR, "get_field; seperator string not found");
+        evalresp_log(log, ERROR, 0, "get_field; seperator string not found");
+        return 0 /*TODO UNDER_SEPSTR */;
+        /*XXX error_return(UNDEF_SEPSTR, "get_field; seperator string not found"); */
     } else if ((lcl_ptr - line) > (int) (strlen(line) - 1)) {
-        error_return(UNDEF_SEPSTR,
+        evalresp_log(log, ERROR, 0,
                 "get_field; nothing to parse after seperator string");
+        return 0 /*TODO UNDER_SEPSTR */;
+        /*XXX error_return(UNDEF_SEPSTR,
+                "get_field; nothing to parse after seperator string"); */
     }
 
     lcl_ptr++;
@@ -455,7 +479,7 @@ int parse_delim_field(char *line, int fld_no, char *delim, char *return_field, e
     return (strlen(return_field));
 }
 
-int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line) {
+int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_log_t *log) {
     char line[MAXLINELEN];
     int test;
     char tmpstr[200];
@@ -484,7 +508,7 @@ int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line) {
         tmpint = sscanf(line, "%s", tmpstr);
 
         if (tmpint == EOF) {
-            return check_line(fptr, blkt_no, fld_no, in_line);
+            return check_line(fptr, blkt_no, fld_no, in_line, log);
         }
 
         tmpint = strlen(line); /* strip any trailing CR or LF chars */
@@ -492,11 +516,15 @@ int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line) {
             line[--tmpint] = '\0';
     }
 
-    test = parse_pref(blkt_no, fld_no, line);
+    test = parse_pref(blkt_no, fld_no, line, log);
     if (!test) {
-        error_return(UNDEF_PREFIX,
+        evalresp_log(log, ERROR, 0,
                 "check_line; unrecogn. prefix on the following line:\n\t  '%s'",
                 line);
+        return 0 /*TODO UNDEF_PREFIX */;
+        /*XXX error_return(UNDEF_PREFIX,
+                "check_line; unrecogn. prefix on the following line:\n\t  '%s'",
+                line); */
     }
 
     strncpy(in_line, line, MAXLINELEN);
