@@ -534,11 +534,6 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     }
 }
 
-/* parse_generic:  parses the RESP file for generic filters (in a Blockette [56] or [46]).
- Errors cause the program to terminate.  The blockette and field numbers are
- checked as the file is parsed. As with parse_pz(), for this routine to work,
- the lines must contain evalresp-3.0 style prefixes */
-
 void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     int i, blkt_typ = GENERIC;
     int blkt_read, check_fld;
@@ -616,11 +611,6 @@ void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     }
 }
 
-/* parse_deci:  parses the RESP file for decimation filters (in a Blockette [57] or [47]).
- Errors cause the program to terminate.  The blockette and field numbers are
- checked as the file is parsed. As with parse_pz(), for this routine to work,
- the lines must contain evalresp-3.0 style prefixes */
-
 int parse_deci(FILE *fptr, struct blkt *blkt_ptr) {
     int blkt_typ = DECIMATION;
     int blkt_read, check_fld;
@@ -692,11 +682,6 @@ int parse_deci(FILE *fptr, struct blkt *blkt_ptr) {
 
 }
 
-/* parse_gain:  parses the RESP file blockettes for gain filters (in a Blockette [58] or [48]).
- Errors cause the program to terminate.  The blockette and field numbers are
- checked as the file is parsed. As with parse_pz(), for this routine to work,
- the lines must contain evalresp-3.0 style prefixes */
-
 int parse_gain(FILE *fptr, struct blkt *blkt_ptr) {
     int i, blkt_typ = GAIN;
     int blkt_read, check_fld;
@@ -762,11 +747,6 @@ int parse_gain(FILE *fptr, struct blkt *blkt_ptr) {
     return (sequence_no);
 
 }
-
-/* parse_polynomial:  parses the RESP file blockettes for polynomial filters (in a Blockette [62] or [42]).
- Errors cause the program to terminate.  The blockette and field numbers are
- checked as the file is parsed.
- The lines must contain evalresp-3.0 style prefixes */
 
 void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
         struct stage *stage_ptr) {
@@ -880,11 +860,6 @@ void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
     }
 }
 
-/* parse_fir:  parses the RESP file blockettes for FIR filters (in a Blockette [61] or [41]).
- Errors cause the program to terminate.  The blockette and field numbers are
- checked as the file is parsed. As with parse_pz(), for this routine to work,
- the lines must contain evalresp-3.0 style prefixes */
-
 void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     int i, blkt_typ;
     int blkt_read, check_fld;
@@ -975,11 +950,6 @@ void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     }
 
 }
-
-/* parse_ref:  parses the RESP file blockettes for Response Reference type filters (in a
- Blockette [60]).  Errors cause the program to terminate.  The blockette and
- field numbers are checked as the file is parsed. As with parse_pz(), for
- this routine to work, the lines must contain evalresp-3.0 style prefixes */
 
 void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     int this_blkt_no = 60, blkt_no, fld_no, i, j, prev_blkt_no = 60;

@@ -1610,47 +1610,93 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses the RESP file for generic filters (in a Blockette [56] or
+ *        [46]).
+ * @details Errors cause the program to terminate. The blockette and field
+ *          numbers are checked as the file is parsed. As with parse_pz(), for
+ *          this routine to work, the lines must contain evalresp-3.0 style
+ *          prefixes.
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] blkt_ptr Blockette structure.
+ * @param[in,out] stage_ptr Stage structure.
  */
-void parse_generic(FILE *, struct blkt *, struct stage *); /* generic */
+void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses the RESP file for decimation filters (in a Blockette [57] or
+ *        [47]).
+ * @details Errors cause the program to terminate. The blockette and field
+ *          numbers are checked as the file is parsed. As with parse_pz(), for
+ *          this routine to work, the lines must contain evalresp-3.0 style
+ *          prefixes.
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] blkt_ptr Blockette structure.
+ * @returns Sequence number of the stage for verification.
  */
-int parse_deci(FILE *, struct blkt *); /* decimation */
+int parse_deci(FILE *fptr, struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses the RESP file blockettes for gain filters (in a Blockette
+ *        [58] or [48]).
+ * @details Errors cause the program to terminate. The blockette and field
+ *          numbers are checked as the file is parsed. As with parse_pz(), for
+ *          this routine to work, the lines must contain evalresp-3.0 style
+ *          prefixes.
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] blkt_ptr Blockette structure.
+ * @returns Sequence number of the stage for verification.
  */
-int parse_gain(FILE *, struct blkt *); /* gain/sensitivity */
+int parse_gain(FILE *fptr, struct blkt *blkt_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses the RESP file blockettes for FIR filters (in a Blockette [61]
+ *        or [41]).
+ * @details Errors cause the program to terminate. The blockette and field
+ *          numbers are checked as the file is parsed. As with parse_pz(), for
+ *          this routine to work, the lines must contain evalresp-3.0 style
+ *          prefixes.
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] blkt_ptr Blockette structure.
+ * @param[in,out] stage_ptr Stage structure.
  */
-void parse_fir(FILE *, struct blkt *, struct stage *); /* fir */
+void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses the RESP file blockettes for Response Reference type filters
+ *        (in a Blockette [60]).
+ * @details Errors cause the program to terminate.  The blockette and field
+ *          numbers are checked as the file is parsed. As with parse_pz(), for
+ *          this routine to work, the lines must contain evalresp-3.0 style
+ *          prefixes.
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] blkt_ptr Blockette structure.
+ * @param[in,out] stage_ptr Stage structure.
  */
-void parse_ref(FILE *, struct blkt *, struct stage *); /* response reference */
+void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
 
 /**
  * @private
  * @ingroup evalresp_private_parse
- * @brief FIXME.
+ * @brief Parses the RESP file blockettes for polynomial filters (in a
+ *        Blockette [62] or [42]).
+ * @details Errors cause the program to terminate. The blockette and field
+ *          numbers are checked as the file is parsed. The lines must contain
+ *          evalresp-3.0 style prefixes
+ * @param[in,out] fptr FILE pointer.
+ * @param[in,out] blkt_ptr Blockette structure.
+ * @param[in,out] stage_ptr Stage structure.
+ * @author 05/31/2013: IGD.
  */
-void parse_polynomial(FILE *, struct blkt *, struct stage *); /* polynomial B42 B62 IGD 05/31/2013 */
-
-/* remove trailing white space from (if last arg is 'a') and add null character to
- end of (if last arg is 'a' or 'e') input (FORTRAN) string */
+void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
+                      struct stage *stage_ptr);
 
 /**
  * @private
@@ -1668,6 +1714,7 @@ void parse_polynomial(FILE *, struct blkt *, struct stage *); /* polynomial B42 
  * @param[in] len Length of string.
  * @param[in] where Where to place null character, @c a or @c e.
  * @returns New length of string.
+ * @remark Practical to use with input FORTRAN strings.
  */
 int add_null(char *s, int len, char where);
 
