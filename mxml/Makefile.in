@@ -429,6 +429,11 @@ doc/mxml.man: mxmldoc-static mxml.xml
 $(OBJS):	Makefile config.h
 
 check:
+info:
+dvi:
+ps:
+pdf:
+html:
 
 #
 # End of "$Id: Makefile.in 459 2014-10-19 17:21:48Z msweet $".
