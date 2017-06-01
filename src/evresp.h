@@ -1939,9 +1939,9 @@ void calc_polynomial(struct blkt *blkt_ptr,  struct evr_complex *out,
  *          tested by Bob Hutt (ASL USGS). Evaluates phase directly from
  *          imaginary and real parts of IIR filter coefficients.
  * @param[in] blkt_ptr Digital IIR filter.
- * @param[in] wint FIXME.
+ * @param[in] wint Circular frequency (2*PI*f). 
  * @param[out] out Response.
- * @author 07/12/00: lya Dricker (ISTI), i.dricker@isti.com: C translation
+ * @author 07/12/00: Ilya Dricker (ISTI), i.dricker@isti.com: C translation
  *         from FORTRAN function. Version 0.2. For version 3.2.17.
  */
 void iir_trans(struct blkt *blkt_ptr, double wint, struct evr_complex *out);
@@ -2060,23 +2060,23 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
  * @ingroup evalresp_private
  * @brief Evaluate responses for user requested station/channel/network tuple
  *        at the frequencies requested by the user.
- * @param[in] stalst FIXME.
- * @param[in] chalst FIXME.
- * @param[in] net_code FIXME.
- * @param[in] locidlst FIXME.
- * @param[in] date_time FIXME.
- * @param[in] units FIXME.
- * @param[in] file FIXME.
- * @param[in] freqs FIXME.
- * @param[in] nfreqs FIXME.
- * @param[in] rtype FIXME.
- * @param[in] verbose FIXME.
- * @param[in] start_stage FIXME.
- * @param[in] stop_stage FIXME.
- * @param[in] stdio_flag FIXME.
- * @param[in] useTotalSensitivityFlag FIXME.
- * @param[in] x_for_b62 FIXME.
- * @param[in] xml_flag FIXME.
+ * @param[in] stalst Station list.
+ * @param[in] chalst Channel list.
+ * @param[in] net_code Network code.
+ * @param[in] locidlst Localtion ID list.
+ * @param[in] date_time Date + time.
+ * @param[in] units Units.
+ * @param[in] file File name.
+ * @param[in] freqs Frequency vector.
+ * @param[in] nfreqs Number of frequencies in the vector.
+ * @param[in] rtype Use complex value or Amplited/phase in the output.
+ * @param[in] verbose If used, then verbose.
+ * @param[in] start_stage Start stage.
+ * @param[in] stop_stage End stage.
+ * @param[in] stdio_flag Print output to stdio if used.
+ * @param[in] useTotalSensitivityFlag Use or not total sensitivity.
+ * @param[in] x_for_b62 Frequency value for Polynomial.
+ * @param[in] xml_flag Use XML or not.
  * @remark Calls evresp_itp() but with listinterp_tension set to 0.
  * @returns Responses.
  */
@@ -2092,26 +2092,26 @@ struct response *evresp(char *stalst, char *chalst, char *net_code,
  * @ingroup evalresp_private
  * @brief Evaluate responses for user requested station/channel/network tuple
  *        at the frequencies requested by the user.
- * @param[in] stalst FIXME.
- * @param[in] chalst FIXME.
- * @param[in] net_code FIXME.
- * @param[in] locidlst FIXME.
- * @param[in] date_time FIXME.
- * @param[in] units FIXME.
- * @param[in] file FIXME.
- * @param[in] freqs FIXME.
- * @param[in] nfreqs FIXME.
- * @param[in] rtype FIXME.
- * @param[in] verbose FIXME.
- * @param[in] start_stage FIXME.
- * @param[in] stop_stage FIXME.
- * @param[in] stdio_flag FIXME.
- * @param[in] listinterp_out_flag FIXME.
- * @param[in] listinterp_in_flag FIXME.
- * @param[in] listinterp_tension FIXME.
- * @param[in] useTotalSensitivityFlag FIXME.
- * @param[in] x_for_b62 FIXME.
- * @param[in] xml_flag FIXME.
+ * @param[in] stalst Station list.
+ * @param[in] chalst Channel list.
+ * @param[in] net_code Network code.
+ * @param[in] locidlst Localtion ID list.
+ * @param[in] date_time Date + time.
+ * @param[in] units Units.
+ * @param[in] file File name.
+ * @param[in] freqs Frequency vector.
+ * @param[in] nfreqs Number of frequencies in the vector.
+ * @param[in] rtype Use complex value or Amplited/phase in the output.
+ * @param[in] verbose If used, then verbose.
+ * @param[in] start_stage Start stage.
+ * @param[in] stop_stage End stage.
+ * @param[in] stdio_flag Print output to stdio if used. 
+ * @param[in] listinterp_out_flag Interpolate output of list (B55).
+ * @param[in] listinterp_in_flag Interpolate input of list (B55).
+ * @param[in] listinterp_tension This parameter is obsolote and should be removed.
+ * @param[in] useTotalSensitivityFlag Use or not total sensitivity.
+ * @param[in] x_for_b62  Frequency value for Polynomial.
+ * @param[in] xml_flag Use XML or not.
  * @returns Responses.
  */
 struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
@@ -2128,25 +2128,45 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
  * @private
  * @ingroup evalresp_private
  * @brief Evaluate responses for user requested station/channel/network tuple
- *        at the frequencies requested by the user.
- * @param[in] sta FIXME.
- * @param[in] cha FIXME.
- * @param[in] net FIXME.
- * @param[in] locid FIXME.
- * @param[in] datime FIXME.
- * @param[in] units FIXME.
- * @param[in] file FIXME.
- * @param[in] freqs FIXME.
- * @param[in] nfreqs FIXME.
- * @param[in] resp FIXME.
- * @param[in] rtype FIXME.
- * @param[in] verbose FIXME.
- * @param[in] start_stage FIXME.
- * @param[in] stop_stage FIXME.
- * @param[in] stdio_flag FIXME.
- * @param[in] useTotalSensitivityFlag FIXME.
- * @param[in] x_for_b62 FIXME.
- * @param[in] xml_flag FIXME.
+ *        at the frequencies requested by the user. FORTRAN callable interface to the evresp.
+ *
+ *        This routine was updated in release 4.0.0 to support Fortran
+ *        95.  Previous versions were clearly broken (parameters had
+ *        been added with no respect to the implicit lengths from
+ *        Fortran character arrays), so backwards compatibility is not
+ *        provided.
+ *        Given the cleaner interface supported by Fortran 95, this
+ *        routine can also be called from C.
+ *        Whereas the other function returns a linked list of responses
+ *        one for each response that matched the user's request), this
+ *        routine returns the response for one (1)
+ *        station-channel-network for one (1) effective time.  If more
+ *        than one match is found for a given
+ *        station-channel-network-time, an error condition is raised
+ *        (and a value of -1 is returned to the calling routine to
+ *        indicate failure).  Likewise, a value of 1 is returned if no
+ *        match is found for the given station-channel-network-time.  If
+ *        a unique match is found, a value of 0 is returned to the
+ *        calling routine
+ *
+ * @param[in] sta Station.
+ * @param[in] cha Channel.
+ * @param[in] net Network.
+ * @param[in] locid Localtion ID.
+ * @param[in] datime data and time.
+ * @param[in] units Units.
+ * @param[in] file File name.
+ * @param[in] freqs Frequency vector.
+ * @param[in] nfreqs Number of frequencies in the vector.
+ * @param[out] resp Double vector containing complex response (even elements are real).
+ * @param[in] rtype Use complex value or Amplited/phase in the output.
+ * @param[in] verbose If used, then verbose.
+ * @param[in] start_stage Start stage..
+ * @param[in] stop_stage End stage..
+ * @param[in] stdio_flag Print output to stdio if used.
+ * @param[in] useTotalSensitivityFlag Use or not total sensitivity.
+ * @param[in] x_for_b62 Frequency value for Polynomial.
+ * @param[in] xml_flag Use XML or not.
  * @remark Fortran interface.
  */
 int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
@@ -2179,7 +2199,7 @@ void interpolate_list_blockette(double **frequency_ptr,
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief An array of strings presenting full SEED units names, like Counts, Volts, etc... .
  */
 extern char SEEDUNITS[][UNITS_STR_LEN];
 
@@ -2212,14 +2232,14 @@ extern int FirstField;
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Pi = 3.141592653589793238462643383279502884197169399375105820974944592307816... .
  */
 extern double Pi;
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief 2 * Pi.
  */
 extern double twoPi;
 
@@ -2242,7 +2262,7 @@ extern struct channel *GblChanPtr;
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Scaling factor to convert from the units in RESP file to MKS units.
  */
 extern float unitScaleFact;
 
@@ -2251,14 +2271,14 @@ extern float unitScaleFact;
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Name of the current RESP file processed by evalresp.
  */
 extern char *curr_file;
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Sequence number of the current stage.
  */
 extern int curr_seq_no;
 
@@ -2268,7 +2288,7 @@ extern int curr_seq_no;
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Jump buffer for long jump function: obsolete and will be removed.
  */
 extern jmp_buf jump_buffer;
 
