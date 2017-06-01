@@ -1096,7 +1096,7 @@ int next_resp(FILE *fptr, evalresp_log_t *log);
  * @returns @c NULL if no files were found that match request.
  */
 struct matched_files *find_files(char *file, struct scn_list *scn_lst,
-                                 int *mode);
+                                 int *mode, evalresp_log_t *log);
 
 /**
  * @private
@@ -1106,7 +1106,7 @@ struct matched_files *find_files(char *file, struct scn_list *scn_lst,
  * @param[out] file Pointer to the head of the linked list of matches files.
  * @returns Number of files found matching the expression.
  */
-int get_names(char *in_file, struct matched_files *file);
+int get_names(char *in_file, struct matched_files *file, evalresp_log_t *log);
 
 /* routines used to allocate vectors of the basic data types used in the
  filter stages */
@@ -1120,7 +1120,7 @@ int get_names(char *in_file, struct matched_files *file);
  * @returns @c NULL if @p npts is zero.
  * @warning Exits with error if allocation fails.
  */
-struct evr_complex *alloc_complex(int npts);
+struct evr_complex *alloc_complex(int npts, evalresp_log_t *log);
 
 /**
  * @private
@@ -1134,7 +1134,7 @@ struct evr_complex *alloc_complex(int npts);
  * @returns @c NULL if @p npts is zero.
  * @warning Exits with error if allocation fails.
  */
-struct response *alloc_response(int npts);
+struct response *alloc_response(int npts, evalresp_log_t *log);
 
 /**
  * @private
@@ -1155,7 +1155,7 @@ struct string_array *alloc_string_array(int nstrings, evalresp_log_t *log);
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-struct scn *alloc_scn(void);
+struct scn *alloc_scn(evalresp_log_t *log);
 
 /**
  * @private
@@ -1166,7 +1166,7 @@ struct scn *alloc_scn(void);
  * @returns @c NULL if @p nscn is zero.
  * @warning Exits with error if allocation fails.
  */
-struct scn_list *alloc_scn_list(int nscn);
+struct scn_list *alloc_scn_list(int nscn, evalresp_log_t *log);
 
 /**
  * @private
@@ -1175,7 +1175,7 @@ struct scn_list *alloc_scn_list(int nscn);
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-struct file_list *alloc_file_list(void);
+struct file_list *alloc_file_list(evalresp_log_t *log);
 
 /**
  * @private
@@ -1184,7 +1184,7 @@ struct file_list *alloc_file_list(void);
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-struct matched_files *alloc_matched_files(void);
+struct matched_files *alloc_matched_files(evalresp_log_t *log);
 
 /**
  * @private
@@ -1195,7 +1195,7 @@ struct matched_files *alloc_matched_files(void);
  * @returns @c NULL if @p npts is zero.
  * @warning Exits with error if allocation fails.
  */
-double *alloc_double(int npts);
+double *alloc_double(int npts, evalresp_log_t *log);
 
 /**
  * @private
@@ -1206,7 +1206,7 @@ double *alloc_double(int npts);
  * @returns @c NULL if @p len is zero.
  * @warning Exits with error if allocation fails.
  */
-char *alloc_char(int len);
+char *alloc_char(int len, evalresp_log_t *log);
 
 /**
  * @private
@@ -1217,7 +1217,7 @@ char *alloc_char(int len);
  * @returns @c NULL if @p len is zero.
  * @warning Exits with error if allocation fails.
  */
-char **alloc_char_ptr(int len);
+char **alloc_char_ptr(int len, evalresp_log_t *log);
 
 /* allocation routines for the various types of filters */
 
@@ -1232,7 +1232,7 @@ char **alloc_char_ptr(int len);
  *       parsed.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_pz(void);
+struct blkt *alloc_pz(evalresp_log_t *log);
 
 /**
  * @private
@@ -1244,7 +1244,7 @@ struct blkt *alloc_pz(void);
  *       parse_fir()).
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_coeff(void);
+struct blkt *alloc_coeff(evalresp_log_t *log);
 
 /**
  * @private
@@ -1256,7 +1256,7 @@ struct blkt *alloc_coeff(void);
  *       parse_fir()).
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_fir(void);
+struct blkt *alloc_fir(evalresp_log_t *log);
 
 /**
  * @private
@@ -1265,7 +1265,7 @@ struct blkt *alloc_fir(void);
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_ref(void);
+struct blkt *alloc_ref(evalresp_log_t *log);
 
 /**
  * @private
@@ -1278,7 +1278,7 @@ struct blkt *alloc_ref(void);
  *       partially parsed.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_gain(void);
+struct blkt *alloc_gain(evalresp_log_t *log);
 
 /**
  * @private
@@ -1290,7 +1290,7 @@ struct blkt *alloc_gain(void);
  *       the number of frequencies is known.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_list(void);
+struct blkt *alloc_list(evalresp_log_t *log);
 
 /**
  * @private
@@ -1302,7 +1302,7 @@ struct blkt *alloc_list(void);
  *       the number of frequencies is known.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_generic(void);
+struct blkt *alloc_generic(evalresp_log_t *log);
 
 /**
  * @private
@@ -1311,7 +1311,7 @@ struct blkt *alloc_generic(void);
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_deci(void);
+struct blkt *alloc_deci(evalresp_log_t *log);
 
 /**
  * @private
@@ -1321,7 +1321,7 @@ struct blkt *alloc_deci(void);
  * @warning Exits with error if allocation fails.
  * @author 05/31/2013: IGD.
  */
-struct blkt *alloc_polynomial(void);
+struct blkt *alloc_polynomial(evalresp_log_t *log);
 
 /**
  * @private
@@ -1330,7 +1330,7 @@ struct blkt *alloc_polynomial(void);
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-struct stage *alloc_stage(void);
+struct stage *alloc_stage(evalresp_log_t *log);
 
 /* routines to free up space associated with dynamically allocated
  structure members */

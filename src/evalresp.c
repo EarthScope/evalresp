@@ -458,7 +458,7 @@ int main(int argc, char *argv[]) {
 
     /* allocate space for the frequencies and fill with appropriate values */
 
-    freqs = alloc_double(nfreqs);
+    freqs = alloc_double(nfreqs, log);
     for (i = 0, val = freq_lims[0]; i < nfreqs; i++) {
         freqs[i] = val;
         if (lin_typ)

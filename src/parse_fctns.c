@@ -172,7 +172,7 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalre
 
     /* remember to allocate enough space for the number of zeros to follow */
 
-    blkt_ptr->blkt_info.pole_zero.zeros = alloc_complex(nzeros);
+    blkt_ptr->blkt_info.pole_zero.zeros = alloc_complex(nzeros, log);
 
     /* set the expected field to the current value (9 or 10 for [53] or [43])
      to the current value + 5 (14 or 15 for [53] or [43] respectively) */
@@ -190,7 +190,7 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalre
 
     /* remember to allocate enough space for the number of poles to follow */
 
-    blkt_ptr->blkt_info.pole_zero.poles = alloc_complex(npoles);
+    blkt_ptr->blkt_info.pole_zero.poles = alloc_complex(npoles, log);
 
     /* set the expected field to the current value (14 or 15 for [53] or [43])
      to the current value - 4 (10 or 11 for [53] or [43] respectively) */
@@ -370,7 +370,7 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr,
 
     /* remember to allocate enough space for the number of coefficients to follow */
 
-    blkt_ptr->blkt_info.coeff.numer = alloc_double(ncoeffs);
+    blkt_ptr->blkt_info.coeff.numer = alloc_double(ncoeffs, log);
 
     /* set the expected field to the current value (8 or 9 for [54] or [44])
      to the current value + 2 (10 or 11 for [54] or [44] respectively) */
@@ -400,7 +400,7 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr,
 
     /* remember to allocate enough space for the number of coefficients to follow */
 
-    blkt_ptr->blkt_info.coeff.denom = alloc_double(ndenom);
+    blkt_ptr->blkt_info.coeff.denom = alloc_double(ndenom, log);
 
     /* set the expected field to the current value (10 or 11 for [54] or [44])
      to the current value - 2 (8 or 9 for [54] or [44] respectively) */
@@ -541,7 +541,7 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eva
 
     /* remember to allocate enough space for the number of coefficients to follow */
 
-    blkt_ptr->blkt_info.fir.coeffs = alloc_double(ncoeffs);
+    blkt_ptr->blkt_info.fir.coeffs = alloc_double(ncoeffs, log);
 
     /* set the expected field to the current value (8 or 9 for [54] or [44])
      to the current value + 2 (10 or 11 for [54] or [44] respectively) */
@@ -673,9 +673,9 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eval
     /* remember to allocate enough space for the number frequency, amplitude, phase tuples
      that follow */
 
-    blkt_ptr->blkt_info.list.freq = alloc_double(nresp);
-    blkt_ptr->blkt_info.list.amp = alloc_double(nresp);
-    blkt_ptr->blkt_info.list.phase = alloc_double(nresp);
+    blkt_ptr->blkt_info.list.freq = alloc_double(nresp, log);
+    blkt_ptr->blkt_info.list.amp = alloc_double(nresp, log);
+    blkt_ptr->blkt_info.list.phase = alloc_double(nresp, log);
 
     /* then get the response information */
 
@@ -871,8 +871,8 @@ void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, e
     /* remember to allocate enough space for the number corner_frequency, corner_slope pairs
      that follow */
 
-    blkt_ptr->blkt_info.generic.corner_freq = alloc_double(ncorners);
-    blkt_ptr->blkt_info.generic.corner_slope = alloc_double(ncorners);
+    blkt_ptr->blkt_info.generic.corner_freq = alloc_double(ncorners, log);
+    blkt_ptr->blkt_info.generic.corner_slope = alloc_double(ncorners, log);
 
     /* then get the response information */
 
@@ -1394,7 +1394,7 @@ void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalr
 
     /* remember to allocate enough space for the number of coefficients to follow */
 
-    blkt_ptr->blkt_info.fir.coeffs = alloc_double(ncoeffs);
+    blkt_ptr->blkt_info.fir.coeffs = alloc_double(ncoeffs, log);
 
     /* the coefficients */
 
@@ -1510,31 +1510,31 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalr
             last_blkt = blkt_ptr;
             switch (blkt_no) {
             case 43:
-                blkt_ptr = alloc_pz();
+                blkt_ptr = alloc_pz(log);
                 parse_pz(fptr, blkt_ptr, this_stage, log);
                 break;
             case 44:
-                blkt_ptr = alloc_fir();
+                blkt_ptr = alloc_fir(log);
                 parse_coeff(fptr, blkt_ptr, this_stage, log);
                 break;
             case 45:
-                blkt_ptr = alloc_list();
+                blkt_ptr = alloc_list(log);
                 parse_list(fptr, blkt_ptr, this_stage, log);
                 break;
             case 46:
-                blkt_ptr = alloc_generic();
+                blkt_ptr = alloc_generic(log);
                 parse_generic(fptr, blkt_ptr, this_stage, log);
                 break;
             case 47:
-                blkt_ptr = alloc_deci();
+                blkt_ptr = alloc_deci(log);
                 parse_deci(fptr, blkt_ptr, log);
                 break;
             case 48:
-                blkt_ptr = alloc_gain();
+                blkt_ptr = alloc_gain(log);
                 parse_gain(fptr, blkt_ptr, log);
                 break;
             case 41:
-                blkt_ptr = alloc_fir();
+                blkt_ptr = alloc_fir(log);
                 parse_fir(fptr, blkt_ptr, this_stage, log);
                 break;
             case 60:
@@ -1569,8 +1569,8 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalr
              for that stage to point to a new blockette [60] type filter */
 
             last_stage = this_stage;
-            this_stage = alloc_stage();
-            blkt_ptr = alloc_ref();
+            this_stage = alloc_stage(log);
+            blkt_ptr = alloc_ref(log);
             last_stage->next_stage = this_stage;
             this_stage->first_blkt = blkt_ptr;
 
@@ -1623,10 +1623,10 @@ int parse_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log) {
 
     last_stage = (struct stage *) NULL;
     curr_seq_no = last_seq_no = 0;
-    this_stage = alloc_stage();
+    this_stage = alloc_stage(log);
     chan->first_stage = this_stage;
     chan->nstages++;
-    tmp_stage = alloc_stage();
+    tmp_stage = alloc_stage(log);
 
     /* start processing the response information */
 
@@ -1634,7 +1634,7 @@ int parse_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log) {
             != 0 && blkt_no != 50) {
         switch (blkt_no) {
         case 53:
-            blkt_ptr = alloc_pz();
+            blkt_ptr = alloc_pz(log);
             parse_pz(fptr, blkt_ptr, tmp_stage, log);
             curr_seq_no = tmp_stage->sequence_no;
             break;
@@ -1642,46 +1642,46 @@ int parse_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log) {
             /* IGD : as we add an IIR case to this blockette, we cannot simply assume that blockette 54 is FIR */
             /*The field 10 should be distinguish between the IIR and FIR */
             if (is_IIR_coeffs(fptr, ftell(fptr))) { /*IGD New IIR case */
-                blkt_ptr = alloc_coeff();
+                blkt_ptr = alloc_coeff(log);
                 parse_iir_coeff(fptr, blkt_ptr, tmp_stage, log);
             } else { /*IGD this is the original case here */
-                blkt_ptr = alloc_fir();
+                blkt_ptr = alloc_fir(log);
                 parse_coeff(fptr, blkt_ptr, tmp_stage, log);
             }
             curr_seq_no = tmp_stage->sequence_no;
             break;
         case 55:
-            blkt_ptr = alloc_list();
+            blkt_ptr = alloc_list(log);
             parse_list(fptr, blkt_ptr, tmp_stage, log);
             curr_seq_no = tmp_stage->sequence_no;
             break;
         case 56:
-            blkt_ptr = alloc_generic();
+            blkt_ptr = alloc_generic(log);
             parse_generic(fptr, blkt_ptr, tmp_stage, log);
             curr_seq_no = tmp_stage->sequence_no;
             break;
         case 57:
-            blkt_ptr = alloc_deci();
+            blkt_ptr = alloc_deci(log);
             curr_seq_no = parse_deci(fptr, blkt_ptr, log);
             break;
         case 58:
-            blkt_ptr = alloc_gain();
+            blkt_ptr = alloc_gain(log);
             curr_seq_no = parse_gain(fptr, blkt_ptr, log);
             break;
         case 60: /* never see a blockette [41], [43]-[48] without a [60], parse_ref handles these */
-            blkt_ptr = alloc_ref();
-            tmp_stage2 = alloc_stage();
+            blkt_ptr = alloc_ref(log);
+            tmp_stage2 = alloc_stage(log);
             parse_ref(fptr, blkt_ptr, tmp_stage2, log);
             curr_seq_no = tmp_stage2->sequence_no;
             tmp_stage2->first_blkt = blkt_ptr;
             break;
         case 61:
-            blkt_ptr = alloc_fir();
+            blkt_ptr = alloc_fir(log);
             parse_fir(fptr, blkt_ptr, tmp_stage, log);
             curr_seq_no = tmp_stage->sequence_no;
             break;
         case 62:
-            blkt_ptr = alloc_polynomial();
+            blkt_ptr = alloc_polynomial(log);
             parse_polynomial(fptr, blkt_ptr, tmp_stage, log);
             curr_seq_no = tmp_stage->sequence_no;
             break;
@@ -1704,7 +1704,7 @@ int parse_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log) {
             } else if (last_seq_no != curr_seq_no) {
                 chan->nstages++;
                 last_stage = this_stage;
-                this_stage = alloc_stage();
+                this_stage = alloc_stage(log);
                 this_stage->sequence_no = curr_seq_no;
                 last_stage->next_stage = this_stage;
                 this_stage->first_blkt = blkt_ptr;
