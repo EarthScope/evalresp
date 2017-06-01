@@ -159,7 +159,7 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs,
                     eval_flag = 1;
                     break;
                 case POLYNOMIAL: /* IGD 06/01/2013*/
-                    calc_polynomial(blkt_ptr, i, &of, x_for_b62, log);
+                    calc_polynomial(blkt_ptr,  &of, x_for_b62, log);
                     eval_flag = 1;
                     break;
                 case IIR_COEFFS: /* This option is added in version 2.3.17 I.Dricker*/
@@ -353,7 +353,7 @@ void iir_trans(struct blkt *blkt_ptr, double wint, struct evr_complex *out) {
  * Function introduced in version 3.3.4 of evalresp
  * Ilya Dricker ISTI (.dricker@isti.com) 06/01/13
  *===============================================================*/
-void calc_polynomial(struct blkt *blkt_ptr, int i, struct evr_complex *out,
+void calc_polynomial(struct blkt *blkt_ptr,  struct evr_complex *out,
         double x_for_b62, evalresp_log_t *log) {
     double amp = 0, phase = 0;
     int j;

@@ -1817,7 +1817,7 @@ void check_sym(struct blkt *f, struct channel *chan, evalresp_log_t *log);
  * @param[in] stop_stage Stop stage.
  * @param[in] useTotalSensitivityFlag Use reported sensitivity to compute
  *                                    response.
- * @param[in] x_for_b62 FIXME.
+ * @param[in] x_for_b62 Frequency for polynomial response (b62).
  */
 void calc_resp(struct channel *chan, double *freq, int nfreqs,
         struct evr_complex *output, char *out_units, int start_stage,
@@ -1909,9 +1909,9 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage, evalresp_l
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief Response of blockette 55 (Response List Blockette).
+ * @brief Response of blockette 55 (Response List Blockette) for a given frequency.
  * @param[in] blkt_ptr Response List Blockette (55).
- * @param[in] i FIXME.
+ * @param[in] i Index in the frequency input vector.
  * @param[out] out Response.
  * @author 06/22/00: Ilya Dricker ISTI (.dricker@isti.com): Function
  *         introduced in version 3.2.17 of evalresp.
@@ -1921,15 +1921,14 @@ void calc_list(struct blkt *blkt_ptr, int i, struct evr_complex *out);
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief Response of blockette 62 (Polynomial).
+ * @brief Response of blockette 62 (Polynomial)i for a given frequency.
  * @param[in] blkt_ptr Polynomial Blockette (62).
- * @param[in] i FIXME.
  * @param[out] out Response.
- * @param[in] x_for_b62 FIXME.
+ * @param[in] x_for_b62 Frequency for response computation.
  * @author 06/01/13: Ilya Dricker ISTI (.dricker@isti.com): Function
  *         introduced in version 3.3.4 of evalresp
  */
-void calc_polynomial(struct blkt *blkt_ptr, int i, struct evr_complex *out,
+void calc_polynomial(struct blkt *blkt_ptr,  struct evr_complex *out,
                      double x_for_b62, evalresp_log_t *log);
 
 /**
