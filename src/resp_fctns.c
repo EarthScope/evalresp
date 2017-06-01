@@ -674,7 +674,7 @@ void interpolate_list_blockette(double **frequency_ptr,
          /* interpolate amplitude values */
   if((retstr=evr_spline(*p_number_points,*frequency_ptr,*amplitude_ptr,
                                      tension,1.0,req_freq_arr,req_num_freqs,
-                                        &retvals_arr,&num_retvals)) != NULL)
+                                        &retvals_arr,&num_retvals, log)) != NULL)
   {
     evalresp_log(log, ERROR, 0,"Error interpolating amplitudes:  %s",retstr);
     /*XXX error_exit(IMPROP_DATA_TYPE,"Error interpolating amplitudes:  %s",retstr); */
@@ -730,7 +730,7 @@ void interpolate_list_blockette(double **frequency_ptr,
          /* interpolate phase values */
   retstr = evr_spline(*p_number_points,*frequency_ptr,local_pha_arr,
                                      tension,1.0,req_freq_arr,req_num_freqs,
-                                                 &retvals_arr,&num_retvals);
+                                                 &retvals_arr,&num_retvals, log);
   free(local_pha_arr);
   if(retstr != NULL)
   {
