@@ -550,7 +550,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                             print_chan(&this_channel, start_stage, stop_stage,
                                     stdio_flag, listinterp_out_flag,
                                     listinterp_in_flag,
-                                    useTotalSensitivityFlag);
+                                    useTotalSensitivityFlag, log);
                         }
 
                         free(freqs); /* free array that was allocated above */
@@ -817,7 +817,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                                             stop_stage, stdio_flag,
                                             listinterp_out_flag,
                                             listinterp_in_flag,
-                                            useTotalSensitivityFlag);
+                                            useTotalSensitivityFlag, log);
                                 }
 
                                 free(freqs); /* free array that was allocated above */

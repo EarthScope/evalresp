@@ -1987,7 +1987,7 @@ int timecmp(struct dateTime *dt1, struct dateTime *dt2);
  */
 void print_chan(struct channel *chan, int start_stage, int stop_stage,
                 int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
-                int useTotalSensitivityFlag);
+                int useTotalSensitivityFlag, evalresp_log_t *log);
 
 /**
  * @private

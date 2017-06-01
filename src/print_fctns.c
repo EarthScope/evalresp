@@ -25,7 +25,7 @@ int evresp_vector_minmax(double *pha, int len, double *min, double *max);
 
 void print_chan(struct channel *chan, int start_stage, int stop_stage,
         int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
-        int useTotalSensitivityFlag) {
+        int useTotalSensitivityFlag, evalresp_log_t *log) {
     struct stage *this_stage, *last_stage, *first_stage;
     struct blkt *this_blkt;
     char tmp_str[TMPSTRLEN], out_str[OUTPUTLEN];
@@ -60,43 +60,76 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
 
     /* inform the user of which file has been evaluated */
 
-    fprintf(stderr, "%s --------------------------------------------------\n",
+    evalresp_log(log, INFO, 0, "%s --------------------------------------------------",
             myLabel);
+    /*XXX fprintf(stderr, "%s --------------------------------------------------\n",
+            myLabel);*/
     if (!stdio_flag) {
-        fprintf(stderr, "%s  %s\n", myLabel, curr_file);
+        evalresp_log(log, INFO, 0, "%s  %s", myLabel, curr_file);
+        /*XXX fprintf(stderr, "%s  %s\n", myLabel, curr_file); */
     } else {
         if (strlen(chan->network)) {
-            fprintf(stderr, "%s  RESP.%s.%s.%s.%s (from stdin)\n", myLabel,
+            evalresp_log(log, INFO, 0, "%s  RESP.%s.%s.%s.%s (from stdin)", myLabel,
                     chan->network, chan->staname, chan->locid, chan->chaname);
+            /*XXX fprintf(stderr, "%s  RESP.%s.%s.%s.%s (from stdin)\n", myLabel,
+                    chan->network, chan->staname, chan->locid, chan->chaname); */
         } else {
-            fprintf(stderr, "%s  RESP..%s.%s.%s (from stdin)\n", myLabel,
+            evalresp_log(log, INFO, 0, "%s  RESP..%s.%s.%s (from stdin)", myLabel,
                     chan->staname, chan->locid, chan->chaname);
+            /*XXX fprintf(stderr, "%s  RESP..%s.%s.%s (from stdin)\n", myLabel,
+                    chan->staname, chan->locid, chan->chaname); */
         }
     }
-    fprintf(stderr, "%s --------------------------------------------------\n",
+    evalresp_log(log, INFO, 0, "%s --------------------------------------------------",
+            myLabel);
+    evalresp_log(log, INFO, 0, "%s  %s %s %s %s ", myLabel,
+            (strlen(chan->network) ? chan->network : "??"), chan->staname,
+            (strlen(chan->locid) ? chan->locid : "??"), chan->chaname);
+    /*XXX fprintf(stderr, "%s --------------------------------------------------\n",
             myLabel);
     fprintf(stderr, "%s  %s %s %s %s ", myLabel,
             (strlen(chan->network) ? chan->network : "??"), chan->staname,
-            (strlen(chan->locid) ? chan->locid : "??"), chan->chaname);
+            (strlen(chan->locid) ? chan->locid : "??"), chan->chaname); */
     if (!def_units_flag)
-        fprintf(stderr, "%s %s %s\n%s   Seed units: %s(in)->%s(out)\n", myLabel,
+    {
+        evalresp_log(log, INFO, 0, "%s %s %s\n%s   Seed units: %s(in)->%s(out)", myLabel,
                 chan->beg_t, chan->end_t, myLabel, SEEDUNITS[in_units],
                 SEEDUNITS[out_units]);
+        /*XXX fprintf(stderr, "%s %s %s\n%s   Seed units: %s(in)->%s(out)\n", myLabel,
+                chan->beg_t, chan->end_t, myLabel, SEEDUNITS[in_units],
+                SEEDUNITS[out_units]); */
+    }
     else
-        fprintf(stderr, "%s %s %s\n%s   Seed units: %s(in)->%s(out)\n", myLabel,
+    {
+        evalresp_log(log, INFO, 0, "%s %s %s\n%s   Seed units: %s(in)->%s(out)", myLabel,
                 chan->beg_t, chan->end_t, myLabel, chan->first_units,
                 chan->last_units);
+        /*XXX fprintf(stderr, "%s %s %s\n%s   Seed units: %s(in)->%s(out)\n", myLabel,
+                chan->beg_t, chan->end_t, myLabel, chan->first_units,
+                chan->last_units); */
+    }
 
-    fprintf(stderr, "%s   computed sens=%.5E (reported=%.5E) @ %.5E Hz\n",
+    evalresp_log(log, INFO, 0, "%s   computed sens=%.5E (reported=%.5E) @ %.5E Hz\n",
+            myLabel, chan->calc_sensit, chan->sensit, chan->sensfreq);
+    evalresp_log(log, INFO, 0,
+            "%s   calc_del=%.5E  corr_app=%.5E  est_delay=%.5E  final_sint=%.3g(sec/sample)",
+            myLabel, chan->calc_delay, chan->applied_corr, chan->estim_delay,
+            chan->sint);
+    /*XXX fprintf(stderr, "%s   computed sens=%.5E (reported=%.5E) @ %.5E Hz\n",
             myLabel, chan->calc_sensit, chan->sensit, chan->sensfreq);
     fprintf(stderr,
             "%s   calc_del=%.5E  corr_app=%.5E  est_delay=%.5E  final_sint=%.3g(sec/sample)\n",
             myLabel, chan->calc_delay, chan->applied_corr, chan->estim_delay,
-            chan->sint);
+            chan->sint); */
     if (1 == useTotalSensitivityFlag)
-        fprintf(stderr,
-                "%s   (reported sensitivity was used to compute response (-ts option enabled))\n",
+    {
+        evalresp_log(log, INFO, 0,
+                "%s   (reported sensitivity was used to compute response (-ts option enabled))",
                 myLabel);
+        /*XXX fprintf(stderr,
+                "%s   (reported sensitivity was used to compute response (-ts option enabled))\n",
+                myLabel); */
+    }
 
     /* then print the parameters for each stage (stage number, type of stage, number
      of coefficients [or number of poles and zeros], gain, and input sample interval
@@ -180,15 +213,27 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
                 sprintf(tmp_str, " SamInt=%E",
                         this_blkt->blkt_info.decimation.sample_int);
                 if (this_blkt->blkt_info.decimation.applied_corr < 0)
-                    fprintf(stderr,
+                {
+                    evalresp_log(log, WARN, 0,
                             "%s WARNING Stage %d: Negative correction_applied=%.5E is likely to be incorrect\n",
                             myLabel, this_stage->sequence_no,
                             this_blkt->blkt_info.decimation.applied_corr);
+                    /*XXX fprintf(stderr,
+                            "%s WARNING Stage %d: Negative correction_applied=%.5E is likely to be incorrect\n",
+                            myLabel, this_stage->sequence_no,
+                            this_blkt->blkt_info.decimation.applied_corr); */
+                }
                 if (this_blkt->blkt_info.decimation.estim_delay < 0)
-                    fprintf(stderr,
-                            "%s WARNING Stage %d: Negative estimated_delay=%.5E is likely to be incorrect\n",
+                {
+                    evalresp_log(log, WARN, 0,
+                            "%s WARNING Stage %d: Negative estimated_delay=%.5E is likely to be incorrect",
                             myLabel, this_stage->sequence_no,
                             this_blkt->blkt_info.decimation.estim_delay);
+                    /*XXX fprintf(stderr,
+                            "%s WARNING Stage %d: Negative estimated_delay=%.5E is likely to be incorrect\n",
+                            myLabel, this_stage->sequence_no,
+                            this_blkt->blkt_info.decimation.estim_delay); */
+                }
                 break;
             case GENERIC:
                 sprintf(tmp_str, " Generic blockette is ignored; ");
@@ -199,40 +244,69 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
             case REFERENCE:
                 break;
             default:
-                fprintf(stderr, "%s .........", myLabel);
+                evalresp_log(log, INFO, 0, "%s .........", myLabel);
+                /*XXX fprintf(stderr, "%s .........", myLabel); */
             }
             strcat(out_str, tmp_str);
             if (first_blkt)
+            {
                 first_blkt = 0;
+            }
             this_blkt = this_blkt->next_blkt;
         }
         if (this_stage->sequence_no)
-            fprintf(stderr, "%s %s\n", myLabel, out_str);
+        {
+            evalresp_log(log, INFO, 0, "%s %s\n", myLabel, out_str);
+            /*XXX fprintf(stderr, "%s %s\n", myLabel, out_str); */
+        }
         this_stage = this_stage->next_stage;
     }
-    fprintf(stderr, "%s--------------------------------------------------\n",
+    evalresp_log(log, INFO, 0, "%s--------------------------------------------------",
             myLabel);
+    /*XXX fprintf(stderr, "%s--------------------------------------------------\n",
+            myLabel); */
     /* IGD : here we print a notice about blockette 55: evalresp v. 2.3.17+*/
     /* ET:  Notice modified, with different notice if freqs interpolated */
     if (chan->first_stage->first_blkt->type == LIST) {
         if (listinterp_in_flag) {
-            fprintf(stderr,
+            evalresp_log(log, INFO, 0,
+                    "%s Note:  The input has been interpolated from the response List stage",
+                    myLabel);
+            evalresp_log(log, INFO, 0,
+                    "%s (blockette 55) to generate output for the %d frequencies requested",
+                    myLabel,
+                    chan->first_stage->first_blkt->blkt_info.list.nresp);
+            /*XXX fprintf(stderr,
                     "%s Note:  The input has been interpolated from the response List stage\n",
                     myLabel);
             fprintf(stderr,
                     "%s (blockette 55) to generate output for the %d frequencies requested\n",
                     myLabel,
-                    chan->first_stage->first_blkt->blkt_info.list.nresp);
+                    chan->first_stage->first_blkt->blkt_info.list.nresp); */
         } else if (listinterp_out_flag) {
-            fprintf(stderr,
+            evalresp_log(log, INFO, 0,
+                    "%s Note:  The output has been interpolated from the %d frequencies",
+                    myLabel,
+                    chan->first_stage->first_blkt->blkt_info.list.nresp);
+            evalresp_log(log, INFO, 0,
+                    "%s defined in the response List stage (blockette 55)",
+                    myLabel);
+            /*XXX fprintf(stderr,
                     "%s Note:  The output has been interpolated from the %d frequencies\n",
                     myLabel,
                     chan->first_stage->first_blkt->blkt_info.list.nresp);
             fprintf(stderr,
                     "%s defined in the response List stage (blockette 55)\n",
-                    myLabel);
+                    myLabel); */
         } else {
-            fprintf(stderr,
+            evalresp_log(log, WARN, 0,
+                    "%s Response contains a List stage (blockette 55)--the output has",
+                    myLabel);
+            evalresp_log(log, WARN, 0,
+                    "%s been generated for those %d frequencies defined in the blockette",
+                    myLabel,
+                    chan->first_stage->first_blkt->blkt_info.list.nresp);
+            /*XXX fprintf(stderr,
                     "%s ++++++++ WARNING ++++++++++++++++++++++++++++\n",
                     myLabel);
             fprintf(stderr,
@@ -244,10 +318,10 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
                     chan->first_stage->first_blkt->blkt_info.list.nresp);
             fprintf(stderr,
                     "%s +++++++++++++++++++++++++++++++++++++++++++++\n",
-                    myLabel);
+                    myLabel); */
         }
     }
-    fflush(stderr);
+    /*XXX fflush(stderr);*/
 }
 
 void print_resp_itp(double *freqs, int nfreqs, struct response *first,
@@ -307,14 +381,20 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
                     sprintf(filename, "AMP.%s.%s.%s.%s", resp->network,
                             resp->station, resp->locid, resp->channel);
                     if ((fptr1 = fopen(filename, "w")) == (FILE *) NULL) {
-                        error_exit(OPEN_FILE_ERROR,
+                        evalresp_log(log, ERROR, 0,
                                 "print_resp; failed to open file %s", filename);
+                        return; /*TODO error? */
+                        /*XXX error_exit(OPEN_FILE_ERROR,
+                                "print_resp; failed to open file %s", filename); */
                     }
                     sprintf(filename, "PHASE.%s.%s.%s.%s", resp->network,
                             resp->station, resp->locid, resp->channel);
                     if ((fptr2 = fopen(filename, "w")) == (FILE *) NULL) {
-                        error_exit(OPEN_FILE_ERROR,
+                        evalresp_log(log, ERROR, 0,
                                 "print_resp; failed to open file %s", filename);
+                        return; /*TODO error? */
+                        /*XXX error_exit(OPEN_FILE_ERROR,
+                                "print_resp; failed to open file %s", filename); */
                     }
                     if (1 == unwrap_flag) {
                         /* 04/27/2010 unwraped phases should only start causal! - Johannes Schweitzer*/
@@ -364,8 +444,13 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
                     sprintf(filename, "FAP.%s.%s.%s.%s", resp->network,
                             resp->station, resp->locid, resp->channel);
                     if ((fptr1 = fopen(filename, "w")) == (FILE *) NULL)
-                        error_exit(OPEN_FILE_ERROR,
+                    {
+                        evalresp_log(log, ERROR, 0,
                                 "print_resp; failed to open file %s", filename);
+                        return; /*TODO error? */
+                        /*XXX error_exit(OPEN_FILE_ERROR,
+                                "print_resp; failed to open file %s", filename); */
+                    }
 
                     /* 04/27/2010 unwraped phases should only start causal! - Johannes Schweitzer*/
                     phas1 = 0.0;
@@ -411,7 +496,9 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
                         myLabel);
             }
             if (freqarr_alloc_flag) /* if freq array was allocated then */
+            {
                 free(freq_arr); /* free freq array */
+            }
             free(pha_arr); /* free allocated arrays */
             free(amp_arr);
         } else {
@@ -419,8 +506,11 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
                 sprintf(filename, "SPECTRA.%s.%s.%s.%s", resp->network,
                         resp->station, resp->locid, resp->channel);
                 if ((fptr1 = fopen(filename, "w")) == (FILE *) NULL) {
-                    error_exit(OPEN_FILE_ERROR,
+                    evalresp_log(log, ERROR, 0,
                             "print_resp; failed to open file %s", filename);
+                    return; /*TODO some error thinging */
+                    /*XXX error_exit(OPEN_FILE_ERROR,
+                            "print_resp; failed to open file %s", filename); */
                 }
             } else {
                 fptr1 = stdout;
@@ -435,8 +525,10 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
                         myLabel);
             }
             for (i = 0; i < resp->nfreqs; i++)
+            {
                 fprintf(fptr1, "%.6E %.6E %.6E\n", resp->freqs[i],
                         output[i].real, output[i].imag);
+            }
             if (!stdio_flag) {
                 fclose(fptr1);
             }
