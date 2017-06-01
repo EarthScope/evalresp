@@ -19,7 +19,7 @@ modifications:
 
  o removed install of headers and man pages (unrenamed; avoid conflicts)
 
- o added empty check target
+ o added empty check and documentation targets
 
 Also, modified parent configure.ac, Makefile.ac to include this
 directory (and copied various things from configure.ac here to there).

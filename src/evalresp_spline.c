@@ -16,7 +16,6 @@ char * evr_spline(int num_points, double *t, double *y,
 {
   char *return_string = NULL;
   int i;
-  int left = 1;
   const int ibcbeg = 0;
   const int ybcbeg = 0.0;
   const int ibcend = 0;
@@ -44,8 +43,7 @@ char * evr_spline(int num_points, double *t, double *y,
 
   for (i = 0; i < num_xvals; ++i) {
     tval = xvals_arr[i];
-    (void)spline_cubic_val2(num_points, t, tval, &left, y, ypp, &yval, &ypval,
-                            &yppval);
+    yval = spline_cubic_val(num_points, t, y, ypp, tval, &ypval, &yppval);
     (*p_retvals_arr)[i] = yval;
   }
   *p_num_retvals = num_xvals;
