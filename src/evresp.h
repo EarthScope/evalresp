@@ -465,8 +465,8 @@ struct scn_list {
 struct pole_zeroType {
     int nzeros;  /**< Number of zeros (blockettes [43] or [53]). */
     int npoles;  /**< Number of poles. */
-    double a0;  /**< FIXME. */
-    double a0_freq;  /**< FIXME. */
+    double a0;  /**< Poles and zeros normaliztion factor. */
+    double a0_freq;  /**< Poles and zeros normaliztion frequency. */
     struct evr_complex *zeros;  /**< Array of zeros (complex). */
     struct evr_complex *poles;  /**< Array of poles (complex). */
 };
@@ -477,11 +477,11 @@ struct pole_zeroType {
  * @brief A Response (Coefficients) blockette.
  */
 struct coeffType {
-    int nnumer;  /**< FIXME. (blockettes [44] or [54]) */
-    int ndenom;  /**< FIXME. */
-    double *numer;  /**< FIXME. */
-    double *denom;  /**< FIXME. */
-    double h0;  /**< FIXME. */  /* IGD this field is new v 3.2.17 */
+    int nnumer;  /**< Length of numerator vector . (blockettes [44] or [54]) */
+    int ndenom;  /**< Length of denominator vector. */
+    double *numer;  /**< Numerator vector. */
+    double *denom;  /**< Denominator vector. */
+    double h0;  /**< Sensitivity. */  /* IGD this field is new v 3.2.17 */
 };
 
 /**
@@ -490,16 +490,16 @@ struct coeffType {
  * @brief A Response (Coefficients) blockette.
  */
 struct polynomialType {
-    unsigned char approximation_type;  /**< FIXME. (blockettes [42] or [62]) */  /* IGD 05/31/2013 */
-    unsigned char frequency_units;  /**< FIXME. */
-    double lower_freq_bound;  /**< FIXME. */
-    double upper_freq_bound;  /**< FIXME. */
-    double lower_approx_bound;  /**< FIXME. */
-    double upper_approx_bound;  /**< FIXME. */
-    double max_abs_error;  /**< FIXME. */
-    int ncoeffs;  /**< FIXME. */
-    double *coeffs;  /**< FIXME. */
-    double *coeffs_err;  /**< FIXME. */
+    unsigned char approximation_type;  /**< Approximation type. (blockettes [42] or [62]) */  /* IGD 05/31/2013 */
+    unsigned char frequency_units;  /**< Frequency unit. */
+    double lower_freq_bound;  /**< Lower frequency bound. */
+    double upper_freq_bound;  /**< Upper frequency bound. */
+    double lower_approx_bound;  /**< Lower approximation bound. */
+    double upper_approx_bound;  /**< Upper approximation bound. */
+    double max_abs_error;  /**< Maximum absolute error. */
+    int ncoeffs;  /**< Length of coefficients vector. */
+    double *coeffs;  /**< Coefficients vector. */
+    double *coeffs_err;  /**< Error vector. */
 };
 
 /**
@@ -510,7 +510,7 @@ struct polynomialType {
 struct firType {
     int ncoeffs;  /**< Number of coefficients (blockettes [41] or [61]). */
     double *coeffs;  /**< Array of coefficients. */
-    double h0;  /**< FIXME. */
+    double h0;  /**< Sensitivity. */
 };
 
 /**
@@ -531,9 +531,9 @@ struct listType {
  * @brief A Generic Response blockette.
  */
 struct genericType {
-    int ncorners;  /**< FIXME. (blockettes [46] or [56]) */
-    double *corner_freq;  /**< FIXME. */
-    double *corner_slope;  /**< FIXME. */
+    int ncorners;  /**< Number of corners. (blockettes [46] or [56]) */
+    double *corner_freq;  /**< Corner frequency vector. */
+    double *corner_slope;  /**< Corner slope vector. */
 };
 
 /**
@@ -542,11 +542,11 @@ struct genericType {
  * @brief A Decimation blockette.
  */
 struct decimationType {
-    double sample_int;  /**< FIXME. (blockettes [47] or [57]) */
-    int deci_fact;  /**< FIXME. */
-    int deci_offset;  /**< FIXME. */
-    double estim_delay;  /**< FIXME. */
-    double applied_corr;  /**< FIXME. */
+    double sample_int;  /**< Sample interval. (blockettes [47] or [57]) */
+    int deci_fact;  /**< Decimation factor. */
+    int deci_offset;  /**< Decimation offset. */
+    double estim_delay;  /**< Estimated delay. */
+    double applied_corr;  /**< Applied correction. */
 };
 
 /**
@@ -555,8 +555,8 @@ struct decimationType {
  * @brief A Channel Sensitivity/Gain blockette.
  */
 struct gainType {
-    double gain;  /**< FIXME. (blockettes [48] or [58]) */
-    double gain_freq;  /**< FIXME. */
+    double gain;  /**< Gain. (blockettes [48] or [58]) */
+    double gain_freq;  /**< Frequency where gain is computed. */
 };
 
 /**
@@ -565,9 +565,9 @@ struct gainType {
  * @brief A Response Reference blockette.
  */
 struct referType {
-    int num_stages;  /**< FIXME. */
-    int stage_num;  /**< FIXME. */
-    int num_responses;  /**< FIXME. */
+    int num_stages;  /**< Total number of stages. */
+    int stage_num;  /**< Stage number. */
+    int num_responses;  /**< Number of responses. */
 };
 
 /**
@@ -584,15 +584,15 @@ struct referType {
 struct blkt {
     int type;  /**< Blockette type. */
     union {
-        struct pole_zeroType pole_zero;  /**< FIXME. */
-        struct coeffType coeff;  /**< FIXME. */
-        struct firType fir;  /**< FIXME. */
-        struct listType list;  /**< FIXME. */
-        struct genericType generic;  /**< FIXME. */
-        struct decimationType decimation;  /**< FIXME. */
-        struct gainType gain;  /**< FIXME. */
-        struct referType reference;  /**< FIXME. */
-        struct polynomialType polynomial;  /**< FIXME. */
+        struct pole_zeroType pole_zero;  /**< Poles and zeros structure. */
+        struct coeffType coeff;  /**< Coefficients structure. */
+        struct firType fir;  /**< FIR structure. */
+        struct listType list;  /**< List structure. */
+        struct genericType generic;  /**< Generic response structure. */
+        struct decimationType decimation;  /**< Decimation blockette structure. */
+        struct gainType gain;  /**< Gain structure. */
+        struct referType reference;  /**< Reference structure. */
+        struct polynomialType polynomial;  /**< Polynomial type structure. */
     } blkt_info;  /**< Blockette info. */
     struct blkt *next_blkt;  /**< Pointer to next blockette. */
 };
@@ -642,22 +642,22 @@ nzeros = blkt_ptr->blkt_info.poles_zeros.nzeros;
 
  */
 struct channel {
-    char staname[STALEN];  /**< FIXME. */
-    char network[NETLEN];  /**< FIXME. */
-    char locid[LOCIDLEN];  /**< FIXME. */
-    char chaname[CHALEN];  /**< FIXME. */
-    char beg_t[DATIMLEN];  /**< FIXME. */
-    char end_t[DATIMLEN];  /**< FIXME. */
-    char first_units[MAXLINELEN];  /**< FIXME. */
-    char last_units[MAXLINELEN];  /**< FIXME. */
-    double sensit;  /**< FIXME. */
-    double sensfreq;  /**< FIXME. */
-    double calc_sensit;  /**< FIXME. */
-    double calc_delay;  /**< FIXME. */
-    double estim_delay;  /**< FIXME. */
-    double applied_corr;  /**< FIXME. */
-    double sint;  /**< FIXME. */
-    int nstages;  /**< FIXME. */
+    char staname[STALEN];  /**< Station name. */
+    char network[NETLEN];  /**< Network name. */
+    char locid[LOCIDLEN];  /**< Location ID. */
+    char chaname[CHALEN];  /**< Channel name. */
+    char beg_t[DATIMLEN];  /**< Start time (string). */
+    char end_t[DATIMLEN];  /**< End time (string). */
+    char first_units[MAXLINELEN];  /**< Units of the first stage. */
+    char last_units[MAXLINELEN];  /**< Units of the last stage. */
+    double sensit;  /**< Sensitivity. */
+    double sensfreq;  /**< Freuqncy at sensitivity. */
+    double calc_sensit;  /**< Calculated sensitivity. */
+    double calc_delay;  /**< Calculated delay. */
+    double estim_delay;  /**< Estimated delay. */
+    double applied_corr;  /**< Applied correction. */
+    double sint;  /**< inversed sample rate (sample interval). */
+    int nstages;  /**< Number of stages. */
     struct stage *first_stage;  /**< Pointer to the head of a linked list of
                                    stage. */
 };
@@ -678,7 +678,7 @@ struct dateTime {
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Global variable to keep Net-Station-Loc-Channel info in case enabling log-label configure option is used.
  * @author 2007/02/27: IGD.
  */
 extern char myLabel[20];
