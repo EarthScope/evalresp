@@ -17,7 +17,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include "evresp.h"
+
+#ifdef HAVE_GETOPT_H
 #include <getopt.h>
+#else
+#include "vcs_getopt.h"
+#endif
 #include <log.h>
 
 #define DATIMESIZE 32
