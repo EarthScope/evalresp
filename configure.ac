@@ -21,7 +21,7 @@ AC_CHECK_LIB(m, fabs)
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(sys/time.h unistd.h malloc.h stdlib.h)
+AC_CHECK_HEADERS(sys/time.h unistd.h malloc.h stdlib.h getopt.h)
 
 dnl Checks for library functions.
 AC_FUNC_VFORK

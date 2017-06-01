@@ -2,11 +2,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "x2r.h"
 #include "x2r_log.h"
 #include "x2r_ws.h"
 #include "x2r_xml.h"
+
+#include <config.h>
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>
+#else
+#include "vcs_getopt.h"
+#endif
 
 
 /**
@@ -16,40 +24,101 @@
  */
 static int parse_opts(int argc, char *argv[], x2r_log **log, FILE **in, FILE **out) {
 
-    int status = X2R_OK, level = 0, index = 0;
+    int status = X2R_OK, level = 0;
     char *input = NULL, *output = NULL;
+    struct option cmdline_flags[]={
+        {"verbose", optional_argument, NULL, 'v'},
+        {"output",  required_argument, NULL, 'o'},
+        {0,0,0,0}};
+    int level_auto = 1, longoptind = -1, opt;
 
     *in = stdin;
     *out = stdout;
 
-    while (++index < argc) {
-    	if (argv[index][0] == '-') {
-    		switch (argv[index][1]) {
+    while(EOF != (opt = getopt_long(argc, argv, ":v::o:", cmdline_flags, &longoptind)) && X2R_OK == status)
+    {
+        switch (opt)
+        {
             case 'v':
-                level += strlen(argv[index]) - 1;
+                if (optarg)
+                {
+                    int len = strlen(optarg), i = 0;
+                    for (; i < len && isdigit(optarg[i]); i++);
+                    if (i >= len)
+                    {
+                        level = atoi(optarg);
+                        level_auto = 0;
+                    }
+                    else
+                    {
+                        /*conflicting modes for verbosity */
+                        status = X2R_ERR_USER;
+                    }
+                }
+                else if (level_auto)
+                {
+                    level++;
+                }
                 break;
             case 'o':
-                output = strdup(argv[++index]);
+                if (output)
+                {
+                    free(output);
+                }
+                output = strdup(optarg);
                 break;
-            default:
+            case ':':
+                if ( 'v' == optopt || 0 == longoptind )
+                {
+                    /* there is a potential bug with optional args on mac */
+                    level++;
+                    break;
+                }
+                /* missing argument */
                 status = X2R_ERR_USER;
-                goto exit;
-    		}
-    	} else if (input) {
-    		status = X2R_ERR_USER;
-    		goto exit;
-    	} else {
-    		input = strdup(argv[index]);
-    	}
+                break;
+            case '?':
+                status = X2R_ERR_USER;
+                break;
+        }
+        longoptind = -1;
+    }
+    if ( X2R_OK != status || 1 <  argc - optind )
+    {
+        if (output)
+        {
+            free(output);
+        }
+        return X2R_ERR_USER;
+    }
+    else if (argc - optind)
+    {
+        input = strdup(argv[optind]);
     }
 
-    if ((status = x2r_alloc_log(level, stderr, log))) goto exit;
+    if ((status = x2r_alloc_log(level, stderr, log)))
+    {
+        if (output)
+        {
+            free(output);
+        }
+        if (input)
+        {
+            free(input);
+        }
+        return status;
+    }
     x2r_info(*log, "Logging to stderr");
 
     if (input) {
         if (!(*in = fopen(input, "r"))) {
             status = x2r_error(*log, X2R_ERR_IO, "Cannot open %s to read", input);
-            goto exit;
+            if (output)
+            {
+                free(output);
+            }
+            free(input);
+            return status;
         }
         x2r_info(*log, "Input from %s", input);
     } else {
@@ -59,16 +128,26 @@ static int parse_opts(int argc, char *argv[], x2r_log **log, FILE **in, FILE **o
     if (output) {
         if (!(*out = fopen(output, "w"))) {
             status = x2r_error(*log, X2R_ERR_IO, "Cannot open %s to write", output);
-            goto exit;
+            if (input)
+            {
+                free(input);
+            }
+            free(output);
+            return status;
         }
         x2r_info(*log, "Output to %s", output);
     } else {
         x2r_info(*log, "Output to stdout");
     }
 
-exit:
-    free(input);
-    free(output);
+    if (output)
+    {
+        free(output);
+    }
+    if (input)
+    {
+        free(input);
+    }
     return status;
 }
 
@@ -84,11 +163,16 @@ int main(int argc, char *argv[]) {
     x2r_fdsn_station_xml *root = NULL;
     FILE *in = stdin, *out = stdout;
 
-    if ((status = parse_opts(argc, argv, &log, &in, &out))) goto exit;
-    if ((status = x2r_station_service_load(log, in, &root))) goto exit;
-    if ((status = x2r_resp_util_write(log, out, root))) goto exit;
+    status = parse_opts(argc, argv, &log, &in, &out);
+    if (!status)
+    {
+        status = x2r_station_service_load(log, in, &root);
+    }
+    if (!status)
+    {
+        status = x2r_resp_util_write(log, out, root);
+    }
 
-exit:
     if (status == X2R_ERR_USER) {
         fprintf(stderr, "\nUsage:\n");
         fprintf(stderr, "\n  Specifying input and output files\n");
@@ -98,8 +182,14 @@ exit:
         fprintf(stderr, "\n  Logging goes to stderr (multiple -v gives more detail)\n");
         fprintf(stderr, "  %s -vvvv -o OUT.resp < IN.xml 2> LOG\n\n", argv[0]);
     }
-    if (in && in != stdin) fclose(in);
-    if (out && out != stdout) fclose(out);
+    if (in && in != stdin)
+    {
+        fclose(in);
+    }
+    if (out && out != stdout)
+    {
+        fclose(out);
+    }
     status = x2r_free_fdsn_station_xml(root, status);
     status = x2r_free_log(log, status);
     return status;
