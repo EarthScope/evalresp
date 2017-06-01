@@ -17,9 +17,9 @@ char * evr_spline(int num_points, double *t, double *y,
 {
   char *return_string = NULL;
   int i;
-  const int ibcbeg = 0;
+  const int ibcbeg = 2;
   const int ybcbeg = 0.0;
-  const int ibcend = 0;
+  const int ibcend = 2;
   const int ybcend = 0.0;
   double *ypp = NULL;
   double tval;
