@@ -134,6 +134,8 @@
 #include <setjmp.h>
 #include <stdarg.h>
 
+#include <log.h>
+
 /* if Windows compiler then redefine 'complex' to */
 /*  differentiate it from the existing struct,    */
 /*  and rename 'strcasecmp' functions:            */
@@ -697,7 +699,7 @@ extern char myLabel[20];
  * @param[in] line String to parse.
  * @returns Array of string objects.
  */
-struct string_array *ev_parse_line(char *line);
+struct string_array *ev_parse_line(char *line, evalresp_log_t *);
 
 /**
  * @private
@@ -712,7 +714,7 @@ struct string_array *ev_parse_line(char *line);
  * @param[in] delim Delimiter string.
  * @returns Array of string objects.
  */
-struct string_array *parse_delim_line(char *line, char *delim);
+struct string_array *parse_delim_line(char *line, char *delim, evalresp_log_t *);
 
 /**
  * @private
@@ -733,7 +735,7 @@ struct string_array *parse_delim_line(char *line, char *delim);
  *       white space.
  */
 int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
-              char *sep, int fld_wanted);
+              char *sep, int fld_wanted, evalresp_log_t *log);
 
 /**
  * @private
@@ -755,7 +757,7 @@ int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
  *       white space.
  */
 int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
-               char *sep, int fld_wanted);
+               char *sep, int fld_wanted, evalresp_log_t *log);
 /**
  * @private
  * @ingroup evalresp_private_string
@@ -777,7 +779,7 @@ int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
  *                        expect. Support for SHAPE formatte RESP files, and
  *                        to skip blank lines.
  */
-int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep);
+int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, evalresp_log_t *log);
 
 /**
  * @private
@@ -795,7 +797,7 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep);
  *          and @p blkt_no).
  * @author 2004.079: SBH: Added code to skip blank lines.
  */
-int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *sep);
+int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *sep, evalresp_log_t *log);
 
 /**
  * @private
@@ -827,10 +829,11 @@ int count_delim_fields(char *line, char *delim);
  * @param[in] line Input line.
  * @param[in] fld_no Field number.
  * @param[out] return_field Return field.
+ * @param[in] log Logging structure.
  * @returns Length of the resulting field if successful.
  * @note Exits with error if no field exists with that number.
  */
-int parse_field(char *line, int fld_no, char *return_field);
+int parse_field(char *line, int fld_no, char *return_field, evalresp_log_t *log);
 
 /**
  * @private
@@ -840,10 +843,11 @@ int parse_field(char *line, int fld_no, char *return_field);
  * @param[in] fld_no Field number.
  * @param[in] delim Delimiter.
  * @param[out] return_field Return field.
+ * @param[in] log Logging structure.
  * @returns Length of the resulting field if successful.
  * @note Exits with error if no field exists with that number.
  */
-int parse_delim_field(char *line, int fld_no, char *delim, char *return_field);
+int parse_delim_field(char *line, int fld_no, char *delim, char *return_field, evalresp_log_t *log);
 
 /**
  * @private
@@ -858,7 +862,7 @@ int parse_delim_field(char *line, int fld_no, char *delim, char *return_field);
  * @returns @c NULL if no non-comment line is found.
  * @author 2004.079: SBH: Added code to skip blank lines.
  */
-int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line);
+int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_log_t *log);
 
 /**
  * @private
@@ -869,7 +873,7 @@ int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line);
  * @param[in] in_line Input string.
  * @returns Integer value on success.
  */
-int get_int(char *in_line);
+int get_int(char *in_line, evalresp_log_t *log);
 
 /**
  * @private
@@ -881,7 +885,7 @@ int get_int(char *in_line);
  * @param[in] in_line Input string.
  * @returns Double value on success.
  */
-double get_double(char *in_line);
+double get_double(char *in_line, evalresp_log_t *log);
 
 /**
  * @private
@@ -895,7 +899,7 @@ double get_double(char *in_line);
  * @param[in] line Incoming line.
  * @see units
  */
-int check_units(char *line);
+int check_units(char *line, evalresp_log_t *log);
 
 /**
  * @private
@@ -921,7 +925,7 @@ int check_units(char *line);
  * @returns 0 if false.
  * @returns >0 if true.
  */
-int string_match(const char *string, char *expr, char *type_flag);
+int string_match(const char *string, char *expr, char *type_flag, evalresp_log_t *log);
 
 /**
  * @private
@@ -932,7 +936,7 @@ int string_match(const char *string, char *expr, char *type_flag);
  * @returns 0 if false.
  * @returns >0 if true.
  */
-int is_int(const char *test);
+int is_int(const char *test, evalresp_log_t *log);
 
 /**
  * @private
@@ -943,7 +947,7 @@ int is_int(const char *test);
  * @returns 0 if false.
  * @returns >0 if true.
 */
-int is_real(const char *test);
+int is_real(const char *test, evalresp_log_t *log);
 
 /**
  * @private
@@ -991,7 +995,7 @@ int is_IIR_coeffs(FILE *fp, int position);
  *       information to be reread.
  */
 int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
-              struct channel *this_channel);
+              struct channel *this_channel, evalresp_log_t *log);
 
 /**
  * @private
@@ -1004,7 +1008,7 @@ int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
  *          end_t and station info are returned as part of the input
  *          structure @p this_channel. The pointer to the file (@p fptr) is
  *          left in position for the parse_channel() routine to grab the
- *          response information for that station. 
+ *          response information for that station.
  * @param[in,out] fptr FILE pointer.
  * @param[in] scn Network-station-locid-channel object.
  * @param[in] datime Date-time string.
@@ -1016,7 +1020,7 @@ int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
  *       information to be reread.
  */
 int get_resp(FILE *fptr, struct scn *scn, char *datime,
-             struct channel *this_channel);
+             struct channel *this_channel, evalresp_log_t *log);
 
 /**
  * @private
@@ -1032,7 +1036,7 @@ int get_resp(FILE *fptr, struct scn *scn, char *datime,
  * @returns 1 on success.
  * @returns 0 on failure.
  */
-int get_channel(FILE *fptr, struct channel* chan);
+int get_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log);
 
 /**
  * @private
@@ -1048,7 +1052,7 @@ int get_channel(FILE *fptr, struct channel* chan);
  * @returns 1 on success.
  * @returns 0 on failure.
  */
-int next_resp(FILE *fptr);
+int next_resp(FILE *fptr, evalresp_log_t *log);
 
 /* routines used to create a list of files matching the users request */
 
@@ -1137,11 +1141,12 @@ struct response *alloc_response(int npts);
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for an array of strings.
  * @param[in] nstrings Number of strings to allocate in array.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated array.
  * @returns @c NULL if @p nstrings is zero.
  * @warning Exits with error if allocation fails.
  */
-struct string_array *alloc_string_array(int nstrings);
+struct string_array *alloc_string_array(int nstrings, evalresp_log_t *log);
 
 /**
  * @private
@@ -1520,7 +1525,7 @@ void error_return(int cond, char *msg, ...);
  * @param[in,out] chan Channel structure.
  * @returns First field number.
  */
-int parse_channel(FILE *fptr, struct channel* chan);
+int parse_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log);
 
 /* parsing routines for various types of filters */
 
@@ -1538,7 +1543,7 @@ int parse_channel(FILE *fptr, struct channel* chan);
  * @returns 1 on success.
  * @returns 0 on failure.
  */
-int parse_pref(int *blkt_no, int *fld_no, char *line);
+int parse_pref(int *blkt_no, int *fld_no, char *line, evalresp_log_t *log);
 
 /**
  * @private
@@ -1554,7 +1559,7 @@ int parse_pref(int *blkt_no, int *fld_no, char *line);
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  */
-void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1569,7 +1574,7 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  */
-void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1581,12 +1586,12 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  *          blockette and field numbers are checked as the file is parsed. As
  *          with parse_pz(), for this routine to work,  the lines must contain
  *          evalresp-3.0 style prefixes.
- * @param[in,out] fptr FILE pointer.
+ * @param[in,out] fptr FILE pointer, evalresp_log_t *log.
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  * @author 06/27/00: I.Dricker (i.dricker@isti.com) for 2.3.17 iir.
  */
-void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1605,7 +1610,7 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr)
  *         Since currently the blockette 55 is not supported, we do not
  *         anticipate problems caused by this change.
  */
-void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1620,7 +1625,7 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  */
-void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1635,7 +1640,7 @@ void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @returns Sequence number of the stage for verification.
  */
-int parse_deci(FILE *fptr, struct blkt *blkt_ptr);
+int parse_deci(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1650,7 +1655,7 @@ int parse_deci(FILE *fptr, struct blkt *blkt_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @returns Sequence number of the stage for verification.
  */
-int parse_gain(FILE *fptr, struct blkt *blkt_ptr);
+int parse_gain(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1665,7 +1670,7 @@ int parse_gain(FILE *fptr, struct blkt *blkt_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  */
-void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1680,7 +1685,7 @@ void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  */
-void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1696,7 +1701,7 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  * @author 05/31/2013: IGD.
  */
 void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
-                      struct stage *stage_ptr);
+                      struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1735,7 +1740,7 @@ int add_null(char *s, int len, char where);
  * @param[in,out] first_blkt First filter.
  * @param[in,out] second_blkt Second filter.
  */
-void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt);
+void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t *log);
 
 /**
  * @private
@@ -1754,7 +1759,7 @@ void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt);
  * @author 07/07/00: Ilya Dricker IGD (i.dricker@isti.com): Modified from
  *         merge_coeffs() for 3.2.17 of evalresp.
  */
-void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt);
+void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t *log);
 
 /**
  * @private
@@ -1784,7 +1789,7 @@ void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt);
  *              structure.
  * @param[in] chan Channel structure.
  */
-void check_channel(struct channel *chan);
+void check_channel(struct channel *chan, evalresp_log_t *log);
 
 /**
  * @private
@@ -1795,7 +1800,7 @@ void check_channel(struct channel *chan);
  * @param[in,out] f FIR filter.
  * @param[in] chan Channel structure.
  */
-void check_sym(struct blkt *f, struct channel *chan);
+void check_sym(struct blkt *f, struct channel *chan, evalresp_log_t *log);
 
 /* routines used to calculate the instrument responses */
 
@@ -1816,7 +1821,7 @@ void check_sym(struct blkt *f, struct channel *chan);
  */
 void calc_resp(struct channel *chan, double *freq, int nfreqs,
         struct evr_complex *output, char *out_units, int start_stage,
-        int stop_stage, int useTotalSensitivityFlag, double x_for_b62);
+        int stop_stage, int useTotalSensitivityFlag, double x_for_b62, evalresp_log_t *log);
 
 /**
  * @private
@@ -1828,7 +1833,7 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs,
  * @param[in] w Frequency.
  */
 void convert_to_units(int inp, char *out_units, struct evr_complex *data,
-                      double w);
+                      double w, evalresp_log_t *log);
 
 /**
  * @private
@@ -1899,7 +1904,7 @@ void zmul(struct evr_complex *val1, struct evr_complex *val2);
  * @param[in] start_stage Start stage.
  * @param[in] stop_stage Stop stage.
  */
-void norm_resp(struct channel *chan, int start_stage, int stop_stage);
+void norm_resp(struct channel *chan, int start_stage, int stop_stage, evalresp_log_t *log);
 
 /**
  * @private
@@ -1925,7 +1930,7 @@ void calc_list(struct blkt *blkt_ptr, int i, struct evr_complex *out);
  *         introduced in version 3.3.4 of evalresp
  */
 void calc_polynomial(struct blkt *blkt_ptr, int i, struct evr_complex *out,
-                     double x_for_b62);
+                     double x_for_b62, evalresp_log_t *log);
 
 /**
  * @private
@@ -1953,7 +1958,7 @@ void iir_trans(struct blkt *blkt_ptr, double wint, struct evr_complex *out);
  * @returns 0 if false.
  * @returns >0 if true.
  */
-int is_time(const char *test);
+int is_time(const char *test, evalresp_log_t *log);
 
 /**
  * @private
@@ -2014,7 +2019,7 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
  *       parameters.
  */
 void print_resp(double *freqs, int nfreqs, struct response *first, char *rtype,
-                int stdio_flag);
+                int stdio_flag, evalresp_log_t *log);
 
 /**
  * @private
@@ -2049,7 +2054,7 @@ void print_resp(double *freqs, int nfreqs, struct response *first, char *rtype,
  */
 void print_resp_itp(double *freqs, int nfreqs, struct response *first,
                     char *rtype, int stdio_flag, int listinterp_out_flag,
-                    double listinterp_tension, int unwrap_flag);
+                    double listinterp_tension, int unwrap_flag, evalresp_log_t *log);
 
 /**
  * @private
@@ -2081,7 +2086,7 @@ struct response *evresp(char *stalst, char *chalst, char *net_code,
                         char *file, double *freqs, int nfreqs, char *rtype,
                         char *verbose, int start_stage, int stop_stage,
                         int stdio_flag, int useTotalSensitivityFlag,
-                        double x_for_b62, int xml_flag);
+                        double x_for_b62, int xml_flag, evalresp_log_t *log);
 
 /**
  * @private
@@ -2118,7 +2123,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                             int listinterp_out_flag, int listinterp_in_flag,
                             double listinterp_tension,
                             int useTotalSensitivityFlag, double x_for_b62,
-                            int xml_flag);
+                            int xml_flag, evalresp_log_t *log);
 
 /**
  * @private
@@ -2149,7 +2154,7 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
              char *units, char *file, double *freqs, int nfreqs, double *resp,
              char *rtype, char *verbose, int start_stage, int stop_stage,
              int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
-             int xml_flag);
+             int xml_flag, evalresp_log_t* log);
 
 /**
  * @private
@@ -2170,7 +2175,7 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
 void interpolate_list_blockette(double **frequency_ptr,
                                 double **amplitude_ptr, double **phase_ptr,
                                 int *p_number_points, double *req_freq_arr,
-                                int req_num_freqs, double tension);
+                                int req_num_freqs, double tension, evalresp_log_t *log);
 
 /**
  * @private

@@ -11,8 +11,9 @@
 #include <string.h>
 #include "evresp.h"
 #include "evr_spline.h"
+#include "log.h"
 
-void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt) {
+void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t *log) {
     int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;
     double *amp1, *amp2, *phase1, *phase2, *freq1, *freq2;
     struct blkt *tmp_blkt;
@@ -22,12 +23,19 @@ void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt) {
     case LIST:
         break;
     default:
-        error_return(MERGE_ERROR, "merge_lists; filter types must be LIST");
+        evalresp_log(log, ERROR, 0, "merge_lists; filter types must be LIST");
+        return; /*TODO MERGE_ERROR */
+        /*XXX error_return(MERGE_ERROR, "merge_lists; filter types must be LIST"); */
     }
 
     if (first_blkt->type != tmp_blkt->type)
-        error_return(MERGE_ERROR,
+    {
+        evalresp_log(log, ERROR, 0,
                 "merge_lists; both filters must have the same type");
+        return; /*TODO MERGE_ERROR */
+        /*XXX error_return(MERGE_ERROR,
+                "merge_lists; both filters must have the same type"); */
+    }
 
     /* set up some local pointers and values */
 
@@ -48,18 +56,33 @@ void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt) {
 
     if ((amp1 = (double *) realloc(amp1, new_ncoeffs * sizeof(double)))
             == (double *) NULL)
-        error_exit(OUT_OF_MEMORY,
+    {
+        evalresp_log(log, ERROR, 0,
                 "merge_lists; insufficient memory for combined amplitudes");
+        return; /*TODO OUT_OF_MEMORY */
+        /*XXX error_exit(OUT_OF_MEMORY,
+                "merge_lists; insufficient memory for combined amplitudes"); */
+    }
 
     if ((phase1 = (double *) realloc(phase1, new_ncoeffs * sizeof(double)))
             == (double *) NULL)
-        error_exit(OUT_OF_MEMORY,
+    {
+        evalresp_log(log, ERROR, 0,
                 "merge_lists; insufficient memory for combined phases");
+        return; /*TODO OUT_OF_MEMORY */
+        /*XXX error_exit(OUT_OF_MEMORY,
+                "merge_lists; insufficient memory for combined phases"); */
+    }
 
     if ((freq1 = (double *) realloc(freq1, new_ncoeffs * sizeof(double)))
             == (double *) NULL)
-        error_exit(OUT_OF_MEMORY,
+    {
+        evalresp_log(log, ERROR, 0,
                 "merge_lists; insufficient memory for combined frequencies");
+        return; /*TODO OUT_OF_MEMORY */
+        /*XXX error_exit(OUT_OF_MEMORY,
+                "merge_lists; insufficient memory for combined frequencies"); */
+    }
     ;
 
     /* copy the coeff values to the new space */
@@ -83,7 +106,7 @@ void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt) {
 
 }
 
-void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt) {
+void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t *log) {
     int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;
     double *coeffs1, *coeffs2;
     struct blkt *tmp_blkt;
@@ -95,12 +118,19 @@ void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt) {
     case FIR_ASYM:
         break;
     default:
-        error_return(MERGE_ERROR, "merge_coeffs; filter types must be FIR");
+        evalresp_log(log, ERROR, 0, "merge_coeffs; filter types must be FIR");
+        return; /*TODO MERGE_ERROR */
+        /*XXX error_return(MERGE_ERROR, "merge_coeffs; filter types must be FIR");*/
     }
 
     if (first_blkt->type != tmp_blkt->type)
-        error_return(MERGE_ERROR,
+    {
+        evalresp_log(log, ERROR, 0,
                 "merge_coeffs; both filters must have the same type");
+        return; /*TODO MERGE_ERROR */
+        /*XXX error_return(MERGE_ERROR,
+                "merge_coeffs; both filters must have the same type"); */
+    }
 
     /* set up some local pointers and values */
 
@@ -116,8 +146,13 @@ void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt) {
 
     if ((coeffs1 = (double *) realloc(coeffs1, new_ncoeffs * sizeof(double)))
             == (double *) NULL)
-        error_exit(OUT_OF_MEMORY,
+    {
+        evalresp_log(log, ERROR, 0,
                 "merge_coeffs; insufficient memory for combined coeffs");
+        return; /*TODO OUT_OF_MEMORY */
+        /*XXX error_exit(OUT_OF_MEMORY,
+                "merge_coeffs; insufficient memory for combined coeffs"); */
+    }
 
     /* copy the coeff values to the new space */
 
@@ -136,8 +171,8 @@ void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt) {
 
 }
 
-void check_channel(struct channel *chan) {
-	// TODO - assignments below (0 + NULL) made blindly to fix compiler warning.  bug?
+void check_channel(struct channel *chan, evalresp_log_t *log) {
+    // TODO - assignments below (0 + NULL) made blindly to fix compiler warning.  bug?
     struct stage *stage_ptr, *next_stage, *prev_stage;
     struct blkt *blkt_ptr, *next_blkt;
     struct blkt *filt_blkt = NULL, *deci_blkt = NULL, *gain_blkt = NULL, *ref_blkt = NULL;
@@ -193,20 +228,32 @@ void check_channel(struct channel *chan) {
       case ANALOG_PZ:
       case LAPLACE_PZ:
         if(stage_type && stage_type != GAIN_TYPE)
-          error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
+        {
+          evalresp_log(log, ERROR, 0, "check_channel; %s in stage %d",
                        "more than one filter type",i);
+          return; /*TODO ILLEGAL_RESP_FORMAT */
+          /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
+                       "more than one filter type",i); */
+        }
         stage_type = PZ_TYPE;
         filt_blkt = blkt_ptr;
         break;
       case IIR_PZ:
         if(stage_type && stage_type != GAIN_TYPE)
-          error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
+        {
+          evalresp_log(log, ERROR, 0, "check_channel; %s in stage %d",
                        "more than one filter type",i);
+          return; /*TODO ILLEGAL_RESP_FORMAT */
+          /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
+                       "more than one filter type",i); */
+        }
         stage_type = IIR_TYPE;
         filt_blkt = blkt_ptr;
         break;
       case FIR_COEFFS:
-        error_return(UNSUPPORT_FILTYPE, "check_channel; unsupported filter type");
+          evalresp_log(log, ERROR, 0, "check_channel; unsupported filter type");
+        return; /*TODO UNSUPPORT_FILTYPE */
+        /*XXX error_return(UNSUPPORT_FILTYPE, "check_channel; unsupported filter type"); */
         break;
       case LIST:
 /* IGD         error_return(UNSUPPORT_FILTYPE, "check_channel; unsupported filter type"); */
@@ -221,13 +268,18 @@ void check_channel(struct channel *chan) {
 /* First we merge blocketes if the list spans for more than a single blockette */
 
       while(next_blkt != (struct blkt *)NULL && next_blkt->type == blkt_ptr->type)
-            merge_lists(blkt_ptr,&next_blkt);
+      {
+            merge_lists(blkt_ptr,&next_blkt, log);
+      }
     if (stage_ptr->next_stage != NULL || prev_stage != NULL)
     {
         if (!stage_ptr->next_stage && 0 != chan->first_stage->next_stage->sequence_no)
         {
-            error_return(UNSUPPORT_FILTYPE,
+            evalresp_log(log, ERROR, 0,
                     "blockette 55 cannot be mixed with other filter blockettes\n");
+            return; /*TODO UNSUPPORT_FILTYPE */
+            /*XXX error_return(UNSUPPORT_FILTYPE,
+                    "blockette 55 cannot be mixed with other filter blockettes\n"); */
         }
     }
     else
@@ -243,8 +295,13 @@ void check_channel(struct channel *chan) {
             {
                 /* If the next stage is overall sesitivity, it's OK */
                 if (chan->first_stage->next_stage->first_blkt->type != GAIN)
-                        error_return(UNSUPPORT_FILTYPE,
+                {
+                        evalresp_log(log, ERROR, 0,
                        "blockette 55 cannot be mixed with other filter blockettes\n");
+                        return; /*TODO UNSUPPORT_FILTYPE */
+                        /*XXX error_return(UNSUPPORT_FILTYPE,
+                       "blockette 55 cannot be mixed with other filter blockettes\n"); */
+                }
 
             }
         }
@@ -256,17 +313,28 @@ void check_channel(struct channel *chan) {
 /*        error_return(UNSUPPORT_FILTYPE, "check_channel; unsupported filter type"); */
     /* IGD 05/16/02 Added support for Generic type */
     if(stage_type && stage_type != GAIN_TYPE)
-            error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
+    {
+            evalresp_log(log, ERROR, 0, "check_channel; %s in stage %d",
                               "more than one filter type",i+1);
+            return; /*TODO ILLEGAL_RESP_FORMAT */
+            /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
+                              "more than one filter type",i+1); */
+    }
         /* check to see if next blockette(s) is(are) a continuation of this one.
         If so, merge them into one blockette */
     if(next_blkt != (struct blkt *)NULL && next_blkt->type == blkt_ptr->type)
-                error_return(ILLEGAL_RESP_FORMAT,
+    {
+                evalresp_log(log, ERROR, 0,
                         "check_channel; multiple 55 blockettes in GENERIC stages are not supported yet");
+                return; /*TODO ILLEGAL_RESP_FORMAT */
+                /*XXX error_return(ILLEGAL_RESP_FORMAT,
+                        "check_channel; multiple 55 blockettes in GENERIC stages are not supported yet"); */
+    }
          stage_type = GENERIC_TYPE;
 /*    nc = 1; */ /*for calc_delay to be 0 in decimation blockette */
-    fprintf(stdout, "%s WARNING: Generic blockette is detected in stage %d; content is ignored\n", myLabel, i+1);
-    fflush(stdout);
+    evalresp_log(log, WARN, 0, "%s WARNING: Generic blockette is detected in stage %d; content is ignored\n", myLabel, i+1);
+    /*XXX fprintf(stdout, "%s WARNING: Generic blockette is detected in stage %d; content is ignored\n", myLabel, i+1);
+    fflush(stdout); */
     filt_blkt = blkt_ptr;
         break;
 
@@ -274,20 +342,25 @@ void check_channel(struct channel *chan) {
       case FIR_SYM_2:
       case FIR_ASYM:
         if(stage_type && stage_type != GAIN_TYPE)
-          error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
+        {
+          evalresp_log(log, ERROR, 0, "check_channel; %s in stage %d",
                        "more than one filter type",i);
+          return; /*TODO ILLEGAL_RESP_FORMAT */
+          /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
+                       "more than one filter type",i); */
+        }
 
         /* check to see if next blockette(s) is(are) a continuation of this one.
            If so, merge them into one blockette */
         while(next_blkt != (struct blkt *)NULL && next_blkt->type == blkt_ptr->type)
-          merge_coeffs(blkt_ptr,&next_blkt);
+          merge_coeffs(blkt_ptr,&next_blkt, log);
 
         /* set the stage type to be FIR_TYPE */
         stage_type = FIR_TYPE;
 
         /* make FIR filters symmetric if possible */
         if(blkt_ptr->type == FIR_ASYM)
-          check_sym(blkt_ptr, chan);
+          check_sym(blkt_ptr, chan, log);
 
         /* increment the channel delay for this stage using the number of coefficients
            and the filter type */
@@ -301,13 +374,23 @@ void check_channel(struct channel *chan) {
         break;
       case IIR_COEFFS:  /* IGD New type evalresp supports in 3.2.17 */
      if(stage_type && stage_type != GAIN_TYPE)
-            error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
+     {
+            evalresp_log(log, ERROR, 0, "check_channel; %s in stage %d",
                               "more than one filter type",i);
+            return; /*TODO ILLEGAL_RESP_FORMAT */
+            /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
+                              "more than one filter type",i); */
+     }
         /* check to see if next blockette(s) is(are) a continuation of this one.
         If so, merge them into one blockette */
     if(next_blkt != (struct blkt *)NULL && next_blkt->type == blkt_ptr->type)
-                error_return(ILLEGAL_RESP_FORMAT,
+    {
+                evalresp_log(log, ERROR, 0,
                         "check_channel; multiple 55 blockettes in IIR stages are not supported yet");
+                return; /*TODO ILLEGAL_RESP_FORMAT */
+                /*XXX error_return(ILLEGAL_RESP_FORMAT,
+                        "check_channel; multiple 55 blockettes in IIR stages are not supported yet"); */
+    }
         /* merge_coeffs(blkt_ptr,&next_blkt);  */ /* Leave it alone for now ! */
         /* set the stage type to be FIR_TYPE */
         stage_type = IIR_COEFFS_TYPE;
@@ -336,8 +419,13 @@ void check_channel(struct channel *chan) {
             (double)blkt_ptr->blkt_info.decimation.deci_fact;  /* channel's sint is the last stage's */
         }
         else
-          error_return(ILLEGAL_RESP_FORMAT,
+        {
+          evalresp_log(log, ERROR, 0,
                      "check_channel; decimation blockette with no associated filter");
+          return; /*TODO ILLEGAL_RESP_FORMAT */
+          /*XXX error_return(ILLEGAL_RESP_FORMAT,
+                     "check_channel; decimation blockette with no associated filter"); */
+        }
         deci_blkt = blkt_ptr;
         deci_flag = j;
         break;
@@ -401,7 +489,11 @@ void check_channel(struct channel *chan) {
     stage_type == IIR_TYPE || stage_type == IIR_COEFFS_TYPE || stage_type == LIST_TYPE) {
       if(prev_stage != (struct stage *)NULL && prev_stage->output_units !=
          stage_ptr->input_units)
-        error_return(ILLEGAL_RESP_FORMAT, "check_channel; units mismatch between stages");
+      {
+        evalresp_log(log, ERROR, 0, "check_channel; units mismatch between stages");
+        return; /*TODO ILLEGAL_RESP_FORMAT */
+        /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; units mismatch between stages"); */
+      }
     }
 
     /* if the main filter type is either FIR with a non-zero number of coefficients
@@ -411,7 +503,11 @@ void check_channel(struct channel *chan) {
 
     /* IGD : new stage type IIR_COEFFS_TYPE is processed in v 3.2.17 */
     if((stage_type == IIR_TYPE || stage_type == FIR_TYPE || stage_type == IIR_COEFFS_TYPE) && !deci_flag)
-        error_return(ILLEGAL_RESP_FORMAT, "check_channel; required decimation blockette for IIR or FIR filter missing");
+    {
+        evalresp_log(log, ERROR, 0, "check_channel; required decimation blockette for IIR or FIR filter missing");
+        return; /*TODO ILLEGAL_RESP_FORMAT */
+        /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; required decimation blockette for IIR or FIR filter missing"); */
+    }
 
     /* if this wasn't a gain-only stage, save it for comparison of units between
        stages.  Otherwise, keep the previous stage from this iteration and move
@@ -424,7 +520,7 @@ void check_channel(struct channel *chan) {
   }
 }
 
-void check_sym(struct blkt *f, struct channel *chan) {
+void check_sym(struct blkt *f, struct channel *chan, evalresp_log_t *log) {
   int nc, n0, k;
   double sum = 0.0;
 
@@ -434,9 +530,11 @@ void check_sym(struct blkt *f, struct channel *chan) {
 
   for (k=0; k<nc; k++) sum += f->blkt_info.fir.coeffs[k];
   if (nc && (sum < (1.0-FIR_NORM_TOL) || sum > (1.0+FIR_NORM_TOL))) {
-    fprintf(stderr,"%s WARNING: FIR normalized: sum[coef]=%E; ", myLabel, sum);
+    evalresp_log(log, WARN, 0,"%s WARNING: FIR normalized: sum[coef]=%E; ", myLabel, sum);
+    evalresp_log(log, WARN, 0,"%s %s %s %s %s\n", myLabel, chan->network, chan->staname, chan->locid, chan->chaname);
+    /*XXX fprintf(stderr,"%s WARNING: FIR normalized: sum[coef]=%E; ", myLabel, sum);
     fprintf(stderr,"%s %s %s %s %s\n", myLabel, chan->network, chan->staname, chan->locid, chan->chaname);
-    fflush(stderr);
+    fflush(stderr); */
     for (k=0; k<nc; k++) f->blkt_info.fir.coeffs[k] /= sum;
   }
 
@@ -480,7 +578,7 @@ void sscdns_free_double (double *array)
 void interpolate_list_blockette(double **frequency_ptr,
                                 double **amplitude_ptr, double **phase_ptr,
                                 int *p_number_points, double *req_freq_arr,
-                                int req_num_freqs, double tension)
+                                int req_num_freqs, double tension, evalresp_log_t *log)
 {
   int i, num;
   double first_freq, last_freq, val, min_ampval;
@@ -522,13 +620,18 @@ void interpolate_list_blockette(double **frequency_ptr,
   {      /* some requested frequency values were clipped */
     if(i >= req_num_freqs)
     {    /* all requested frequency values were clipped */
-      error_exit(IMPROP_DATA_TYPE,"Error interpolating amp/phase values:  %s",
+      evalresp_log(log, ERROR, 0,"Error interpolating amp/phase values:  %s",
                                   "All requested freqencies out of range\n");
-      return;
+      /*XXX error_exit(IMPROP_DATA_TYPE,"Error interpolating amp/phase values:  %s",
+                                  "All requested freqencies out of range\n"); */
+      return; /*TODO return error */
     }
-    fprintf(stderr,
+    evalresp_log(log, INFO, 0,
          "%s Note:  %d frequenc%s clipped from beginning of requested range\n",
                                                myLabel, i, ((i == 1) ? "y" : "ies"));
+    /*XXX fprintf(stderr,
+         "%s Note:  %d frequenc%s clipped from beginning of requested range\n",
+                                               myLabel, i, ((i == 1) ? "y" : "ies"));*/
   }
   used_req_num_freqs = req_num_freqs;
   while(used_req_num_freqs > 0 &&
@@ -551,7 +654,8 @@ void interpolate_list_blockette(double **frequency_ptr,
   if((num=req_num_freqs-used_req_num_freqs) > 0)
   {      /* some requested frequency values were clipped; show message */
     req_num_freqs = used_req_num_freqs;
-    fprintf(stderr,
+    evalresp_log(log, INFO, 0,
+    /*XXX fprintf(stderr, */
                "%s Note:  %d frequenc%s clipped from end of requested range\n",
                                            myLabel, num, ((num == 1) ? "y" : "ies"));
   }
@@ -572,14 +676,17 @@ void interpolate_list_blockette(double **frequency_ptr,
                                      tension,1.0,req_freq_arr,req_num_freqs,
                                         &retvals_arr,&num_retvals)) != NULL)
   {
-    error_exit(IMPROP_DATA_TYPE,"Error interpolating amplitudes:  %s",retstr);
-    return;
+    evalresp_log(log, ERROR, 0,"Error interpolating amplitudes:  %s",retstr);
+    /*XXX error_exit(IMPROP_DATA_TYPE,"Error interpolating amplitudes:  %s",retstr); */
+    return; /*TODO This should return somethin */
   }
   if(num_retvals != req_num_freqs)
   {      /* # of generated values != # requested (shouldn't happen) */
-    error_exit(IMPROP_DATA_TYPE,"Error interpolating amplitudes:  %s",
+    evalresp_log(log, ERROR, 0,"Error interpolating amplitudes:  %s",
                                 "Bad # of values");
-    return;
+    /*XXX error_exit(IMPROP_DATA_TYPE,"Error interpolating amplitudes:  %s",
+                                "Bad # of values"); */
+    return; /*TODO This should return somethin */
   }
   retamps_arr = retvals_arr;      /* save ptr to interpolated amplitudes */
 
@@ -627,14 +734,17 @@ void interpolate_list_blockette(double **frequency_ptr,
   free(local_pha_arr);
   if(retstr != NULL)
   {
-    error_exit(IMPROP_DATA_TYPE,"Error interpolating phases:  %s",retstr);
-    return;
+    evalresp_log(log, ERROR, 0,"Error interpolating phases:  %s",retstr);
+    /*XXX error_exit(IMPROP_DATA_TYPE,"Error interpolating phases:  %s",retstr); */
+    return; /*TODO this should return something */
   }
   if(num_retvals != req_num_freqs)
   {      /* # of generated values != # requested (shouldn't happen) */
-    error_exit(IMPROP_DATA_TYPE,"Error interpolating phases:  %s",
+    evalresp_log(log, ERROR, 0,"Error interpolating phases:  %s",
                                 "Bad # of values");
-    return;
+    /*XXX error_exit(IMPROP_DATA_TYPE,"Error interpolating phases:  %s",
+                                "Bad # of values"); */
+    return; /*TODO this should return something */
   }
 
   if(unwrapped_flag)

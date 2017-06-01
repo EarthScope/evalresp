@@ -252,7 +252,7 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
 
 void print_resp_itp(double *freqs, int nfreqs, struct response *first,
         char *rtype, int stdio_flag, int listinterp_out_flag,
-        double listinterp_tension, int unwrap_flag) {
+        double listinterp_tension, int unwrap_flag, evalresp_log_t *log) {
     int i;
     double amp, pha;
     char filename[MAXLINELEN];
@@ -296,7 +296,7 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
                 freqarr_alloc_flag = 1; /* indicate freq array allocated */
                 /* interpolate to given freqs */
                 interpolate_list_blockette(&freq_arr, &amp_arr, &pha_arr,
-                        &num_points, freqs, nfreqs, listinterp_tension);
+                        &num_points, freqs, nfreqs, listinterp_tension, log);
             } else { /* not interpolating List blockette entries */
                 /* use freqs from 'response' blk to support List blockette */
                 freq_arr = resp->freqs;
@@ -446,8 +446,8 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
 }
 
 void print_resp(double *freqs, int nfreqs, struct response *first, char *rtype,
-        int stdio_flag) {
-    print_resp_itp(freqs, nfreqs, first, rtype, stdio_flag, 0, 0.0, 0);
+        int stdio_flag, evalresp_log_t *log) {
+    print_resp_itp(freqs, nfreqs, first, rtype, stdio_flag, 0, 0.0, 0, log);
 }
 
 /* Compares the entries in the given arrays.
