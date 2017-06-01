@@ -21,7 +21,7 @@
 #include "./evresp.h"
 double atof();
 
-int parse_pref(int *blkt_no, int *fld_no, char *line) {
+int parse_pref(int *blkt_no, int *fld_no, char *line, evalresp_log_t *log) {
     char fldstr[FLDSTRLEN], blktstr[BLKTSTRLEN];
 
     strncpy(fldstr, "", FLDSTRLEN);
@@ -34,18 +34,28 @@ int parse_pref(int *blkt_no, int *fld_no, char *line) {
     *(blktstr + 3) = '\0';
     *(fldstr + 2) = '\0';
 
-    if (!is_int(blktstr))
-        error_return(UNDEF_PREFIX, "parse_pref; prefix '%s' cannot be %s",
+    if (!is_int(blktstr, log))
+    {
+        evalresp_log(log, ERROR, 0, "parse_pref; prefix '%s' cannot be %s",
                 blktstr, "converted to a blockette number");
+        return 0; /*TODO UNDEF_PREFIX */
+        /*XXX error_return(UNDEF_PREFIX, "parse_pref; prefix '%s' cannot be %s",
+                blktstr, "converted to a blockette number"); */
+    }
     *blkt_no = atoi(blktstr);
-    if (!is_int(fldstr))
-        error_return(UNDEF_PREFIX, "parse_pref; prefix '%s' cannot be %s",
+    if (!is_int(fldstr, log))
+    {
+        evalresp_log(log, ERROR, 0, "parse_pref; prefix '%s' cannot be %s",
                 fldstr, "converted to a blockette number");
+        return 0; /*TODO UNDEF_PREFIX */
+        /*XXX error_return(UNDEF_PREFIX, "parse_pref; prefix '%s' cannot be %s",
+                fldstr, "converted to a blockette number"); */
+    }
     *fld_no = atoi(fldstr);
     return (1);
 }
 
-void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
+void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log) {
     int i, blkt_typ, check_fld;
     int blkt_read;
     int npoles, nzeros;
@@ -56,10 +66,15 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
      first field should be a F05 */
 
     if (FirstField != 3 && FirstField != 5) {
-        error_return(PARSE_ERROR, "parse_pz; %s%s%s%2.2d",
+        evalresp_log(log, ERROR, 0, "parse_pz; %s%s%s%2.2d",
                 "(return_field) fld ",
                 "number does not match expected value\n\tfld_xpt=F03 or F05",
                 ", fld_found=F", FirstField);
+        return /*TODO PARSE_ERROR should be returned */;
+        /*XXX error_return(PARSE_ERROR, "parse_pz; %s%s%s%2.2d",
+                "(return_field) fld ",
+                "number does not match expected value\n\tfld_xpt=F03 or F05",
+                ", fld_found=F", FirstField); */
     }
 
     if (FirstField == 3)
@@ -67,11 +82,18 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     else
         blkt_read = 43;
 
-    parse_field(FirstLine, 0, field);
+    if (0 > parse_field(FirstLine, 0, field, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
     if (strlen(field) != 1) {
-        error_return(PARSE_ERROR,
+        evalresp_log(log, ERROR, 0,
                 "parse_pz; parsing (Poles & Zeros), illegal filter type ('%s')",
                 field);
+        /*XXX error_return(PARSE_ERROR,
+                "parse_pz; parsing (Poles & Zeros), illegal filter type ('%s')",
+                field); */
+        return /*TODO PARSE_ERROR should be returned */;
     }
     blkt_typ = *field;
     switch (blkt_typ) {
@@ -85,9 +107,13 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
         blkt_ptr->type = IIR_PZ;
         break;
     default:
-        error_return(PARSE_ERROR,
+        evalresp_log(log, ERROR, 0,
                 "parse_pz; parsing (Poles & Zeros), unexpected filter type ('%c')",
                 *field);
+        /*XXX error_return(PARSE_ERROR,
+                "parse_pz; parsing (Poles & Zeros), unexpected filter type ('%c')",
+                *field); */
+        return /*TODO PARSE_ERROR should be returned */;
     }
 
     /* set the check-field counter to the next expected field */
@@ -97,33 +123,51 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     /* then, if is a B053F04, get the stage sequence number (from the file) */
 
     if (check_fld == 4) {
-        get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-        stage_ptr->sequence_no = get_int(field);
+        if ( 0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        stage_ptr->sequence_no = get_int(field, log);
         curr_seq_no = stage_ptr->sequence_no;
     }
 
     /* next should be the units (in first, then out) */
 
-    get_line(fptr, line, blkt_read, check_fld++, ":");
-    stage_ptr->input_units = check_units(line);
+    if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
+    {
+        return; /*TODO */
+    }
+    stage_ptr->input_units = check_units(line, log);
 
-    get_line(fptr, line, blkt_read, check_fld++, ":");
-    stage_ptr->output_units = check_units(line);
+    if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
+    {
+        return; /*TODO */
+    }
+    stage_ptr->output_units = check_units(line, log);
 
     /* then the A0 normalization factor */
 
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    blkt_ptr->blkt_info.pole_zero.a0 = get_double(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    blkt_ptr->blkt_info.pole_zero.a0 = get_double(field, log);
 
     /* the A0 normalization frequency */
 
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    blkt_ptr->blkt_info.pole_zero.a0_freq = get_double(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    blkt_ptr->blkt_info.pole_zero.a0_freq = get_double(field, log);
 
     /* the number of zeros */
 
-    get_field(fptr, field, blkt_read, check_fld, ":", 0);
-    nzeros = get_int(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    nzeros = get_int(field, log);
     blkt_ptr->blkt_info.pole_zero.nzeros = nzeros;
 
     /* remember to allocate enough space for the number of zeros to follow */
@@ -137,8 +181,11 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
 
     /* the number of poles */
 
-    get_field(fptr, field, blkt_read, check_fld, ":", 0);
-    npoles = get_int(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    npoles = get_int(field, log);
     blkt_ptr->blkt_info.pole_zero.npoles = npoles;
 
     /* remember to allocate enough space for the number of poles to follow */
@@ -153,16 +200,35 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     /* get the zeros */
 
     for (i = 0; i < nzeros; i++) {
-        get_line(fptr, line, blkt_read, check_fld, " ");
-        parse_field(line, 1, field);
-        if (!is_real(field))
-            error_return(PARSE_ERROR, "parse_pz: %s%s%s",
+        if ( 0 > get_line(fptr, line, blkt_read, check_fld, " ", log))
+        {
+            return; /*TODO */
+        }
+        if (0 > parse_field(line, 1, field, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        if (!is_real(field, log))
+        {
+            evalresp_log(log, ERROR, 0, "parse_pz: %s%s%s",
                     "zeros must be real numbers (found '", field, "')");
+            /*XXX error_return(PARSE_ERROR, "parse_pz: %s%s%s",
+                    "zeros must be real numbers (found '", field, "')"); */
+            return /*TODO PARSE_ERROR should be returned */;
+        }
         blkt_ptr->blkt_info.pole_zero.zeros[i].real = atof(field);
-        parse_field(line, 2, field);
-        if (!is_real(field))
-            error_return(PARSE_ERROR, "parse_pz: %s%s%s",
+        if (0 > parse_field(line, 2, field, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        if (!is_real(field, log))
+        {
+            evalresp_log(log, ERROR, 0, "parse_pz: %s%s%s",
                     "zeros must be real numbers (found '", field, "')");
+            /*XXX error_return(PARSE_ERROR, "parse_pz: %s%s%s",
+                    "zeros must be real numbers (found '", field, "')"); */
+            return /*TODO PARSE_ERROR should be returned */;
+        }
         blkt_ptr->blkt_info.pole_zero.zeros[i].imag = atof(field);
     }
 
@@ -174,22 +240,42 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     /* and then get the poles */
 
     for (i = 0; i < npoles; i++) {
-        get_line(fptr, line, blkt_read, check_fld, " ");
-        parse_field(line, 1, field);
-        if (!is_real(field))
-            error_return(PARSE_ERROR, "parse_pz: %s%s%s",
+        if ( 0 > get_line(fptr, line, blkt_read, check_fld, " ", log))
+        {
+            return; /*TODO */
+        }
+        if (0 > parse_field(line, 1, field, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        if (!is_real(field, log))
+        {
+            evalresp_log(log, ERROR, 0, "parse_pz: %s%s%s",
                     "poles must be real numbers (found '", field, "')");
+            /*XXX error_return(PARSE_ERROR, "parse_pz: %s%s%s",
+                    "poles must be real numbers (found '", field, "')"); */
+            return /*TODO PARSE_ERROR should be returned */;
+        }
         blkt_ptr->blkt_info.pole_zero.poles[i].real = atof(field);
-        parse_field(line, 2, field);
-        if (!is_real(field))
-            error_return(PARSE_ERROR, "parse_pz: %s%s%s",
+        if (0 > parse_field(line, 2, field, log ))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        if (!is_real(field, log))
+        {
+            evalresp_log(log, ERROR, 0, "parse_pz: %s%s%s",
                     "poles must be real numbers (found '", field, "')");
+            /*XXX error_return(PARSE_ERROR, "parse_pz: %s%s%s",
+                    "poles must be real numbers (found '", field, "')"); */
+            return /*TODO PARSE_ERROR should be returned */;
+        }
         blkt_ptr->blkt_info.pole_zero.poles[i].imag = atof(field);
     }
 
 }
 
-void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
+/*TODO this should be int to error out the rest of the  processing */
+void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log) {
     int i, blkt_typ, check_fld;
     int blkt_read;
     int ncoeffs, ndenom;
@@ -200,10 +286,15 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr)
      first field should be a F05 */
 
     if (FirstField != 3 && FirstField != 5) {
-        error_return(PARSE_ERROR, "parse_coeff; %s%s%s%2.2d",
+        evalresp_log(log, ERROR, 0, "parse_coeff; %s%s%s%2.2d",
                 "(return_field) fld ",
                 "number does not match expected value\n\tfld_xpt=F03 or F05",
                 ", fld_found=F", FirstField);
+        return /*TODO PARSE_ERROR should be returned */;
+        /*XXX error_return(PARSE_ERROR, "parse_coeff; %s%s%s%2.2d",
+                "(return_field) fld ",
+                "number does not match expected value\n\tfld_xpt=F03 or F05",
+                ", fld_found=F", FirstField); */
     }
 
     if (FirstField == 3)
@@ -211,11 +302,18 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr)
     else
         blkt_read = 44;
 
-    parse_field(FirstLine, 0, field);
+    if (0 > parse_field(FirstLine, 0, field, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
     if (strlen(field) != 1) {
-        error_return(PARSE_ERROR,
+        evalresp_log(log, ERROR, 0,
                 "parse_coeff; parsing (IIR_COEFFS), illegal filter type ('%s')",
                 field);
+        /*XXX error_return(PARSE_ERROR,
+                "parse_coeff; parsing (IIR_COEFFS), illegal filter type ('%s')",
+                field); */
+        return /*TODO PARSE_ERROR should be returned */;
     }
     blkt_typ = *field;
     switch (blkt_typ) {
@@ -223,9 +321,13 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr)
         blkt_ptr->type = IIR_COEFFS;
         break;
     default:
-        error_return(PARSE_ERROR,
+        evalresp_log(log, ERROR, 0,
                 "parse_coeff; parsing (IIR_COEFFS), unexpected filter type ('%c')",
                 *field);
+        /*XXX error_return(PARSE_ERROR,
+                "parse_coeff; parsing (IIR_COEFFS), unexpected filter type ('%c')",
+                *field); */
+        return /*TODO PARSE_ERROR should be returned */;
     }
 
     /* set the check-field counter to the next expected field */
@@ -235,23 +337,35 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr)
     /* then, if is a B054F04, get the stage sequence number (from the file) */
 
     if (check_fld == 4) {
-        get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-        stage_ptr->sequence_no = get_int(field);
+        if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        stage_ptr->sequence_no = get_int(field, log);
         curr_seq_no = stage_ptr->sequence_no;
     }
 
     /* next should be the units (in first, then out) */
 
-    get_line(fptr, line, blkt_read, check_fld++, ":");
-    stage_ptr->input_units = check_units(line);
+    if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
+    {
+        return; /*TODO */
+    }
+    stage_ptr->input_units = check_units(line, log);
 
-    get_line(fptr, line, blkt_read, check_fld++, ":");
-    stage_ptr->output_units = check_units(line);
+    if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
+    {
+        return; /*TODO */
+    }
+    stage_ptr->output_units = check_units(line, log);
 
     /* the number of coefficients */
 
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    ncoeffs = get_int(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    ncoeffs = get_int(field, log);
     blkt_ptr->blkt_info.coeff.nnumer = ncoeffs;
 
     /* remember to allocate enough space for the number of coefficients to follow */
@@ -265,15 +379,22 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr)
 
     /* the number of denominators */
 
-    get_field(fptr, field, blkt_read, check_fld, ":", 0);
-    ndenom = get_int(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    ndenom = get_int(field, log);
 
     /* if the number of denominators is zero, then is not an IIR filter. */
 
     if (ndenom == 0) {
-        error_return(UNRECOG_FILTYPE, "%s%s",
+        evalresp_log(log, ERROR, 0, "%s%s",
                 "parse_coeff; This is not IIR filter , because number of denominators is zero!\n",
                 "\tshould be represented as blockette [53] filters");
+        /*XXX error_return(UNRECOG_FILTYPE, "%s%s",
+                "parse_coeff; This is not IIR filter , because number of denominators is zero!\n",
+                "\tshould be represented as blockette [53] filters"); */
+        return /*TODO UNRECOG_FILTYPE should be returned */;
     }
     blkt_ptr->blkt_info.coeff.ndenom = ndenom;
 
@@ -289,26 +410,43 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr)
     /* the coefficients */
 
     for (i = 0; i < ncoeffs; i++) {
-        get_field(fptr, field, blkt_read, check_fld, " ", 1);
-        if (!is_real(field))
-            error_return(PARSE_ERROR, "parse_coeff: %s%s%s",
+        if (0 > get_field(fptr, field, blkt_read, check_fld, " ", 1, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        if (!is_real(field, log))
+        {
+            evalresp_log(log, ERROR, 0, "parse_coeff: %s%s%s",
                     "numerators must be real numbers (found '", field, "')");
+            /*XXX error_return(PARSE_ERROR, "parse_coeff: %s%s%s",
+                    "numerators must be real numbers (found '", field, "')"); */
+            return /*TODO PARSE_ERROR should be returned */;
+        }
         blkt_ptr->blkt_info.coeff.numer[i] = atof(field);
     }
 
     check_fld += 3; /*IGD : we need field 11 now */
 
     for (i = 0; i < ndenom; i++) {
-        get_field(fptr, field, blkt_read, check_fld, " ", 1);
-        if (!is_real(field))
-            error_return(PARSE_ERROR, "parse_coeff: %s%s%s",
+        if (0 > get_field(fptr, field, blkt_read, check_fld, " ", 1, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        if (!is_real(field, log))
+        {
+            evalresp_log(log, ERROR, 0, "parse_coeff: %s%s%s",
                     "denominators must be real numbers (found '", field, "')");
+            /*XXX error_return(PARSE_ERROR, "parse_coeff: %s%s%s",
+                    "denominators must be real numbers (found '", field, "')"); */
+            return /*TODO PARSE_ERROR should be returned */;
+        }
         blkt_ptr->blkt_info.coeff.denom[i] = atof(field);
     }
 
 }
 
-void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
+/*TODO this should be int to error out the rest of the  processing */
+void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log) {
     int i, blkt_typ, check_fld;
     int blkt_read;
     int ncoeffs, ndenom;
@@ -319,10 +457,15 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
      first field should be a F05 */
 
     if (FirstField != 3 && FirstField != 5) {
-        error_return(PARSE_ERROR, "parse_coeff; %s%s%s%2.2d",
+        evalresp_log(log, ERROR, 0, "parse_coeff; %s%s%s%2.2d",
                 "(return_field) fld ",
                 "number does not match expected value\n\tfld_xpt=F03 or F05",
                 ", fld_found=F", FirstField);
+        /*XXX error_return(PARSE_ERROR, "parse_coeff; %s%s%s%2.2d",
+                "(return_field) fld ",
+                "number does not match expected value\n\tfld_xpt=F03 or F05",
+                ", fld_found=F", FirstField); */
+        return /*TODO PARSE_ERROR should be returned */;
     }
 
     if (FirstField == 3)
@@ -330,11 +473,18 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     else
         blkt_read = 44;
 
-    parse_field(FirstLine, 0, field);
+    if (0 > parse_field(FirstLine, 0, field, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
     if (strlen(field) != 1) {
-        error_return(PARSE_ERROR,
+        evalresp_log(log, ERROR, 0,
                 "parse_coeff; parsing (FIR_ASYM), illegal filter type ('%s')",
                 field);
+        /*XXX error_return(PARSE_ERROR,
+                "parse_coeff; parsing (FIR_ASYM), illegal filter type ('%s')",
+                field); */
+        return /*TODO PARSE_ERROR should be returned */;
     }
     blkt_typ = *field;
     switch (blkt_typ) {
@@ -342,9 +492,13 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
         blkt_ptr->type = FIR_ASYM;
         break;
     default:
-        error_return(PARSE_ERROR,
+        evalresp_log(log, ERROR, 0,
                 "parse_coeff; parsing (FIR_ASYM), unexpected filter type ('%c')",
                 *field);
+        /*XXX error_return(PARSE_ERROR,
+                "parse_coeff; parsing (FIR_ASYM), unexpected filter type ('%c')",
+                *field); */
+        return /*TODO PARSE_ERROR should be returned */;
     }
 
     /* set the check-field counter to the next expected field */
@@ -354,23 +508,35 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     /* then, if is a B054F04, get the stage sequence number (from the file) */
 
     if (check_fld == 4) {
-        get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-        stage_ptr->sequence_no = get_int(field);
+        if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        stage_ptr->sequence_no = get_int(field, log);
         curr_seq_no = stage_ptr->sequence_no;
     }
 
     /* next should be the units (in first, then out) */
 
-    get_line(fptr, line, blkt_read, check_fld++, ":");
-    stage_ptr->input_units = check_units(line);
+    if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
+    {
+        return; /*TODO */
+    }
+    stage_ptr->input_units = check_units(line, log);
 
-    get_line(fptr, line, blkt_read, check_fld++, ":");
-    stage_ptr->output_units = check_units(line);
+    if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
+    {
+        return; /*TODO */
+    }
+    stage_ptr->output_units = check_units(line, log);
 
     /* the number of coefficients */
 
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    ncoeffs = get_int(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    ncoeffs = get_int(field, log);
     blkt_ptr->blkt_info.fir.ncoeffs = ncoeffs;
 
     /* remember to allocate enough space for the number of coefficients to follow */
@@ -384,8 +550,11 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
 
     /* the number of denominators */
 
-    get_field(fptr, field, blkt_read, check_fld, ":", 0);
-    ndenom = get_int(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    ndenom = get_int(field, log);
 
     /* if the number of denominators is not zero, then is not a FIR filter.
      evalresp cannot evaluate IIR and Analog filters that are represented
@@ -395,9 +564,13 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
      of these unsupported filters is detected, print error and exit. */
 
     if (ndenom) {
-        error_return(UNRECOG_FILTYPE, "%s%s",
+        evalresp_log(log, ERROR, 0, "%s%s",
                 "parse_coeff; Unsupported filter type, IIR and Analog filters\n",
                 "\tshould be represented as blockette [53] filters");
+        /*XXX error_return(UNRECOG_FILTYPE, "%s%s",
+                "parse_coeff; Unsupported filter type, IIR and Analog filters\n",
+                "\tshould be represented as blockette [53] filters"); */
+        return /*TODO UNRECOG_FILTYPE should be returned */;
     }
 
     /* set the expected field to the current value (10 or 11 for [54] or [44])
@@ -408,16 +581,25 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     /* the coefficients */
 
     for (i = 0; i < ncoeffs; i++) {
-        get_field(fptr, field, blkt_read, check_fld, " ", 1);
-        if (!is_real(field))
-            error_return(PARSE_ERROR, "parse_coeff: %s%s%s",
+        if (0 > get_field(fptr, field, blkt_read, check_fld, " ", 1, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        if (!is_real(field, log))
+        {
+            evalresp_log(log, ERROR, 0, "parse_coeff: %s%s%s",
                     "coeffs must be real numbers (found '", field, "')");
+            /*XXX error_return(PARSE_ERROR, "parse_coeff: %s%s%s",
+                    "coeffs must be real numbers (found '", field, "')"); */
+            return /*TODO PARSE_ERROR should be returned */;
+        }
         blkt_ptr->blkt_info.fir.coeffs[i] = atof(field);
     }
 
 }
 
-void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
+/*TODO this should be int to error out the rest of the  processing */
+void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log) {
     int i, blkt_typ = LIST;
     int blkt_read, check_fld;
     int nresp;
@@ -429,10 +611,15 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     blkt_ptr->type = blkt_typ;
 
     if (FirstField != 3 && FirstField != 5) {
-        error_return(PARSE_ERROR, "parse_list; %s%s%s%2.2d",
+        evalresp_log(log, ERROR, 0, "parse_list; %s%s%s%2.2d",
                 "(return_field) fld ",
                 "number does not match expected value\n\tfld_xpt=F03 or F05",
                 ", fld_found=F", FirstField);
+        /*XXX error_return(PARSE_ERROR, "parse_list; %s%s%s%2.2d",
+                "(return_field) fld ",
+                "number does not match expected value\n\tfld_xpt=F03 or F05",
+                ", fld_found=F", FirstField); */
+        return /*TODO PARSE_ERROR should be returned */;
     }
 
     if (FirstField == 3)
@@ -448,11 +635,17 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
      and the input units (from the file), otherwise, get the input units (from FirstLine) */
 
     if (check_fld == 3) {
-        parse_field(FirstLine, 0, field);
-        stage_ptr->sequence_no = get_int(field);
+        if (0 > parse_field(FirstLine, 0, field, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        stage_ptr->sequence_no = get_int(field, log);
         curr_seq_no = stage_ptr->sequence_no;
         check_fld++;
-        get_line(fptr, line, blkt_read, check_fld++, ":");
+        if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
+        {
+            return; /*TODO */
+        }
     } else {
         strncpy(line, FirstLine, MAXLINELEN);
         check_fld++;
@@ -460,15 +653,21 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
 
     /* the units (in first, then out) */
 
-    stage_ptr->input_units = check_units(line);
+    stage_ptr->input_units = check_units(line, log);
 
-    get_line(fptr, line, blkt_read, check_fld++, ":");
-    stage_ptr->output_units = check_units(line);
+    if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
+    {
+        return; /*TODO */
+    }
+    stage_ptr->output_units = check_units(line, log);
 
     /* the number of responses */
 
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    nresp = get_int(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    nresp = get_int(field, log);
     blkt_ptr->blkt_info.list.nresp = nresp;
 
     /* remember to allocate enough space for the number frequency, amplitude, phase tuples
@@ -484,57 +683,121 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
 
         /*we now check if the B055F07-11 has a numbering field and set format accordingly */
         marker = ftell(fptr);
-        get_line(fptr, line, blkt_read, check_fld, " ");
+        if ( 0 > get_line(fptr, line, blkt_read, check_fld, " ", log))
+        {
+            return; /*TODO */
+        }
         format = count_fields(line) - 5; /*format == 0 if no number of responses in the file */
         /*format == 1 if  number of responses in the sec column*/
         fseek(fptr, marker, SEEK_SET); /* rewind back to we we've been before the test */
         if (format != 0 && format != 1) /*Wrong format */
-            error_return(PARSE_ERROR, "parse_list: %s",
+        {
+            evalresp_log(log, ERROR, 0, "parse_list: %s",
                     "Unknown format for B055F07-11");
+            /*XXX error_return(PARSE_ERROR, "parse_list: %s",
+                    "Unknown format for B055F07-11"); */
+            return /*TODO PARSE_ERROR should be returned */;
+        }
 
         for (i = 0; i < nresp; i++) {
-            get_line(fptr, line, blkt_read, check_fld, " ");
-            parse_field(line, format, field); /* Frequency */
-            if (!is_real(field))
-                error_return(PARSE_ERROR, "parse_list: %s%s%s",
+            if ( 0 > get_line(fptr, line, blkt_read, check_fld, " ", log))
+            {
+                return; /*TODO */
+            }
+            if (0 > parse_field(line, format, field, log)) /* Frequency */
+            {
+                return /*TODO PARSE_ERROR should be returned */;
+            }
+            if (!is_real(field, log))
+            {
+                evalresp_log(log, ERROR, 0, "parse_list: %s%s%s",
                         "freq vals must be real numbers (found '", field, "')");
+                /*XXX error_return(PARSE_ERROR, "parse_list: %s%s%s",
+                        "freq vals must be real numbers (found '", field, "')");*/
+                return /*TODO PARSE_ERROR should be returned */;
+            }
             blkt_ptr->blkt_info.list.freq[i] = atof(field);
-            parse_field(line, 1 + format, field); /* the amplitude of the Fourier transform */
-            if (!is_real(field))
-                error_return(PARSE_ERROR, "parse_list: %s%s%s",
+            if (0 > parse_field(line, 1 + format, field, log)) /* the amplitude of the Fourier transform */
+            {
+                return /*TODO PARSE_ERROR should be returned */;
+            }
+            if (!is_real(field, log))
+            {
+                evalresp_log(log, ERROR, 0, "parse_list: %s%s%s",
                         "amp vals must be real numbers (found '", field, "')");
+                /*XXX error_return(PARSE_ERROR, "parse_list: %s%s%s",
+                        "amp vals must be real numbers (found '", field, "')"); */
+                return /*TODO PARSE_ERROR should be returned */;
+            }
             blkt_ptr->blkt_info.list.amp[i] = atof(field);
-            parse_field(line, 3 + format, field); /* Phase of the transform */
-            if (!is_real(field))
-                error_return(PARSE_ERROR, "parse_list: %s%s%s",
+            if (0 > parse_field(line, 3 + format, field, log)) /* Phase of the transform */
+            {
+                return /*TODO PARSE_ERROR should be returned */;
+            }
+            if (!is_real(field, log))
+            {
+                evalresp_log(log, ERROR, 0, "parse_list: %s%s%s",
                         "phase vals must be real numbers (found '", field,
                         "')");
+                /*XXX error_return(PARSE_ERROR, "parse_list: %s%s%s",
+                        "phase vals must be real numbers (found '", field,
+                        "')"); */
+                return /*TODO PARSE_ERROR should be returned */;
+            }
             blkt_ptr->blkt_info.list.phase[i] = atof(field);
         }
     } else { /* This is blockette 45 - leave at as in McSweeny's version */
         for (i = 0; i < nresp; i++) {
-            get_line(fptr, line, blkt_read, check_fld, " ");
-            parse_field(line, 0, field);
-            if (!is_real(field))
-                error_return(PARSE_ERROR, "parse_list: %s%s%s",
+            if ( 0 > get_line(fptr, line, blkt_read, check_fld, " ", log))
+            {
+                return; /*TODO */
+            }
+            if (0 > parse_field(line, 0, field, log))
+            {
+                return /*TODO PARSE_ERROR should be returned */;
+            }
+            if (!is_real(field, log))
+            {
+                evalresp_log(log, ERROR, 0, "parse_list: %s%s%s",
                         "freq vals must be real numbers (found '", field, "')");
+                /*XXX error_return(PARSE_ERROR, "parse_list: %s%s%s",
+                        "freq vals must be real numbers (found '", field, "')"); */
+                return /*TODO PARSE_ERROR should be returned */;
+            }
             blkt_ptr->blkt_info.list.freq[i] = atof(field);
-            parse_field(line, 1, field);
-            if (!is_real(field))
-                error_return(PARSE_ERROR, "parse_list: %s%s%s",
+            if (0 > parse_field(line, 1, field, log))
+            {
+                return /*TODO PARSE_ERROR should be returned */;
+            }
+            if (!is_real(field, log))
+            {
+                evalresp_log(log, ERROR, 0, "parse_list: %s%s%s",
                         "amp vals must be real numbers (found '", field, "')");
+                /*XXX error_return(PARSE_ERROR, "parse_list: %s%s%s",
+                        "amp vals must be real numbers (found '", field, "')"); */
+                return /*TODO PARSE_ERROR should be returned */;
+            }
             blkt_ptr->blkt_info.list.amp[i] = atof(field);
-            parse_field(line, 3, field);
-            if (!is_real(field))
-                error_return(PARSE_ERROR, "parse_list: %s%s%s",
+            if (0 > parse_field(line, 3, field, log))
+            {
+                return /*TODO PARSE_ERROR should be returned */;
+            }
+            if (!is_real(field, log))
+            {
+                evalresp_log(log, ERROR, 0, "parse_list: %s%s%s",
                         "phase vals must be real numbers (found '", field,
                         "')");
+                /*XXX error_return(PARSE_ERROR, "parse_list: %s%s%s",
+                        "phase vals must be real numbers (found '", field,
+                        "')"); */
+                return /*TODO PARSE_ERROR should be returned */;
+            }
             blkt_ptr->blkt_info.list.phase[i] = atof(field);
         }
     }
 }
 
-void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
+void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log) {
     int i, blkt_typ = GENERIC;
     int blkt_read, check_fld;
     int ncorners;
@@ -547,10 +810,15 @@ void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     /* first get the stage sequence number (from the input line) */
 
     if (FirstField != 3 && FirstField != 5) {
-        error_return(PARSE_ERROR, "parse_generic; %s%s%s%2.2d",
+        evalresp_log(log, ERROR, 0, "parse_generic; %s%s%s%2.2d",
                 "(return_field) fld ",
                 "number does not match expected value\n\tfld_xpt=F03 or F05",
                 ", fld_found=F", FirstField);
+        /*XXX error_return(PARSE_ERROR, "parse_generic; %s%s%s%2.2d",
+                "(return_field) fld ",
+                "number does not match expected value\n\tfld_xpt=F03 or F05",
+                ", fld_found=F", FirstField); */
+        return /*TODO PARSE_ERROR should be returned */;
     }
     if (FirstField == 3)
         blkt_read = 56;
@@ -565,11 +833,17 @@ void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
      and the input units (from the file), otherwise, get the input units (from FirstLine) */
 
     if (check_fld == 3) {
-        parse_field(FirstLine, 0, field);
-        stage_ptr->sequence_no = get_int(field);
+        if (0 > parse_field(FirstLine, 0, field, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        stage_ptr->sequence_no = get_int(field, log);
         curr_seq_no = stage_ptr->sequence_no;
         check_fld++;
-        get_line(fptr, line, blkt_read, check_fld++, ":");
+        if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
+        {
+            return; /*TODO */
+        }
     } else {
         strncpy(line, FirstLine, MAXLINELEN);
         check_fld++;
@@ -577,15 +851,21 @@ void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
 
     /* next (from the file) should be the units (in first, then out) */
 
-    stage_ptr->input_units = check_units(line);
+    stage_ptr->input_units = check_units(line, log);
 
-    get_line(fptr, line, blkt_read, check_fld++, ":");
-    stage_ptr->output_units = check_units(line);
+    if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
+    {
+        return; /*TODO */
+    }
+    stage_ptr->output_units = check_units(line, log);
 
     /* the number of responses */
 
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    ncorners = get_int(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    ncorners = get_int(field, log);
     blkt_ptr->blkt_info.generic.ncorners = ncorners;
 
     /* remember to allocate enough space for the number corner_frequency, corner_slope pairs
@@ -597,21 +877,40 @@ void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     /* then get the response information */
 
     for (i = 0; i < ncorners; i++) {
-        get_line(fptr, line, blkt_read, check_fld, " ");
-        parse_field(line, 1, field);
-        if (!is_real(field))
-            error_return(PARSE_ERROR, "parse_generic: %s%s%s",
+        if ( 0 > get_line(fptr, line, blkt_read, check_fld, " ", log))
+        {
+            return; /*TODO */
+        }
+        if (0 > parse_field(line, 1, field, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        if (!is_real(field, log))
+        {
+            evalresp_log(log, ERROR, 0, "parse_generic: %s%s%s",
                     "corner_freqs must be real numbers (found '", field, "')");
+            /*XXX error_return(PARSE_ERROR, "parse_generic: %s%s%s",
+                    "corner_freqs must be real numbers (found '", field, "')"); */
+            return /*TODO PARSE_ERROR should be returned */;
+        }
         blkt_ptr->blkt_info.generic.corner_freq[i] = atof(field);
-        parse_field(line, 2, field);
-        if (!is_real(field))
-            error_return(PARSE_ERROR, "parse_generic: %s%s%s",
+        if (0 > parse_field(line, 2, field, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        if (!is_real(field, log))
+        {
+            evalresp_log(log, ERROR, 0, "parse_generic: %s%s%s",
                     "corner_slopes must be real numbers (found '", field, "')");
+            /*XXX error_return(PARSE_ERROR, "parse_generic: %s%s%s",
+                    "corner_slopes must be real numbers (found '", field, "')"); */
+            return /*TODO PARSE_ERROR should be returned */;
+        }
         blkt_ptr->blkt_info.generic.corner_slope[i] = atof(field);
     }
 }
 
-int parse_deci(FILE *fptr, struct blkt *blkt_ptr) {
+int parse_deci(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log) {
     int blkt_typ = DECIMATION;
     int blkt_read, check_fld;
     int sequence_no = 0;
@@ -625,15 +924,22 @@ int parse_deci(FILE *fptr, struct blkt *blkt_ptr) {
     /* first get the stage sequence number (from the input line) */
 
     if (FirstField != 3 && FirstField != 5) {
-        error_return(PARSE_ERROR, "parse_deci; %s%s%s%2.2d",
+        evalresp_log(log, ERROR, 0, "parse_deci; %s%s%s%2.2d",
                 "(return_field) fld ",
                 "number does not match expected value\n\tfld_xpt=F03 or F05",
                 ", fld_found=F", FirstField);
+        return PARSE_ERROR;
+        /*XXX error_return(PARSE_ERROR, "parse_deci; %s%s%s%2.2d",
+                "(return_field) fld ",
+                "number does not match expected value\n\tfld_xpt=F03 or F05",
+                ", fld_found=F", FirstField); */
     }
     if (FirstField == 3)
+    {
         blkt_read = 57;
-    else
+    } else {
         blkt_read = 47;
+    }
 
     /* set the check-field counter to the next expected field */
 
@@ -643,38 +949,61 @@ int parse_deci(FILE *fptr, struct blkt *blkt_ptr) {
      and the input units (from the file), otherwise, get the input units (from FirstLine) */
 
     if (check_fld == 3) {
-        parse_field(FirstLine, 0, field);
-        sequence_no = get_int(field);
+        if (0 > parse_field(FirstLine, 0, field, log))
+        {
+            return PARSE_ERROR;
+        }
+        sequence_no = get_int(field, log);
         check_fld++;
-        get_field(fptr, field, blkt_read, check_fld++, ":", 0);
+        if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+        {
+            return PARSE_ERROR;
+        }
     } else {
-        parse_field(FirstLine, 0, field);
+        if (0 > parse_field(FirstLine, 0, field, log))
+        {
+            return PARSE_ERROR;
+        }
         check_fld++;
     }
 
     /* next (from the file) input sample rate, convert to input sample interval */
 
-    srate = get_double(field);
+    srate = get_double(field, log);
     if (srate)
+    {
         blkt_ptr->blkt_info.decimation.sample_int = 1.0 / srate;
+    }
 
     /* get the decimation factor and decimation offset */
 
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    blkt_ptr->blkt_info.decimation.deci_fact = get_int(field);
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    blkt_ptr->blkt_info.decimation.deci_offset = get_int(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return PARSE_ERROR;
+    }
+    blkt_ptr->blkt_info.decimation.deci_fact = get_int(field, log);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return PARSE_ERROR;
+    }
+    blkt_ptr->blkt_info.decimation.deci_offset = get_int(field, log);
 
     /* the estimated delay */
 
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    blkt_ptr->blkt_info.decimation.estim_delay = get_double(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return PARSE_ERROR;
+    }
+    blkt_ptr->blkt_info.decimation.estim_delay = get_double(field, log);
 
     /* and, finally, the applied correction.  Note:  the calculated delay is left undefined
      by this routine, although space does exist in this filter type for this parameter */
 
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    blkt_ptr->blkt_info.decimation.applied_corr = get_double(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return PARSE_ERROR;
+    }
+    blkt_ptr->blkt_info.decimation.applied_corr = get_double(field, log);
 
     /* return the sequence number of the stage for verification */
 
@@ -682,7 +1011,7 @@ int parse_deci(FILE *fptr, struct blkt *blkt_ptr) {
 
 }
 
-int parse_gain(FILE *fptr, struct blkt *blkt_ptr) {
+int parse_gain(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log) {
     int i, blkt_typ = GAIN;
     int blkt_read, check_fld;
     int sequence_no = 0;
@@ -696,16 +1025,23 @@ int parse_gain(FILE *fptr, struct blkt *blkt_ptr) {
     /* first get the stage sequence number (from the input line) */
 
     if (FirstField != 3 && FirstField != 5) {
-        error_return(PARSE_ERROR, "parse_gain; %s%s%s%2.2d",
+        evalresp_log(log, ERROR, 0, "parse_gain; %s%s%s%2.2d",
                 "(return_field) fld ",
                 "number does not match expected value\n\tfld_xpt=F03 of F05",
                 ", fld_found=F", FirstField);
+        return PARSE_ERROR;
+        /*XXX error_return(PARSE_ERROR, "parse_gain; %s%s%s%2.2d",
+                "(return_field) fld ",
+                "number does not match expected value\n\tfld_xpt=F03 of F05",
+                ", fld_found=F", FirstField); */
     }
 
     if (FirstField == 3)
+    {
         blkt_read = 58;
-    else
+    } else {
         blkt_read = 48;
+    }
 
     /* set the check-field counter to the next expected field */
 
@@ -715,31 +1051,49 @@ int parse_gain(FILE *fptr, struct blkt *blkt_ptr) {
      and the symmetry type (from the file), otherwise, get the symmetry (from FirstLine) */
 
     if (check_fld == 3) {
-        parse_field(FirstLine, 0, field);
-        sequence_no = get_int(field);
+        if (0 > parse_field(FirstLine, 0, field, log))
+        {
+            return PARSE_ERROR;
+        }
+        sequence_no = get_int(field, log);
         check_fld++;
-        get_field(fptr, field, blkt_read, check_fld++, ":", 0);
+        if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+        {
+            return PARSE_ERROR;
+        }
     } else {
-        parse_field(FirstLine, 0, field);
+        if (0 > parse_field(FirstLine, 0, field, log))
+        {
+            return PARSE_ERROR;
+        }
         check_fld++;
     }
 
     /* then get the gain and frequency of gain (these correspond to sensitivity and frequency of
      sensitivity for stage 0 Sensitivity/Gain filters) */
 
-    blkt_ptr->blkt_info.gain.gain = get_double(field);
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    blkt_ptr->blkt_info.gain.gain_freq = get_double(field);
+    blkt_ptr->blkt_info.gain.gain = get_double(field, log);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return PARSE_ERROR;
+    }
+    blkt_ptr->blkt_info.gain.gain_freq = get_double(field, log);
 
     /* if there is a history, skip it. First determine number of lines to skip */
 
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    nhist = get_int(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return PARSE_ERROR;
+    }
+    nhist = get_int(field, log);
 
     /* then skip them  */
 
     for (i = 0; i < nhist; i++) {
-        get_line(fptr, line, blkt_read, check_fld, " ");
+        if ( 0 > get_line(fptr, line, blkt_read, check_fld, " ", log))
+        {
+            return PARSE_ERROR; /*TODO */
+        }
     }
 
     /* return the sequence number of the stage for verification */
@@ -749,7 +1103,7 @@ int parse_gain(FILE *fptr, struct blkt *blkt_ptr) {
 }
 
 void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
-        struct stage *stage_ptr) {
+        struct stage *stage_ptr, evalresp_log_t *log) {
     int i, blkt_typ;
     int blkt_read, check_fld;
     int ncoeffs;
@@ -758,22 +1112,36 @@ void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
     /* first get the stage sequence number (from the input line) */
 
     if (FirstField != 3 && FirstField != 5) {
-        error_return(PARSE_ERROR, "parse_polynomial; %s%s%s%2.2d",
+        evalresp_log(log, ERROR, 0, "parse_polynomial; %s%s%s%2.2d",
                 "(return_field) fld ",
                 "number does not match expected value\n\tfld_xpt=F03 or F05",
                 ", fld_found=F", FirstField);
+        return /*TODO PARSE_ERROR should be returned */;
+        /*XXX error_return(PARSE_ERROR, "parse_polynomial; %s%s%s%2.2d",
+                "(return_field) fld ",
+                "number does not match expected value\n\tfld_xpt=F03 or F05",
+                ", fld_found=F", FirstField); */
     }
 
     if (FirstField == 3)
+    {
         blkt_read = 62;
-    else
+    } else {
         blkt_read = 42;
+    }
 
-    parse_field(FirstLine, 0, field);
+    if (0 > parse_field(FirstLine, 0, field, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
     if (strlen(field) != 1) {
-        error_return(PARSE_ERROR,
+        evalresp_log(log, ERROR, 0,
                 "parse_polynomial; parsing (Polynomial), illegal filter type ('%s')",
                 field);
+        return /*TODO PARSE_ERROR should be returned */;
+        /*XXX error_return(PARSE_ERROR,
+                "parse_polynomial; parsing (Polynomial), illegal filter type ('%s')",
+                field); */
     }
     blkt_typ = *field;
     switch (blkt_typ) {
@@ -781,59 +1149,96 @@ void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
         blkt_ptr->type = POLYNOMIAL;
         break;
     default:
-        error_return(PARSE_ERROR,
+        evalresp_log(log, ERROR, 0,
                 "parse_polynomial; parsing (Polynomial), unexpected filter type ('%c')",
                 *field);
+        return /*TODO PARSE_ERROR should be returned */;
+        /*XXX error_return(PARSE_ERROR,
+                "parse_polynomial; parsing (Polynomial), unexpected filter type ('%c')",
+                *field); */
     }
 
     check_fld = FirstField + 1;
 
     if (check_fld == 4) {
-        get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-        stage_ptr->sequence_no = get_int(field);
+        if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        stage_ptr->sequence_no = get_int(field, log);
         curr_seq_no = stage_ptr->sequence_no;
     }
 
     /* next should be the units (in first, then out) */
 
-    get_line(fptr, line, blkt_read, check_fld++, ":");
-    stage_ptr->input_units = check_units(line);
+    if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
+    {
+        return; /*TODO */
+    }
+    stage_ptr->input_units = check_units(line, log);
 
-    get_line(fptr, line, blkt_read, check_fld++, ":");
-    stage_ptr->output_units = check_units(line);
+    if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
+    {
+        return; /*TODO */
+    }
+    stage_ptr->output_units = check_units(line, log);
 
     /* Polynomial Approximation Type */
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
     blkt_ptr->blkt_info.polynomial.approximation_type = field[0];
 
     /* Valid Frequency Units */
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
     blkt_ptr->blkt_info.polynomial.frequency_units = field[0];
 
     /* Lower Valid Frequency Bound */
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    blkt_ptr->blkt_info.polynomial.lower_freq_bound = get_double(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    blkt_ptr->blkt_info.polynomial.lower_freq_bound = get_double(field, log);
 
     /* Upper Valid Frequency Bound */
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    blkt_ptr->blkt_info.polynomial.upper_freq_bound = get_double(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    blkt_ptr->blkt_info.polynomial.upper_freq_bound = get_double(field, log);
 
     /* Lower Bound of Approximation */
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    blkt_ptr->blkt_info.polynomial.lower_approx_bound = get_double(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    blkt_ptr->blkt_info.polynomial.lower_approx_bound = get_double(field, log);
 
     /* Upper Bound of Approximation */
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    blkt_ptr->blkt_info.polynomial.upper_approx_bound = get_double(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    blkt_ptr->blkt_info.polynomial.upper_approx_bound = get_double(field, log);
 
     /* Maximum Absolute Error */
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    blkt_ptr->blkt_info.polynomial.max_abs_error = get_double(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    blkt_ptr->blkt_info.polynomial.max_abs_error = get_double(field, log);
 
     /* the number of coefficients */
 
-    get_field(fptr, field, blkt_read, check_fld, ":", 0);
-    ncoeffs = get_int(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    ncoeffs = get_int(field, log);
     blkt_ptr->blkt_info.polynomial.ncoeffs = ncoeffs;
 
     /* remember to allocate enough space for the number of coeffs */
@@ -846,21 +1251,40 @@ void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
     /* get the coefficients and their errors */
 
     for (i = 0; i < ncoeffs; i++) {
-        get_line(fptr, line, blkt_read, check_fld, " ");
-        parse_field(line, 1, field);
-        if (!is_real(field))
-            error_return(PARSE_ERROR, "polynomial: %s%s%s",
+        if ( 0 > get_line(fptr, line, blkt_read, check_fld, " ", log))
+        {
+            return; /*TODO */
+        }
+        if (0 > parse_field(line, 1, field, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        if (!is_real(field, log))
+        {
+            evalresp_log(log, ERROR, 0, "polynomial: %s%s%s",
                     "coeffs must be real numbers (found '", field, "')");
+            return /*TODO PARSE_ERROR should be returned */;
+            /*XXX error_return(PARSE_ERROR, "polynomial: %s%s%s",
+                    "coeffs must be real numbers (found '", field, "')"); */
+        }
         blkt_ptr->blkt_info.polynomial.coeffs[i] = atof(field);
-        parse_field(line, 2, field);
-        if (!is_real(field))
-            error_return(PARSE_ERROR, "polynomial: %s%s%s",
+        if (0 > parse_field(line, 2, field, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        if (!is_real(field, log))
+        {
+            evalresp_log(log, ERROR, 0, "polynomial: %s%s%s",
                     "coeffs errors must be real numbers (found '", field, "')");
+            return /*TODO PARSE_ERROR should be returned */;
+            /*XXX error_return(PARSE_ERROR, "polynomial: %s%s%s",
+                    "coeffs errors must be real numbers (found '", field, "')"); */
+        }
         blkt_ptr->blkt_info.polynomial.coeffs_err[i] = atof(field);
     }
 }
 
-void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
+void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log) {
     int i, blkt_typ;
     int blkt_read, check_fld;
     int ncoeffs;
@@ -869,16 +1293,23 @@ void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     /* first get the stage sequence number (from the input line) */
 
     if (FirstField != 3 && FirstField != 5) {
-        error_return(PARSE_ERROR, "parse_fir; %s%s%s%2.2d",
+        evalresp_log(log, ERROR, 0, "parse_fir; %s%s%s%2.2d",
                 "(return_field) fld ",
                 "number does not match expected value\n\tfld_xpt=F03 or F05",
                 ", fld_found=F", FirstField);
+        return /*TODO PARSE_ERROR should be returned */;
+        /*XXX error_return(PARSE_ERROR, "parse_fir; %s%s%s%2.2d",
+                "(return_field) fld ",
+                "number does not match expected value\n\tfld_xpt=F03 or F05",
+                ", fld_found=F", FirstField); */
     }
 
     if (FirstField == 3)
+    {
         blkt_read = 61;
-    else
+    } else {
         blkt_read = 41;
+    }
 
     /* set the check-field counter to the next expected field */
 
@@ -888,22 +1319,35 @@ void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
      and the symmetry type (from the file), otherwise, get the symmetry (from FirstLine) */
 
     if (check_fld == 3) {
-        parse_field(FirstLine, 0, field);
-        stage_ptr->sequence_no = get_int(field);
+        if (0 > parse_field(FirstLine, 0, field, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        stage_ptr->sequence_no = get_int(field, log);
         curr_seq_no = stage_ptr->sequence_no;
         check_fld += 2;
-        get_field(fptr, field, blkt_read, check_fld++, ":", 0);
+        if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
     } else {
-        parse_field(FirstLine, 0, field);
+        if (0 > parse_field(FirstLine, 0, field, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
         check_fld++;
     }
 
     /* then get the symmetry type */
 
     if (strlen(field) != 1) {
-        error_return(PARSE_ERROR,
+        evalresp_log(log, ERROR, 0,
                 "parse_fir; parsing (FIR), illegal symmetry type ('%s')",
                 field);
+        return /*TODO PARSE_ERROR should be returned */;
+        /*XXX error_return(PARSE_ERROR,
+                "parse_fir; parsing (FIR), illegal symmetry type ('%s')",
+                field); */
     }
     blkt_typ = *field;
     switch (blkt_typ) {
@@ -917,22 +1361,35 @@ void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
         blkt_ptr->type = FIR_SYM_2; /* even number coefficients with symmetry */
         break;
     default:
-        error_return(PARSE_ERROR,
+        evalresp_log(log, ERROR, 0,
                 "parse_fir; parsing (FIR), unexpected symmetry type ('%c')",
                 *field);
+        return /*TODO PARSE_ERROR should be returned */;
+        /*XXX error_return(PARSE_ERROR,
+                "parse_fir; parsing (FIR), unexpected symmetry type ('%c')",
+                *field);*/
     }
     /* next should be the units (in first, then out) */
 
-    get_line(fptr, line, blkt_read, check_fld++, ":");
-    stage_ptr->input_units = check_units(line);
+    if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
+    {
+        return; /*TODO */
+    }
+    stage_ptr->input_units = check_units(line, log);
 
-    get_line(fptr, line, blkt_read, check_fld++, ":");
-    stage_ptr->output_units = check_units(line);
+    if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
+    {
+        return; /*TODO */
+    }
+    stage_ptr->output_units = check_units(line, log);
 
     /* the number of coefficients */
 
-    get_field(fptr, field, blkt_read, check_fld++, ":", 0);
-    ncoeffs = get_int(field);
+    if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    ncoeffs = get_int(field, log);
     blkt_ptr->blkt_info.fir.ncoeffs = ncoeffs;
 
     /* remember to allocate enough space for the number of coefficients to follow */
@@ -942,16 +1399,24 @@ void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     /* the coefficients */
 
     for (i = 0; i < ncoeffs; i++) {
-        get_field(fptr, field, blkt_read, check_fld, " ", 1);
-        if (!is_real(field))
-            error_return(PARSE_ERROR, "parse_fir: %s%s%s",
+        if (0 > get_field(fptr, field, blkt_read, check_fld, " ", 1, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        if (!is_real(field, log))
+        {
+            evalresp_log(log, ERROR, 0, "parse_fir: %s%s%s",
                     "coeffs must be real numbers (found '", field, "')");
+            return /*TODO PARSE_ERROR should be returned */;
+            /*XXX error_return(PARSE_ERROR, "parse_fir: %s%s%s",
+                    "coeffs must be real numbers (found '", field, "')"); */
+        }
         blkt_ptr->blkt_info.fir.coeffs[i] = atof(field);
     }
 
 }
 
-void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
+void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log) {
     int this_blkt_no = 60, blkt_no, fld_no, i, j, prev_blkt_no = 60;
     int nstages, stage_num, nresps, lcl_nstages;
     char field[MAXFLDLEN];
@@ -969,15 +1434,28 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     /* first get the number of stages (from the input line) */
 
     if (FirstField != 3) {
-        error_return(PARSE_ERROR, "parse_ref; %s%s%s%2.2d",
+        evalresp_log(log, ERROR, 0, "parse_ref; %s%s%s%2.2d",
                 "(return_field) fld ",
                 "number does not match expected value\n\tfld_xpt=F03",
                 ", fld_found=F", FirstField);
+        return /*TODO PARSE_ERROR should be returned */;
+        /*XXX error_return(PARSE_ERROR, "parse_ref; %s%s%s%2.2d",
+                "(return_field) fld ",
+                "number does not match expected value\n\tfld_xpt=F03",
+                ", fld_found=F", FirstField); */
     }
-    parse_field(FirstLine, 0, field);
-    if (!is_int(field))
-        error_return(PARSE_ERROR, "parse_ref; value '%s' %s", field,
+    if (0 > parse_field(FirstLine, 0, field, log))
+    {
+        return /*TODO PARSE_ERROR should be returned */;
+    }
+    if (!is_int(field, log))
+    {
+        evalresp_log(log, ERROR, 0, "parse_ref; value '%s' %s", field,
                 " cannot be converted to the number of stages");
+        return /*TODO PARSE_ERROR should be returned */;
+        /*XXX error_return(PARSE_ERROR, "parse_ref; value '%s' %s", field,
+                " cannot be converted to the number of stages"); */
+    }
     nstages = atoi(field);
     blkt_ptr->blkt_info.reference.num_stages = nstages;
 
@@ -987,10 +1465,18 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
 
         /* determine the stage number in the sequence of stages */
 
-        get_field(fptr, field, this_blkt_no, 4, ":", 0);
-        if (!is_int(field))
-            error_return(PARSE_ERROR, "parse_ref; value '%s' %s", field,
+        if (0 > get_field(fptr, field, this_blkt_no, 4, ":", 0, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        if (!is_int(field, log))
+        {
+            evalresp_log(log, ERROR, 0, "parse_ref; value '%s' %s", field,
                     " cannot be converted to the stage sequence number");
+            return /*TODO PARSE_ERROR should be returned */;
+            /*XXX error_return(PARSE_ERROR, "parse_ref; value '%s' %s", field,
+                    " cannot be converted to the stage sequence number"); */
+        }
         stage_num = atoi(field);
         blkt_ptr->blkt_info.reference.stage_num = stage_num;
 
@@ -1001,10 +1487,18 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
 
         /* then the number of responses in this stage */
 
-        get_field(fptr, field, this_blkt_no, 5, ":", 0);
-        if (!is_int(field))
-            error_return(PARSE_ERROR, "parse_ref; value '%s' %s", field,
+        if (0 > get_field(fptr, field, this_blkt_no, 5, ":", 0, log))
+        {
+            return /*TODO PARSE_ERROR should be returned */;
+        }
+        if (!is_int(field, log))
+        {
+            evalresp_log(log, ERROR, 0, "parse_ref; value '%s' %s", field,
                     " cannot be converted to the number of responses");
+            return /*TODO PARSE_ERROR should be returned */;
+            /*XXX error_return(PARSE_ERROR, "parse_ref; value '%s' %s", field,
+                    " cannot be converted to the number of responses"); */
+        }
         nresps = atoi(field);
         blkt_ptr->blkt_info.reference.num_responses = nresps;
 
@@ -1012,50 +1506,58 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
          response to determine the type of response to read */
 
         for (j = 0; j < nresps; j++) {
-            FirstField = next_line(fptr, FirstLine, &blkt_no, &fld_no, ":");
+            FirstField = next_line(fptr, FirstLine, &blkt_no, &fld_no, ":", log);
             last_blkt = blkt_ptr;
             switch (blkt_no) {
             case 43:
                 blkt_ptr = alloc_pz();
-                parse_pz(fptr, blkt_ptr, this_stage);
+                parse_pz(fptr, blkt_ptr, this_stage, log);
                 break;
             case 44:
                 blkt_ptr = alloc_fir();
-                parse_coeff(fptr, blkt_ptr, this_stage);
+                parse_coeff(fptr, blkt_ptr, this_stage, log);
                 break;
             case 45:
                 blkt_ptr = alloc_list();
-                parse_list(fptr, blkt_ptr, this_stage);
+                parse_list(fptr, blkt_ptr, this_stage, log);
                 break;
             case 46:
                 blkt_ptr = alloc_generic();
-                parse_generic(fptr, blkt_ptr, this_stage);
+                parse_generic(fptr, blkt_ptr, this_stage, log);
                 break;
             case 47:
                 blkt_ptr = alloc_deci();
-                parse_deci(fptr, blkt_ptr);
+                parse_deci(fptr, blkt_ptr, log);
                 break;
             case 48:
                 blkt_ptr = alloc_gain();
-                parse_gain(fptr, blkt_ptr);
+                parse_gain(fptr, blkt_ptr, log);
                 break;
             case 41:
                 blkt_ptr = alloc_fir();
-                parse_fir(fptr, blkt_ptr, this_stage);
+                parse_fir(fptr, blkt_ptr, this_stage, log);
                 break;
             case 60:
-                error_return(PARSE_ERROR,
+                evalresp_log(log, ERROR, 0,
                         "parse_ref; unexpected end of stage (at blockette [%3.3d])",
                         prev_blkt_no);
+                return /*TODO PARSE_ERROR should be returned */;
+                /*XXX error_return(PARSE_ERROR,
+                        "parse_ref; unexpected end of stage (at blockette [%3.3d])",
+                        prev_blkt_no); */
                 break;
             default:
                 /* code to ignore unexected blockette/field lines might be useful here, but need
                  example code to test it - SBH. 2004.079
                  If we want it, replace this error_return and break with a "continue;"
                  */
-                error_return(UNRECOG_FILTYPE,
+                evalresp_log(log, ERROR, 0,
                         "parse_ref; unexpected filter type (blockette [%3.3d])",
                         blkt_no);
+                return /*TODO UNRECOG_FILTYPE should be returned */;
+                /*XXX error_return(UNRECOG_FILTYPE,
+                        "parse_ref; unexpected filter type (blockette [%3.3d])",
+                        blkt_no); */
                 break;
             }
             last_blkt->next_blkt = blkt_ptr;
@@ -1078,17 +1580,30 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
 
             /* and set the number of stages again ... */
 
-            get_field(fptr, field, this_blkt_no, 3, ":", 0);
-            if (!is_int(field))
-                error_return(PARSE_ERROR, "parse_ref; value '%s' %s", field,
+            if (0 > get_field(fptr, field, this_blkt_no, 3, ":", 0, log))
+            {
+                return /*TODO PARSE_ERROR should be returned */;
+            }
+            if (!is_int(field, log))
+            {
+                evalresp_log(log, ERROR, 0, "parse_ref; value '%s' %s", field,
                         " cannot be converted to the new stage sequence number");
+                return /*TODO PARSE_ERROR should be returned */;
+                /*XXX error_return(PARSE_ERROR, "parse_ref; value '%s' %s", field,
+                        " cannot be converted to the new stage sequence number"); */
+            }
 
             lcl_nstages = atoi(field);
             if (lcl_nstages != nstages) {
-                error_return(PARSE_ERROR,
+                evalresp_log(log, ERROR, 0,
                         "parse_ref; internal RESP format error, %s%d%s%d",
                         "\n\tstage expected = ", nstages, ", stage found = ",
                         lcl_nstages);
+                return /*TODO PARSE_ERROR should be returned */;
+                /*XXX error_return(PARSE_ERROR,
+                        "parse_ref; internal RESP format error, %s%d%s%d",
+                        "\n\tstage expected = ", nstages, ", stage found = ",
+                        lcl_nstages); */
             }
             blkt_ptr->blkt_info.reference.num_stages = nstages;
 
@@ -1096,9 +1611,9 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr) {
     }
 }
 
-int parse_channel(FILE *fptr, struct channel* chan) {
+int parse_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log) {
 
-	// TODO - assigments for no_units and tmp_stage2 made blindly to fix compiler warning.  bug?
+    // TODO - assigments for no_units and tmp_stage2 made blindly to fix compiler warning.  bug?
     int blkt_no, read_blkt = 0, fld_no, no_units = 0;
     int curr_seq_no, last_seq_no;
     struct blkt *blkt_ptr, *last_blkt = NULL;
@@ -1115,12 +1630,12 @@ int parse_channel(FILE *fptr, struct channel* chan) {
 
     /* start processing the response information */
 
-    while ((FirstField = next_line(fptr, FirstLine, &blkt_no, &fld_no, ":"))
+    while ((FirstField = next_line(fptr, FirstLine, &blkt_no, &fld_no, ":", log))
             != 0 && blkt_no != 50) {
         switch (blkt_no) {
         case 53:
             blkt_ptr = alloc_pz();
-            parse_pz(fptr, blkt_ptr, tmp_stage);
+            parse_pz(fptr, blkt_ptr, tmp_stage, log);
             curr_seq_no = tmp_stage->sequence_no;
             break;
         case 54:
@@ -1128,46 +1643,46 @@ int parse_channel(FILE *fptr, struct channel* chan) {
             /*The field 10 should be distinguish between the IIR and FIR */
             if (is_IIR_coeffs(fptr, ftell(fptr))) { /*IGD New IIR case */
                 blkt_ptr = alloc_coeff();
-                parse_iir_coeff(fptr, blkt_ptr, tmp_stage);
+                parse_iir_coeff(fptr, blkt_ptr, tmp_stage, log);
             } else { /*IGD this is the original case here */
                 blkt_ptr = alloc_fir();
-                parse_coeff(fptr, blkt_ptr, tmp_stage);
+                parse_coeff(fptr, blkt_ptr, tmp_stage, log);
             }
             curr_seq_no = tmp_stage->sequence_no;
             break;
         case 55:
             blkt_ptr = alloc_list();
-            parse_list(fptr, blkt_ptr, tmp_stage);
+            parse_list(fptr, blkt_ptr, tmp_stage, log);
             curr_seq_no = tmp_stage->sequence_no;
             break;
         case 56:
             blkt_ptr = alloc_generic();
-            parse_generic(fptr, blkt_ptr, tmp_stage);
+            parse_generic(fptr, blkt_ptr, tmp_stage, log);
             curr_seq_no = tmp_stage->sequence_no;
             break;
         case 57:
             blkt_ptr = alloc_deci();
-            curr_seq_no = parse_deci(fptr, blkt_ptr);
+            curr_seq_no = parse_deci(fptr, blkt_ptr, log);
             break;
         case 58:
             blkt_ptr = alloc_gain();
-            curr_seq_no = parse_gain(fptr, blkt_ptr);
+            curr_seq_no = parse_gain(fptr, blkt_ptr, log);
             break;
         case 60: /* never see a blockette [41], [43]-[48] without a [60], parse_ref handles these */
             blkt_ptr = alloc_ref();
             tmp_stage2 = alloc_stage();
-            parse_ref(fptr, blkt_ptr, tmp_stage2);
+            parse_ref(fptr, blkt_ptr, tmp_stage2, log);
             curr_seq_no = tmp_stage2->sequence_no;
             tmp_stage2->first_blkt = blkt_ptr;
             break;
         case 61:
             blkt_ptr = alloc_fir();
-            parse_fir(fptr, blkt_ptr, tmp_stage);
+            parse_fir(fptr, blkt_ptr, tmp_stage, log);
             curr_seq_no = tmp_stage->sequence_no;
             break;
         case 62:
             blkt_ptr = alloc_polynomial();
-            parse_polynomial(fptr, blkt_ptr, tmp_stage);
+            parse_polynomial(fptr, blkt_ptr, tmp_stage, log);
             curr_seq_no = tmp_stage->sequence_no;
             break;
         default:
@@ -1242,7 +1757,7 @@ int parse_channel(FILE *fptr, struct channel* chan) {
     return (FirstField);
 }
 
-int get_channel(FILE *fptr, struct channel* chan) {
+int get_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log) {
     int blkt_no, fld_no;
     char field[MAXFLDLEN], line[MAXLINELEN];
 
@@ -1263,19 +1778,32 @@ int get_channel(FILE *fptr, struct channel* chan) {
     chan->sint = 0.0;
 
     if (!strlen(FirstLine))
-        get_field(fptr, field, 50, 3, ":", 0);
-    else
-        parse_field(FirstLine, 0, field);
+    {
+        if (0 > get_field(fptr, field, 50, 3, ":", 0, log))
+        {
+            return 0 /*TODO PARSE_ERROR should be returned */;
+        }
+    } else {
+        if (0 < parse_field(FirstLine, 0, field, log))
+        {
+            return  0 /*TODO PARSE_ERROR should be returned */;
+        }
+    }
 
     strncpy(chan->staname, field, STALEN);
 
     /* then (from the file) the Network ID */
 
-    get_field(fptr, field, 50, 16, ":", 0);
+    if (0 > get_field(fptr, field, 50, 16, ":", 0, log))
+    {
+        return 0 /*TODO PARSE_ERROR should be returned */;
+    }
     if (!strncmp(field, "??", 2))
+    {
         strncpy(chan->network, "", NETLEN);
-    else
+    } else {
         strncpy(chan->network, field, NETLEN);
+    }
 
     /* then (from the file) the Location Identifier (if it exists ... it won't for
      "old style" RESP files so assume old style RESP files contain a null location
@@ -1286,19 +1814,29 @@ int get_channel(FILE *fptr, struct channel* chan) {
      nothing afterward -- 10/19/2005 -- [ET] */
     /*  test_field(fptr,field,&blkt_no,&fld_no,":",0); */
 
-    next_line(fptr, line, &blkt_no, &fld_no, ":");
+    next_line(fptr, line, &blkt_no, &fld_no, ":", log);
     if (strlen(line) > 0) /* if data after "Location:" then */
-        parse_field(line, 0, field); /* parse location data */
-    else
+    {
+        if (0 > parse_field(line, 0, field, log)) /* parse location data */
+        {
+            return 0 /*TODO PARSE_ERROR should be returned */;
+        }
+    } else {
         /* if no data after "Location:" then */
         field[0] = '\0'; /* clear 'field' string */
+    }
 
     if (blkt_no == 52 && fld_no == 3) {
         if (strlen(field) <= 0 || !strncmp(field, "??", 2))
+        {
             strncpy(chan->locid, "", LOCIDLEN);
-        else
+        } else {
             strncpy(chan->locid, field, LOCIDLEN);
-        get_field(fptr, field, 52, 4, ":", 0);
+        }
+        if (0 > get_field(fptr, field, 52, 4, ":", 0, log))
+        {
+            return 0 /*TODO PARSE_ERROR should be returned */;
+        }
         strncpy(chan->chaname, field, CHALEN);
     } else if (blkt_no == 52 && fld_no == 4) {
         strncpy(chan->locid, "", LOCIDLEN);
@@ -1307,22 +1845,34 @@ int get_channel(FILE *fptr, struct channel* chan) {
 #ifdef LIB_MODE
         return 0;
 #else
-        error_return(PARSE_ERROR,
+        evalresp_log(log, ERROR, 0,
                 "get_line; %s%s%3.3d%s%3.3d%s[%2.2d|%2.2d]%s%2.2d", "blkt",
                 " and fld numbers do not match expected values\n\tblkt_xpt=B",
                 52, ", blkt_found=B", blkt_no, "; fld_xpt=F", 3, 4,
                 ", fld_found=F", fld_no);
+        return 0; /*TODO error code maybe? */
+        /*XXX error_return(PARSE_ERROR,
+                "get_line; %s%s%3.3d%s%3.3d%s[%2.2d|%2.2d]%s%2.2d", "blkt",
+                " and fld numbers do not match expected values\n\tblkt_xpt=B",
+                52, ", blkt_found=B", blkt_no, "; fld_xpt=F", 3, 4,
+                ", fld_found=F", fld_no);*/
 #endif
     }
 
     /* get the Start Date */
 
-    get_line(fptr, line, 52, 22, ":");
+    if ( 0 > get_line(fptr, line, 52, 22, ":", log))
+    {
+        return 0; /*TODO */
+    }
     strncpy(chan->beg_t, line, DATIMLEN);
 
     /* get the End Date */
 
-    get_line(fptr, line, 52, 23, ":");
+    if ( 0 > get_line(fptr, line, 52, 23, ":", log))
+    {
+        return 0; /*TODO */
+    }
     strncpy(chan->end_t, line, DATIMLEN);
 
     return (1);
@@ -1469,24 +2019,24 @@ int in_epoch(const char *datime, const char *beg_t, const char *end_t) {
 }
 
 int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
-        struct channel *this_channel) {
+        struct channel *this_channel, evalresp_log_t *log) {
     int test, i;
     struct scn *scn = NULL;
 
-    while ((test = get_channel(fptr, this_channel)) != 0) {
+    while ((test = get_channel(fptr, this_channel, log)) != 0) {
         for (i = 0; i < scn_lst->nscn; i++) {
             scn = scn_lst->scn_vec[i];
-            if (string_match(this_channel->staname, scn->station, "-g")
+            if (string_match(this_channel->staname, scn->station, "-g", log)
                     && ((!strlen(scn->network) && !strlen(this_channel->network))
-                            || string_match(this_channel->network, scn->network, "-g"))
-                    && string_match(this_channel->locid, scn->locid, "-g")
-                    && string_match(this_channel->chaname, scn->channel, "-g")
+                            || string_match(this_channel->network, scn->network, "-g", log))
+                    && string_match(this_channel->locid, scn->locid, "-g", log)
+                    && string_match(this_channel->chaname, scn->channel, "-g", log)
                     && in_epoch(datime, this_channel->beg_t, this_channel->end_t)) {
                 scn->found = 1;
                 return (i);
             }
         }
-        if (!(test = next_resp(fptr))) {
+        if (!(test = next_resp(fptr, log))) {
             return (-1);
         }
     }
@@ -1494,22 +2044,22 @@ int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
 }
 
 int get_resp(FILE *fptr, struct scn *scn, char *datime,
-        struct channel *this_channel) {
+        struct channel *this_channel, evalresp_log_t *log) {
     int test;
 
-    while ((test = get_channel(fptr, this_channel)) != 0) {
+    while ((test = get_channel(fptr, this_channel, log)) != 0) {
 
-        if (string_match(this_channel->staname, scn->station, "-g")
+        if (string_match(this_channel->staname, scn->station, "-g", log)
                 && ((!strlen(scn->network) && !strlen(this_channel->network))
                         || string_match(this_channel->network, scn->network,
-                                "-g"))
-                && string_match(this_channel->locid, scn->locid, "-g")
-                && string_match(this_channel->chaname, scn->channel, "-g")
+                                "-g", log))
+                && string_match(this_channel->locid, scn->locid, "-g", log)
+                && string_match(this_channel->chaname, scn->channel, "-g", log)
                 && in_epoch(datime, this_channel->beg_t, this_channel->end_t)) {
             scn->found = 1;
             return (1);
         } else {
-            if (!(test = next_resp(fptr))) {
+            if (!(test = next_resp(fptr, log))) {
                 return (-1);
             }
         }
@@ -1517,16 +2067,19 @@ int get_resp(FILE *fptr, struct scn *scn, char *datime,
     return (-1);
 }
 
-int next_resp(FILE *fptr) {
+int next_resp(FILE *fptr, evalresp_log_t *log) {
     int blkt_no, fld_no, test;
     char tmp_line[MAXLINELEN];
 
-    while ((test = check_line(fptr, &blkt_no, &fld_no, tmp_line)) != 0
+    while ((test = check_line(fptr, &blkt_no, &fld_no, tmp_line, log)) != 0
             && blkt_no != 50)
         ;
 
     if (test && blkt_no == 50) {
-        parse_field(tmp_line, 2, FirstLine);
+        if (0 > parse_field(tmp_line, 2, FirstLine, log))
+        {
+            return 0 /*TODO PARSE_ERROR should be returned ?*/;
+        }
         return (1);
     } else
         return (0);

@@ -52,7 +52,7 @@
 /* IGD 10/04/13 Reformatted */
 void calc_resp(struct channel *chan, double *freq, int nfreqs,
         struct evr_complex *output, char *out_units, int start_stage,
-        int stop_stage, int useTotalSensitivityFlag, double x_for_b62) {
+        int stop_stage, int useTotalSensitivityFlag, double x_for_b62, evalresp_log_t *log) {
     struct blkt *blkt_ptr;
     struct stage *stage_ptr;
     int i, j, units_code, eval_flag = 0, nc = 0, sym_fir = 0;
@@ -159,7 +159,7 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs,
                     eval_flag = 1;
                     break;
                 case POLYNOMIAL: /* IGD 06/01/2013*/
-                    calc_polynomial(blkt_ptr, i, &of, x_for_b62);
+                    calc_polynomial(blkt_ptr,  &of, x_for_b62, log);
                     eval_flag = 1;
                     break;
                 case IIR_COEFFS: /* This option is added in version 2.3.17 I.Dricker*/
@@ -179,15 +179,25 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs,
         /* if no matching stages were found, then report the error */
 
         if (!matching_stages && !has_stage0) {
-            error_return(NO_STAGE_MATCHED,
+            evalresp_log(log, ERROR, 0,
                     "calc_resp: %s start_stage=%d, highest stage found=%d)",
                     "No Matching Stages Found (requested", start_stage,
                     chan->nstages);
+            return; /*TODO NO_STAGE_MATCHED */
+            /*XXX error_return(NO_STAGE_MATCHED,
+                    "calc_resp: %s start_stage=%d, highest stage found=%d)",
+                    "No Matching Stages Found (requested", start_stage,
+                    chan->nstages); */
         } else if (!matching_stages) {
-            error_return(NO_STAGE_MATCHED,
+            evalresp_log(log, ERROR, 0,
                     "calc_resp: %s start_stage=%d, highest stage found=%d)",
                     "No Matching Stages Found (requested", start_stage,
                     chan->nstages - 1);
+            return; /*TODO NO_STAGE_MATCHED */
+            /*XXX error_return(NO_STAGE_MATCHED,
+                    "calc_resp: %s start_stage=%d, highest stage found=%d)",
+                    "No Matching Stages Found (requested", start_stage,
+                    chan->nstages - 1); */
         }
 
         /*  Write output for freq[i] in output[i] (note: unitScaleFact is a global variable
@@ -202,15 +212,15 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs,
             output[i].imag = val.imag * chan->sensit * unitScaleFact;
         }
 
-        convert_to_units(units_code, out_units, &output[i], w);
+        convert_to_units(units_code, out_units, &output[i], w, log);
     }
 }
 
 /*==================================================================
  * Convert response to velocity first, then to specified units
  *=================================================================*/
-void convert_to_units(int inp, char *out_units, struct evr_complex *data, double w) {
-	// TODO - 0 assignment below made blindly to fix compiler warning.  bug?
+void convert_to_units(int inp, char *out_units, struct evr_complex *data, double w, evalresp_log_t *log) {
+    // TODO - 0 assignment below made blindly to fix compiler warning.  bug?
     int out = 0, l;
     struct evr_complex scale_val;
 
@@ -228,7 +238,9 @@ void convert_to_units(int inp, char *out_units, struct evr_complex *data, double
         else if (!strncmp(out_units, "ACC", 3))
             out = ACC;
         else {
-            error_return(BAD_OUT_UNITS, "convert_to_units: bad output units");
+            evalresp_log(log, ERROR, 0, "convert_to_units: bad output units");
+            return; /*TODO BAD_OUT_UNITS */
+            /*XXX error_return(BAD_OUT_UNITS, "convert_to_units: bad output units"); */
         }
     } else
         out = VEL;
@@ -341,25 +353,37 @@ void iir_trans(struct blkt *blkt_ptr, double wint, struct evr_complex *out) {
  * Function introduced in version 3.3.4 of evalresp
  * Ilya Dricker ISTI (.dricker@isti.com) 06/01/13
  *===============================================================*/
-void calc_polynomial(struct blkt *blkt_ptr, int i, struct evr_complex *out,
-        double x_for_b62) {
+void calc_polynomial(struct blkt *blkt_ptr,  struct evr_complex *out,
+        double x_for_b62, evalresp_log_t *log) {
     double amp = 0, phase = 0;
     int j;
 
     if (x_for_b62 <= 0)
-        error_return(IMPROP_DATA_TYPE,
+    {
+        evalresp_log(log, ERROR, 0,
                 "Cannot compute B62 response for negative or zero input: %f",
                 x_for_b62);
+        return; /*TODO IMPROP_DATA_TYPE */
+        /*XXX error_return(IMPROP_DATA_TYPE,
+                "Cannot compute B62 response for negative or zero input: %f",
+                x_for_b62); */
+    }
 
     // Compute a first derivate of MacLaurin polynomial
     for (j = 1; j < blkt_ptr->blkt_info.polynomial.ncoeffs; j++)
+    {
         amp += blkt_ptr->blkt_info.polynomial.coeffs[j] * j
                 * pow(x_for_b62, j - 1);
+    }
 
     if (amp >= 0)
+    {
         phase = 0;
+    }
     else
+    {
         phase = Pi;
+    }
 
     out->real = amp * cos(phase);
     out->imag = amp * sin(phase);
@@ -578,7 +602,7 @@ void zmul(struct evr_complex *val1, struct evr_complex *val2) {
 /*=================================================================
  *                   Normalize response
  *=================================================================*/
-void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
+void norm_resp(struct channel *chan, int start_stage, int stop_stage, evalresp_log_t *log) {
     struct stage *stage_ptr;
     // TODO - NULL assignments below made blindly to fix compiler warning.  bug?
     struct blkt *fil, *last_fil = NULL, *main_filt = NULL;
@@ -588,12 +612,12 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
     struct evr_complex of, df;
 
     /* -------- TEST 1 -------- */
-    /*  
+    /*
      A single stage response must specify a stage gain, a stage zero
      sensitivity, or both.  If the gain has been set, simply drop through
      to the next test. If the gain is zero, set the gain equal to the
-     sensitivity and then go to the next test. 
-     (IGD 06/01/2013) Above notes are not applicable to polynomial stage which does 
+     sensitivity and then go to the next test.
+     (IGD 06/01/2013) Above notes are not applicable to polynomial stage which does
      not require gain or sensitivity
      */
 
@@ -605,8 +629,11 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
             fil = last_fil->next_blkt;
         }
         if (fil == (struct blkt *) NULL && last_fil->type != POLYNOMIAL) {
-            error_return(ILLEGAL_RESP_FORMAT,
+            evalresp_log(log, ERROR, 0,
                     "norm_resp; no stage gain defined, zero sensitivity");
+            return; /*TODO ILLEGAL_RESP_FORMAT */
+            /*XXX error_return(ILLEGAL_RESP_FORMAT,
+                    "norm_resp; no stage gain defined, zero sensitivity"); */
         }
     } else if (chan->nstages == 2) { /* has a stage 0??? */
         stage_ptr = chan->first_stage;
@@ -617,8 +644,11 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
         }
         if (fil == (struct blkt *) NULL && last_fil->type != POLYNOMIAL) {
             if (chan->sensit == 0.0) {
-                error_return(ILLEGAL_RESP_FORMAT,
+                evalresp_log(log, ERROR, 0,
                         "norm_resp; no stage gain defined, zero sensitivity");
+                return; /*TODO ILLEGAL_RESP_FORMAT */
+                /*XXX error_return(ILLEGAL_RESP_FORMAT,
+                        "norm_resp; no stage gain defined, zero sensitivity"); */
             } else {
                 fil = alloc_gain();
                 fil->blkt_info.gain.gain = chan->sensit;
@@ -658,7 +688,9 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
         curr_seq_no = stage_ptr->sequence_no;
         while (fil) {
             if (fil->type == GAIN && fil->blkt_info.gain.gain == 0.0) {
-                error_return(ILLEGAL_RESP_FORMAT, "norm_resp; zero stage gain");
+                evalresp_log(log, ERROR, 0, "norm_resp; zero stage gain");
+                return; /*TODO ILLEGAL_RESP_FORMAT */
+                /*XXX error_return(ILLEGAL_RESP_FORMAT, "norm_resp; zero stage gain"); */
             }
             fil = fil->next_blkt;
         }
@@ -746,13 +778,19 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
                             analog_trans(main_filt,
                                     fil->blkt_info.gain.gain_freq, &df);
                             if (df.real == 0.0 && df.imag == 0.0) {
-                                error_return(ILLEGAL_FILT_SPEC,
+                                evalresp_log(log, ERROR, 0,
                                         "norm_resp: Gain frequency of zero found in bandpass analog filter");
+                                return ; /*TODO ILLEGAL_FILT_S{EC */
+                                /*XXX error_return(ILLEGAL_FILT_SPEC,
+                                        "norm_resp: Gain frequency of zero found in bandpass analog filter"); */
                             }
                             analog_trans(main_filt, f, &of);
                             if (of.real == 0.0 && of.imag == 0.0) {
-                                error_return(ILLEGAL_FILT_SPEC,
+                                evalresp_log(log, ERROR, 0,
                                         "norm_resp: Chan. Sens. frequency found with bandpass analog filter");
+                                return ; /*TODO ILLEGAL_FILT_S{EC */
+                                /*XXX error_return(ILLEGAL_FILT_SPEC,
+                                        "norm_resp: Chan. Sens. frequency found with bandpass analog filter"); */
                             }
                         } else if (main_type == IIR_PZ) {
                             main_filt->blkt_info.pole_zero.a0 = 1.0;
@@ -833,20 +871,26 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage) {
         percent_diff = fabs((chan->sensit - chan->calc_sensit) / chan->sensit);
         if (percent_diff >= 0.05) {
 #ifndef LIB_MODE
+            evalresp_log(log, WARN, 0,
+                    "%s (norm_resp): computed and reported sensitivities",
+                    myLabel);
+            evalresp_log(log, WARN, 0, "%s differ by more than 5 percent. \n", myLabel);
+            evalresp_log(log, WARN, 0, "%s\t Execution continuing.\n", myLabel);
+            /*XXX
             fprintf(stderr,
                     "%s WARNING (norm_resp): computed and reported sensitivities",
                     myLabel);
             fprintf(stderr, "%s differ by more than 5 percent. \n", myLabel);
             fprintf(stderr, "%s\t Execution continuing.\n", myLabel);
-            fflush(stderr);
+            fflush(stderr); */
 #endif
         }
     }
 }
 
-/* IGD 04/05/04 Phase unwrapping function 
+/* IGD 04/05/04 Phase unwrapping function
  * It works only inside a loop over phases.
- * 
+ *
  */
 double unwrap_phase(double phase, double prev_phase, double range,
         double *added_value) {

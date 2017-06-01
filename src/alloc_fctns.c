@@ -13,6 +13,8 @@
 
 #include <string.h>
 
+#include <log.h>
+
 struct evr_complex *alloc_complex(int npts) {
     struct evr_complex *cptr;
 
@@ -28,20 +30,27 @@ struct evr_complex *alloc_complex(int npts) {
     return (cptr);
 }
 
-struct string_array *alloc_string_array(int nstrings) {
+struct string_array *alloc_string_array(int nstrings, evalresp_log_t *log) {
     struct string_array *sl_ptr;
     int i;
 
     if (nstrings) {
         if ((sl_ptr = (struct string_array *) malloc(
                 sizeof(struct string_array))) == (struct string_array *) NULL) {
-            error_exit(OUT_OF_MEMORY,
+            evalresp_log(log, ERROR, 0,
                     "alloc_string_array; malloc() failed for (string_array)");
+            return NULL;
+            /*XXX error_exit(OUT_OF_MEMORY,
+                    "alloc_string_array; malloc() failed for (string_array)"); */
         }
         if ((sl_ptr->strings = (char **) malloc(nstrings * sizeof(char *)))
                 == (char **) NULL) {
-            error_exit(OUT_OF_MEMORY,
+            evalresp_log(log, ERROR, 0,
                     "alloc_string_array; malloc() failed for (char *) vector");
+            free(sl_ptr);
+            return NULL;
+            /*XXX error_exit(OUT_OF_MEMORY,
+                    "alloc_string_array; malloc() failed for (char *) vector"); */
         }
         for (i = 0; i < nstrings; i++)
             sl_ptr->strings[i] = (char *) NULL;
@@ -393,11 +402,22 @@ struct stage *alloc_stage() {
 void free_string_array(struct string_array *lst) {
     int i;
 
-    for (i = 0; i < lst->nstrings; i++) {
-        free(lst->strings[i]);
+    if (lst)
+    {
+        if (lst->strings)
+        {
+            for (i = 0; i < lst->nstrings; i++) {
+                if (lst->strings[i])
+                {
+                    free(lst->strings[i]);
+                    lst->strings[i] = NULL;
+                }
+            }
+            free(lst->strings);
+            lst->strings = NULL;
+        }
+        free(lst);
     }
-    free(lst->strings);
-    free(lst);
 }
 
 void free_scn(struct scn *ptr) {

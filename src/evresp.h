@@ -134,6 +134,8 @@
 #include <setjmp.h>
 #include <stdarg.h>
 
+#include <log.h>
+
 /* if Windows compiler then redefine 'complex' to */
 /*  differentiate it from the existing struct,    */
 /*  and rename 'strcasecmp' functions:            */
@@ -463,8 +465,8 @@ struct scn_list {
 struct pole_zeroType {
     int nzeros;  /**< Number of zeros (blockettes [43] or [53]). */
     int npoles;  /**< Number of poles. */
-    double a0;  /**< FIXME. */
-    double a0_freq;  /**< FIXME. */
+    double a0;  /**< Poles and zeros normaliztion factor. */
+    double a0_freq;  /**< Poles and zeros normaliztion frequency. */
     struct evr_complex *zeros;  /**< Array of zeros (complex). */
     struct evr_complex *poles;  /**< Array of poles (complex). */
 };
@@ -475,11 +477,11 @@ struct pole_zeroType {
  * @brief A Response (Coefficients) blockette.
  */
 struct coeffType {
-    int nnumer;  /**< FIXME. (blockettes [44] or [54]) */
-    int ndenom;  /**< FIXME. */
-    double *numer;  /**< FIXME. */
-    double *denom;  /**< FIXME. */
-    double h0;  /**< FIXME. */  /* IGD this field is new v 3.2.17 */
+    int nnumer;  /**< Length of numerator vector . (blockettes [44] or [54]) */
+    int ndenom;  /**< Length of denominator vector. */
+    double *numer;  /**< Numerator vector. */
+    double *denom;  /**< Denominator vector. */
+    double h0;  /**< Sensitivity. */  /* IGD this field is new v 3.2.17 */
 };
 
 /**
@@ -488,16 +490,16 @@ struct coeffType {
  * @brief A Response (Coefficients) blockette.
  */
 struct polynomialType {
-    unsigned char approximation_type;  /**< FIXME. (blockettes [42] or [62]) */  /* IGD 05/31/2013 */
-    unsigned char frequency_units;  /**< FIXME. */
-    double lower_freq_bound;  /**< FIXME. */
-    double upper_freq_bound;  /**< FIXME. */
-    double lower_approx_bound;  /**< FIXME. */
-    double upper_approx_bound;  /**< FIXME. */
-    double max_abs_error;  /**< FIXME. */
-    int ncoeffs;  /**< FIXME. */
-    double *coeffs;  /**< FIXME. */
-    double *coeffs_err;  /**< FIXME. */
+    unsigned char approximation_type;  /**< Approximation type. (blockettes [42] or [62]) */  /* IGD 05/31/2013 */
+    unsigned char frequency_units;  /**< Frequency unit. */
+    double lower_freq_bound;  /**< Lower frequency bound. */
+    double upper_freq_bound;  /**< Upper frequency bound. */
+    double lower_approx_bound;  /**< Lower approximation bound. */
+    double upper_approx_bound;  /**< Upper approximation bound. */
+    double max_abs_error;  /**< Maximum absolute error. */
+    int ncoeffs;  /**< Length of coefficients vector. */
+    double *coeffs;  /**< Coefficients vector. */
+    double *coeffs_err;  /**< Error vector. */
 };
 
 /**
@@ -508,7 +510,7 @@ struct polynomialType {
 struct firType {
     int ncoeffs;  /**< Number of coefficients (blockettes [41] or [61]). */
     double *coeffs;  /**< Array of coefficients. */
-    double h0;  /**< FIXME. */
+    double h0;  /**< Sensitivity. */
 };
 
 /**
@@ -529,9 +531,9 @@ struct listType {
  * @brief A Generic Response blockette.
  */
 struct genericType {
-    int ncorners;  /**< FIXME. (blockettes [46] or [56]) */
-    double *corner_freq;  /**< FIXME. */
-    double *corner_slope;  /**< FIXME. */
+    int ncorners;  /**< Number of corners. (blockettes [46] or [56]) */
+    double *corner_freq;  /**< Corner frequency vector. */
+    double *corner_slope;  /**< Corner slope vector. */
 };
 
 /**
@@ -540,11 +542,11 @@ struct genericType {
  * @brief A Decimation blockette.
  */
 struct decimationType {
-    double sample_int;  /**< FIXME. (blockettes [47] or [57]) */
-    int deci_fact;  /**< FIXME. */
-    int deci_offset;  /**< FIXME. */
-    double estim_delay;  /**< FIXME. */
-    double applied_corr;  /**< FIXME. */
+    double sample_int;  /**< Sample interval. (blockettes [47] or [57]) */
+    int deci_fact;  /**< Decimation factor. */
+    int deci_offset;  /**< Decimation offset. */
+    double estim_delay;  /**< Estimated delay. */
+    double applied_corr;  /**< Applied correction. */
 };
 
 /**
@@ -553,8 +555,8 @@ struct decimationType {
  * @brief A Channel Sensitivity/Gain blockette.
  */
 struct gainType {
-    double gain;  /**< FIXME. (blockettes [48] or [58]) */
-    double gain_freq;  /**< FIXME. */
+    double gain;  /**< Gain. (blockettes [48] or [58]) */
+    double gain_freq;  /**< Frequency where gain is computed. */
 };
 
 /**
@@ -563,9 +565,9 @@ struct gainType {
  * @brief A Response Reference blockette.
  */
 struct referType {
-    int num_stages;  /**< FIXME. */
-    int stage_num;  /**< FIXME. */
-    int num_responses;  /**< FIXME. */
+    int num_stages;  /**< Total number of stages. */
+    int stage_num;  /**< Stage number. */
+    int num_responses;  /**< Number of responses. */
 };
 
 /**
@@ -582,15 +584,15 @@ struct referType {
 struct blkt {
     int type;  /**< Blockette type. */
     union {
-        struct pole_zeroType pole_zero;  /**< FIXME. */
-        struct coeffType coeff;  /**< FIXME. */
-        struct firType fir;  /**< FIXME. */
-        struct listType list;  /**< FIXME. */
-        struct genericType generic;  /**< FIXME. */
-        struct decimationType decimation;  /**< FIXME. */
-        struct gainType gain;  /**< FIXME. */
-        struct referType reference;  /**< FIXME. */
-        struct polynomialType polynomial;  /**< FIXME. */
+        struct pole_zeroType pole_zero;  /**< Poles and zeros structure. */
+        struct coeffType coeff;  /**< Coefficients structure. */
+        struct firType fir;  /**< FIR structure. */
+        struct listType list;  /**< List structure. */
+        struct genericType generic;  /**< Generic response structure. */
+        struct decimationType decimation;  /**< Decimation blockette structure. */
+        struct gainType gain;  /**< Gain structure. */
+        struct referType reference;  /**< Reference structure. */
+        struct polynomialType polynomial;  /**< Polynomial type structure. */
     } blkt_info;  /**< Blockette info. */
     struct blkt *next_blkt;  /**< Pointer to next blockette. */
 };
@@ -640,22 +642,22 @@ nzeros = blkt_ptr->blkt_info.poles_zeros.nzeros;
 
  */
 struct channel {
-    char staname[STALEN];  /**< FIXME. */
-    char network[NETLEN];  /**< FIXME. */
-    char locid[LOCIDLEN];  /**< FIXME. */
-    char chaname[CHALEN];  /**< FIXME. */
-    char beg_t[DATIMLEN];  /**< FIXME. */
-    char end_t[DATIMLEN];  /**< FIXME. */
-    char first_units[MAXLINELEN];  /**< FIXME. */
-    char last_units[MAXLINELEN];  /**< FIXME. */
-    double sensit;  /**< FIXME. */
-    double sensfreq;  /**< FIXME. */
-    double calc_sensit;  /**< FIXME. */
-    double calc_delay;  /**< FIXME. */
-    double estim_delay;  /**< FIXME. */
-    double applied_corr;  /**< FIXME. */
-    double sint;  /**< FIXME. */
-    int nstages;  /**< FIXME. */
+    char staname[STALEN];  /**< Station name. */
+    char network[NETLEN];  /**< Network name. */
+    char locid[LOCIDLEN];  /**< Location ID. */
+    char chaname[CHALEN];  /**< Channel name. */
+    char beg_t[DATIMLEN];  /**< Start time (string). */
+    char end_t[DATIMLEN];  /**< End time (string). */
+    char first_units[MAXLINELEN];  /**< Units of the first stage. */
+    char last_units[MAXLINELEN];  /**< Units of the last stage. */
+    double sensit;  /**< Sensitivity. */
+    double sensfreq;  /**< Freuqncy at sensitivity. */
+    double calc_sensit;  /**< Calculated sensitivity. */
+    double calc_delay;  /**< Calculated delay. */
+    double estim_delay;  /**< Estimated delay. */
+    double applied_corr;  /**< Applied correction. */
+    double sint;  /**< inversed sample rate (sample interval). */
+    int nstages;  /**< Number of stages. */
     struct stage *first_stage;  /**< Pointer to the head of a linked list of
                                    stage. */
 };
@@ -676,7 +678,7 @@ struct dateTime {
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Global variable to keep Net-Station-Loc-Channel info in case enabling log-label configure option is used.
  * @author 2007/02/27: IGD.
  */
 extern char myLabel[20];
@@ -697,7 +699,7 @@ extern char myLabel[20];
  * @param[in] line String to parse.
  * @returns Array of string objects.
  */
-struct string_array *ev_parse_line(char *line);
+struct string_array *ev_parse_line(char *line, evalresp_log_t *);
 
 /**
  * @private
@@ -712,7 +714,7 @@ struct string_array *ev_parse_line(char *line);
  * @param[in] delim Delimiter string.
  * @returns Array of string objects.
  */
-struct string_array *parse_delim_line(char *line, char *delim);
+struct string_array *parse_delim_line(char *line, char *delim, evalresp_log_t *);
 
 /**
  * @private
@@ -733,7 +735,7 @@ struct string_array *parse_delim_line(char *line, char *delim);
  *       white space.
  */
 int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
-              char *sep, int fld_wanted);
+              char *sep, int fld_wanted, evalresp_log_t *log);
 
 /**
  * @private
@@ -755,7 +757,7 @@ int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
  *       white space.
  */
 int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
-               char *sep, int fld_wanted);
+               char *sep, int fld_wanted, evalresp_log_t *log);
 /**
  * @private
  * @ingroup evalresp_private_string
@@ -777,7 +779,7 @@ int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
  *                        expect. Support for SHAPE formatte RESP files, and
  *                        to skip blank lines.
  */
-int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep);
+int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, evalresp_log_t *log);
 
 /**
  * @private
@@ -795,7 +797,7 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep);
  *          and @p blkt_no).
  * @author 2004.079: SBH: Added code to skip blank lines.
  */
-int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *sep);
+int next_line(FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *sep, evalresp_log_t *log);
 
 /**
  * @private
@@ -827,10 +829,11 @@ int count_delim_fields(char *line, char *delim);
  * @param[in] line Input line.
  * @param[in] fld_no Field number.
  * @param[out] return_field Return field.
+ * @param[in] log Logging structure.
  * @returns Length of the resulting field if successful.
  * @note Exits with error if no field exists with that number.
  */
-int parse_field(char *line, int fld_no, char *return_field);
+int parse_field(char *line, int fld_no, char *return_field, evalresp_log_t *log);
 
 /**
  * @private
@@ -840,10 +843,11 @@ int parse_field(char *line, int fld_no, char *return_field);
  * @param[in] fld_no Field number.
  * @param[in] delim Delimiter.
  * @param[out] return_field Return field.
+ * @param[in] log Logging structure.
  * @returns Length of the resulting field if successful.
  * @note Exits with error if no field exists with that number.
  */
-int parse_delim_field(char *line, int fld_no, char *delim, char *return_field);
+int parse_delim_field(char *line, int fld_no, char *delim, char *return_field, evalresp_log_t *log);
 
 /**
  * @private
@@ -858,7 +862,7 @@ int parse_delim_field(char *line, int fld_no, char *delim, char *return_field);
  * @returns @c NULL if no non-comment line is found.
  * @author 2004.079: SBH: Added code to skip blank lines.
  */
-int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line);
+int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_log_t *log);
 
 /**
  * @private
@@ -869,7 +873,7 @@ int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line);
  * @param[in] in_line Input string.
  * @returns Integer value on success.
  */
-int get_int(char *in_line);
+int get_int(char *in_line, evalresp_log_t *log);
 
 /**
  * @private
@@ -881,7 +885,7 @@ int get_int(char *in_line);
  * @param[in] in_line Input string.
  * @returns Double value on success.
  */
-double get_double(char *in_line);
+double get_double(char *in_line, evalresp_log_t *log);
 
 /**
  * @private
@@ -895,7 +899,7 @@ double get_double(char *in_line);
  * @param[in] line Incoming line.
  * @see units
  */
-int check_units(char *line);
+int check_units(char *line, evalresp_log_t *log);
 
 /**
  * @private
@@ -921,7 +925,7 @@ int check_units(char *line);
  * @returns 0 if false.
  * @returns >0 if true.
  */
-int string_match(const char *string, char *expr, char *type_flag);
+int string_match(const char *string, char *expr, char *type_flag, evalresp_log_t *log);
 
 /**
  * @private
@@ -932,7 +936,7 @@ int string_match(const char *string, char *expr, char *type_flag);
  * @returns 0 if false.
  * @returns >0 if true.
  */
-int is_int(const char *test);
+int is_int(const char *test, evalresp_log_t *log);
 
 /**
  * @private
@@ -943,7 +947,7 @@ int is_int(const char *test);
  * @returns 0 if false.
  * @returns >0 if true.
 */
-int is_real(const char *test);
+int is_real(const char *test, evalresp_log_t *log);
 
 /**
  * @private
@@ -991,7 +995,7 @@ int is_IIR_coeffs(FILE *fp, int position);
  *       information to be reread.
  */
 int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
-              struct channel *this_channel);
+              struct channel *this_channel, evalresp_log_t *log);
 
 /**
  * @private
@@ -1004,7 +1008,7 @@ int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
  *          end_t and station info are returned as part of the input
  *          structure @p this_channel. The pointer to the file (@p fptr) is
  *          left in position for the parse_channel() routine to grab the
- *          response information for that station. 
+ *          response information for that station.
  * @param[in,out] fptr FILE pointer.
  * @param[in] scn Network-station-locid-channel object.
  * @param[in] datime Date-time string.
@@ -1016,7 +1020,7 @@ int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
  *       information to be reread.
  */
 int get_resp(FILE *fptr, struct scn *scn, char *datime,
-             struct channel *this_channel);
+             struct channel *this_channel, evalresp_log_t *log);
 
 /**
  * @private
@@ -1032,7 +1036,7 @@ int get_resp(FILE *fptr, struct scn *scn, char *datime,
  * @returns 1 on success.
  * @returns 0 on failure.
  */
-int get_channel(FILE *fptr, struct channel* chan);
+int get_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log);
 
 /**
  * @private
@@ -1048,7 +1052,7 @@ int get_channel(FILE *fptr, struct channel* chan);
  * @returns 1 on success.
  * @returns 0 on failure.
  */
-int next_resp(FILE *fptr);
+int next_resp(FILE *fptr, evalresp_log_t *log);
 
 /* routines used to create a list of files matching the users request */
 
@@ -1137,11 +1141,12 @@ struct response *alloc_response(int npts);
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for an array of strings.
  * @param[in] nstrings Number of strings to allocate in array.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated array.
  * @returns @c NULL if @p nstrings is zero.
  * @warning Exits with error if allocation fails.
  */
-struct string_array *alloc_string_array(int nstrings);
+struct string_array *alloc_string_array(int nstrings, evalresp_log_t *log);
 
 /**
  * @private
@@ -1520,7 +1525,7 @@ void error_return(int cond, char *msg, ...);
  * @param[in,out] chan Channel structure.
  * @returns First field number.
  */
-int parse_channel(FILE *fptr, struct channel* chan);
+int parse_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log);
 
 /* parsing routines for various types of filters */
 
@@ -1538,7 +1543,7 @@ int parse_channel(FILE *fptr, struct channel* chan);
  * @returns 1 on success.
  * @returns 0 on failure.
  */
-int parse_pref(int *blkt_no, int *fld_no, char *line);
+int parse_pref(int *blkt_no, int *fld_no, char *line, evalresp_log_t *log);
 
 /**
  * @private
@@ -1554,7 +1559,7 @@ int parse_pref(int *blkt_no, int *fld_no, char *line);
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  */
-void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1569,7 +1574,7 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  */
-void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1581,12 +1586,12 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  *          blockette and field numbers are checked as the file is parsed. As
  *          with parse_pz(), for this routine to work,  the lines must contain
  *          evalresp-3.0 style prefixes.
- * @param[in,out] fptr FILE pointer.
+ * @param[in,out] fptr FILE pointer, evalresp_log_t *log.
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  * @author 06/27/00: I.Dricker (i.dricker@isti.com) for 2.3.17 iir.
  */
-void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1605,7 +1610,7 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr)
  *         Since currently the blockette 55 is not supported, we do not
  *         anticipate problems caused by this change.
  */
-void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1620,7 +1625,7 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  */
-void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1635,7 +1640,7 @@ void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @returns Sequence number of the stage for verification.
  */
-int parse_deci(FILE *fptr, struct blkt *blkt_ptr);
+int parse_deci(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1650,7 +1655,7 @@ int parse_deci(FILE *fptr, struct blkt *blkt_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @returns Sequence number of the stage for verification.
  */
-int parse_gain(FILE *fptr, struct blkt *blkt_ptr);
+int parse_gain(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1665,7 +1670,7 @@ int parse_gain(FILE *fptr, struct blkt *blkt_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  */
-void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1680,7 +1685,7 @@ void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
  */
-void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
+void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1696,7 +1701,7 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr);
  * @author 05/31/2013: IGD.
  */
 void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
-                      struct stage *stage_ptr);
+                      struct stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1735,7 +1740,7 @@ int add_null(char *s, int len, char where);
  * @param[in,out] first_blkt First filter.
  * @param[in,out] second_blkt Second filter.
  */
-void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt);
+void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t *log);
 
 /**
  * @private
@@ -1754,7 +1759,7 @@ void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt);
  * @author 07/07/00: Ilya Dricker IGD (i.dricker@isti.com): Modified from
  *         merge_coeffs() for 3.2.17 of evalresp.
  */
-void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt);
+void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t *log);
 
 /**
  * @private
@@ -1784,7 +1789,7 @@ void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt);
  *              structure.
  * @param[in] chan Channel structure.
  */
-void check_channel(struct channel *chan);
+void check_channel(struct channel *chan, evalresp_log_t *log);
 
 /**
  * @private
@@ -1795,7 +1800,7 @@ void check_channel(struct channel *chan);
  * @param[in,out] f FIR filter.
  * @param[in] chan Channel structure.
  */
-void check_sym(struct blkt *f, struct channel *chan);
+void check_sym(struct blkt *f, struct channel *chan, evalresp_log_t *log);
 
 /* routines used to calculate the instrument responses */
 
@@ -1812,11 +1817,11 @@ void check_sym(struct blkt *f, struct channel *chan);
  * @param[in] stop_stage Stop stage.
  * @param[in] useTotalSensitivityFlag Use reported sensitivity to compute
  *                                    response.
- * @param[in] x_for_b62 FIXME.
+ * @param[in] x_for_b62 Frequency for polynomial response (b62).
  */
 void calc_resp(struct channel *chan, double *freq, int nfreqs,
         struct evr_complex *output, char *out_units, int start_stage,
-        int stop_stage, int useTotalSensitivityFlag, double x_for_b62);
+        int stop_stage, int useTotalSensitivityFlag, double x_for_b62, evalresp_log_t *log);
 
 /**
  * @private
@@ -1828,7 +1833,7 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs,
  * @param[in] w Frequency.
  */
 void convert_to_units(int inp, char *out_units, struct evr_complex *data,
-                      double w);
+                      double w, evalresp_log_t *log);
 
 /**
  * @private
@@ -1899,14 +1904,14 @@ void zmul(struct evr_complex *val1, struct evr_complex *val2);
  * @param[in] start_stage Start stage.
  * @param[in] stop_stage Stop stage.
  */
-void norm_resp(struct channel *chan, int start_stage, int stop_stage);
+void norm_resp(struct channel *chan, int start_stage, int stop_stage, evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief Response of blockette 55 (Response List Blockette).
+ * @brief Response of blockette 55 (Response List Blockette) for a given frequency.
  * @param[in] blkt_ptr Response List Blockette (55).
- * @param[in] i FIXME.
+ * @param[in] i Index in the frequency input vector.
  * @param[out] out Response.
  * @author 06/22/00: Ilya Dricker ISTI (.dricker@isti.com): Function
  *         introduced in version 3.2.17 of evalresp.
@@ -1916,16 +1921,15 @@ void calc_list(struct blkt *blkt_ptr, int i, struct evr_complex *out);
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief Response of blockette 62 (Polynomial).
+ * @brief Response of blockette 62 (Polynomial)i for a given frequency.
  * @param[in] blkt_ptr Polynomial Blockette (62).
- * @param[in] i FIXME.
  * @param[out] out Response.
- * @param[in] x_for_b62 FIXME.
+ * @param[in] x_for_b62 Frequency for response computation.
  * @author 06/01/13: Ilya Dricker ISTI (.dricker@isti.com): Function
  *         introduced in version 3.3.4 of evalresp
  */
-void calc_polynomial(struct blkt *blkt_ptr, int i, struct evr_complex *out,
-                     double x_for_b62);
+void calc_polynomial(struct blkt *blkt_ptr,  struct evr_complex *out,
+                     double x_for_b62, evalresp_log_t *log);
 
 /**
  * @private
@@ -1935,9 +1939,9 @@ void calc_polynomial(struct blkt *blkt_ptr, int i, struct evr_complex *out,
  *          tested by Bob Hutt (ASL USGS). Evaluates phase directly from
  *          imaginary and real parts of IIR filter coefficients.
  * @param[in] blkt_ptr Digital IIR filter.
- * @param[in] wint FIXME.
+ * @param[in] wint Circular frequency (2*PI*f). 
  * @param[out] out Response.
- * @author 07/12/00: lya Dricker (ISTI), i.dricker@isti.com: C translation
+ * @author 07/12/00: Ilya Dricker (ISTI), i.dricker@isti.com: C translation
  *         from FORTRAN function. Version 0.2. For version 3.2.17.
  */
 void iir_trans(struct blkt *blkt_ptr, double wint, struct evr_complex *out);
@@ -1953,7 +1957,7 @@ void iir_trans(struct blkt *blkt_ptr, double wint, struct evr_complex *out);
  * @returns 0 if false.
  * @returns >0 if true.
  */
-int is_time(const char *test);
+int is_time(const char *test, evalresp_log_t *log);
 
 /**
  * @private
@@ -2014,7 +2018,7 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
  *       parameters.
  */
 void print_resp(double *freqs, int nfreqs, struct response *first, char *rtype,
-                int stdio_flag);
+                int stdio_flag, evalresp_log_t *log);
 
 /**
  * @private
@@ -2049,30 +2053,30 @@ void print_resp(double *freqs, int nfreqs, struct response *first, char *rtype,
  */
 void print_resp_itp(double *freqs, int nfreqs, struct response *first,
                     char *rtype, int stdio_flag, int listinterp_out_flag,
-                    double listinterp_tension, int unwrap_flag);
+                    double listinterp_tension, int unwrap_flag, evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Evaluate responses for user requested station/channel/network tuple
  *        at the frequencies requested by the user.
- * @param[in] stalst FIXME.
- * @param[in] chalst FIXME.
- * @param[in] net_code FIXME.
- * @param[in] locidlst FIXME.
- * @param[in] date_time FIXME.
- * @param[in] units FIXME.
- * @param[in] file FIXME.
- * @param[in] freqs FIXME.
- * @param[in] nfreqs FIXME.
- * @param[in] rtype FIXME.
- * @param[in] verbose FIXME.
- * @param[in] start_stage FIXME.
- * @param[in] stop_stage FIXME.
- * @param[in] stdio_flag FIXME.
- * @param[in] useTotalSensitivityFlag FIXME.
- * @param[in] x_for_b62 FIXME.
- * @param[in] xml_flag FIXME.
+ * @param[in] stalst Station list.
+ * @param[in] chalst Channel list.
+ * @param[in] net_code Network code.
+ * @param[in] locidlst Localtion ID list.
+ * @param[in] date_time Date + time.
+ * @param[in] units Units.
+ * @param[in] file File name.
+ * @param[in] freqs Frequency vector.
+ * @param[in] nfreqs Number of frequencies in the vector.
+ * @param[in] rtype Use complex value or Amplited/phase in the output.
+ * @param[in] verbose If used, then verbose.
+ * @param[in] start_stage Start stage.
+ * @param[in] stop_stage End stage.
+ * @param[in] stdio_flag Print output to stdio if used.
+ * @param[in] useTotalSensitivityFlag Use or not total sensitivity.
+ * @param[in] x_for_b62 Frequency value for Polynomial.
+ * @param[in] xml_flag Use XML or not.
  * @remark Calls evresp_itp() but with listinterp_tension set to 0.
  * @returns Responses.
  */
@@ -2081,33 +2085,33 @@ struct response *evresp(char *stalst, char *chalst, char *net_code,
                         char *file, double *freqs, int nfreqs, char *rtype,
                         char *verbose, int start_stage, int stop_stage,
                         int stdio_flag, int useTotalSensitivityFlag,
-                        double x_for_b62, int xml_flag);
+                        double x_for_b62, int xml_flag, evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Evaluate responses for user requested station/channel/network tuple
  *        at the frequencies requested by the user.
- * @param[in] stalst FIXME.
- * @param[in] chalst FIXME.
- * @param[in] net_code FIXME.
- * @param[in] locidlst FIXME.
- * @param[in] date_time FIXME.
- * @param[in] units FIXME.
- * @param[in] file FIXME.
- * @param[in] freqs FIXME.
- * @param[in] nfreqs FIXME.
- * @param[in] rtype FIXME.
- * @param[in] verbose FIXME.
- * @param[in] start_stage FIXME.
- * @param[in] stop_stage FIXME.
- * @param[in] stdio_flag FIXME.
- * @param[in] listinterp_out_flag FIXME.
- * @param[in] listinterp_in_flag FIXME.
- * @param[in] listinterp_tension FIXME.
- * @param[in] useTotalSensitivityFlag FIXME.
- * @param[in] x_for_b62 FIXME.
- * @param[in] xml_flag FIXME.
+ * @param[in] stalst Station list.
+ * @param[in] chalst Channel list.
+ * @param[in] net_code Network code.
+ * @param[in] locidlst Localtion ID list.
+ * @param[in] date_time Date + time.
+ * @param[in] units Units.
+ * @param[in] file File name.
+ * @param[in] freqs Frequency vector.
+ * @param[in] nfreqs Number of frequencies in the vector.
+ * @param[in] rtype Use complex value or Amplited/phase in the output.
+ * @param[in] verbose If used, then verbose.
+ * @param[in] start_stage Start stage.
+ * @param[in] stop_stage End stage.
+ * @param[in] stdio_flag Print output to stdio if used. 
+ * @param[in] listinterp_out_flag Interpolate output of list (B55).
+ * @param[in] listinterp_in_flag Interpolate input of list (B55).
+ * @param[in] listinterp_tension This parameter is obsolote and should be removed.
+ * @param[in] useTotalSensitivityFlag Use or not total sensitivity.
+ * @param[in] x_for_b62  Frequency value for Polynomial.
+ * @param[in] xml_flag Use XML or not.
  * @returns Responses.
  */
 struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
@@ -2118,38 +2122,58 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                             int listinterp_out_flag, int listinterp_in_flag,
                             double listinterp_tension,
                             int useTotalSensitivityFlag, double x_for_b62,
-                            int xml_flag);
+                            int xml_flag, evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Evaluate responses for user requested station/channel/network tuple
- *        at the frequencies requested by the user.
- * @param[in] sta FIXME.
- * @param[in] cha FIXME.
- * @param[in] net FIXME.
- * @param[in] locid FIXME.
- * @param[in] datime FIXME.
- * @param[in] units FIXME.
- * @param[in] file FIXME.
- * @param[in] freqs FIXME.
- * @param[in] nfreqs FIXME.
- * @param[in] resp FIXME.
- * @param[in] rtype FIXME.
- * @param[in] verbose FIXME.
- * @param[in] start_stage FIXME.
- * @param[in] stop_stage FIXME.
- * @param[in] stdio_flag FIXME.
- * @param[in] useTotalSensitivityFlag FIXME.
- * @param[in] x_for_b62 FIXME.
- * @param[in] xml_flag FIXME.
+ *        at the frequencies requested by the user. FORTRAN callable interface to the evresp.
+ *
+ *        This routine was updated in release 4.0.0 to support Fortran
+ *        95.  Previous versions were clearly broken (parameters had
+ *        been added with no respect to the implicit lengths from
+ *        Fortran character arrays), so backwards compatibility is not
+ *        provided.
+ *        Given the cleaner interface supported by Fortran 95, this
+ *        routine can also be called from C.
+ *        Whereas the other function returns a linked list of responses
+ *        one for each response that matched the user's request), this
+ *        routine returns the response for one (1)
+ *        station-channel-network for one (1) effective time.  If more
+ *        than one match is found for a given
+ *        station-channel-network-time, an error condition is raised
+ *        (and a value of -1 is returned to the calling routine to
+ *        indicate failure).  Likewise, a value of 1 is returned if no
+ *        match is found for the given station-channel-network-time.  If
+ *        a unique match is found, a value of 0 is returned to the
+ *        calling routine
+ *
+ * @param[in] sta Station.
+ * @param[in] cha Channel.
+ * @param[in] net Network.
+ * @param[in] locid Localtion ID.
+ * @param[in] datime data and time.
+ * @param[in] units Units.
+ * @param[in] file File name.
+ * @param[in] freqs Frequency vector.
+ * @param[in] nfreqs Number of frequencies in the vector.
+ * @param[out] resp Double vector containing complex response (even elements are real).
+ * @param[in] rtype Use complex value or Amplited/phase in the output.
+ * @param[in] verbose If used, then verbose.
+ * @param[in] start_stage Start stage..
+ * @param[in] stop_stage End stage..
+ * @param[in] stdio_flag Print output to stdio if used.
+ * @param[in] useTotalSensitivityFlag Use or not total sensitivity.
+ * @param[in] x_for_b62 Frequency value for Polynomial.
+ * @param[in] xml_flag Use XML or not.
  * @remark Fortran interface.
  */
 int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
              char *units, char *file, double *freqs, int nfreqs, double *resp,
              char *rtype, char *verbose, int start_stage, int stop_stage,
              int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
-             int xml_flag);
+             int xml_flag, evalresp_log_t* log);
 
 /**
  * @private
@@ -2170,12 +2194,12 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
 void interpolate_list_blockette(double **frequency_ptr,
                                 double **amplitude_ptr, double **phase_ptr,
                                 int *p_number_points, double *req_freq_arr,
-                                int req_num_freqs, double tension);
+                                int req_num_freqs, double tension, evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief An array of strings presenting full SEED units names, like Counts, Volts, etc... .
  */
 extern char SEEDUNITS[][UNITS_STR_LEN];
 
@@ -2208,14 +2232,14 @@ extern int FirstField;
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Pi = 3.141592653589793238462643383279502884197169399375105820974944592307816... .
  */
 extern double Pi;
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief 2 * Pi.
  */
 extern double twoPi;
 
@@ -2238,7 +2262,7 @@ extern struct channel *GblChanPtr;
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Scaling factor to convert from the units in RESP file to MKS units.
  */
 extern float unitScaleFact;
 
@@ -2247,14 +2271,14 @@ extern float unitScaleFact;
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Name of the current RESP file processed by evalresp.
  */
 extern char *curr_file;
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Sequence number of the current stage.
  */
 extern int curr_seq_no;
 
@@ -2264,7 +2288,7 @@ extern int curr_seq_no;
 /**
  * @private
  * @ingroup evalresp_private
- * @brief FIXME.
+ * @brief Jump buffer for long jump function: obsolete and will be removed.
  */
 extern jmp_buf jump_buffer;
 

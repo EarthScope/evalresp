@@ -11,12 +11,14 @@ Makefile
 *~
 *.log
 *.sw[op]
+*.pdf
 
 configure
 config.*
 libtool
 stamp*
 build-aux
+doc/latex
 
 env
 install
