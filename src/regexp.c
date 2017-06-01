@@ -39,6 +39,8 @@
 #include "regexp.h"
 #include "regmagic.h"
 
+#include "log.h"
+
 /*
  * The "internal use only" fields in regexp.h are present to pass info from
  * compile to execute that permits the execute phase to run lots faster on
@@ -142,7 +144,8 @@
 #define    UCHARAT(p)    ((int)*(p)&CHARBITS)
 #endif
 
-#define    FAIL(m)    { evr_regerror(m); return(NULL); }
+#define    FAIL(m, log)    { evalresp_log(log, ERROR, 0, m); return(NULL); }
+/*XXX #define    FAIL(m)    { evr_regerror(m); return(NULL); } */
 #define    ISMULT(c)    ((c) == '*' || (c) == '+' || (c) == '?')
 #define    META    "^$.[()|?+*\\"
 
@@ -198,8 +201,9 @@ STATIC int strcspn();
  * Beware that the optimization-preparation code in here knows about some
  * of the structure of the compiled regexp.
  */
-regexp * evr_regcomp(exp)
-    char *exp; {
+regexp * evr_regcomp(exp, log)
+    char *exp;
+    evalresp_log_t *log;{
     register regexp *r;
     register char *scan;
     register char *longest;
@@ -208,7 +212,7 @@ regexp * evr_regcomp(exp)
     extern void *malloc(size_t size);
 
     if (exp == NULL)
-        FAIL("NULL argument");
+        FAIL("NULL argument", log);
 
     /* First pass: determine size, legality. */
     regparse = exp;
@@ -221,12 +225,12 @@ regexp * evr_regcomp(exp)
 
     /* Small enough for pointer-storage convention? */
     if (regsize >= 32767L) /* Probably could be 65535L. */
-        FAIL("regexp too big");
+        FAIL("regexp too big", log);
 
     /* Allocate space. */
     r = (regexp *) malloc(sizeof(regexp) + (unsigned) regsize);
     if (r == NULL)
-        FAIL("out of space");
+        FAIL("out of space", log);
 
     /* Second pass: emit code. */
     regparse = exp;
@@ -285,9 +289,10 @@ regexp * evr_regcomp(exp)
  * is a trifle forced, but the need to tie the tails of the branches to what
  * follows makes it hard to avoid.
  */
-static char * reg(paren, flagp)
+static char * reg(paren, flagp, log)
     int paren; /* Parenthesized? */
-    int *flagp; {
+    int *flagp;
+    evalresp_log_t *log; {
     register char *ret;
     register char *br;
     register char *ender;
@@ -299,7 +304,7 @@ static char * reg(paren, flagp)
     /* Make an OPEN node, if parenthesized. */
     if (paren) {
         if (regnpar >= NSUBEXP)
-            FAIL("too many ()");
+            FAIL("too many ()", log);
         parno = regnpar;
         regnpar++;
         ret = regnode(OPEN + parno);
@@ -334,16 +339,16 @@ static char * reg(paren, flagp)
 
     /* Hook the tails of the branches to the closing node. */
     for (br = ret; br != NULL; br = regnext(br))
-        regoptail(br, ender);
+        regoptail(br, ender, log);
 
     /* Check for proper termination. */
     if (paren && *regparse++ != ')') {
-        FAIL("unmatched ()");
+        FAIL("unmatched ()", log);
     } else if (!paren && *regparse != '\0') {
         if (*regparse == ')') {
-            FAIL("unmatched ()");
+            FAIL("unmatched ()", log);
         } else
-            FAIL("junk on end"); /* "Can't happen". */
+            FAIL("junk on end", log); /* "Can't happen". */
         /* NOTREACHED */
     }
 
@@ -392,8 +397,9 @@ static char * regbranch(flagp)
  * It might seem that this node could be dispensed with entirely, but the
  * endmarker role is not redundant.
  */
-static char * regpiece(flagp)
-    int *flagp; {
+static char * regpiece(flagp, log)
+    int *flagp;
+    evalresp_log_t *log;{
     register char *ret;
     register char op;
     register char *next;
@@ -410,7 +416,7 @@ static char * regpiece(flagp)
     }
 
     if (!(flags & HASWIDTH) && op != '?')
-        FAIL("*+ operand could be empty");
+        FAIL("*+ operand could be empty", log);
     *flagp = (op != '+') ? (WORST | SPSTART) : (WORST | HASWIDTH);
 
     if (op == '*' && (flags & SIMPLE))
@@ -418,8 +424,8 @@ static char * regpiece(flagp)
     else if (op == '*') {
         /* Emit x* as (x&|), where & means "self". */
         reginsert(BRANCH, ret); /* Either x */
-        regoptail(ret, regnode(BACK)); /* and loop */
-        regoptail(ret, ret); /* back */
+        regoptail(ret, regnode(BACK), log); /* and loop */
+        regoptail(ret, ret, log); /* back */
         regtail(ret, regnode(BRANCH)); /* or */
         regtail(ret, regnode(NOTHING)); /* null. */
     } else if (op == '+' && (flags & SIMPLE))
@@ -437,11 +443,11 @@ static char * regpiece(flagp)
         regtail(ret, regnode(BRANCH)); /* or */
         next = regnode(NOTHING); /* null. */
         regtail(ret, next);
-        regoptail(ret, next);
+        regoptail(ret, next, log);
     }
     regparse++;
     if (ISMULT(*regparse))
-        FAIL("nested *?+");
+        FAIL("nested *?+", log);
 
     return (ret);
 }
@@ -454,8 +460,9 @@ static char * regpiece(flagp)
  * faster to run.  Backslashed characters are exceptions, each becoming a
  * separate node; the code is simpler that way and it's not worth fixing.
  */
-static char * regatom(flagp)
-    int *flagp; {
+static char * regatom(flagp, log)
+    int *flagp;
+    evalresp_log_t *log;{
     register char *ret;
     int flags;
 
@@ -492,7 +499,7 @@ static char * regatom(flagp)
                     class = UCHARAT(regparse-2) + 1;
                     classend = UCHARAT(regparse);
                     if (class > classend + 1)
-                        FAIL("invalid [] range");
+                        FAIL("invalid [] range", log);
                     for (; class <= classend; class++)
                         regc(class);
                     regparse++;
@@ -502,7 +509,7 @@ static char * regatom(flagp)
         }
         regc('\0');
         if (*regparse != ']')
-            FAIL("unmatched []");
+            FAIL("unmatched []", log);
         regparse++;
         *flagp |= HASWIDTH | SIMPLE;
     }
@@ -516,18 +523,18 @@ static char * regatom(flagp)
     case '\0':
     case '|':
     case ')':
-        FAIL("internal urp")
+        FAIL("internal urp", log)
         ; /* Supposed to be caught earlier. */
         break;
     case '?':
     case '+':
     case '*':
-        FAIL("?+* follows nothing")
+        FAIL("?+* follows nothing", log)
         ;
         break;
     case '\\':
         if (*regparse == '\0')
-            FAIL("trailing \\")
+            FAIL("trailing \\", log)
         ;
         ret = regnode(EXACTLY);
         regc(*regparse++);
@@ -541,7 +548,7 @@ static char * regatom(flagp)
         regparse--;
         len = strcspn(regparse, META);
         if (len <= 0)
-            FAIL("internal disaster");
+            FAIL("internal disaster", log);
         ender = *(regparse + len);
         if (len > 1 && ISMULT(ender))
             len--; /* Back off clear of ?+* operand. */
@@ -656,8 +663,8 @@ static void regtail(p, val)
 /*
  - regoptail - regtail on operand of first argument; nop if operandless
  */
-static void regoptail(p, val)
-    char *p;char *val; {
+static void regoptail(p, val, log)
+    char *p;char *val;evalresp_log_t *log; {
     /* "Operandless" and "op != BRANCH" are synonymous in practice. */
     if (p == NULL || p == &regdummy || OP(p) != BRANCH)
         return;
@@ -692,19 +699,21 @@ STATIC char *regprop();
 /*
  - evr_regexec - match a regexp against a string
  */
-int evr_regexec(prog, string)
-    register regexp *prog;register char *string; {
+int evr_regexec(prog, string, log)
+    register regexp *prog;register char *string;evalresp_log_t *log; {
     register char *s;
 
     /* Be paranoid... */
     if (prog == NULL || string == NULL) {
-        evr_regerror("NULL parameter");
+        evalresp_log(log, ERROR, 0,"NULL parameter");
+        /*XXX evr_regerror("NULL parameter"); */
         return (0);
     }
 
     /* Check validity of program. */
     if (UCHARAT(prog->program) != MAGIC) {
-        evr_regerror("corrupted program");
+        evalresp_log(log, ERROR, 0,"NULL parameter");
+        /*XXX evr_regerror("corrupted program"); */
         return (0);
     }
 
@@ -786,20 +795,27 @@ regtry(prog, string)
  * by recursion.
  */
 static int /* 0 failure, 1 success */
-regmatch(prog)
-    char *prog; {
+regmatch(prog, log)
+    char *prog;
+    evalresp_log_t *log; {
     register char *scan; /* Current node. */
     char *next; /* Next node. */
 
     scan = prog;
 #ifdef DEBUG
     if (scan != NULL && regnarrate)
-    fprintf(stderr, "%s(\n", regprop(scan));
+    {
+        evalresp_log(log, DEBUG, 0, "%s(", regprop(scan));
+    }
+    /*XXX fprintf(stderr, "%s(\n", regprop(scan)); */
 #endif
     while (scan != NULL) {
 #ifdef DEBUG
         if (regnarrate)
-        fprintf(stderr, "%s...\n", regprop(scan));
+        {
+            evalresp_log(log, DEBUG, 0, "%s...", regprop(scan));
+        /*XXX fprintf(stderr, "%s...\n", regprop(scan)); *//
+        }
 #endif
         next = regnext(scan);
 
@@ -952,7 +968,8 @@ regmatch(prog)
             return (1); /* Success! */
             break;
         default:
-            evr_regerror("memory corruption");
+            evalresp_log(log, ERROR, 0,"memory corruption");
+            /*XXX evr_regerror("memory corruption"); */
             return (0);
             break;
         }
@@ -964,15 +981,17 @@ regmatch(prog)
      * We get here only if there's trouble -- normally "case END" is
      * the terminating point.
      */
-    evr_regerror("corrupted pointers");
+    evalresp_log(log, ERROR, 0,"corrupted pointers");
+    /*XXX evr_regerror("corrupted pointers"); */
     return (0);
 }
 
 /*
  - regrepeat - repeatedly match something simple, report how many
  */
-static int regrepeat(p)
-    char *p; {
+static int regrepeat(p, log)
+    char *p;
+    evalresp_log_t *log;{
     register int count = 0;
     register char *scan;
     register char *opnd;
@@ -1003,7 +1022,8 @@ static int regrepeat(p)
         }
         break;
     default: /* Oh dear.  Called inappropriately. */
-        evr_regerror("internal foulup");
+        evalresp_log(log, ERROR, 0,"internal foulup");
+        /*XXX evr_regerror("internal foulup"); */
         count = 0; /* Best compromise. */
         break;
     }
@@ -1152,7 +1172,8 @@ char *op;
         p = "PLUS";
         break;
         default:
-        evr_regerror("corrupted opcode");
+        evalresp_log(log, ERROR, 0,"corrupted opcode");
+        /*XXX evr_regerror("corrupted opcode"); */
         break;
     }
     if (p != NULL)

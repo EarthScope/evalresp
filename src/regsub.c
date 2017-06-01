@@ -25,6 +25,7 @@
 #include <string.h>          /* added 8/28/2001 -- [ET] */
 #include "regexp.h"
 #include "regmagic.h"
+#include "log.h"
 
 #ifndef CHARBITS
 #define    UCHARAT(p)    ((int)*(unsigned char *)(p))
@@ -35,8 +36,8 @@
 /*
  - evr_regsub - perform substitutions after a regexp match
  */
-void evr_regsub(prog, source, dest)
-    regexp *prog;char *source;char *dest; {
+void evr_regsub(prog, source, dest, log)
+    regexp *prog;char *source;char *dest;evalresp_log_t *log; {
     register char *src;
     register char *dst;
     register char c;
@@ -44,11 +45,13 @@ void evr_regsub(prog, source, dest)
     register int len;
 
     if (prog == NULL || source == NULL || dest == NULL) {
-        evr_regerror("NULL parm to evr_regsub");
+        evalresp_log(log, ERROR, 0, "NULL parm to evr_regsub");
+        /*XXX evr_regerror("NULL parm to evr_regsub"); */
         return;
     }
     if (UCHARAT(prog->program) != MAGIC) {
-        evr_regerror("damaged regexp fed to evr_regsub");
+        evalresp_log(log, ERROR, 0,"damaged regexp fed to evr_regsub");
+        /*XXX evr_regerror("damaged regexp fed to evr_regsub"); */
         return;
     }
 
@@ -69,7 +72,8 @@ void evr_regsub(prog, source, dest)
             (void) strncpy(dst, prog->startp[no], len);
             dst += len;
             if (*(dst - 1) == '\0') { /* strncpy hit NUL. */
-                evr_regerror("damaged match string");
+                evalresp_log(log, ERROR, 0,"damaged match string");
+                /*XXX evr_regerror("damaged match string"); */
                 return;
             }
         }

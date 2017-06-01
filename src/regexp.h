@@ -1,3 +1,4 @@
+#include <log.h>
 /**
  * @mainpage Introduction
  *
@@ -75,7 +76,7 @@ typedef struct regexp {
  * @warning Beware that the optimization-preparation code in here knows about
  *          some of the structure of the compiled regexp.
  */
-regexp *evr_regcomp(char *exp);
+regexp *evr_regcomp(char *exp, evalresp_log_t *log);
 
 /**
  * @private
@@ -86,7 +87,7 @@ regexp *evr_regcomp(char *exp);
  * @returns @c 0 on error or no match.
  * @returns Pointer to position in string if match.
  */
-int evr_regexec(regexp *prog, char *string);
+int evr_regexec(regexp *prog, char *string, evalresp_log_t *log);
 
 /**
  * @private
@@ -96,7 +97,7 @@ int evr_regexec(regexp *prog, char *string);
  * @param[in] source Source string.
  * @param[out] dest Destination string.
  */
-void evr_regsub(regexp *prog, char *source, char *dest);
+void evr_regsub(regexp *prog, char *source, char *dest, evalresp_log_t *log);
 
 /**
  * @private
