@@ -428,7 +428,8 @@ doc/mxml.man: mxmldoc-static mxml.xml
 
 $(OBJS):	Makefile config.h
 
-check:
+check: all
+
 info:
 dvi:
 ps:

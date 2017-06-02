@@ -107,6 +107,9 @@ Estimated delay
     Run process  evalresp  CGV  HYZ  2010  1  0.001  10  100  -f  RESP.Z.CGV..HYZ  -use-estimated-delay
     Count and compare target files two float cols
 
+# the following two tests don't test anything - waiting on better data from
+# ilya
+
 Interpolate output
     Prepare  base/args/interp_out  base  RESP.Z.CGV..HYZ
     Run process  evalresp  CGV  HYZ  2010  1  0.001  10  100  -f  RESP.Z.CGV..HYZ  -il
@@ -142,7 +145,14 @@ XML
     Run process  evalresp  ANMO  BHZ  2015  1  0.001  10  100  -f  station-1.xml  -x  -l  10
     Count and compare target files two float cols
 
-B62 interpolation
-    Prepare  base/args/b62  base  RESP.IM.ATTU..BHE
-    Run process  evalresp  ATTU  BHE  1998  57  0.001  10  100  -f  RESP.IM.ATTU..BHE  -il  -b62_x  1
-    Count and compare target files two float cols  base/args/b62  0.1
+# waiting on b62 test from ilya
+
+# the following, by happy mistake, tested spline data, so we are leaving
+# it here, even though it does not test the b62 flag as originally intended.
+
+B55 interpolation
+    Prepare  base/args/b55  base  RESP.IM.ATTU..BHE
+    Run process  evalresp  ATTU  BHE  1998  57  0.001  10  100  -f  RESP.IM.ATTU..BHE  -il
+    # 50% difference is high, but leave this in as it check sthe file count
+    Count and compare target files two float cols  base/args/b55  0.5
+    Compare target files two float cols average  base/args/b55  0.01
