@@ -44,5 +44,8 @@ check_log_CFLAGS = @CHECK_CFLAGS@ -I../../src/ -I../../src/log
 check_log_LDADD = ../../src/libx2r.la ../../src/libevresp.la @CHECK_LIBS@ -lmxmlev 
 endif
 
+clean-local:
+	rm -f *.xml *.txt *.o
+
 distclean-local:
 	rm -f Makefile.in *~
