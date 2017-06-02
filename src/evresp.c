@@ -90,9 +90,10 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
         char *units, char *file, double *freqs, int nfreqs, double *resp,
         char *rtype, char *verbose, int start_stage, int stop_stage,
         int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
-        int xml_flag, evalresp_log_t *log) {
+        int xml_flag) {
     struct response *first = (struct response *) NULL;
     int i, j;
+    evalresp_log_t *log = NULL;
 
     // some eyeball checks to make sure fortran is passing things ok
     // printf("freqs: %f-%f\n", freqs[0], freqs[nfreqs-1]);

@@ -2168,12 +2168,13 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
  * @param[in] x_for_b62 Frequency value for Polynomial.
  * @param[in] xml_flag Use XML or not.
  * @remark Fortran interface.
+ * @note this will log to default of the library, currently stderr
  */
 int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
              char *units, char *file, double *freqs, int nfreqs, double *resp,
              char *rtype, char *verbose, int start_stage, int stop_stage,
              int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
-             int xml_flag, evalresp_log_t* log);
+             int xml_flag);
 
 /**
  * @private
