@@ -196,3 +196,60 @@ class Support:
             filelist = ','.join(files)
             self.compare_text(target_dir, filelist)
         self.check_number_of_files(len(files)+1)
+
+    def compare_n_float_cols_average(self, target_dir, ncols, tol, files):
+        """Call this method after running evalresp on a single set of files.
+        It checks the given files (a comma-separated list with no
+        spaces) between the working directory and the target
+        directory, using the average relative deviation."""
+        run = join(RUN, getcwd())
+        self._assert_present_dir(run)
+        target = join(TARGET, target_dir)
+        self._assert_present_dir(target)
+        for file in files.split(','):
+            result_path = join(run, file)
+            target_path = join(target, file)
+            logger.info('Comparing %s with %s' % (result_path, target_path))
+            total, n = 0, 0
+            with open(target_path, 'r') as target_file:
+                with open(result_path, 'r') as result_file:
+                    for (index, result_line) in enumerate(result_file.readlines()):
+                        target_line = target_file.readline()
+                        try:
+                            result_data = self._extract_floats(ncols, result_line, result_path, index)
+                            target_data = self._extract_floats(ncols, target_line, target_path, index)
+                            for (a, b) in zip(result_data, target_data):
+                                magnitude = max(abs(a), abs(b))
+                                if magnitude < tol:
+                                    delta = abs(a - b)
+                                else:
+                                    delta = abs(a - b) / magnitude
+                            total += delta
+                            n += 1
+                        except Exception, e:
+                            # try comparing as text (may be titles etc)
+                            if result_line != target_line:
+                                raise e
+                average = total / n
+                if average > tol:
+                    raise Exception('%s and %s have an average (relative) difference of %f > %f' %
+                                    (result_path, target_path, average, tol))
+                if target_file.readline():
+                    raise Exception('Missing data at end of %s' % result_path)
+
+    def compare_target_files_two_float_cols_average(
+            self, target_dir=None, tol=None):
+        """Call this method after running evalresp on a single set of files.
+        It checks all files in the target directory against those in
+        the run directory (the target directory can be inferred if
+        both have the same relative paths) using the average relative
+        deviation."""
+        if not target_dir:
+            target_dir = relpath(realpath(getcwd()), realpath(RUN))
+        if tol:
+            tol = float(tol)
+        else:
+            tol = TINY
+        target = join(TARGET, target_dir)
+        files = ','.join(listdir(target))
+        self.compare_n_float_cols_average(target_dir, 2, tol, files)
