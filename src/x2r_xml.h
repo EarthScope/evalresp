@@ -30,6 +30,7 @@
 #include <stdio.h>
 
 #include "x2r_log.h"
+#include <log.h>
 
 
 // This is the in-memory model of the station.xml file.
@@ -303,7 +304,7 @@ typedef struct {
  *          implicit tests against the IRIS-WS code elsewhere). Originally
  *          used strptime, but that's not available on Windows.
  */
-int x2r_parse_iso_datetime(x2r_log *log, const char *datetime, time_t *epoch);
+int x2r_parse_iso_datetime(evalresp_log_t *log, const char *datetime, time_t *epoch);
 
 /**
  * @private
@@ -312,7 +313,7 @@ int x2r_parse_iso_datetime(x2r_log *log, const char *datetime, time_t *epoch);
  *        in-memory representation of the station.xml file read from the given
  *        stream.
  */
-int x2r_station_service_load(x2r_log *log, FILE *in, x2r_fdsn_station_xml **root);
+int x2r_station_service_load(evalresp_log_t *log, FILE *in, x2r_fdsn_station_xml **root);
 
 /**
  * @private

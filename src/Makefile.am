@@ -7,7 +7,7 @@ evalresp_SOURCE = evalresp.c
 evalresp_LDADD =  -levresp -lm -lx2r -lmxmlev
 
 xml2resp_SOURCE = xml2resp.c
-xml2resp_LDADD = -lx2r -lmxmlev
+xml2resp_LDADD = -levresp -lx2r -lmxmlev
 
 lib_LTLIBRARIES = libevresp.la libx2r.la
 

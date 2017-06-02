@@ -410,7 +410,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
         if (!mode) {
 
             /* convert from xml format if necessary, logging error messages to stderr. */
-            if (x2r_xml2resp_on_flag(&fptr, xml_flag, X2R_ERROR)) return NULL;
+            if (x2r_xml2resp_on_flag(&fptr, xml_flag, X2R_ERROR, log)) return NULL;
             //if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
 
             which_matched = 0;
@@ -607,7 +607,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                 if (fptr) {
 
                     /* convert from xml format if necessary, logging error messages to stderr. */
-                    if (x2r_xml2resp_on_flag(&fptr, xml_flag, X2R_ERROR)) return NULL;
+                    if (x2r_xml2resp_on_flag(&fptr, xml_flag, X2R_ERROR, log)) return NULL;
                     //if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
 
                     curr_file = lst_ptr->name;
