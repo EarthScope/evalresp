@@ -6,6 +6,7 @@
 #include "x2r.h"
 #include "x2r_log.h"
 #include "x2r_ws.h"
+#include "log.h"
 
 
 void run_test(char *station, char *response) {
@@ -13,8 +14,9 @@ void run_test(char *station, char *response) {
     fail_if(!(in = fopen(station, "r")));
     FILE *out;
     fail_if(!(out = tmpfile()));
-    x2r_log *log;
-    fail_if(x2r_alloc_log(X2R_DEBUG, stderr, &log));
+    evalresp_log_t *log = NULL;
+    /*XXX x2r_log *log;
+    fail_if(x2r_alloc_log(X2R_DEBUG, stderr, &log)); */
     x2r_fdsn_station_xml *root = NULL;
     fail_if(x2r_station_service_load(log, in, &root));
     fail_if(x2r_resp_util_write(log, out, root));
@@ -32,7 +34,7 @@ void run_test(char *station, char *response) {
                 response, station, line, a, b);
     }
     fail_if(x2r_free_fdsn_station_xml(root, X2R_OK));
-    fail_if(x2r_free_log(log, X2R_OK));
+    /*XXX fail_if(x2r_free_log(log, X2R_OK)); */
 }
 
 
