@@ -294,7 +294,7 @@ extern evalresp_log_t *evalresp_log_t_alloc(evalresp_log_func_t log_func, void *
  *
  * Currently a wrapper for free().
  *
- * @param[in] log
+ * @param[in] log Logging structure.
  */
 extern void evalresp_log_t_free(evalresp_log_t *log);
 
