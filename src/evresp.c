@@ -275,7 +275,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
     /* if the verbose flag is set, then print some diagnostic output (other than errors) */
 
     if (verbose && !strcmp(verbose, "-v")) {
-        evalresp_log(log, WARN, 0, "<< EVALRESP RESPONSE OUTPUT V%s >>\n", REVNUM);
+        evalresp_log(log, WARN, 0, "<< EVALRESP RESPONSE OUTPUT V%s >>", REVNUM);
         /*XXX fprintf(stderr, "<< EVALRESP RESPONSE OUTPUT V%s >>\n", REVNUM);
         fflush(stderr); */
     }

@@ -92,8 +92,9 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
             (strlen(chan->locid) ? chan->locid : "??"), chan->chaname); */
     if (!def_units_flag)
     {
-        evalresp_log(log, INFO, 0, "%s %s %s\n%s   Seed units: %s(in)->%s(out)", myLabel,
-                chan->beg_t, chan->end_t, myLabel, SEEDUNITS[in_units],
+        evalresp_log(log, INFO, 0, "%s %s %s", myLabel,
+                chan->beg_t, chan->end_t);
+        evalresp_log(log, INFO, 0,"%s   Seed units: %s(in)->%s(out)", myLabel, SEEDUNITS[in_units],
                 SEEDUNITS[out_units]);
         /*XXX fprintf(stderr, "%s %s %s\n%s   Seed units: %s(in)->%s(out)\n", myLabel,
                 chan->beg_t, chan->end_t, myLabel, SEEDUNITS[in_units],
@@ -109,7 +110,7 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
                 chan->last_units); */
     }
 
-    evalresp_log(log, INFO, 0, "%s   computed sens=%.5E (reported=%.5E) @ %.5E Hz\n",
+    evalresp_log(log, INFO, 0, "%s   computed sens=%.5E (reported=%.5E) @ %.5E Hz",
             myLabel, chan->calc_sensit, chan->sensit, chan->sensfreq);
     evalresp_log(log, INFO, 0,
             "%s   calc_del=%.5E  corr_app=%.5E  est_delay=%.5E  final_sint=%.3g(sec/sample)",
@@ -256,7 +257,7 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
         }
         if (this_stage->sequence_no)
         {
-            evalresp_log(log, INFO, 0, "%s %s\n", myLabel, out_str);
+            evalresp_log(log, INFO, 0, "%s %s", myLabel, out_str);
             /*XXX fprintf(stderr, "%s %s\n", myLabel, out_str); */
         }
         this_stage = this_stage->next_stage;
