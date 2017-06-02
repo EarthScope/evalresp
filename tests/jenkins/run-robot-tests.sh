@@ -16,13 +16,16 @@ if [ ! -d env ]; then
     virtualenv env
     . ./env/bin/activate
     pip install --upgrade robotframework
-    pushd tests/robot/lib
-    python setup.py install
-    popd
 else
     echo "Reusing existing robot virtualenv"
     . ./env/bin/activate
 fi    
+
+# install this every time in case we change it
+echo "(Re-)Installing support library"
+pushd tests/robot/lib
+python setup.py install
+popd
 
 
 # under jenkins, WORKSPACE is set automatically, but otherwise
