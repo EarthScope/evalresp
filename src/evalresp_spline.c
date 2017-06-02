@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "spline.h"
+#include "log.h"
 
 #include "evr_spline.h"
 
@@ -12,7 +13,7 @@ char * evr_spline(int num_points, double *t, double *y,
                   double tension, /* Not used anymore */
                   double k, /* Not used anymore */
                   double *xvals_arr, int num_xvals,
-                  double **p_retvals_arr, int *p_num_retvals)
+                  double **p_retvals_arr, int *p_num_retvals, evalresp_log_t *log)
 {
   char *return_string = NULL;
   int i;
@@ -29,7 +30,7 @@ char * evr_spline(int num_points, double *t, double *y,
   *p_retvals_arr = NULL;
   *p_num_retvals = 0;
 
-  ypp = spline_cubic_set(num_points, t, y, ibcbeg, ybcbeg, ibcend, ybcend);
+  ypp = spline_cubic_set(num_points, t, y, ibcbeg, ybcbeg, ibcend, ybcend, log);
   if (NULL == ypp) {
     return_string = "Call to spline_cubic_set failed";
     goto exit;

@@ -6,12 +6,14 @@
 #include "x2r.h"
 #include "x2r_log.h"
 #include "x2r_ws.h"
+#include "log.h"
 
 
 void run_test(char *input, char *response) {
     FILE *in;
+    evalresp_log_t *log = NULL;
     fail_if(!(in = fopen(input, "r")));
-    fail_if(x2r_xml2resp_auto(&in, X2R_DEBUG));
+    fail_if(x2r_xml2resp_auto(&in, X2R_DEBUG, log));
     FILE *expect;
     fail_if(!(expect = fopen(response, "r")));
     char a[1000], b[1000];

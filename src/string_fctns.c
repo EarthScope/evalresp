@@ -672,7 +672,7 @@ int string_match(const char *string, char *expr, char *type_flag, evalresp_log_t
     }
     regexp_pattern[i] = '\0';
 
-    if ((prog = evr_regcomp(regexp_pattern)) == NULL) {
+    if ((prog = evr_regcomp(regexp_pattern, log)) == NULL) {
         evalresp_log(log, ERROR, 0,
                 "string_match; pattern '%s' didn't compile", regexp_pattern);
         return 0; /*TODO RE_COMP_FAILED*/
@@ -680,7 +680,7 @@ int string_match(const char *string, char *expr, char *type_flag, evalresp_log_t
                 "string_match; pattern '%s' didn't compile", regexp_pattern); */
     }
     lcl_ptr = lcl_string;
-    test = evr_regexec(prog, lcl_ptr);
+    test = evr_regexec(prog, lcl_ptr, log);
 
     free(prog);
     return (test);

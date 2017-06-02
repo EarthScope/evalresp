@@ -1,20 +1,21 @@
-<< EVALRESP RESPONSE OUTPUT V4.0.7 >>
- --------------------------------------------------
-  RESP.Z.CGV..HYZ
- --------------------------------------------------
-  Z CGV ?? HYZ  2010,001,00:00:00.0000 No Ending Time
-   Seed units: Velocity(in)->Counts(out)
-   computed sens=1.25777E+09 (reported=1.25777E+09) @ 5.00000E-02 Hz
-   calc_del=3.74668E-01  corr_app=3.74668E-01  est_delay=3.74668E-01  final_sint=0.01(sec/sample)
-      stage  1: LAPLACE     A0=9.873398E+04 NZeros=  2 NPoles=  4 Sd=1.999229E+03
-      stage  2: GAIN        Sd=1.000000E+00
-      stage  3: FIR_SYM_1   H0=1.000000E+00 Ncoeff=  1 SamInt=9.765625E-06 Sd=6.291290E+05
-      stage  4: FIR_SYM_1   H0=1.000000E+00 Ncoeff= 29 SamInt=9.765625E-06 Sd=1.000000E+00
-      stage  5: FIR_SYM_1   H0=1.000000E+00 Ncoeff= 13 SamInt=7.812500E-05 Sd=1.000000E+00
-      stage  6: FIR_SYM_1   H0=1.000000E+00 Ncoeff= 13 SamInt=1.562500E-04 Sd=1.000000E+00
-      stage  7: FIR_SYM_1   H0=1.000000E+00 Ncoeff= 13 SamInt=3.125000E-04 Sd=1.000000E+00
-      stage  8: FIR_SYM_1   H0=1.000000E+00 Ncoeff= 13 SamInt=6.250000E-04 Sd=1.000000E+00
-      stage  9: FIR_SYM_1   H0=1.000000E+00 Ncoeff= 13 SamInt=1.250000E-03 Sd=1.000000E+00
-      stage 10: FIR_ASYM    H0=1.000000E+00 Ncoeff=101 SamInt=2.500000E-03 Sd=1.000000E+00
-      stage 11: FIR_SYM_1   H0=1.000000E+00 Ncoeff= 95 SamInt=5.000000E-03 Sd=1.000000E+00
---------------------------------------------------
+Fri Jun  2 11:04:48 2017 [WARN] << EVALRESP RESPONSE OUTPUT V4.0.7 >>
+Fri Jun  2 11:04:48 2017 [INFO]  --------------------------------------------------
+Fri Jun  2 11:04:48 2017 [INFO]   RESP.Z.CGV..HYZ
+Fri Jun  2 11:04:48 2017 [INFO]  --------------------------------------------------
+Fri Jun  2 11:04:48 2017 [INFO]   Z CGV ?? HYZ 
+Fri Jun  2 11:04:48 2017 [INFO]  2010,001,00:00:00.0000 No Ending Time
+Fri Jun  2 11:04:48 2017 [INFO]    Seed units: Velocity(in)->Counts(out)
+Fri Jun  2 11:04:48 2017 [INFO]    computed sens=1.25777E+09 (reported=1.25777E+09) @ 5.00000E-02 Hz
+Fri Jun  2 11:04:48 2017 [INFO]    calc_del=3.74668E-01  corr_app=3.74668E-01  est_delay=3.74668E-01  final_sint=0.01(sec/sample)
+Fri Jun  2 11:04:48 2017 [INFO]       stage  1: LAPLACE     A0=9.873398E+04 NZeros=  2 NPoles=  4 Sd=1.999229E+03
+Fri Jun  2 11:04:48 2017 [INFO]       stage  2: GAIN        Sd=1.000000E+00
+Fri Jun  2 11:04:48 2017 [INFO]       stage  3: FIR_SYM_1   H0=1.000000E+00 Ncoeff=  1 SamInt=9.765625E-06 Sd=6.291290E+05
+Fri Jun  2 11:04:48 2017 [INFO]       stage  4: FIR_SYM_1   H0=1.000000E+00 Ncoeff= 29 SamInt=9.765625E-06 Sd=1.000000E+00
+Fri Jun  2 11:04:48 2017 [INFO]       stage  5: FIR_SYM_1   H0=1.000000E+00 Ncoeff= 13 SamInt=7.812500E-05 Sd=1.000000E+00
+Fri Jun  2 11:04:48 2017 [INFO]       stage  6: FIR_SYM_1   H0=1.000000E+00 Ncoeff= 13 SamInt=1.562500E-04 Sd=1.000000E+00
+Fri Jun  2 11:04:48 2017 [INFO]       stage  7: FIR_SYM_1   H0=1.000000E+00 Ncoeff= 13 SamInt=3.125000E-04 Sd=1.000000E+00
+Fri Jun  2 11:04:48 2017 [INFO]       stage  8: FIR_SYM_1   H0=1.000000E+00 Ncoeff= 13 SamInt=6.250000E-04 Sd=1.000000E+00
+Fri Jun  2 11:04:48 2017 [INFO]       stage  9: FIR_SYM_1   H0=1.000000E+00 Ncoeff= 13 SamInt=1.250000E-03 Sd=1.000000E+00
+Fri Jun  2 11:04:48 2017 [INFO]       stage 10: FIR_ASYM    H0=1.000000E+00 Ncoeff=101 SamInt=2.500000E-03 Sd=1.000000E+00
+Fri Jun  2 11:04:48 2017 [INFO]       stage 11: FIR_SYM_1   H0=1.000000E+00 Ncoeff= 95 SamInt=5.000000E-03 Sd=1.000000E+00
+Fri Jun  2 11:04:48 2017 [INFO] --------------------------------------------------

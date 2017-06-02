@@ -44,7 +44,7 @@
 #endif
 
 struct matched_files *find_files(char *file, struct scn_list *scn_lst,
-        int *mode) {
+        int *mode, evalresp_log_t *log) {
     char *basedir, testdir[MAXLINELEN];
     char comp_name[MAXLINELEN], new_name[MAXLINELEN];
     int i, nscn, nfiles, loc_wild;
@@ -58,7 +58,7 @@ struct matched_files *find_files(char *file, struct scn_list *scn_lst,
 
     /* allocate space for the first element of the file pointer linked list */
 
-    flst_head = alloc_matched_files();
+    flst_head = alloc_matched_files(log);
 
     /* and set an 'iterator' variable to be moved through the linked list */
 
@@ -81,27 +81,32 @@ struct matched_files *find_files(char *file, struct scn_list *scn_lst,
                 memset(comp_name, 0, MAXLINELEN);
                 sprintf(comp_name, "%s/RESP.%s.%s.%s.%s", file,
                         scn_ptr->network, scn_ptr->station,
-						loc_wild ? "*" : scn_ptr->locid,
+                        loc_wild ? "*" : scn_ptr->locid,
                         scn_ptr->channel);
-                nfiles = get_names(comp_name, flst_ptr);
+                nfiles = get_names(comp_name, flst_ptr, log);
                 if (!nfiles && !loc_wild) {
-                    fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
+                    evalresp_log(log, WARN, 0, "evresp_; no files match '%s'",
                             comp_name);
-                    fflush(stderr);
+                    /*XXX fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
+                            comp_name);
+                    fflush(stderr); */
                 } else if (!nfiles && loc_wild) {
                     memset(comp_name, 0, MAXLINELEN);
                     sprintf(comp_name, "%s/RESP.%s.%s.%s", file,
                             scn_ptr->network, scn_ptr->station,
                             scn_ptr->channel);
-                    nfiles = get_names(comp_name, flst_ptr);
+                    nfiles = get_names(comp_name, flst_ptr, log);
                     if (!nfiles) {
-                        fprintf(stderr,
+                        evalresp_log(log, WARN, 0,
+                                "evresp_; no files match '%s' (or globbed location)",
+                                comp_name);
+                        /*XXX fprintf(stderr,
                                 "WARNING: evresp_; no files match '%s' (or globbed location)\n",
                                 comp_name);
-                        fflush(stderr);
+                        fflush(stderr); */
                     }
                 }
-                tmp_ptr = alloc_matched_files();
+                tmp_ptr = alloc_matched_files(log);
                 flst_ptr->ptr_next = tmp_ptr;
                 flst_ptr = tmp_ptr;
             }
@@ -128,11 +133,13 @@ struct matched_files *find_files(char *file, struct scn_list *scn_lst,
                     strcat(comp_name, new_name);
                 }
             }
-            nfiles = get_names(comp_name, flst_ptr);
+            nfiles = get_names(comp_name, flst_ptr, log);
             if (!nfiles && strcmp(scn_ptr->locid, "*")) {
-                fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
+                evalresp_log(log, WARN, 0, "evresp_; no files match '%s'",
                         comp_name);
-                fflush(stderr);
+                /*XXX fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
+                        comp_name);
+                fflush(stderr); */
             } else if (!nfiles && !strcmp(scn_ptr->locid, "*")) {
                 memset(comp_name, 0, MAXLINELEN);
                 sprintf(comp_name, "./RESP.%s.%s.%s", scn_ptr->network,
@@ -148,14 +155,16 @@ struct matched_files *find_files(char *file, struct scn_list *scn_lst,
                         strcat(comp_name, new_name);
                     }
                 }
-                nfiles = get_names(comp_name, flst_ptr);
+                nfiles = get_names(comp_name, flst_ptr, log);
                 if (!nfiles) {
-                    fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
+                    evalresp_log(log, WARN, 0, "evresp_; no files match '%s'",
                             comp_name);
-                    fflush(stderr);
+                    /*fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
+                            comp_name);
+                    fflush(stderr); */
                 }
             }
-            tmp_ptr = alloc_matched_files();
+            tmp_ptr = alloc_matched_files(log);
             flst_ptr->ptr_next = tmp_ptr;
             flst_ptr = tmp_ptr;
         }
@@ -173,7 +182,7 @@ struct matched_files *find_files(char *file, struct scn_list *scn_lst,
 /* get_names:  uses system glob() to get filenames matching the
  expression in 'in_file'. */
 
-int get_names(char *in_file, struct matched_files *files) {
+int get_names(char *in_file, struct matched_files *files, evalresp_log_t *log) {
     struct file_list *lst_ptr, *tmp_ptr;
     glob_t globs;
     int count;
@@ -208,7 +217,7 @@ int get_names(char *in_file, struct matched_files *files) {
     /* set the head of the 'files' linked list to a pointer to a newly allocated
      'matched_files' structure */
 
-    files->first_list = alloc_file_list();
+    files->first_list = alloc_file_list(log);
     tmp_ptr = lst_ptr = files->first_list;
 
     /* retrieve the files from the glob list and build up a linked
@@ -218,9 +227,9 @@ int get_names(char *in_file, struct matched_files *files) {
     while (count) {
         count--;
         files->nfiles++;
-        lst_ptr->name = alloc_char(strlen(globs.gl_pathv[count]) + 1);
+        lst_ptr->name = alloc_char(strlen(globs.gl_pathv[count]) + 1, log);
         strcpy(lst_ptr->name, globs.gl_pathv[count]);
-        lst_ptr->next_file = alloc_file_list();
+        lst_ptr->next_file = alloc_file_list(log);
         tmp_ptr = lst_ptr;
         lst_ptr = lst_ptr->next_file;
     }

@@ -1,3 +1,6 @@
+#ifndef __EVALRESP_EVR_SPLINE_H__
+#define __EVALRESP_EVR_SPLINE_H__
+#include <log.h>
 /**
  * @mainpage Introduction
  *
@@ -47,10 +50,12 @@
  * @param[out] p_num_retvals Reference to number of values returned in
  *                           @p p_retvals_arr (will be less than @p num_xvals
  *                           if any new abscissa values are out of range).
+ * @param[in] log Logging structure.
  * @return @c NULL if successful; an error message string if not.
  */
 char * evr_spline(int num_points, double *t, double *y,
                   double tension, /* Not used anymore */
                   double k, /* Not used anymore */
                   double *xvals_arr, int num_xvals,
-                  double **p_retvals_arr, int *p_num_retvals);
+                  double **p_retvals_arr, int *p_num_retvals, evalresp_log_t *log);
+#endif /* __EVALRESP_EVR_SPLINE_H__ */

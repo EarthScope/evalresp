@@ -30,13 +30,14 @@
 
 #include "x2r_log.h"
 #include "x2r_xml.h"
+#include <log.h>
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_ws
  * @brief Print the entire response document, given the in-memory model.
  */
-int x2r_resp_util_write(x2r_log *log, FILE *out, const x2r_fdsn_station_xml *root);
+int x2r_resp_util_write(evalresp_log_t *log, FILE *out, const x2r_fdsn_station_xml *root);
 
 /**
  * @private
@@ -44,7 +45,7 @@ int x2r_resp_util_write(x2r_log *log, FILE *out, const x2r_fdsn_station_xml *roo
  * @brief If xml_flag is set, convert the file and replace *in. Otherwise, do
  *        nothing.
  */
-int x2r_xml2resp_on_flag(FILE **in, int xml_flag, int log_level);
+int x2r_xml2resp_on_flag(FILE **in, int xml_flag, int log_level, evalresp_log_t *log);
 
 /**
  * @private
@@ -52,6 +53,6 @@ int x2r_xml2resp_on_flag(FILE **in, int xml_flag, int log_level);
  * @brief Check the given file, to see if the first character as <, and if so,
  *        convert and replace *in.
  */
-int x2r_xml2resp_auto(FILE **in, int log_level);
+int x2r_xml2resp_auto(FILE **in, int log_level, evalresp_log_t *log);
 
 #endif

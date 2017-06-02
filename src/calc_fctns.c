@@ -650,7 +650,7 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage, evalresp_l
                 /*XXX error_return(ILLEGAL_RESP_FORMAT,
                         "norm_resp; no stage gain defined, zero sensitivity"); */
             } else {
-                fil = alloc_gain();
+                fil = alloc_gain(log);
                 fil->blkt_info.gain.gain = chan->sensit;
                 fil->blkt_info.gain.gain_freq = chan->sensfreq;
                 last_fil->next_blkt = fil;

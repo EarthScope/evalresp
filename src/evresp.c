@@ -90,9 +90,10 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
         char *units, char *file, double *freqs, int nfreqs, double *resp,
         char *rtype, char *verbose, int start_stage, int stop_stage,
         int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
-        int xml_flag, evalresp_log_t *log) {
+        int xml_flag) {
     struct response *first = (struct response *) NULL;
     int i, j;
+    evalresp_log_t *log = NULL;
 
     // some eyeball checks to make sure fortran is passing things ok
     // printf("freqs: %f-%f\n", freqs[0], freqs[nfreqs-1]);
@@ -274,7 +275,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
     /* if the verbose flag is set, then print some diagnostic output (other than errors) */
 
     if (verbose && !strcmp(verbose, "-v")) {
-        evalresp_log(log, WARN, 0, "<< EVALRESP RESPONSE OUTPUT V%s >>\n", REVNUM);
+        evalresp_log(log, WARN, 0, "<< EVALRESP RESPONSE OUTPUT V%s >>", REVNUM);
         /*XXX fprintf(stderr, "<< EVALRESP RESPONSE OUTPUT V%s >>\n", REVNUM);
         fflush(stderr); */
     }
@@ -344,7 +345,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
 
     /* then form a set of network-station-locid-channel tuples to search for */
     scns = alloc_scn_list(
-            chan_list->nstrings * sta_list->nstrings * locid_list->nstrings);
+            chan_list->nstrings * sta_list->nstrings * locid_list->nstrings, log);
     for (i = 0; i < sta_list->nstrings; i++) {
         for (j = 0; j < locid_list->nstrings; j++) {
             for (k = 0; k < chan_list->nstrings; k++, count++) {
@@ -373,7 +374,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
         fptr = stdin;
         mode = 0;
     } else {
-        flst_head = find_files(file, scns, &mode);
+        flst_head = find_files(file, scns, &mode, log);
         flst_ptr = flst_head;
     }
 
@@ -396,13 +397,13 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
     }
 
     /* allocate space for the first response */
-    resp = alloc_response(nfreqs);
+    resp = alloc_response(nfreqs, log);
 
     for (i = 0; i < scns->nscn && (mode || test); i++) {
         /* allocate space for 'matched_files' pointer used to determine if a file has already been read */
 
         if (!stdio_flag)
-            output_files = alloc_matched_files();
+            output_files = alloc_matched_files(log);
 
         /* then check the mode to determine if are parsing one file or a list
          of files (note: if input is from stdin, is one file) */
@@ -410,7 +411,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
         if (!mode) {
 
             /* convert from xml format if necessary, logging error messages to stderr. */
-            if (x2r_xml2resp_on_flag(&fptr, xml_flag, X2R_ERROR)) return NULL;
+            if (x2r_xml2resp_on_flag(&fptr, xml_flag, X2R_ERROR, log)) return NULL;
             //if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
 
             which_matched = 0;
@@ -446,9 +447,9 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                     if ((stdio_flag && !new_file) || !output_files->nfiles) {
                         if (!stdio_flag) {
                             output_files->nfiles++;
-                            out_file = alloc_file_list();
+                            out_file = alloc_file_list(log);
                             output_files->first_list = out_file;
-                            out_file->name = alloc_char(strlen(out_name) + 1);
+                            out_file->name = alloc_char(strlen(out_name) + 1, log);
                             strcpy(out_file->name, out_name);
                         }
                         new_file = 1;
@@ -456,10 +457,10 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                             || k == output_files->nfiles) {
                         if (!stdio_flag) {
                             output_files->nfiles++;
-                            out_file->next_file = alloc_file_list();
+                            out_file->next_file = alloc_file_list(log);
                             tmp_file = out_file->next_file;
                             out_file = tmp_file;
-                            out_file->name = alloc_char(strlen(out_name) + 1);
+                            out_file->name = alloc_char(strlen(out_name) + 1, log);
                             strcpy(out_file->name, out_name);
                         }
                         new_file = 1;
@@ -515,7 +516,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                             memcpy(freqs,
                                     this_channel.first_stage->first_blkt->blkt_info.list.freq,
                                     sizeof(double) * nfreqs); /*cp*/
-                            resp->rvec = alloc_complex(nfreqs);
+                            resp->rvec = alloc_complex(nfreqs, log);
                             output = resp->rvec;
                             resp->nfreqs = nfreqs;
                             resp->freqs = (double *) malloc(
@@ -527,7 +528,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                             nfreqs = nfreqs_orig;
                             freqs = (double *) malloc(sizeof(double) * nfreqs); /* malloc a new vector */
                             memcpy(freqs, freqs_orig, sizeof(double) * nfreqs); /*cp*/
-                            resp->rvec = alloc_complex(nfreqs);
+                            resp->rvec = alloc_complex(nfreqs, log);
                             output = resp->rvec;
                             resp->nfreqs = nfreqs;
                             resp->freqs = (double *) malloc(
@@ -550,7 +551,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                             print_chan(&this_channel, start_stage, stop_stage,
                                     stdio_flag, listinterp_out_flag,
                                     listinterp_in_flag,
-                                    useTotalSensitivityFlag);
+                                    useTotalSensitivityFlag, log);
                         }
 
                         free(freqs); /* free array that was allocated above */
@@ -562,7 +563,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                         if (first_resp == (struct response *) NULL) {
                             first_resp = resp;
                         }
-                        next_ptr = alloc_response(nfreqs);
+                        next_ptr = alloc_response(nfreqs, log);
                         resp->next = next_ptr;
                         prev_ptr = resp;
                         resp = next_ptr;
@@ -607,7 +608,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                 if (fptr) {
 
                     /* convert from xml format if necessary, logging error messages to stderr. */
-                    if (x2r_xml2resp_on_flag(&fptr, xml_flag, X2R_ERROR)) return NULL;
+                    if (x2r_xml2resp_on_flag(&fptr, xml_flag, X2R_ERROR, log)) return NULL;
                     //if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
 
                     curr_file = lst_ptr->name;
@@ -639,19 +640,19 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                             }
                             if (!output_files->nfiles) {
                                 output_files->nfiles++;
-                                out_file = alloc_file_list();
+                                out_file = alloc_file_list(log);
                                 output_files->first_list = out_file;
                                 out_file->name = alloc_char(
-                                        strlen(out_name) + 1);
+                                        strlen(out_name) + 1, log);
                                 strcpy(out_file->name, out_name);
                                 new_file = 1;
                             } else if (k == output_files->nfiles) {
                                 output_files->nfiles++;
-                                out_file->next_file = alloc_file_list();
+                                out_file->next_file = alloc_file_list(log);
                                 tmp_file = out_file->next_file;
                                 out_file = tmp_file;
                                 out_file->name = alloc_char(
-                                        strlen(out_name) + 1);
+                                        strlen(out_name) + 1, log);
                                 strcpy(out_file->name, out_name);
                                 new_file = 1;
                             } else
@@ -778,7 +779,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                                     memcpy(freqs,
                                             this_channel.first_stage->first_blkt->blkt_info.list.freq,
                                             sizeof(double) * nfreqs); /*cp*/
-                                    resp->rvec = alloc_complex(nfreqs);
+                                    resp->rvec = alloc_complex(nfreqs, log);
                                     output = resp->rvec;
                                     resp->nfreqs = nfreqs;
                                     resp->freqs = (double *) malloc(
@@ -792,7 +793,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                                             sizeof(double) * nfreqs); /* malloc a new vector */
                                     memcpy(freqs, freqs_orig,
                                             sizeof(double) * nfreqs); /*cp*/
-                                    resp->rvec = alloc_complex(nfreqs);
+                                    resp->rvec = alloc_complex(nfreqs, log);
                                     output = resp->rvec;
                                     resp->nfreqs = nfreqs;
                                     resp->freqs = (double *) malloc(
@@ -817,7 +818,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                                             stop_stage, stdio_flag,
                                             listinterp_out_flag,
                                             listinterp_in_flag,
-                                            useTotalSensitivityFlag);
+                                            useTotalSensitivityFlag, log);
                                 }
 
                                 free(freqs); /* free array that was allocated above */
@@ -830,7 +831,7 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
                                 if (first_resp == (struct response *) NULL) {
                                     first_resp = resp;
                                 }
-                                next_ptr = alloc_response(nfreqs);
+                                next_ptr = alloc_response(nfreqs, log);
                                 resp->next = next_ptr;
                                 prev_ptr = resp;
                                 resp = next_ptr;

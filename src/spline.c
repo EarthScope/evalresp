@@ -5,6 +5,7 @@
 # include <string.h>
 
 # include "spline.h"
+#include "log.h"
 
 /******************************************************************************/
 
@@ -30,7 +31,7 @@ double basis_function_b_val ( double tdata[], double tval )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -88,16 +89,16 @@ double basis_function_b_val ( double tdata[], double tval )
   }
   else if ( tval < tdata[2] )
   {
-    yval = ( ( (     - 3.0 
-                 * u + 3.0 ) 
-                 * u + 3.0 ) 
+    yval = ( ( (     - 3.0
+                 * u + 3.0 )
+                 * u + 3.0 )
                  * u + 1.0 ) / 6.0;
   }
   else if ( tval < tdata[3])
   {
-    yval = ( ( (     + 3.0 
-                 * u - 6.0 ) 
-                 * u + 0.0 ) 
+    yval = ( ( (     + 3.0
+                 * u - 6.0 )
+                 * u + 0.0 )
                  * u + 4.0 ) / 6.0;
   }
   else if ( tval < tdata[4] )
@@ -111,7 +112,7 @@ double basis_function_b_val ( double tdata[], double tval )
 }
 /******************************************************************************/
 
-double basis_function_beta_val ( double beta1, double beta2, double tdata[], 
+double basis_function_beta_val ( double beta1, double beta2, double tdata[],
   double tval )
 
 /******************************************************************************/
@@ -137,7 +138,7 @@ double basis_function_beta_val ( double beta1, double beta2, double tdata[],
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -206,15 +207,15 @@ double basis_function_beta_val ( double beta1, double beta2, double tdata[],
   else if ( tval < tdata[2] )
   {
     a = beta2 + 4.0 * beta1 + 4.0 * beta1 * beta1
-      + 6.0 * ( 1.0 - beta1 * beta1 ) 
-      - 3.0 * ( 2.0 + beta2 + 2.0 * beta1 ) 
+      + 6.0 * ( 1.0 - beta1 * beta1 )
+      - 3.0 * ( 2.0 + beta2 + 2.0 * beta1 )
       + 2.0 * ( 1.0 + beta2 + beta1 + beta1 * beta1 );
 
-    b = - 6.0 * ( 1.0 - beta1 * beta1 ) 
-        + 6.0 * ( 2.0 + beta2 + 2.0 * beta1 ) 
+    b = - 6.0 * ( 1.0 - beta1 * beta1 )
+        + 6.0 * ( 2.0 + beta2 + 2.0 * beta1 )
         - 6.0 * ( 1.0 + beta2 + beta1 + beta1 * beta1 );
 
-    c = - 3.0 * ( 2.0 + beta2 + 2.0 * beta1 ) 
+    c = - 3.0 * ( 2.0 + beta2 + 2.0 * beta1 )
         + 6.0 * ( 1.0 + beta2 + beta1 + beta1 * beta1 );
 
     d = - 2.0 * ( 1.0 + beta2 + beta1 + beta1 * beta1 );
@@ -227,7 +228,7 @@ double basis_function_beta_val ( double beta1, double beta2, double tdata[],
 
     b = - 6.0 * beta1 * ( 1.0 - beta1 * beta1 );
 
-    c = - 3.0 * ( beta2 + 2.0 * beta1 * beta1 
+    c = - 3.0 * ( beta2 + 2.0 * beta1 * beta1
       + 2.0 * beta1 * beta1 * beta1 );
 
     d = 2.0 * ( beta2 + beta1 + beta1 * beta1 + beta1 * beta1 * beta1 );
@@ -257,7 +258,7 @@ double *basis_matrix_b_uni ( )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -285,9 +286,9 @@ double *basis_matrix_b_uni ( )
   int j;
   double *mbasis;
   double mbasis_save[4*4] = {
-    -1.0 / 6.0, 
-     3.0 / 6.0, 
-    -3.0 / 6.0, 
+    -1.0 / 6.0,
+     3.0 / 6.0,
+    -3.0 / 6.0,
      1.0 / 6.0,
      3.0 / 6.0,
     -6.0 / 6.0,
@@ -331,7 +332,7 @@ double *basis_matrix_beta_uni ( double beta1, double beta2 )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -369,13 +370,13 @@ double *basis_matrix_beta_uni ( double beta1, double beta2 )
   mbasis = ( double * ) malloc ( 4 * 4 * sizeof ( double ) );
 
   mbasis[0+0*4] = - 2.0 * beta1 * beta1 * beta1;
-  mbasis[0+1*4] =   2.0 * beta2 
+  mbasis[0+1*4] =   2.0 * beta2
     + 2.0 * beta1 * ( beta1 * beta1 + beta1 + 1.0 );
   mbasis[0+2*4] = - 2.0 * ( beta2 + beta1 * beta1 + beta1 + 1.0 );
   mbasis[0+3*4] =   2.0;
 
   mbasis[1+0*4] =   6.0 * beta1 * beta1 * beta1;
-  mbasis[1+1*4] = - 3.0 * beta2 
+  mbasis[1+1*4] = - 3.0 * beta2
     - 6.0 * beta1 * beta1 * ( beta1 + 1.0 );
   mbasis[1+2*4] =   3.0 * beta2 + 6.0 * beta1 * beta1;
   mbasis[1+3*4] =   0.0;
@@ -390,9 +391,9 @@ double *basis_matrix_beta_uni ( double beta1, double beta2 )
   mbasis[3+2*4] =   2.0;
   mbasis[3+3*4] =   0.0;
 
-  delta = ( ( 2.0   
-    * beta1 + 4.0 ) 
-    * beta1 + 4.0 ) 
+  delta = ( ( 2.0
+    * beta1 + 4.0 )
+    * beta1 + 4.0 )
     * beta1 + 2.0 + beta2;
 
   for ( j = 0; j < 4; j++ )
@@ -426,7 +427,7 @@ double *basis_matrix_bezier ( )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -489,12 +490,12 @@ double *basis_matrix_hermite ( )
   Discussion:
 
     This basis matrix assumes that the data points are stored as
-    ( P1, P2, P1', P2' ), with P1 and P1' being the data value and 
+    ( P1, P2, P1', P2' ), with P1 and P1' being the data value and
     the derivative dP/dT at T = 0, while P2 and P2' apply at T = 1.
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -562,7 +563,7 @@ double *basis_matrix_overhauser_nonuni ( double alpha, double beta )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -592,7 +593,7 @@ double *basis_matrix_overhauser_nonuni ( double alpha, double beta )
 
   mbasis[1+0*4] =   2.0 * ( 1.0 - alpha ) * ( 1.0 - alpha ) / alpha;
   mbasis[1+1*4] = ( - 2.0 * ( 1.0 - alpha ) - alpha * beta ) / alpha;
-  mbasis[1+2*4] = ( 2.0 * ( 1.0 - alpha ) 
+  mbasis[1+2*4] = ( 2.0 * ( 1.0 - alpha )
     - beta * ( 1.0 - 2.0 * alpha ) ) / ( 1.0 - beta );
   mbasis[1+3*4] = - beta * beta / ( 1.0 - beta );
 
@@ -626,7 +627,7 @@ double *basis_matrix_overhauser_nul ( double alpha )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -680,7 +681,7 @@ double *basis_matrix_overhauser_nur ( double beta )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -734,7 +735,7 @@ double *basis_matrix_overhauser_uni ( void)
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -802,7 +803,7 @@ double *basis_matrix_overhauser_uni_l ( )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -853,7 +854,7 @@ double *basis_matrix_overhauser_uni_r ( )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -888,7 +889,7 @@ double *basis_matrix_overhauser_uni_r ( )
 }
 /******************************************************************************/
 
-double basis_matrix_tmp ( int left, int n, double mbasis[], int ndata, 
+double basis_matrix_tmp ( int left, int n, double mbasis[], int ndata,
   double tdata[], double ydata[], double tval )
 
 /******************************************************************************/
@@ -907,7 +908,7 @@ double basis_matrix_tmp ( int left, int n, double mbasis[], int ndata,
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -1022,7 +1023,7 @@ void bc_val ( int n, double t, double xcon[], double ycon[], double *xval,
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -1081,7 +1082,7 @@ void bc_val ( int n, double t, double xcon[], double ycon[], double *xval,
 }
 /******************************************************************************/
 
-double bez_val ( int n, double x, double a, double b, double y[] )
+double bez_val ( int n, double x, double a, double b, double y[], evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -1109,7 +1110,7 @@ double bez_val ( int n, double x, double a, double b, double y[] )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -1155,9 +1156,11 @@ double bez_val ( int n, double x, double a, double b, double y[] )
 
   if ( b - a == 0.0 )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "BEZ_VAL - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  Null interval, A = B = %f", a );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "BEZ_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  Null interval, A = B = %f\n", a );
+    fprintf ( stderr, "  Null interval, A = B = %f\n", a ); */
     exit ( 1 );
   }
 /*
@@ -1179,7 +1182,7 @@ double bez_val ( int n, double x, double a, double b, double y[] )
 }
 /******************************************************************************/
 
-double bpab_approx ( int n, double a, double b, double ydata[], double xval )
+double bpab_approx ( int n, double a, double b, double ydata[], double xval, evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -1210,7 +1213,7 @@ double bpab_approx ( int n, double a, double b, double ydata[], double xval )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -1253,7 +1256,7 @@ double bpab_approx ( int n, double a, double b, double ydata[], double xval )
 /*
   Evaluate the Bernstein basis polynomials at XVAL.
 */
-  bvec = bpab ( n, a, b, xval );
+  bvec = bpab ( n, a, b, xval, log );
 /*
   Now compute the sum of YDATA(I) * BVEC(I).
 */
@@ -1322,7 +1325,7 @@ double *bp01 ( int n, double x )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -1381,7 +1384,7 @@ double *bp01 ( int n, double x )
 }
 /******************************************************************************/
 
-double *bpab ( int n, double a, double b, double x )
+double *bpab ( int n, double a, double b, double x, evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -1417,7 +1420,7 @@ double *bpab ( int n, double a, double b, double x )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -1458,9 +1461,11 @@ double *bpab ( int n, double a, double b, double x )
 
   if ( b == a )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "BPAB - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  A = B = %f", a );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "BPAB - Fatal error!\n" );
-    fprintf ( stderr, "  A = B = %f\n", a );
+    fprintf ( stderr, "  A = B = %f\n", a ); */
     exit ( 1 );
   }
 
@@ -1491,7 +1496,7 @@ double *bpab ( int n, double a, double b, double x )
 /******************************************************************************/
 
 int chfev ( double x1, double x2, double f1, double f2, double d1, double d2,
-  int ne, double xe[], double fe[], int next[] )
+  int ne, double xe[], double fe[], int next[], evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -1512,7 +1517,7 @@ int chfev ( double x1, double x2, double f1, double f2, double d1, double d2,
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -1525,7 +1530,7 @@ int chfev ( double x1, double x2, double f1, double f2, double d1, double d2,
 
   Reference:
 
-    Fred Fritsch, Ralph Carlson, 
+    Fred Fritsch, Ralph Carlson,
     Monotone Piecewise Cubic Interpolation,
     SIAM Journal on Numerical Analysis,
     Volume 17, Number 2, April 1980, pages 238-246.
@@ -1581,10 +1586,13 @@ int chfev ( double x1, double x2, double f1, double f2, double d1, double d2,
   if ( ne < 1 )
   {
     ierr = -1;
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "CHFEV - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  Number of evaluation points is less than 1." );
+    evalresp_log(log, ERROR, 0, "  NE = %d", ne );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "CHFEV - Fatal error!\n" );
     fprintf ( stderr, "  Number of evaluation points is less than 1.\n" );
-    fprintf ( stderr, "  NE = %d\n", ne );
+    fprintf ( stderr, "  NE = %d\n", ne ); */
     return ierr;
   }
 
@@ -1593,9 +1601,11 @@ int chfev ( double x1, double x2, double f1, double f2, double d1, double d2,
   if ( h == 0.0 )
   {
     ierr = -2;
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "CHFEV - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  The interval [X1,X2] is of zero length." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "CHFEV - Fatal error!\n" );
-    fprintf ( stderr, "  The interval [X1,X2] is of zero length.\n" );
+    fprintf ( stderr, "  The interval [X1,X2] is of zero length.\n" ); */
     return ierr;
   }
 /*
@@ -1665,7 +1675,7 @@ double *d3_mxv ( int n, double a[], double x[] )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -1737,7 +1747,7 @@ double *d3_np_fs ( int n, double a[], double b[] )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -1825,7 +1835,7 @@ void d3_print ( int n, double a[], char *title )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -1880,7 +1890,7 @@ void d3_print_some ( int n, double a[], int ilo, int jlo, int ihi, int jhi )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -1980,7 +1990,7 @@ void d3_print_some ( int n, double a[], int ilo, int jlo, int ihi, int jhi )
 }
 /******************************************************************************/
 
-double *d3_uniform ( int n, int *seed )
+double *d3_uniform ( int n, int *seed, evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -2005,7 +2015,7 @@ double *d3_uniform ( int n, int *seed )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -2032,9 +2042,9 @@ double *d3_uniform ( int n, int *seed )
 
   a = ( double * ) malloc ( 3 * n * sizeof ( double ) );
 
-  u = r8vec_uniform_new ( n-1, 0.0, 1.0, seed );
-  v = r8vec_uniform_new ( n,   0.0, 1.0, seed );
-  w = r8vec_uniform_new ( n-1, 0.0, 1.0, seed );
+  u = r8vec_uniform_new ( n-1, 0.0, 1.0, seed, log );
+  v = r8vec_uniform_new ( n,   0.0, 1.0, seed, log );
+  w = r8vec_uniform_new ( n-1, 0.0, 1.0, seed, log );
 
   a[0+0*3] = 0.0;
   for ( i = 1; i < n; i++ )
@@ -2059,7 +2069,7 @@ double *d3_uniform ( int n, int *seed )
 }
 /******************************************************************************/
 
-void data_to_dif ( int ntab, double xtab[], double ytab[], double diftab[] )
+void data_to_dif ( int ntab, double xtab[], double ytab[], double diftab[], evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -2075,7 +2085,7 @@ void data_to_dif ( int ntab, double xtab[], double ytab[], double diftab[] )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -2088,14 +2098,14 @@ void data_to_dif ( int ntab, double xtab[], double ytab[], double diftab[] )
   Parameters:
 
     Input, int NTAB, the number of pairs of points
-    (XTAB[I],YTAB[I]) which are to be used as data.  
+    (XTAB[I],YTAB[I]) which are to be used as data.
 
     Input, double XTAB[NTAB], the X values at which data was taken.
     These values must be distinct.
 
     Input, double YTAB[NTAB], the corresponding Y values.
 
-    Output, double DIFTAB[NTAB], the divided difference coefficients 
+    Output, double DIFTAB[NTAB], the divided difference coefficients
     corresponding to the input (XTAB,YTAB).
 */
 {
@@ -2117,11 +2127,15 @@ void data_to_dif ( int ntab, double xtab[], double ytab[], double diftab[] )
     {
       if ( xtab[i] - xtab[j] == 0.0 )
       {
-        fprintf ( stderr, "\n" );
+        evalresp_log(log, ERROR, 0, "DATA_TO_DIF - Fatal error!" );
+        evalresp_log(log, ERROR, 0, "  Two entries of XTAB are equal!" );
+        evalresp_log(log, ERROR, 0, "  XTAB[%d] = %f", i, xtab[i] );
+        evalresp_log(log, ERROR, 0, "  XTAB[%d] = %f", j, xtab[j] );
+        /*XXX fprintf ( stderr, "\n" );
         fprintf ( stderr, "DATA_TO_DIF - Fatal error!\n" );
         fprintf ( stderr, "  Two entries of XTAB are equal!\n" );
         fprintf ( stderr, "  XTAB[%d] = %f\n", i, xtab[i] );
-        fprintf ( stderr, "  XTAB[%d] = %f\n", j, xtab[j] );
+        fprintf ( stderr, "  XTAB[%d] = %f\n", j, xtab[j] ); */
         exit ( 1 );
       }
     }
@@ -2136,7 +2150,7 @@ void data_to_dif ( int ntab, double xtab[], double ytab[], double diftab[] )
       diftab[j] = ( diftab[j] - diftab[j-1] ) / ( xtab[j] - xtab[j-i] );
     }
   }
- 
+
   return;
 }
 /******************************************************************************/
@@ -2155,7 +2169,7 @@ double dif_val ( int ntab, double xtab[], double diftab[], double xval )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -2189,7 +2203,7 @@ double dif_val ( int ntab, double xtab[], double diftab[], double xval )
   {
     value = diftab[ntab-i] + ( xval - xtab[ntab-i] ) * value;
   }
- 
+
   return value;
 }
 /******************************************************************************/
@@ -2276,8 +2290,8 @@ int i4_min ( int i1, int i2 )
 }
 /******************************************************************************/
 
-void least_set ( int point_num, double x[], double f[], double w[], 
-  int nterms, double b[], double c[], double d[] )
+void least_set ( int point_num, double x[], double f[], double w[],
+  int nterms, double b[], double c[], double d[], evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -2299,7 +2313,7 @@ void least_set ( int point_num, double x[], double f[], double w[],
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -2356,12 +2370,17 @@ void least_set ( int point_num, double x[], double f[], double w[],
 
   if ( unique_num < nterms )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "LEAST_SET - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  The number of distinct X values must be" );
+    evalresp_log(log, ERROR, 0, "  at least NTERMS = %d", nterms );
+    evalresp_log(log, ERROR, 0, "  but the input data has only %d", unique_num );
+    evalresp_log(log, ERROR, 0, "  distinct entries." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "LEAST_SET - Fatal error!\n" );
     fprintf ( stderr, "  The number of distinct X values must be\n" );
     fprintf ( stderr, "  at least NTERMS = %d\n", nterms );
     fprintf ( stderr, "  but the input data has only %d\n", unique_num );
-    fprintf ( stderr, "  distinct entries.\n" );
+    fprintf ( stderr, "  distinct entries.\n" ); */
     return;
   }
 /*
@@ -2371,11 +2390,15 @@ void least_set ( int point_num, double x[], double f[], double w[],
   {
     if ( w[i] <= 0.0 )
     {
-      fprintf ( stderr, "\n" );
+      evalresp_log(log, ERROR, 0, "LEAST_SET - Fatal error!" );
+      evalresp_log(log, ERROR, 0, "  All weights W must be positive," );
+      evalresp_log(log, ERROR, 0, "  but weight %d", i );
+      evalresp_log(log, ERROR, 0, "  is %g", w[i] );
+      /*XXX fprintf ( stderr, "\n" );
       fprintf ( stderr, "LEAST_SET - Fatal error!\n" );
       fprintf ( stderr, "  All weights W must be positive,\n" );
       fprintf ( stderr, "  but weight %d\n", i );
-      fprintf ( stderr, "  is %g\n", w[i] );
+      fprintf ( stderr, "  is %g\n", w[i] ); */
       return;
     }
   }
@@ -2459,7 +2482,7 @@ void least_set ( int point_num, double x[], double f[], double w[],
 }
 /******************************************************************************/
 
-double least_val ( int nterms, double b[], double c[], double d[], 
+double least_val ( int nterms, double b[], double c[], double d[],
   double x )
 
 /******************************************************************************/
@@ -2495,7 +2518,7 @@ double least_val ( int nterms, double b[], double c[], double d[],
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -2527,7 +2550,7 @@ double least_val ( int nterms, double b[], double c[], double d[],
     Input, double X, the point at which the least squares polynomial
     is to be evaluated.
 
-    Output, double LEAST_VAL, the value of the least squares 
+    Output, double LEAST_VAL, the value of the least squares
     polynomial at X.
 */
 {
@@ -2558,7 +2581,7 @@ double least_val ( int nterms, double b[], double c[], double d[],
 }
 /******************************************************************************/
 
-void least_val2 ( int nterms, double b[], double c[], double d[], double x, 
+void least_val2 ( int nterms, double b[], double c[], double d[], double x,
   double *px, double *pxp )
 
 /******************************************************************************/
@@ -2596,7 +2619,7 @@ void least_val2 ( int nterms, double b[], double c[], double d[], double x,
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -2657,8 +2680,8 @@ void least_val2 ( int nterms, double b[], double c[], double d[], double x,
 }
 /******************************************************************************/
 
-void least_set_old ( int ntab, double xtab[], double ytab[], int ndeg, 
-  double ptab[], double b[], double c[], double d[], double *eps, int *ierror )
+void least_set_old ( int ntab, double xtab[], double ytab[], int ndeg,
+  double ptab[], double b[], double c[], double d[], double *eps, int *ierror, evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -2672,7 +2695,7 @@ void least_set_old ( int ntab, double xtab[], double ytab[], int ndeg,
     polynomial.  Instead, it is represented in terms of a set of
     orthogonal polynomials appopriate for the given data.  This makes
     the computation more accurate, but means that the user can not
-    easily evaluate the computed polynomial.  Instead, the routine 
+    easily evaluate the computed polynomial.  Instead, the routine
     LEAST_EVAL should be used to evaluate the least squares polynomial
     at any point.  (However, the value of the least squares polynomial
     at each of the data points is returned as part of this computation.)
@@ -2708,7 +2731,7 @@ void least_set_old ( int ntab, double xtab[], double ytab[], int ndeg,
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -2732,13 +2755,13 @@ void least_set_old ( int ntab, double xtab[], double ytab[], int ndeg,
     to the X data in XTAB.
 
     Input, int NDEG, the degree of the polynomial which the
-    program is to use.  NDEG must be at least 1, and less than or 
+    program is to use.  NDEG must be at least 1, and less than or
     equal to NTAB-1.
 
-    Output, double PTAB[NTAB], the value of the least squares polynomial 
+    Output, double PTAB[NTAB], the value of the least squares polynomial
     at the points XTAB(1:NTAB).
 
-    Output, double B[1:NDEG], C[0:NDEG], D[2:NDEG], arrays containing 
+    Output, double B[1:NDEG], C[0:NDEG], D[2:NDEG], arrays containing
     data about the polynomial.
 
     Output, double *EPS, the root-mean-square discrepancy of the
@@ -2772,18 +2795,22 @@ void least_set_old ( int ntab, double xtab[], double ytab[], int ndeg,
   if ( ndeg < 1 )
   {
     *ierror = 1;
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "LEAST_SET_OLD - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  NDEG < 1." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "LEAST_SET_OLD - Fatal error!\n" );
-    fprintf ( stderr, "  NDEG < 1.\n" );
+    fprintf ( stderr, "  NDEG < 1.\n" ); */
     exit ( 1 );
   }
 
   if ( ntab <= ndeg )
   {
     *ierror = 1;
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "LEAST_SET_OLD - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  NTAB <= NDEG." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "LEAST_SET_OLD - Fatal error!\n" );
-    fprintf ( stderr, "  NTAB <= NDEG.\n" );
+    fprintf ( stderr, "  NTAB <= NDEG.\n" ); */
     exit ( 1 );
   }
 /*
@@ -2794,11 +2821,15 @@ void least_set_old ( int ntab, double xtab[], double ytab[], int ndeg,
     if ( xtab[i] <= xtab[i-1] )
     {
       *ierror = 1;
-      fprintf ( stderr, "\n" );
+      evalresp_log(log, ERROR, 0, "LEAST_SET_OLD - Fatal error!" );
+      evalresp_log(log, ERROR, 0, "  XTAB must be strictly increasing, but" );
+      evalresp_log(log, ERROR, 0, "  XTAB(%d) = %g", i - 1, xtab[i-1] );
+      evalresp_log(log, ERROR, 0, "  XTAB(%d) = %g", i, xtab[i] );
+      /*XXX fprintf ( stderr, "\n" );
       fprintf ( stderr, "LEAST_SET_OLD - Fatal error!\n" );
       fprintf ( stderr, "  XTAB must be strictly increasing, but\n" );
       fprintf ( stderr, "  XTAB(%d) = %g\n", i - 1, xtab[i-1] );
-      fprintf ( stderr, "  XTAB(%d) = %g\n", i, xtab[i] );
+      fprintf ( stderr, "  XTAB(%d) = %g\n", i, xtab[i] ); */
       exit ( 1 );
     }
   }
@@ -2901,7 +2932,7 @@ void least_set_old ( int ntab, double xtab[], double ytab[], int ndeg,
 
     for ( i = 0; i < ntab; i++ )
     {
-      ztab[i0l1+i] = ( xtab[i] - b[k+B_OFFSET] ) * ztab[i1l1+i] 
+      ztab[i0l1+i] = ( xtab[i] - b[k+B_OFFSET] ) * ztab[i1l1+i]
         - d[k+D_OFFSET] * ztab[i0l1+i];
       s = s + ztab[i0l1+i] * ztab[i0l1+i];
       sum2 = sum2 + ztab[i0l1+i] * ( ytab[i] - ptab[i] );
@@ -2956,7 +2987,7 @@ double least_val_old ( double x, int ndeg, double b[], double c[], double d[] )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -3016,8 +3047,8 @@ double least_val_old ( double x, int ndeg, double b[], double c[], double d[] )
 }
 /******************************************************************************/
 
-void parabola_val2 ( int ndim, int ndata, double tdata[], double ydata[], 
-  int left, double tval, double *yval )
+void parabola_val2 ( int ndim, int ndata, double tdata[], double ydata[],
+  int left, double tval, double *yval, evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -3034,7 +3065,7 @@ void parabola_val2 ( int ndim, int ndata, double tdata[], double ydata[],
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -3063,11 +3094,11 @@ void parabola_val2 ( int ndim, int ndata, double tdata[], double ydata[],
     must pass.  0 <= LEFT <= NDATA - 3.
 
     Input, double TVAL, the value of T at which the parabolic interpolant
-    is to be evaluated.  Normally, TDATA[0] <= TVAL <= T[NDATA-1], and 
-    the data will be interpolated.  For TVAL outside this range, 
+    is to be evaluated.  Normally, TDATA[0] <= TVAL <= T[NDATA-1], and
+    the data will be interpolated.  For TVAL outside this range,
     extrapolation will be used.
 
-    Output, double YVAL[NDIM], the value of the parabolic interpolant 
+    Output, double YVAL[NDIM], the value of the parabolic interpolant
     at TVAL.
 */
 {
@@ -3081,33 +3112,39 @@ void parabola_val2 ( int ndim, int ndata, double tdata[], double ydata[],
   double y2;
   double y3;
 /*
-  Check. 
+  Check.
 */
   if ( left < 1 )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "PARABOLA_VAL2 - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  LEFT < 0." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "PARABOLA_VAL2 - Fatal error!\n" );
-    fprintf ( stderr, "  LEFT < 0.\n" );
+    fprintf ( stderr, "  LEFT < 0.\n" ); */
     exit ( 1 );
   }
 
   if ( ndata-2 < left )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "PARABOLA_VAL2 - Fatal error!" );
+    evalresp_log(log, ERROR, 0, " NDATA-2 < LEFT." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "PARABOLA_VAL2 - Fatal error!\n" );
-    fprintf ( stderr, " NDATA-2 < LEFT.\n" );
+    fprintf ( stderr, " NDATA-2 < LEFT.\n" ); */
     exit ( 1 );
   }
 
   if ( ndim < 1 )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "PARABOLA_VAL2 - Fatal error!" );
+    evalresp_log(log, ERROR, 0, " NDIM < 1." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "PARABOLA_VAL2 - Fatal error!\n" );
-    fprintf ( stderr, " NDIM < 1.\n" );
+    fprintf ( stderr, " NDIM < 1.\n" ); */
     exit ( 1 );
   }
 /*
-  Copy out the three abscissas. 
+  Copy out the three abscissas.
 */
   t1 = tdata[left-1];
   t2 = tdata[left];
@@ -3115,16 +3152,21 @@ void parabola_val2 ( int ndim, int ndata, double tdata[], double ydata[],
 
   if ( t2 <= t1 || t3 <= t2 )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "PARABOLA_VAL2 - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  T2 <= T1 or T3 <= T2." );
+    evalresp_log(log, ERROR, 0, "  T1 = %g", t1 );
+    evalresp_log(log, ERROR, 0, "  T2 = %g", t2 );
+    evalresp_log(log, ERROR, 0, "  T3 = %g", t3 );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "PARABOLA_VAL2 - Fatal error!\n" );
     fprintf ( stderr, "  T2 <= T1 or T3 <= T2.\n" );
     fprintf ( stderr, "  T1 = %g\n", t1 );
     fprintf ( stderr, "  T2 = %g\n", t2 );
-    fprintf ( stderr, "  T3 = %g\n", t3 );
+    fprintf ( stderr, "  T3 = %g\n", t3 ); */
     exit ( 1 );
   }
 /*
-  Construct and evaluate a parabolic interpolant for the data. 
+  Construct and evaluate a parabolic interpolant for the data.
 */
   for ( i = 0; i < ndim; i++ )
   {
@@ -3161,7 +3203,7 @@ double pchst ( double arg1, double arg2 )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -3174,7 +3216,7 @@ double pchst ( double arg1, double arg2 )
 
   Reference:
 
-    Fred Fritsch, Ralph Carlson, 
+    Fred Fritsch, Ralph Carlson,
     Monotone Piecewise Cubic Interpolation,
     SIAM Journal on Numerical Analysis,
     Volume 17, Number 2, April 1980, pages 238-246.
@@ -3443,7 +3485,7 @@ double r8_uniform_01 ( int *seed )
 }
 /******************************************************************************/
 
-double *r8ge_fs_new ( int n, double a[], double b[] )
+double *r8ge_fs_new ( int n, double a[], double b[], evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -3453,9 +3495,9 @@ double *r8ge_fs_new ( int n, double a[], double b[] )
 
   Discussion:
 
-    The R8GE storage format is used for a "general" M by N matrix.  
-    A physical storage space is made for each logical entry.  The two 
-    dimensional logical array is mapped to a vector, in which storage is 
+    The R8GE storage format is used for a "general" M by N matrix.
+    A physical storage space is made for each logical entry.  The two
+    dimensional logical array is mapped to a vector, in which storage is
     by columns.
 
     The function does not save the LU factors of the matrix, and hence cannot
@@ -3466,7 +3508,7 @@ double *r8ge_fs_new ( int n, double a[], double b[] )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -3525,9 +3567,11 @@ double *r8ge_fs_new ( int n, double a[], double b[] )
 
     if ( piv == 0.0 )
     {
-      fprintf ( stderr, "\n" );
+      evalresp_log(log, ERROR, 0, "R8GE_FS_NEW - Fatal error!" );
+      evalresp_log(log, ERROR, 0, "  Zero pivot on step %d", jcol );
+      /*XXX fprintf ( stderr, "\n" );
       fprintf ( stderr, "R8GE_FS_NEW - Fatal error!\n" );
-      fprintf ( stderr, "  Zero pivot on step %d\n", jcol );
+      fprintf ( stderr, "  Zero pivot on step %d\n", jcol ); */
       exit ( 1 );
     }
 /*
@@ -3660,7 +3704,7 @@ void r8vec_bracket ( int n, double x[], double xval, int *left,
 }
 /******************************************************************************/
 
-void r8vec_bracket3 ( int n, double t[], double tval, int *left )
+void r8vec_bracket3 ( int n, double t[], double tval, int *left, evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -3725,9 +3769,11 @@ void r8vec_bracket3 ( int n, double t[], double tval, int *left )
 */
   if ( n < 2 )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "R8VEC_BRACKET3 - Fatal error" );
+    evalresp_log(log, ERROR, 0, "  N must be at least 2." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "R8VEC_BRACKET3 - Fatal error\n" );
-    fprintf ( stderr, "  N must be at least 2.\n" );
+    fprintf ( stderr, "  N must be at least 2.\n" ); */
     exit ( 1 );
   }
 /*
@@ -4187,7 +4233,7 @@ void r8vec_sort_bubble_a ( int n, double a[] )
 }
 /******************************************************************************/
 
-double *r8vec_uniform_new ( int n, double b, double c, int *seed )
+double *r8vec_uniform_new ( int n, double b, double c, int *seed, evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -4264,9 +4310,11 @@ double *r8vec_uniform_new ( int n, double b, double c, int *seed )
 
   if ( *seed == 0 )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "R8VEC_UNIFORM_NEW - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  Input value of SEED = 0." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "R8VEC_UNIFORM_NEW - Fatal error!\n" );
-    fprintf ( stderr, "  Input value of SEED = 0.\n" );
+    fprintf ( stderr, "  Input value of SEED = 0.\n" ); */
     exit ( 1 );
   }
 
@@ -4406,7 +4454,7 @@ double spline_b_val ( int ndata, double tdata[], double ydata[], double tval )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -4455,9 +4503,9 @@ double spline_b_val ( int ndata, double tdata[], double ydata[], double tval )
   B function associated with node LEFT - 1, (or "phantom node"),
   evaluated in its 4th interval.
 */
-  bval = ( ( (     - 1.0   
-               * u + 3.0 ) 
-               * u - 3.0 ) 
+  bval = ( ( (     - 1.0
+               * u + 3.0 )
+               * u - 3.0 )
                * u + 1.0 ) / 6.0;
 
   if ( 0 < left-1 )
@@ -4472,9 +4520,9 @@ double spline_b_val ( int ndata, double tdata[], double ydata[], double tval )
   B function associated with node LEFT,
   evaluated in its third interval.
 */
-  bval = ( ( (       3.0   
-               * u - 6.0 ) 
-               * u + 0.0 ) 
+  bval = ( ( (       3.0
+               * u - 6.0 )
+               * u + 0.0 )
                * u + 4.0 ) / 6.0;
 
   yval = yval + ydata[left-1] * bval;
@@ -4482,9 +4530,9 @@ double spline_b_val ( int ndata, double tdata[], double ydata[], double tval )
   B function associated with node RIGHT,
   evaluated in its second interval.
 */
-  bval = ( ( (     - 3.0   
-               * u + 3.0 ) 
-               * u + 3.0 ) 
+  bval = ( ( (     - 3.0
+               * u + 3.0 )
+               * u + 3.0 )
                * u + 1.0 ) / 6.0;
 
   yval = yval + ydata[right-1] * bval;
@@ -4532,7 +4580,7 @@ double spline_beta_val ( double beta1, double beta2, int ndata, double tdata[],
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -4581,9 +4629,9 @@ double spline_beta_val ( double beta1, double beta2, int ndata, double tdata[],
 */
   u = ( tval - tdata[left-1] ) / ( tdata[right-1] - tdata[left-1] );
 
-  delta = ( ( 2.0   
-    * beta1 + 4.0 ) 
-    * beta1 + 4.0 ) 
+  delta = ( ( 2.0
+    * beta1 + 4.0 )
+    * beta1 + 4.0 )
     * beta1 + 2.0 + beta2;
 
   yval = 0.0;
@@ -4609,14 +4657,14 @@ double spline_beta_val ( double beta1, double beta2, int ndata, double tdata[],
 
   b = - 6.0 * beta1 * ( 1.0 - beta1 ) * ( 1.0 + beta1 );
 
-  c = ( (     - 6.0   
-      * beta1 - 6.0 ) 
-      * beta1 + 0.0 ) 
+  c = ( (     - 6.0
+      * beta1 - 6.0 )
+      * beta1 + 0.0 )
       * beta1 - 3.0 * beta2;
 
-  d = ( (     + 2.0   
-      * beta1 + 2.0 ) 
-      * beta1 + 2.0 ) 
+  d = ( (     + 2.0
+      * beta1 + 2.0 )
+      * beta1 + 2.0 )
       * beta1 + 2.0 * beta2;
 
   bval = ( a + u * ( b + u * ( c + u * d ) ) ) / delta;
@@ -4656,7 +4704,7 @@ double spline_beta_val ( double beta1, double beta2, int ndata, double tdata[],
 }
 /******************************************************************************/
 
-double spline_constant_val ( int ndata, double tdata[], double ydata[], 
+double spline_constant_val ( int ndata, double tdata[], double ydata[],
   double tval )
 
 /******************************************************************************/
@@ -4674,7 +4722,7 @@ double spline_constant_val ( int ndata, double tdata[], double ydata[],
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -4713,8 +4761,8 @@ double spline_constant_val ( int ndata, double tdata[], double ydata[],
 }
 /******************************************************************************/
 
-double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg, 
-  double ybcbeg, int ibcend, double ybcend )
+double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
+  double ybcbeg, int ibcend, double ybcend, evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -4785,12 +4833,12 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
       6 * ( Y(IVAL+1) - Y(IVAL) ) / H(IVAL)
       - 6 * ( Y(IVAL) - Y(IVAL-1) ) / H(IVAL-1)
 
-    Boundary conditions must be applied at the first and last knots.  
+    Boundary conditions must be applied at the first and last knots.
     The resulting tridiagonal system can be solved for the YPP values.
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -4836,7 +4884,7 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
     Input, double YBCEND, the values to be used in the boundary
     conditions if IBCEND is equal to 1 or 2.
 
-    Output, double SPLINE_CUBIC_SET[N], the second derivatives 
+    Output, double SPLINE_CUBIC_SET[N], the second derivatives
     of the cubic spline.
 */
 {
@@ -4853,10 +4901,13 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
 */
   if ( n <= 1 )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "SPLINE_CUBIC_SET - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  The number of data points N must be at least 2." );
+    evalresp_log(log, ERROR, 0, "  The input value is %d.\n", n );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "SPLINE_CUBIC_SET - Fatal error!\n" );
     fprintf ( stderr, "  The number of data points N must be at least 2.\n" );
-    fprintf ( stderr, "  The input value is %d.\n", n );
+    fprintf ( stderr, "  The input value is %d.\n", n ); */
     exit ( 1 );
   }
 
@@ -4864,11 +4915,15 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
   {
     if ( t[i+1] <= t[i] )
     {
-      fprintf ( stderr, "\n" );
+      evalresp_log(log, ERROR, 0, "SPLINE_CUBIC_SET - Fatal error!" );
+      evalresp_log(log, ERROR, 0, "  The knots must be strictly increasing, but" );
+      evalresp_log(log, ERROR, 0, "  T(%d) = %g", i, t[i] );
+      evalresp_log(log, ERROR, 0, "  T(%d) = %g", i+1, t[i+1] );
+      /*XXX fprintf ( stderr, "\n" );
       fprintf ( stderr, "SPLINE_CUBIC_SET - Fatal error!\n" );
       fprintf ( stderr, "  The knots must be strictly increasing, but\n" );
       fprintf ( stderr, "  T(%d) = %g\n", i, t[i] );
-      fprintf ( stderr, "  T(%d) = %g\n", i+1, t[i+1] );
+      fprintf ( stderr, "  T(%d) = %g\n", i+1, t[i+1] ); */
       exit ( 1 );
     }
   }
@@ -4917,10 +4972,13 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
   }
   else
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "SPLINE_CUBIC_SET - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  IBCBEG must be 0, 1 or 2." );
+    evalresp_log(log, ERROR, 0, "  The input value is %d.", ibcbeg );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "SPLINE_CUBIC_SET - Fatal error!\n" );
     fprintf ( stderr, "  IBCBEG must be 0, 1 or 2.\n" );
-    fprintf ( stderr, "  The input value is %d.\n", ibcbeg );
+    fprintf ( stderr, "  The input value is %d.\n", ibcbeg ); */
     exit ( 1 );
   }
 /*
@@ -4964,10 +5022,13 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
   }
   else
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "SPLINE_CUBIC_SET - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  IBCEND must be 0, 1 or 2." );
+    evalresp_log(log, ERROR, 0, "  The input value is %d.", ibcend );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "SPLINE_CUBIC_SET - Fatal error!\n" );
     fprintf ( stderr, "  IBCEND must be 0, 1 or 2.\n" );
-    fprintf ( stderr, "  The input value is %d.\n", ibcend );
+    fprintf ( stderr, "  The input value is %d.\n", ibcend ); */
     exit ( 1 );
   }
 /*
@@ -4996,7 +5057,7 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
 }
 /******************************************************************************/
 
-double *penta ( int n, double a1[], double a2[], double a3[], double a4[], 
+double *penta ( int n, double a1[], double a2[], double a3[], double a4[],
   double a5[], double b[] )
 
 /******************************************************************************/
@@ -5080,7 +5141,7 @@ double *penta ( int n, double a1[], double a2[], double a3[], double a4[],
 }
 /******************************************************************************/
 
-double spline_cubic_val ( int n, double t[], double y[], double ypp[], 
+double spline_cubic_val ( int n, double t[], double y[], double ypp[],
   double tval, double *ypval, double *yppval )
 
 /******************************************************************************/
@@ -5110,7 +5171,7 @@ double spline_cubic_val ( int n, double t[], double y[], double ypp[],
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -5185,8 +5246,8 @@ double spline_cubic_val ( int n, double t[], double y[], double ypp[],
 }
 /******************************************************************************/
 
-void spline_cubic_val2 ( int n, double t[], double tval, int *left, double y[], 
-  double ypp[], double *yval, double *ypval, double *yppval )
+void spline_cubic_val2 ( int n, double t[], double tval, int *left, double y[],
+  double ypp[], double *yval, double *ypval, double *yppval, evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -5220,7 +5281,7 @@ void spline_cubic_val2 ( int n, double t[], double tval, int *left, double y[],
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -5258,12 +5319,12 @@ void spline_cubic_val2 ( int n, double t[], double tval, int *left, double y[],
   double h;
   int right;
 /*
-  Determine the interval [T[LEFT], T[RIGHT]] that contains TVAL.  
-  
+  Determine the interval [T[LEFT], T[RIGHT]] that contains TVAL.
+
   What you want from R8VEC_BRACKET3 is that TVAL is to be computed
-  by the data in interval [T[LEFT-1], T[RIGHT-1]].  
+  by the data in interval [T[LEFT-1], T[RIGHT-1]].
 */
-  r8vec_bracket3 ( n, t, tval, left );
+  r8vec_bracket3 ( n, t, tval, left, log );
 /*
  In the interval LEFT, the polynomial is in terms of a normalized
  coordinate  ( DT / H ) between 0 and 1.
@@ -5290,7 +5351,7 @@ void spline_cubic_val2 ( int n, double t[], double tval, int *left, double y[],
 }
 /******************************************************************************/
 
-double *spline_hermite_set ( int ndata, double tdata[], double ydata[], 
+double *spline_hermite_set ( int ndata, double tdata[], double ydata[],
   double ypdata[] )
 
 /******************************************************************************/
@@ -5314,7 +5375,7 @@ double *spline_hermite_set ( int ndata, double tdata[], double ydata[],
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -5343,7 +5404,7 @@ double *spline_hermite_set ( int ndata, double tdata[], double ydata[],
     Input, double Y[NDATA], YP[NDATA], the value of the
     function and its derivative at TDATA(1:NDATA).
 
-    Output, double SPLINE_HERMITE_SET[4*NDATA], the coefficients of 
+    Output, double SPLINE_HERMITE_SET[4*NDATA], the coefficients of
     the Hermite polynomial.  We will refer to this array as "C".
     C(1,1:NDATA) = Y(1:NDATA) and C(2,1:NDATA) = YP(1:NDATA).
     C(3,1:NDATA-1) and C(4,1:NDATA-1) are the quadratic and cubic
@@ -5385,7 +5446,7 @@ double *spline_hermite_set ( int ndata, double tdata[], double ydata[],
 }
 /******************************************************************************/
 
-void spline_hermite_val ( int ndata, double tdata[], double c[], double tval, 
+void spline_hermite_val ( int ndata, double tdata[], double c[], double tval,
   double *sval, double *spval )
 
 /******************************************************************************/
@@ -5417,7 +5478,7 @@ void spline_hermite_val ( int ndata, double tdata[], double c[], double tval,
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -5466,20 +5527,20 @@ void spline_hermite_val ( int ndata, double tdata[], double c[], double tval,
 */
   dt = tval - tdata[left-1];
 
-  *sval =        c[0+(left-1)*4] 
-        + dt * ( c[1+(left-1)*4] 
-        + dt * ( c[2+(left-1)*4] 
+  *sval =        c[0+(left-1)*4]
+        + dt * ( c[1+(left-1)*4]
+        + dt * ( c[2+(left-1)*4]
         + dt *   c[3+(left-1)*4] ) );
 
-  *spval =             c[1+(left-1)*4] 
-        + dt * ( 2.0 * c[2+(left-1)*4] 
+  *spval =             c[1+(left-1)*4]
+        + dt * ( 2.0 * c[2+(left-1)*4]
         + dt *   3.0 * c[3+(left-1)*4] );
 
   return;
 }
 /******************************************************************************/
 
-double spline_linear_int ( int ndata, double tdata[], double ydata[], 
+double spline_linear_int ( int ndata, double tdata[], double ydata[],
   double a, double b )
 
 /******************************************************************************/
@@ -5490,7 +5551,7 @@ double spline_linear_int ( int ndata, double tdata[], double ydata[],
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -5551,7 +5612,7 @@ double spline_linear_int ( int ndata, double tdata[], double ydata[],
   {
     tval = ( a_copy + b_copy ) / 2.0;
 
-    yp = ( ydata[a_right-1] - ydata[a_left-1] ) / 
+    yp = ( ydata[a_right-1] - ydata[a_left-1] ) /
          ( tdata[a_right-1] - tdata[a_left-1] );
 
     yval = ydata[a_left-1] + ( tval - tdata[a_left-1] ) * yp;
@@ -5573,7 +5634,7 @@ double spline_linear_int ( int ndata, double tdata[], double ydata[],
 */
   tval = ( a_copy + tdata[a_right-1] ) / 2.0;
 
-  yp = ( ydata[a_right-1] - ydata[a_left-1] ) / 
+  yp = ( ydata[a_right-1] - ydata[a_left-1] ) /
        ( tdata[a_right-1] - tdata[a_left-1] );
 
   yval = ydata[a_left-1] + ( tval - tdata[a_left-1] ) * yp;
@@ -5584,7 +5645,7 @@ double spline_linear_int ( int ndata, double tdata[], double ydata[],
   {
     tval = ( tdata[i_left] + tdata[i_left-1] ) / 2.0;
 
-    yp = ( ydata[i_left-1] - ydata[i_left-2] ) / 
+    yp = ( ydata[i_left-1] - ydata[i_left-2] ) /
          ( tdata[i_left-1] - tdata[i_left-2] );
 
     yval = ydata[i_left-2] + ( tval - tdata[i_left-2] ) * yp;
@@ -5594,7 +5655,7 @@ double spline_linear_int ( int ndata, double tdata[], double ydata[],
 
   tval = ( tdata[b_left-1] + b_copy ) / 2.0E+0;
 
-  yp = ( ydata[b_right-1] - ydata[b_left-1] ) / 
+  yp = ( ydata[b_right-1] - ydata[b_left-1] ) /
        ( tdata[b_right-1] - tdata[b_left-1] );
 
   yval = ydata[b_left-1] + ( tval - tdata[b_left-1] ) * yp;
@@ -5610,7 +5671,7 @@ double spline_linear_int ( int ndata, double tdata[], double ydata[],
 }
 /******************************************************************************/
 
-void spline_linear_intset ( int n, double int_x[], double int_v[], 
+void spline_linear_intset ( int n, double int_x[], double int_v[],
   double data_x[], double data_y[] )
 
 /******************************************************************************/
@@ -5633,7 +5694,7 @@ void spline_linear_intset ( int n, double int_x[], double int_v[],
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -5679,7 +5740,7 @@ void spline_linear_intset ( int n, double int_x[], double int_v[],
 */
   for ( i = 0; i < n-2; i++ )
   {
-    a[2+i*3] = 1.0 - ( 0.5 * ( data_x[i+1] + int_x[i+1] ) 
+    a[2+i*3] = 1.0 - ( 0.5 * ( data_x[i+1] + int_x[i+1] )
       - data_x[i] ) / ( data_x[i+1] - data_x[i] );
   }
   a[2+(n-2)*3] = 0.0;
@@ -5689,9 +5750,9 @@ void spline_linear_intset ( int n, double int_x[], double int_v[],
 
   for ( i = 1; i < n-1; i++ )
   {
-    a[1+i*3] = 1.0 + ( 0.5 * ( data_x[i] + int_x[i] ) 
-    - data_x[i-1] ) / ( data_x[i] - data_x[i-1] ) 
-    - ( 0.5 * ( data_x[i] + int_x[i+1] ) - data_x[i] ) 
+    a[1+i*3] = 1.0 + ( 0.5 * ( data_x[i] + int_x[i] )
+    - data_x[i-1] ) / ( data_x[i] - data_x[i-1] )
+    - ( 0.5 * ( data_x[i] + int_x[i+1] ) - data_x[i] )
     / ( data_x[i+1] - data_x[i] );
   }
   a[1+(n-1)*3] = int_x[n] - int_x[n-1];
@@ -5700,7 +5761,7 @@ void spline_linear_intset ( int n, double int_x[], double int_v[],
   a[0+1*3] = 0.0;
   for ( i = 2; i < n; i++ )
   {
-    a[0+i*3] = ( 0.5 * ( data_x[i-1] + int_x[i] ) 
+    a[0+i*3] = ( 0.5 * ( data_x[i-1] + int_x[i] )
     - data_x[i-1] ) / ( data_x[i] - data_x[i-1] );
   }
 /*
@@ -5730,7 +5791,7 @@ void spline_linear_intset ( int n, double int_x[], double int_v[],
 }
 /******************************************************************************/
 
-void spline_linear_val ( int ndata, double tdata[], double ydata[], 
+void spline_linear_val ( int ndata, double tdata[], double ydata[],
   double tval, double *yval, double *ypval )
 
 /******************************************************************************/
@@ -5748,7 +5809,7 @@ void spline_linear_val ( int ndata, double tdata[], double ydata[],
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -5783,7 +5844,7 @@ void spline_linear_val ( int ndata, double tdata[], double ydata[],
 /*
   Now evaluate the piecewise linear function.
 */
-  *ypval = ( ydata[right-1] - ydata[left-1] ) 
+  *ypval = ( ydata[right-1] - ydata[left-1] )
          / ( tdata[right-1] - tdata[left-1] );
 
   *yval = ydata[left-1] +  ( tval - tdata[left-1] ) * (*ypval);
@@ -5792,8 +5853,8 @@ void spline_linear_val ( int ndata, double tdata[], double ydata[],
 }
 /******************************************************************************/
 
-double spline_overhauser_nonuni_val ( int ndata, double tdata[], 
-  double ydata[], double tval )
+double spline_overhauser_nonuni_val ( int ndata, double tdata[],
+  double ydata[], double tval, evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -5812,7 +5873,7 @@ double spline_overhauser_nonuni_val ( int ndata, double tdata[],
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -5835,7 +5896,7 @@ double spline_overhauser_nonuni_val ( int ndata, double tdata[],
     Input, double TVAL, the value where the spline is to
     be evaluated.
 
-    Output, double SPLINE_OVERHAUSER_NONUNI_VAL, the value of the 
+    Output, double SPLINE_OVERHAUSER_NONUNI_VAL, the value of the
     spline at TVAL.
 */
 {
@@ -5853,9 +5914,11 @@ double spline_overhauser_nonuni_val ( int ndata, double tdata[],
 */
   if ( ndata < 3 )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "SPLINE_OVERHAUSER_NONUNI_VAL - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  NDATA < 3." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "SPLINE_OVERHAUSER_NONUNI_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  NDATA < 3.\n" );
+    fprintf ( stderr, "  NDATA < 3.\n" ); */
     exit ( 1 );
   }
 /*
@@ -5881,13 +5944,13 @@ double spline_overhauser_nonuni_val ( int ndata, double tdata[],
   }
   else if ( left < ndata-1 )
   {
-    d21 = sqrt ( pow ( tdata[left-1] - tdata[left-2], 2 ) 
+    d21 = sqrt ( pow ( tdata[left-1] - tdata[left-2], 2 )
                + pow ( ydata[left-1] - ydata[left-2], 2 ) );
 
-    d32 = sqrt ( pow ( tdata[left] - tdata[left-1], 2 ) 
+    d32 = sqrt ( pow ( tdata[left] - tdata[left-1], 2 )
                + pow ( ydata[left] - ydata[left-1], 2 ) );
 
-    d43 = sqrt ( pow ( tdata[left+1] - tdata[left], 2 ) 
+    d43 = sqrt ( pow ( tdata[left+1] - tdata[left], 2 )
                + pow ( ydata[left+1] - ydata[left], 2 ) );
 
     alpha = d21 / ( d32 + d21 );
@@ -5899,10 +5962,10 @@ double spline_overhauser_nonuni_val ( int ndata, double tdata[],
   }
   else if ( left == ndata-1 )
   {
-    d32 = sqrt ( pow ( tdata[ndata-2] - tdata[ndata-3], 2 ) 
+    d32 = sqrt ( pow ( tdata[ndata-2] - tdata[ndata-3], 2 )
                + pow ( ydata[ndata-2] - ydata[ndata-3], 2 ) );
 
-    d43 = sqrt ( pow ( tdata[ndata-1] - tdata[ndata-2], 2 ) 
+    d43 = sqrt ( pow ( tdata[ndata-1] - tdata[ndata-2], 2 )
                + pow ( ydata[ndata-1] - ydata[ndata-2], 2 ) );
 
     beta  = d32 / ( d43 + d32 );
@@ -5913,11 +5976,15 @@ double spline_overhauser_nonuni_val ( int ndata, double tdata[],
   }
   else
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "SPLINE_OVERHAUSER_NONUNI_VAL - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  Nonsensical value of LEFT = %d", left );
+    evalresp_log(log, ERROR, 0, "  but 0 < LEFT < NDATA = %d", ndata );
+    evalresp_log(log, ERROR, 0, "  is required." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "SPLINE_OVERHAUSER_NONUNI_VAL - Fatal error!\n" );
     fprintf ( stderr, "  Nonsensical value of LEFT = %d\n", left );
     fprintf ( stderr, "  but 0 < LEFT < NDATA = %d\n", ndata );
-    fprintf ( stderr, "  is required.\n" );
+    fprintf ( stderr, "  is required.\n" ); */
     exit ( 1 );
   }
 
@@ -5928,7 +5995,7 @@ double spline_overhauser_nonuni_val ( int ndata, double tdata[],
 /******************************************************************************/
 
 double spline_overhauser_uni_val ( int ndata, double tdata[], double ydata[],
-  double tval )
+  double tval, evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -5938,7 +6005,7 @@ double spline_overhauser_uni_val ( int ndata, double tdata[], double ydata[],
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -5975,9 +6042,11 @@ double spline_overhauser_uni_val ( int ndata, double tdata[], double ydata[],
 */
   if ( ndata < 3 )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "SPLINE_OVERHAUSER_UNI_VAL - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  NDATA < 3." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "SPLINE_OVERHAUSER_UNI_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  NDATA < 3.\n" );
+    fprintf ( stderr, "  NDATA < 3.\n" ); */
     exit ( 1 );
   }
 /*
@@ -6014,8 +6083,8 @@ double spline_overhauser_uni_val ( int ndata, double tdata[], double ydata[],
 }
 /******************************************************************************/
 
-void spline_overhauser_val ( int ndim, int ndata, double tdata[], 
-  double ydata[], double tval, double yval[] )
+void spline_overhauser_val ( int ndim, int ndata, double tdata[],
+  double ydata[], double tval, double yval[], evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -6025,13 +6094,13 @@ void spline_overhauser_val ( int ndim, int ndata, double tdata[],
 
   Discussion:
 
-    Over the first and last intervals, the Overhauser spline is a 
+    Over the first and last intervals, the Overhauser spline is a
     quadratic.  In the intermediate intervals, it is a piecewise cubic.
     The Overhauser spline is also known as the Catmull-Rom spline.
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -6078,8 +6147,8 @@ void spline_overhauser_val ( int ndim, int ndata, double tdata[],
     the abscissas.
 
     Input, double TVAL, the abscissa value at which the spline
-    is to be evaluated.  Normally, TDATA[0] <= TVAL <= T[NDATA-1], and 
-    the data will be interpolated.  For TVAL outside this range, 
+    is to be evaluated.  Normally, TDATA[0] <= TVAL <= T[NDATA-1], and
+    the data will be interpolated.  For TVAL outside this range,
     extrapolation will be used.
 
     Output, double YVAL[NDIM], the value of the spline at TVAL.
@@ -6098,45 +6167,49 @@ void spline_overhauser_val ( int ndim, int ndata, double tdata[],
 
   if ( order != 2 )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "SPLINE_OVERHAUSER_VAL - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  The data abscissas are not strictly ascending." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "SPLINE_OVERHAUSER_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  The data abscissas are not strictly ascending.\n" );
+    fprintf ( stderr, "  The data abscissas are not strictly ascending.\n" ); */
     exit ( 1 );
   }
 
   if ( ndata < 3 )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "SPLINE_OVERHAUSER_VAL - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  NDATA < 3." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "SPLINE_OVERHAUSER_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  NDATA < 3.\n" );
+    fprintf ( stderr, "  NDATA < 3.\n" ); */
     exit ( 1 );
   }
 /*
-  Locate the abscissa interval T[LEFT], T[LEFT+1] nearest to or 
-  containing TVAL. 
+  Locate the abscissa interval T[LEFT], T[LEFT+1] nearest to or
+  containing TVAL.
 */
   r8vec_bracket ( ndata, tdata, tval, &left, &right );
 /*
-  Evaluate the "left hand" quadratic defined at 
-  T[LEFT-1], T[LEFT], T[RIGHT]. 
+  Evaluate the "left hand" quadratic defined at
+  T[LEFT-1], T[LEFT], T[RIGHT].
 */
   yl = ( double * ) malloc ( ndim * sizeof ( double ) );
   yr = ( double * ) malloc ( ndim * sizeof ( double ) );
 
   if ( 0 < left-1 )
   {
-    parabola_val2 ( ndim, ndata, tdata, ydata, left-1, tval, yl );
+    parabola_val2 ( ndim, ndata, tdata, ydata, left-1, tval, yl, log );
   }
 /*
-  Evaluate the "right hand" quadratic defined at 
-  T[LEFT], T[RIGHT], T[RIGHT+1]. 
+  Evaluate the "right hand" quadratic defined at
+  T[LEFT], T[RIGHT], T[RIGHT+1].
 */
   if ( right+1 <= ndata )
   {
-    parabola_val2 ( ndim, ndata, tdata, ydata, left, tval, yr );
+    parabola_val2 ( ndim, ndata, tdata, ydata, left, tval, yr, log );
   }
 /*
-  Blend the quadratics. 
+  Blend the quadratics.
 */
   if ( left == 1 )
   {
@@ -6145,7 +6218,7 @@ void spline_overhauser_val ( int ndim, int ndata, double tdata[],
       yval[i] = yr[i];
     }
   }
-  else if ( right < ndata ) 
+  else if ( right < ndata )
   {
     for ( i = 0; i < ndim; i++ )
     {
@@ -6170,7 +6243,7 @@ void spline_overhauser_val ( int ndim, int ndata, double tdata[],
 }
 /******************************************************************************/
 
-void spline_pchip_set ( int n, double x[], double f[], double d[] )
+void spline_pchip_set ( int n, double x[], double f[], double d[], evalresp_log_t *log )
 
 /******************************************************************************/
 /*
@@ -6180,7 +6253,7 @@ void spline_pchip_set ( int n, double x[], double f[], double d[] )
 
   Discussion:
 
-    This routine computes what would normally be called a Hermite 
+    This routine computes what would normally be called a Hermite
     interpolant.  However, the user is only required to supply function
     values, not derivative values as well.  This routine computes
     "suitable" derivative values, so that the resulting Hermite interpolant
@@ -6199,7 +6272,7 @@ void spline_pchip_set ( int n, double x[], double f[], double d[] )
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -6218,7 +6291,7 @@ void spline_pchip_set ( int n, double x[], double f[], double d[] )
     Volume 17, Number 2, April 1980, pages 238-246.
 
     Fred Fritsch, Judy Butland,
-    A Method for Constructing Local Monotone Piecewise 
+    A Method for Constructing Local Monotone Piecewise
     Cubic Interpolants,
     SIAM Journal on Scientific and Statistical Computing,
     Volume 5, Number 2, 1984, pages 300-304.
@@ -6230,13 +6303,13 @@ void spline_pchip_set ( int n, double x[], double f[], double d[] )
     Input, double X[N], the strictly increasing independent
     variable values.
 
-    Input, double F[N], dependent variable values to be interpolated.  This 
+    Input, double F[N], dependent variable values to be interpolated.  This
     routine is designed for monotonic data, but it will work for any F-array.
     It will force extrema at points where monotonicity switches direction.
 
     Output, double D[N], the derivative values at the
     data points.  If the data are monotonic, these values will determine
-    a monotone cubic Hermite function.  
+    a monotone cubic Hermite function.
 */
 {
   double del1;
@@ -6262,9 +6335,11 @@ void spline_pchip_set ( int n, double x[], double f[], double d[] )
   if ( n < 2 )
   {
     ierr = -1;
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "SPLINE_PCHIP_SET - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  Number of data points less than 2." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "SPLINE_PCHIP_SET - Fatal error!\n" );
-    fprintf ( stderr, "  Number of data points less than 2.\n" );
+    fprintf ( stderr, "  Number of data points less than 2.\n" ); */
     exit ( ierr );
   }
 
@@ -6273,9 +6348,11 @@ void spline_pchip_set ( int n, double x[], double f[], double d[] )
     if ( x[i] <= x[i-1] )
     {
       ierr = -3;
-      fprintf ( stderr, "\n" );
+      evalresp_log(log, ERROR, 0, "SPLINE_PCHIP_SET - Fatal error!" );
+      evalresp_log(log, ERROR, 0, "  X array not strictly increasing.\n" );
+      /*XXX fprintf ( stderr, "\n" );
       fprintf ( stderr, "SPLINE_PCHIP_SET - Fatal error!\n" );
-      fprintf ( stderr, "  X array not strictly increasing.\n" );
+      fprintf ( stderr, "  X array not strictly increasing.\n" ); */
       exit ( ierr );
     }
   }
@@ -6408,8 +6485,8 @@ void spline_pchip_set ( int n, double x[], double f[], double d[] )
 }
 /******************************************************************************/
 
-void spline_pchip_val ( int n, double x[], double f[], double d[],  
-  int ne, double xe[], double fe[] )
+void spline_pchip_val ( int n, double x[], double f[], double d[],
+  int ne, double xe[], double fe[] , evalresp_log_t *log)
 
 /******************************************************************************/
 /*
@@ -6453,7 +6530,7 @@ void spline_pchip_val ( int n, double x[], double f[], double d[],
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -6466,7 +6543,7 @@ void spline_pchip_val ( int n, double x[], double f[], double d[],
 
   Reference:
 
-    Fred Fritsch, Ralph Carlson, 
+    Fred Fritsch, Ralph Carlson,
     Monotone Piecewise Cubic Interpolation,
     SIAM Journal on Numerical Analysis,
     Volume 17, Number 2, April 1980, pages 238-246.
@@ -6507,9 +6584,11 @@ void spline_pchip_val ( int n, double x[], double f[], double d[],
   if ( n < 2 )
   {
     ierr = -1;
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "SPLINE_PCHIP_VAL - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  Number of data points less than 2." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "SPLINE_PCHIP_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  Number of data points less than 2.\n" );
+    fprintf ( stderr, "  Number of data points less than 2.\n" ); */
     exit ( ierr );
   }
 
@@ -6518,9 +6597,11 @@ void spline_pchip_val ( int n, double x[], double f[], double d[],
     if ( x[i] <= x[i-1] )
     {
       ierr = -3;
-      fprintf ( stderr, "\n" );
+      evalresp_log(log, ERROR, 0, "SPLINE_PCHIP_VAL - Fatal error!" );
+      evalresp_log(log, ERROR, 0, "  X array not strictly increasing." );
+      /*XXX fprintf ( stderr, "\n" );
       fprintf ( stderr, "SPLINE_PCHIP_VAL - Fatal error!\n" );
-      fprintf ( stderr, "  X array not strictly increasing.\n" );
+      fprintf ( stderr, "  X array not strictly increasing.\n" ); */
       exit ( ierr );
     }
   }
@@ -6528,9 +6609,11 @@ void spline_pchip_val ( int n, double x[], double f[], double d[],
   if ( ne < 1 )
   {
     ierr = -4;
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "SPLINE_PCHIP_VAL - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  Number of evaluation points less than 1." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "SPLINE_PCHIP_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  Number of evaluation points less than 1.\n" );
+    fprintf ( stderr, "  Number of evaluation points less than 1.\n" ); */
     return;
   }
 
@@ -6583,15 +6666,17 @@ void spline_pchip_val ( int n, double x[], double f[], double d[],
 /*
   Evaluate cubic at XE(J_FIRST:J-1).
 */
-      ierc = chfev ( x[ir-2], x[ir-1], f[ir-2], f[ir-1], d[ir-2], d[ir-1], 
-        nj, xe+j_first-1, fe+j_first-1, next );
+      ierc = chfev ( x[ir-2], x[ir-1], f[ir-2], f[ir-1], d[ir-2], d[ir-1],
+        nj, xe+j_first-1, fe+j_first-1, next, log );
 
       if ( ierc < 0 )
       {
         ierr = -5;
-        fprintf ( stderr, "\n" );
+        evalresp_log(log, ERROR, 0, "SPLINE_PCHIP_VAL - Fatal error!" );
+        evalresp_log(log, ERROR, 0, "  Error return from CHFEV." );
+        /*XXX fprintf ( stderr, "\n" );
         fprintf ( stderr, "SPLINE_PCHIP_VAL - Fatal error!\n" );
-        fprintf ( stderr, "  Error return from CHFEV.\n" );
+        fprintf ( stderr, "  Error return from CHFEV.\n" ); */
         exit ( ierr );
       }
 /*
@@ -6602,9 +6687,11 @@ void spline_pchip_val ( int n, double x[], double f[], double d[],
         if ( ir < n )
         {
           ierr = -5;
-          fprintf ( stderr, "\n" );
+          evalresp_log(log, ERROR, 0, "SPLINE_PCHIP_VAL - Fatal error!" );
+          evalresp_log(log, ERROR, 0, "  IR < N." );
+          /*XXX fprintf ( stderr, "\n" );
           fprintf ( stderr, "SPLINE_PCHIP_VAL - Fatal error!\n" );
-          fprintf ( stderr, "  IR < N.\n" );
+          fprintf ( stderr, "  IR < N.\n" ); */
           exit ( ierr );
         }
 /*
@@ -6641,9 +6728,11 @@ void spline_pchip_val ( int n, double x[], double f[], double d[],
           if ( j_new == -1 )
           {
             ierr = -5;
-            fprintf ( stderr, "\n" );
+            evalresp_log(log, ERROR, 0, "SPLINE_PCHIP_VAL - Fatal error!" );
+            evalresp_log(log, ERROR, 0, "  Could not bracket the data point." );
+            /*XXX fprintf ( stderr, "\n" );
             fprintf ( stderr, "SPLINE_PCHIP_VAL - Fatal error!\n" );
-            fprintf ( stderr, "  Could not bracket the data point.\n" );
+            fprintf ( stderr, "  Could not bracket the data point.\n" ); */
             exit ( ierr );
           }
 /*
@@ -6685,8 +6774,8 @@ void spline_pchip_val ( int n, double x[], double f[], double d[],
 }
 /******************************************************************************/
 
-void spline_quadratic_val ( int ndata, double tdata[], double ydata[], 
-  double tval, double *yval, double *ypval )
+void spline_quadratic_val ( int ndata, double tdata[], double ydata[],
+  double tval, double *yval, double *ypval, evalresp_log_t *log)
 
 /******************************************************************************/
 /*
@@ -6703,7 +6792,7 @@ void spline_quadratic_val ( int ndata, double tdata[], double ydata[],
 
   Licensing:
 
-    This code is distributed under the GNU LGPL license. 
+    This code is distributed under the GNU LGPL license.
 
   Modified:
 
@@ -6742,17 +6831,21 @@ void spline_quadratic_val ( int ndata, double tdata[], double ydata[],
 
   if ( ndata < 3 )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "SPLINE_QUADRATIC_VAL - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  NDATA < 3." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "SPLINE_QUADRATIC_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  NDATA < 3.\n" );
+    fprintf ( stderr, "  NDATA < 3.\n" ); */
     exit ( 1 );
   }
 
   if ( ndata % 2 == 0 )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "SPLINE_QUADRATIC_VAL - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  NDATA must be odd." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "SPLINE_QUADRATIC_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  NDATA must be odd.\n" );
+    fprintf ( stderr, "  NDATA must be odd.\n" ); */
     exit ( 1 );
   }
 /*
@@ -6776,9 +6869,11 @@ void spline_quadratic_val ( int ndata, double tdata[], double ydata[],
 
   if ( t2 <= t1 || t3 <= t2 )
   {
-    fprintf ( stderr, "\n" );
+    evalresp_log(log, ERROR, 0, "SPLINE_QUADRATIC_VAL - Fatal error!" );
+    evalresp_log(log, ERROR, 0, "  T2 <= T1 or T3 <= T2." );
+    /*XXX fprintf ( stderr, "\n" );
     fprintf ( stderr, "SPLINE_QUADRATIC_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  T2 <= T1 or T3 <= T2.\n" );
+    fprintf ( stderr, "  T2 <= T1 or T3 <= T2.\n" ); */
     exit ( 1 );
   }
 /*
@@ -6791,7 +6886,7 @@ void spline_quadratic_val ( int ndata, double tdata[], double ydata[],
 
   dif1 = ( y2 - y1 ) / ( t2 - t1 );
 
-  dif2 = ( ( y3 - y1 ) / ( t3 - t1 ) 
+  dif2 = ( ( y3 - y1 ) / ( t3 - t1 )
        - ( y2 - y1 ) / ( t2 - t1 ) ) / ( t3 - t2 );
 
   *yval = y1 + ( tval - t1 ) * ( dif1 + ( tval - t2 ) * dif2 );

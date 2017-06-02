@@ -29,6 +29,7 @@ void run_test(const char *file) {
 	int n_freq = 19, i;
 	double lof = 0.1, hif = 10, delta, *freqs = NULL;
 	struct response *response = NULL;
+    evalresp_log_t *log = NULL;
 
 	fail_if(!mkdtemp(tmpdir));
 	fail_if(!getcwd(cwd, 1000));
@@ -45,7 +46,7 @@ void run_test(const char *file) {
 
 	fail_if(!(response = evresp("HAW", "HHZ", "CO", "00", "2011,1,00:00:00", "VEL", data, freqs, n_freq,
 			"AP", "-v", 0, 99, 0, 0, 0.1, 0, NULL)));
-	print_resp(freqs, n_freq, response, "AP", 0);
+	print_resp(freqs, n_freq, response, "AP", 0, log);
 
 	// TODO - delete directory?
 }

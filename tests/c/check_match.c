@@ -10,6 +10,7 @@
 #include "x2r.h"
 #include "x2r_log.h"
 #include "x2r_ws.h"
+#include "log.h"
 
 
 FILE *open_path(const char *dir, const char *file, const char *mode) {
@@ -78,6 +79,7 @@ START_TEST (test_match)
 	int n_freq = 19, i;
 	double lof = 0.1, hif = 10, delta, *freqs = NULL, err;
 	struct response *response = NULL;
+    evalresp_log_t *log = NULL;
 
 	fail_if(!mkdtemp(tmpdir));
 	fail_if(!getcwd(cwd, 1000));
@@ -95,8 +97,8 @@ START_TEST (test_match)
 	}
 
 	fail_if(!(response = evresp_itp("ANMO", "BHZ", "IU", "??", "2015,1,00:00:00", "VEL",
-			tmpdir, freqs, n_freq, "AP", "-v", 0, 99, 0, 0, 0, 0, 0, 0.1, 0, NULL)));
-	print_resp(freqs, n_freq, response, "AP", 0);
+			tmpdir, freqs, n_freq, "AP", "-v", 0, 99, 0, 0, 0, 0, 0, 0.1, 0, log)));
+	print_resp(freqs, n_freq, response, "AP", 0, log);
 
 	// reference files take from evalresp
 	err = max_err(data, tmpdir, "AMP.IU.ANMO.00.BHZ");

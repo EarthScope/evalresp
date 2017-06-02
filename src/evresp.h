@@ -697,9 +697,10 @@ extern char myLabel[20];
  *          character strings (which are easier to deal with than the original
  *          line).
  * @param[in] line String to parse.
+ * @param[in] log Logging structure.
  * @returns Array of string objects.
  */
-struct string_array *ev_parse_line(char *line, evalresp_log_t *);
+struct string_array *ev_parse_line(char *line, evalresp_log_t *log);
 
 /**
  * @private
@@ -712,9 +713,10 @@ struct string_array *ev_parse_line(char *line, evalresp_log_t *);
  *          line).
  * @param[in] line String to parse.
  * @param[in] delim Delimiter string.
+ * @param[in] log Logging structure.
  * @returns Array of string objects.
  */
-struct string_array *parse_delim_line(char *line, char *delim, evalresp_log_t *);
+struct string_array *parse_delim_line(char *line, char *delim, evalresp_log_t *log);
 
 /**
  * @private
@@ -730,6 +732,7 @@ struct string_array *parse_delim_line(char *line, char *delim, evalresp_log_t *)
  * @param[in] fld_no Field number.
  * @param[in] sep Field separator.
  * @param[in] fld_wanted Field wanted.
+ * @param[in] log Logging structure.
  * @returns Length of the resulting field if successful.
  * @note Here a field is any string of non-white characters surrounded by
  *       white space.
@@ -751,6 +754,7 @@ int get_field(FILE *fptr, char *return_field, int blkt_no, int fld_no,
  * @param[out] fld_no Field number.
  * @param[in] sep Field separator.
  * @param[in] fld_wanted Field wanted.
+ * @param[in] log Logging structure.
  * @returns Length of the resulting field if successful.
  * @returns Value of zero otherwise.
  * @note Here a field is any string of non-white characters surrounded by
@@ -771,6 +775,7 @@ int test_field(FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
  * @param[in] blkt_no Blockette number.
  * @param[in] fld_no Field number.
  * @param[in] sep Separator.
+ * @param[in] log Logging structure.
  * @returns length of the resulting line if successful
  * @note Exits with error if no non-comment lines left in file or if expected
  *       blockette and field numbers do not match those found in the next
@@ -790,6 +795,7 @@ int get_line(FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, 
  * @param[out] blkt_no Blockette number.
  * @param[out] fld_no Field number.
  * @param[in] sep Separator.
+ * @param[in] log Logging structure.
  * @returns The fld_no of the resulting line if successful.
  * @returns 0 if no non-comment lines left in file, regardless of the
  *          blockette and field numbers for the line (these values are
@@ -858,6 +864,7 @@ int parse_delim_field(char *line, int fld_no, char *delim, char *return_field, e
  * @param[out] blkt_no Blockette number.
  * @param[out] fld_no Field number.
  * @param[out] in_line Line string.
+ * @param[in] log Logging structure.
  * @returns 1 if a non-comment field is found.
  * @returns @c NULL if no non-comment line is found.
  * @author 2004.079: SBH: Added code to skip blank lines.
@@ -871,6 +878,7 @@ int check_line(FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_lo
  * @details If the requested field is not a proper representation of a number,
  *          then 'IMPROPER DATA TYPE' error is signaled.
  * @param[in] in_line Input string.
+ * @param[in] log Logging structure.
  * @returns Integer value on success.
  */
 int get_int(char *in_line, evalresp_log_t *log);
@@ -883,6 +891,7 @@ int get_int(char *in_line, evalresp_log_t *log);
  * @details If the requested field is not a proper representation of a number,
  *          then 'IMPROPER DATA TYPE' error is signaled.
  * @param[in] in_line Input string.
+ * @param[in] log Logging structure.
  * @returns Double value on success.
  */
 double get_double(char *in_line, evalresp_log_t *log);
@@ -897,6 +906,7 @@ double get_double(char *in_line, evalresp_log_t *log);
  *          should be used, then the line is simply saved as the value of
  *          'SEEDUNITS[DEFAULT]' and no check of the units is made.
  * @param[in] line Incoming line.
+ * @param[in] log Logging structure.
  * @see units
  */
 int check_units(char *line, evalresp_log_t *log);
@@ -922,6 +932,7 @@ int check_units(char *line, evalresp_log_t *log);
  * @param[in] string Input string.
  * @param[in] expr Regularion expression or glob-style pattern expression.
  * @param[in] type_flag Type flag, @c -g or @c -r.
+ * @param[in] log Logging structure.
  * @returns 0 if false.
  * @returns >0 if true.
  */
@@ -933,6 +944,7 @@ int string_match(const char *string, char *expr, char *type_flag, evalresp_log_t
  * @brief A function that tests whether a string can be converted into an
  *        integer using string_match().
  * @param[in] test String to test.
+ * @param[in] log Logging structure.
  * @returns 0 if false.
  * @returns >0 if true.
  */
@@ -944,6 +956,7 @@ int is_int(const char *test, evalresp_log_t *log);
  * @brief A function that tests whether a string can be converted into an
  *        double using string_match().
  * @param[in] test String to test.
+ * @param[in] log Logging structure.
  * @returns 0 if false.
  * @returns >0 if true.
 */
@@ -988,6 +1001,7 @@ int is_IIR_coeffs(FILE *fp, int position);
  * @param[in] scn_lst List of network-station-locid-channel objects.
  * @param[in] datime Date-time string.
  * @param[out] this_channel Channel structure.
+ * @param[in] log Logging structure.
  * @returns Index of the matching station-channel pair.
  * @returns -1 on failure.
  * @note The station information is preloaded into @p this_channel, so the
@@ -1013,6 +1027,7 @@ int find_resp(FILE *fptr, struct scn_list *scn_lst, char *datime,
  * @param[in] scn Network-station-locid-channel object.
  * @param[in] datime Date-time string.
  * @param[out] this_channel Channel structure.
+ * @param[in] log Logging structure.
  * @returns 1 on success.
  * @returns -1 on failure.
  * @note The station information is preloaded into @p this_channel, so the
@@ -1033,6 +1048,7 @@ int get_resp(FILE *fptr, struct scn *scn, char *datime,
  *          response information into the filter structures.
  * @param[in,out] fptr File pointer.
  * @param[out] chan Channel structure.
+ * @param[in] log Logging structure.
  * @returns 1 on success.
  * @returns 0 on failure.
  */
@@ -1049,6 +1065,7 @@ int get_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log);
  *          pointer to the file (fptr) is left in position for the
  *          get_channel() routine to grab the channel information.
  * @param[in,out] fptr FILE pointer.
+ * @param[in] log Logging structure.
  * @returns 1 on success.
  * @returns 0 on failure.
  */
@@ -1092,11 +1109,12 @@ int next_resp(FILE *fptr, evalresp_log_t *log);
  * @param[in] file File name.
  * @param[in] scn_lst List of network-station-locid-channel objects.
  * @param[out] mode 1 for directory search or 0 if file was specified.
+ * @param[in] log Logging structure.
  * @returns Pointer to the head of the linked list of matches files.
  * @returns @c NULL if no files were found that match request.
  */
 struct matched_files *find_files(char *file, struct scn_list *scn_lst,
-                                 int *mode);
+                                 int *mode, evalresp_log_t *log);
 
 /**
  * @private
@@ -1104,9 +1122,10 @@ struct matched_files *find_files(char *file, struct scn_list *scn_lst,
  * @brief Get filenames matching the expression in @p in_file.
  * @param[in] in_file File name matching expression.
  * @param[out] file Pointer to the head of the linked list of matches files.
+ * @param[in] log Logging structure.
  * @returns Number of files found matching the expression.
  */
-int get_names(char *in_file, struct matched_files *file);
+int get_names(char *in_file, struct matched_files *file, evalresp_log_t *log);
 
 /* routines used to allocate vectors of the basic data types used in the
  filter stages */
@@ -1116,11 +1135,12 @@ int get_names(char *in_file, struct matched_files *file);
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for an array of complex numbers.
  * @param[in] npts Number of complex numbers to allocate in array.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated array.
  * @returns @c NULL if @p npts is zero.
  * @warning Exits with error if allocation fails.
  */
-struct evr_complex *alloc_complex(int npts);
+struct evr_complex *alloc_complex(int npts, evalresp_log_t *log);
 
 /**
  * @private
@@ -1130,17 +1150,19 @@ struct evr_complex *alloc_complex(int npts);
  *          station-channel-network, and a pointer to the next 'response' in
  *          the list.
  * @param[in] npts Number of responses to allocate in array.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated array.
  * @returns @c NULL if @p npts is zero.
  * @warning Exits with error if allocation fails.
  */
-struct response *alloc_response(int npts);
+struct response *alloc_response(int npts, evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for an array of strings.
  * @param[in] nstrings Number of strings to allocate in array.
+ * @param[in] log Logging structure.
  * @param[in] log Logging structure.
  * @returns Pointer to allocated array.
  * @returns @c NULL if @p nstrings is zero.
@@ -1153,71 +1175,78 @@ struct string_array *alloc_string_array(int nstrings, evalresp_log_t *log);
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for a station-channel structure
  * @returns Pointer to allocated structure.
+ * @param[in] log Logging structure.
  * @warning Exits with error if allocation fails.
  */
-struct scn *alloc_scn(void);
+struct scn *alloc_scn(evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for an array of station/channel pairs.
  * @param[in] nscn Number of station/channel pairs to allocate in array.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated array.
  * @returns @c NULL if @p nscn is zero.
  * @warning Exits with error if allocation fails.
  */
-struct scn_list *alloc_scn_list(int nscn);
+struct scn_list *alloc_scn_list(int nscn, evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for an element of a linked list of filenames.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-struct file_list *alloc_file_list(void);
+struct file_list *alloc_file_list(evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for an element of a linked list of matching files.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-struct matched_files *alloc_matched_files(void);
+struct matched_files *alloc_matched_files(evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for an array of double precision numbers
  * @param[in] npts Number of double precision numbers to allocate in array.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated array.
  * @returns @c NULL if @p npts is zero.
  * @warning Exits with error if allocation fails.
  */
-double *alloc_double(int npts);
+double *alloc_double(int npts, evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for an array of characters.
  * @param[in] len Number of characters to allocate in array.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated array.
  * @returns @c NULL if @p len is zero.
  * @warning Exits with error if allocation fails.
  */
-char *alloc_char(int len);
+char *alloc_char(int len, evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for an array of char pointers.
  * @param[in] len Number of char pointers to allocate in array.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated array.
  * @returns @c NULL if @p len is zero.
  * @warning Exits with error if allocation fails.
  */
-char **alloc_char_ptr(int len);
+char **alloc_char_ptr(int len, evalresp_log_t *log);
 
 /* allocation routines for the various types of filters */
 
@@ -1225,6 +1254,7 @@ char **alloc_char_ptr(int len);
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for a pole-zero type filter structure.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated structure.
  * @note The space for the complex poles and zeros is not allocated here, the
  *       space for these vectors must be allocated as they are read, since the
@@ -1232,45 +1262,49 @@ char **alloc_char_ptr(int len);
  *       parsed.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_pz(void);
+struct blkt *alloc_pz(evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for a coefficients-type filter.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated structure.
  * @note See alloc_pz() for details (like alloc_pz(), this does not allocate
  *       space for the numerators and denominators, that is left until
  *       parse_fir()).
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_coeff(void);
+struct blkt *alloc_coeff(evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for a fir-type filter.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated structure.
  * @note See alloc_pz() for details (like alloc_pz(), this does not allocate
  *       space for the numerators and denominators, that is left until
  *       parse_fir()).
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_fir(void);
+struct blkt *alloc_fir(evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for a response reference type filter structure.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_ref(void);
+struct blkt *alloc_ref(evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for a gain type filter structure.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated structure.
  * @note The space for the calibration vectors is not allocated here, the
  *       space for these vectors must be allocated as they are read, since the
@@ -1278,59 +1312,64 @@ struct blkt *alloc_ref(void);
  *       partially parsed.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_gain(void);
+struct blkt *alloc_gain(evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for a list type filter structure.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated structure.
  * @note The space for the amplitude, phase and frequency vectors is not
  *       allocated here the user must allocate space for these parameters once
  *       the number of frequencies is known.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_list(void);
+struct blkt *alloc_list(evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for a generic type filter structure.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated structure.
  * @note The space for the corner_freq, and corner_slope vectors is not
  *       allocated here the user must allocate space for these parameters once
  *       the number of frequencies is known.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_generic(void);
+struct blkt *alloc_generic(evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for a decimation type filter structure.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_deci(void);
+struct blkt *alloc_deci(evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for a polynomial Blockette 62.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  * @author 05/31/2013: IGD.
  */
-struct blkt *alloc_polynomial(void);
+struct blkt *alloc_polynomial(evalresp_log_t *log);
 
 /**
  * @private
  * @ingroup evalresp_private_alloc
  * @brief Allocates space for a decimation type filter structure.
+ * @param[in] log Logging structure.
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-struct stage *alloc_stage(void);
+struct stage *alloc_stage(evalresp_log_t *log);
 
 /* routines to free up space associated with dynamically allocated
  structure members */
@@ -1523,6 +1562,7 @@ void error_return(int cond, char *msg, ...);
  *          non-comment line starts the actual response information).
  * @param[in,out] fptr FILE pointer.
  * @param[in,out] chan Channel structure.
+ * @param[in] log Logging structure.
  * @returns First field number.
  */
 int parse_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log);
@@ -1540,6 +1580,7 @@ int parse_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log);
  * @param[out] blkt_no Blockette number.
  * @param[out] fld_no Starting field number.
  * @param[in] line Non-comment RESP file line.
+ * @param[in] log Logging structure.
  * @returns 1 on success.
  * @returns 0 on failure.
  */
@@ -1558,6 +1599,7 @@ int parse_pref(int *blkt_no, int *fld_no, char *line, evalresp_log_t *log);
  * @param[in,out] fptr FILE pointer.
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
+ * @param[in] log Logging structure.
  */
 void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
@@ -1573,6 +1615,7 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalre
  * @param[in,out] fptr FILE pointer.
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
+ * @param[in] log Logging structure.
  */
 void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
@@ -1589,6 +1632,7 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eva
  * @param[in,out] fptr FILE pointer, evalresp_log_t *log.
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
+ * @param[in] log Logging structure.
  * @author 06/27/00: I.Dricker (i.dricker@isti.com) for 2.3.17 iir.
  */
 void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
@@ -1605,6 +1649,7 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr,
  * @param[in,out] fptr FILE pointer.
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
+ * @param[in] log Logging structure.
  * @author 06/21/00: Ilya Dricker ISTI: I modify this routine to accomodate
  *         the form of the parsed blockette 55 generated by SeismiQuery.
  *         Since currently the blockette 55 is not supported, we do not
@@ -1624,6 +1669,7 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eval
  * @param[in,out] fptr FILE pointer.
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
+ * @param[in] log Logging structure.
  */
 void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
@@ -1638,6 +1684,7 @@ void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, e
  *          prefixes.
  * @param[in,out] fptr FILE pointer.
  * @param[in,out] blkt_ptr Blockette structure.
+ * @param[in] log Logging structure.
  * @returns Sequence number of the stage for verification.
  */
 int parse_deci(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log);
@@ -1653,6 +1700,7 @@ int parse_deci(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log);
  *          prefixes.
  * @param[in,out] fptr FILE pointer.
  * @param[in,out] blkt_ptr Blockette structure.
+ * @param[in] log Logging structure.
  * @returns Sequence number of the stage for verification.
  */
 int parse_gain(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log);
@@ -1669,6 +1717,7 @@ int parse_gain(FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log);
  * @param[in,out] fptr FILE pointer.
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
+ * @param[in] log Logging structure.
  */
 void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
@@ -1684,6 +1733,7 @@ void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalr
  * @param[in,out] fptr FILE pointer.
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
+ * @param[in] log Logging structure.
  */
 void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
 
@@ -1698,6 +1748,7 @@ void parse_ref(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalr
  * @param[in,out] fptr FILE pointer.
  * @param[in,out] blkt_ptr Blockette structure.
  * @param[in,out] stage_ptr Stage structure.
+ * @param[in] log Logging structure.
  * @author 05/31/2013: IGD.
  */
 void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
@@ -1739,6 +1790,7 @@ int add_null(char *s, int len, char where);
  *          filter
  * @param[in,out] first_blkt First filter.
  * @param[in,out] second_blkt Second filter.
+ * @param[in] log Logging structure.
  */
 void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t *log);
 
@@ -1756,6 +1808,7 @@ void merge_coeffs(struct blkt *first_blkt, struct blkt **second_blkt, evalresp_l
  *          first filter.
  * @param[in,out] first_blkt First filter.
  * @param[in,out] second_blkt Second filter.
+ * @param[in] log Logging structure.
  * @author 07/07/00: Ilya Dricker IGD (i.dricker@isti.com): Modified from
  *         merge_coeffs() for 3.2.17 of evalresp.
  */
@@ -1788,6 +1841,7 @@ void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt, evalresp_lo
  *              filter sequence is calculated and stored in the filter
  *              structure.
  * @param[in] chan Channel structure.
+ * @param[in] log Logging structure.
  */
 void check_channel(struct channel *chan, evalresp_log_t *log);
 
@@ -1799,6 +1853,7 @@ void check_channel(struct channel *chan, evalresp_log_t *log);
  * @details If so, the conversion is made and the filter type is redefined.
  * @param[in,out] f FIR filter.
  * @param[in] chan Channel structure.
+ * @param[in] log Logging structure.
  */
 void check_sym(struct blkt *f, struct channel *chan, evalresp_log_t *log);
 
@@ -1818,6 +1873,7 @@ void check_sym(struct blkt *f, struct channel *chan, evalresp_log_t *log);
  * @param[in] useTotalSensitivityFlag Use reported sensitivity to compute
  *                                    response.
  * @param[in] x_for_b62 Frequency for polynomial response (b62).
+ * @param[in] log Logging structure.
  */
 void calc_resp(struct channel *chan, double *freq, int nfreqs,
         struct evr_complex *output, char *out_units, int start_stage,
@@ -1831,6 +1887,7 @@ void calc_resp(struct channel *chan, double *freq, int nfreqs,
  * @param[in] out_units Output units. @c DEF, @c DIS, @c VEL, @c ACC.
  * @param[in,out] data Data.
  * @param[in] w Frequency.
+ * @param[in] log Logging structure.
  */
 void convert_to_units(int inp, char *out_units, struct evr_complex *data,
                       double w, evalresp_log_t *log);
@@ -1903,6 +1960,7 @@ void zmul(struct evr_complex *val1, struct evr_complex *val2);
  * @param[in,out] chan Channel structure.
  * @param[in] start_stage Start stage.
  * @param[in] stop_stage Stop stage.
+ * @param[in] log Logging structure.
  */
 void norm_resp(struct channel *chan, int start_stage, int stop_stage, evalresp_log_t *log);
 
@@ -1925,6 +1983,7 @@ void calc_list(struct blkt *blkt_ptr, int i, struct evr_complex *out);
  * @param[in] blkt_ptr Polynomial Blockette (62).
  * @param[out] out Response.
  * @param[in] x_for_b62 Frequency for response computation.
+ * @param[in] log Logging structure.
  * @author 06/01/13: Ilya Dricker ISTI (.dricker@isti.com): Function
  *         introduced in version 3.3.4 of evalresp
  */
@@ -1954,6 +2013,7 @@ void iir_trans(struct blkt *blkt_ptr, double wint, struct evr_complex *out);
  * @details Time strings must be in the format 'hh:mm:ss[.#####]', so more
  *          than 14 characters is an error (too many digits).
  * @param[in] test String to test.
+ * @param[in] log Logging structure.
  * @returns 0 if false.
  * @returns >0 if true.
  */
@@ -1984,10 +2044,11 @@ int timecmp(struct dateTime *dt1, struct dateTime *dt2);
  * @param[in] listinterp_in_flag Flag if interpolated input was used.
  * @param[in] useTotalSensitivityFlag Flag if reported sensitivity was used to
  *                                  compute response.
+ * @param[in] log Logging structure.
  */
 void print_chan(struct channel *chan, int start_stage, int stop_stage,
                 int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
-                int useTotalSensitivityFlag);
+                int useTotalSensitivityFlag, evalresp_log_t *log);
 
 /**
  * @private
@@ -2013,6 +2074,7 @@ void print_chan(struct channel *chan, int start_stage, int stop_stage,
  * @param[in] first Pointer to first response in chain.
  * @param[in] rtype Reponse type.
  * @param[in] stdio_flag Flag controlling output.
+ * @param[in] log Logging structure.
  * @see print_resp_itp().
  * @note This version of the function does not include the 'listinterp...'
  *       parameters.
@@ -2048,6 +2110,7 @@ void print_resp(double *freqs, int nfreqs, struct response *first, char *rtype,
  * @param[in] listinterp_out_flag Flag if interpolated output was used.
  * @param[in] listinterp_tension Interpolation tension used.
  * @param[in] unwrap_flag Flag if phases are unwrapped.
+ * @param[in] log Logging structure.
  * @see print_resp().
  * @note This version of the function includes the 'listinterp...' parameters.
  */
@@ -2077,6 +2140,7 @@ void print_resp_itp(double *freqs, int nfreqs, struct response *first,
  * @param[in] useTotalSensitivityFlag Use or not total sensitivity.
  * @param[in] x_for_b62 Frequency value for Polynomial.
  * @param[in] xml_flag Use XML or not.
+ * @param[in] log Logging structure.
  * @remark Calls evresp_itp() but with listinterp_tension set to 0.
  * @returns Responses.
  */
@@ -2112,6 +2176,7 @@ struct response *evresp(char *stalst, char *chalst, char *net_code,
  * @param[in] useTotalSensitivityFlag Use or not total sensitivity.
  * @param[in] x_for_b62  Frequency value for Polynomial.
  * @param[in] xml_flag Use XML or not.
+ * @param[in] log Logging structure.
  * @returns Responses.
  */
 struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
@@ -2168,12 +2233,13 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
  * @param[in] x_for_b62 Frequency value for Polynomial.
  * @param[in] xml_flag Use XML or not.
  * @remark Fortran interface.
+ * @note this will log to default of the library, currently stderr
  */
 int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
              char *units, char *file, double *freqs, int nfreqs, double *resp,
              char *rtype, char *verbose, int start_stage, int stop_stage,
              int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
-             int xml_flag, evalresp_log_t* log);
+             int xml_flag);
 
 /**
  * @private
@@ -2190,6 +2256,7 @@ int evresp_1(char *sta, char *cha, char *net, char *locid, char *datime,
  * @param[in] req_freq_arr Array of requested frequency values.
  * @param[in] eq_num_freqs Number values in @p req_freq_arr array.
  * @param[in] tension Tension value for interpolation.
+ * @param[in] log Logging structure.
  */
 void interpolate_list_blockette(double **frequency_ptr,
                                 double **amplitude_ptr, double **phase_ptr,

@@ -1,3 +1,4 @@
+#include <log.h>
 /**
  * @mainpage Introduction
  *
@@ -62,6 +63,7 @@ typedef struct regexp {
  * @ingroup evalresp_private_regexp
  * @brief Compile a regular expression into internal code.
  * @param[in] exp Regular expression string.
+ * @param[in] log Logging structure.
  * @returns Compiled regular expression object.
  * @note We can't allocate space until we know how big the compiled form will
  *       be, but we can't compile it (and thus know how big it is) until we've
@@ -75,7 +77,7 @@ typedef struct regexp {
  * @warning Beware that the optimization-preparation code in here knows about
  *          some of the structure of the compiled regexp.
  */
-regexp *evr_regcomp(char *exp);
+regexp *evr_regcomp(char *exp, evalresp_log_t *log);
 
 /**
  * @private
@@ -83,10 +85,11 @@ regexp *evr_regcomp(char *exp);
  * @brief Match a regexp against a string.
  * @param[in] prog Compiled regular expression object.
  * @param[in] string String to match against.
+ * @param[in] log Logging structure.
  * @returns @c 0 on error or no match.
  * @returns Pointer to position in string if match.
  */
-int evr_regexec(regexp *prog, char *string);
+int evr_regexec(regexp *prog, char *string, evalresp_log_t *log);
 
 /**
  * @private
@@ -95,8 +98,9 @@ int evr_regexec(regexp *prog, char *string);
  * @param[in] prog Compiled regular expression object.
  * @param[in] source Source string.
  * @param[out] dest Destination string.
+ * @param[in] log Logging structure.
  */
-void evr_regsub(regexp *prog, char *source, char *dest);
+void evr_regsub(regexp *prog, char *source, char *dest, evalresp_log_t *log);
 
 /**
  * @private
