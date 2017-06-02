@@ -96,7 +96,7 @@ START_TEST (test_match)
 		freqs[i] = pow(10.0, log10(lof) + i * delta);
 	}
 
-	fail_if(!(response = evresp_itp("ANMO", "BHZ", "IU", "??", "2015,1,00:00:00", "VEL",
+	ck_assert(NULL != (response = evresp_itp("ANMO", "BHZ", "IU", "??", "2015,1,00:00:00", "VEL",
 			tmpdir, freqs, n_freq, "AP", "-v", 0, 99, 0, 0, 0, 0, 0, 0.1, 0, log)));
 	print_resp(freqs, n_freq, response, "AP", 0, log);
 
