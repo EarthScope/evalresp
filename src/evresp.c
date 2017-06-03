@@ -346,6 +346,10 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
     /* then form a set of network-station-locid-channel tuples to search for */
     scns = alloc_scn_list(
             chan_list->nstrings * sta_list->nstrings * locid_list->nstrings, log);
+    if (!scns)
+    {
+        return NULL;
+    }
     for (i = 0; i < sta_list->nstrings; i++) {
         for (j = 0; j < locid_list->nstrings; j++) {
             for (k = 0; k < chan_list->nstrings; k++, count++) {
@@ -398,6 +402,10 @@ struct response *evresp_itp(char *stalst, char *chalst, char *net_code,
 
     /* allocate space for the first response */
     resp = alloc_response(nfreqs, log);
+    if (!resp)
+    {
+        return NULL;
+    }
 
     for (i = 0; i < scns->nscn && (mode || test); i++) {
         /* allocate space for 'matched_files' pointer used to determine if a file has already been read */
