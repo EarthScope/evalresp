@@ -336,7 +336,7 @@ static int parse_float(evalresp_log_t *log, mxml_node_t *parent, const char *pat
     int status = X2R_OK;
     mxml_node_t *node;
 
-    evalresp_log(log, DEBUG, 0, "Parsing float");
+    //evalresp_log(log, DEBUG, 0, "Parsing float");
     /*XXX x2r_debug(log, "Parsing float"); */
 
     if (!(status = find_child(log, &node, NULL, parent, path))) {
@@ -356,7 +356,7 @@ static int parse_pole_zero(evalresp_log_t *log, mxml_node_t *node, x2r_pole_zero
 
     int status = X2R_OK;
 
-    evalresp_log(log, DEBUG, 0, "Parsing pole_zero");
+    //evalresp_log(log, DEBUG, 0, "Parsing pole_zero");
     /*XXX x2r_debug(log, "Parsing pole_zero"); */
 
     if (!(status = int_attribute(log, node, "number", NULL, &pole_zero->number))) {
@@ -374,7 +374,7 @@ static int parse_coefficient(evalresp_log_t *log, mxml_node_t *node, x2r_coeffic
 
     int status = X2R_OK;
 
-    evalresp_log(log, DEBUG, 0, "Parsing coefficient");
+    //evalresp_log(log, DEBUG, 0, "Parsing coefficient");
     /*XXX x2r_debug(log, "Parsing coefficient"); */
 
     if (!(status = int_attribute(log, node, "number", NULL, &coefficient->number))) {
@@ -391,7 +391,7 @@ static int parse_response_list_element(evalresp_log_t *log, mxml_node_t *node,
 
     int status = X2R_OK;
 
-    evalresp_log(log, DEBUG, 0, "Parsing response_list_element");
+    //evalresp_log(log, DEBUG, 0, "Parsing response_list_element");
     /*XXX x2r_debug(log, "Parsing response_list_element"); */
 
     if (!(status = double_element(log, node, "Frequency", NULL, &element->frequency))) {
@@ -410,7 +410,7 @@ static int parse_numerator_coefficient(evalresp_log_t *log, mxml_node_t *node,
 
     int status = X2R_OK;
 
-    evalresp_log(log, DEBUG, 0, "Parsing numerator_coefficient");
+    //evalresp_log(log, DEBUG, 0, "Parsing numerator_coefficient");
     /*XXX x2r_debug(log, "Parsing numerator_coefficient"); */
 
     // this (i) is not used in IRIS-WS or here - on output we provide a new index.
@@ -430,7 +430,7 @@ static int parse_units(evalresp_log_t *log, mxml_node_t *parent, const char *pat
     int status = X2R_OK;
     mxml_node_t *node;
 
-    evalresp_log(log, DEBUG, 0, "Parsing units");
+    //evalresp_log(log, DEBUG, 0, "Parsing units");
     /*XXX x2r_debug(log, "Parsing units"); */
 
     if (!(status = find_child(log, &node, NULL, parent, path))) {
@@ -531,7 +531,7 @@ static int parse_poles_zeros(evalresp_log_t *log, mxml_node_t *node,
 
     int status = X2R_OK;
 
-    evalresp_log(log, DEBUG, 0, "Parsing poles_zeros");
+    //evalresp_log(log, DEBUG, 0, "Parsing poles_zeros");
     /*XXX x2r_debug(log, "Parsing poles_zeros"); */
 
     if (!(status = parse_poles_zeros_data(log, node, poles_zeros))) {
@@ -636,7 +636,7 @@ static int parse_coefficients(evalresp_log_t *log, mxml_node_t *node,
 
     int status = X2R_OK;
 
-    evalresp_log(log, DEBUG, 0, "Parsing coefficients");
+    //evalresp_log(log, DEBUG, 0, "Parsing coefficients");
     /*XXX x2r_debug(log, "Parsing coefficients"); */
 
     if (!(status = parse_coefficients_data(log, node, coefficients))) {
@@ -669,7 +669,7 @@ static int parse_response_list(evalresp_log_t *log, mxml_node_t *node,
     int status = X2R_OK, i;
     nodelist *elements = NULL;
 
-    evalresp_log(log, DEBUG, 0, "Parsing response_list");
+    //evalresp_log(log, DEBUG, 0, "Parsing response_list");
     /*XXX x2r_debug(log, "Parsing response_list"); */
 
     if (!(status = parse_units(log, node, "InputUnits",
@@ -733,7 +733,7 @@ static int parse_fir(evalresp_log_t *log, mxml_node_t *node, x2r_fir *fir) {
     int status = X2R_OK, i;
     nodelist *numerator_coefficients = NULL;
 
-    evalresp_log(log, DEBUG, 0, "Parsing fir");
+    //evalresp_log(log, DEBUG, 0, "Parsing fir");
     /*XXX x2r_debug(log, "Parsing fir"); */
 
     if (!(status = parse_fir_data(log, node, fir))) {
@@ -812,7 +812,7 @@ static int parse_polynomial(evalresp_log_t *log, mxml_node_t *node, x2r_polynomi
     int status = X2R_OK, i;
     nodelist *coefficents = NULL;
 
-    evalresp_log(log, DEBUG, 0, "Parsing polynomial");
+    //evalresp_log(log, DEBUG, 0, "Parsing polynomial");
     /*XXX x2r_debug(log, "Parsing polynomial"); */
 
     if (!(status = parse_polynomial_data(log, node, polynomial))) {
@@ -855,7 +855,7 @@ static int parse_decimation(evalresp_log_t *log, mxml_node_t *node, x2r_decimati
 
     int status = X2R_OK;
 
-    evalresp_log(log, DEBUG, 0, "Parsing decimation");
+    //evalresp_log(log, DEBUG, 0, "Parsing decimation");
     /*XXX x2r_debug(log, "Parsing decimation"); */
 
     if (!(status = double_element(log, node, "InputSampleRate", NULL,
@@ -911,7 +911,7 @@ static int parse_stage(evalresp_log_t *log, mxml_node_t *node, x2r_stage *stage)
     mxml_node_t *decimation, *stage_gain;
 
     if (!(status = int_attribute(log, node, "number", NULL, &stage->number))) {
-        evalresp_log(log, DEBUG, 0, "Parsing stage %d", stage->number);
+        //evalresp_log(log, DEBUG, 0, "Parsing stage %d", stage->number);
         /*XXX x2r_debug(log, "Parsing stage %d", stage->number); */
     }
 
@@ -1065,7 +1065,7 @@ static int parse_response(evalresp_log_t *log, mxml_node_t *node, x2r_response *
     mxml_node_t *instrument_sensitivity;
     mxml_node_t *instrument_polynomial;
 
-    evalresp_log(log, DEBUG, 0, "Parsing response");
+    //evalresp_log(log, DEBUG, 0, "Parsing response");
     /*XXX x2r_debug(log, "Parsing response"); */
 
     if (!(status = find_children(log, &stages, node, "Stage"))) {
@@ -1138,7 +1138,7 @@ static int parse_channel(evalresp_log_t *log, mxml_node_t *node, x2r_channel *ch
     int status = X2R_OK;
     mxml_node_t *response;
 
-    evalresp_log(log, DEBUG, 0, "Parsing channel");
+    //evalresp_log(log, DEBUG, 0, "Parsing channel");
     /*XXX x2r_debug(log, "Parsing channel"); */
 
     if (!(status = char_attribute(log, node, "code", NULL, &channel->code))) {
@@ -1176,7 +1176,7 @@ static int parse_station(evalresp_log_t *log, mxml_node_t *node, x2r_station *st
     int status = X2R_OK, i;
     nodelist *stations = NULL;
 
-    evalresp_log(log, DEBUG, 0, "Parsing station");
+    //evalresp_log(log, DEBUG, 0, "Parsing station");
     /*XXX x2r_debug(log, "Parsing station"); */
 
     if (!(status = find_children(log, &stations, node, "Channel"))) {
@@ -1219,7 +1219,7 @@ static int parse_network(evalresp_log_t *log, mxml_node_t *node, x2r_network *ne
     int status = X2R_OK, i;
     nodelist *stations = NULL;
 
-    evalresp_log(log, DEBUG, 0, "Parsing network");
+    //evalresp_log(log, DEBUG, 0, "Parsing network");
     /*XXX x2r_debug(log, "Parsing network"); */
 
     if (!(status = find_children(log, &stations, node, "Station"))) {
@@ -1263,7 +1263,7 @@ static int parse_fdsn_station_xml(evalresp_log_t *log, mxml_node_t *doc, x2r_fds
     mxml_node_t *fdsn = NULL;
     nodelist *networks = NULL;
 
-    evalresp_log(log, DEBUG, 0, "Parsing root");
+    //evalresp_log(log, DEBUG, 0, "Parsing root");
     /*XXX x2r_debug(log, "Parsing root"); */
 
     if (!(*root = calloc(1, sizeof(**root)))) {
