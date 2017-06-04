@@ -1784,7 +1784,7 @@ int get_channel(FILE *fptr, struct channel* chan, evalresp_log_t *log) {
             return 0 /*TODO PARSE_ERROR should be returned */;
         }
     } else {
-        if (0 < parse_field(FirstLine, 0, field, log))
+        if (0 > parse_field(FirstLine, 0, field, log))
         {
             return  0 /*TODO PARSE_ERROR should be returned */;
         }
