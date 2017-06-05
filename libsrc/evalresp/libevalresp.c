@@ -63,7 +63,7 @@ Notes:
 */
 
 #include "./evresp.h"
-#include "x2r_ws.h"
+#include <evalresp/x2r/ws.h>
 #include <stdlib.h>
 #include <string.h>
 #include <evalresp_log/log.h>

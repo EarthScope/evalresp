@@ -16,13 +16,14 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include "evresp.h"
 
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #else
 #include "vcs_getopt.h"
 #endif
+
+#include <evalresp/evresp.h>
 #include <evalresp_log/log.h>
 
 #define DATIMESIZE 32

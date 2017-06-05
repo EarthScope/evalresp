@@ -28,8 +28,8 @@
 
 #include <stdio.h>
 
-#include "x2r_log.h"
-#include "x2r_xml.h"
+#include <evalresp/x2r/log.h>
+#include <evalresp/x2r/xml.h>
 #include <evalresp_log/log.h>
 
 /**

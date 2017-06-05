@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include "x2r.h"
-#include "x2r_log.h"
+#include <evalresp/x2r.h>
+#include <evalresp/x2r/log.h>
 
 
 static char *labels[] = {"ERROR", "WARN", "INFO", "DEBUG"};

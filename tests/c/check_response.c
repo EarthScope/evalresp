@@ -6,10 +6,10 @@
 #include <fcntl.h>
 #include <math.h>
 
-#include "evresp.h"
-#include "x2r.h"
-#include "x2r_log.h"
-#include "x2r_ws.h"
+#include <evalresp/evresp.h>
+#include <evalresp/x2r.h>
+#include <evalresp/x2r/log.h>
+#include <evalresp/x2r/ws.h>
 
 
 FILE *open_path(const char *dir, const char *file) {

@@ -3,8 +3,8 @@
 #include <mxml.h>
 #include <evalresp_log/log.h>
 
-#include "x2r.h"
-#include "x2r_xml.h"
+#include <evalresp/x2r.h>
+#include <evalresp/x2r/xml.h>
 
 #define BUFFER_SIZE 5000
 

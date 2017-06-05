@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 
-#include "spline.h"
+#include <spline/spline.h>
 #include <evalresp_log/log.h>
 
 #include "evr_spline.h"
