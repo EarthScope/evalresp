@@ -3,12 +3,24 @@
  *
  * @section purpose Purpose
  *
- * Implements the private interface for evalresp.
+ * Implements the interfaces for evalresp.
  *
  * @section history History
  *
  * Written by <a href="http://www.isti.com/">Instrumental Software
  * Technologies, Inc.</a> (ISTI).
+ */
+
+/**
+ * @defgroup evalresp evalresp
+ * @ingroup iris
+ * @brief Application Programming Interface (API) for evalresp.
+ */
+
+/**
+ * @defgroup evalresp_public evalresp Public Interface
+ * @ingroup evalresp
+ * @brief Public evalresp interface.
  */
 
 /**
@@ -125,8 +137,8 @@
  10/02/2013 -- [IGD] Version 3.3.4: Adding DEGREE CENTIGRADE as units
  */
 
-#ifndef EVRESP_H
-#define EVRESP_H
+#ifndef __EVALRESP_EVALRESP_H__
+#define __EVALRESP EVALRESP_H__
 
 #include <stdio.h>
 #include <math.h>
@@ -2402,4 +2414,4 @@ u *          want to change the number of arguments in evresp() function which
  */
 int use_estimated_delay(int flag);
 
-#endif /* !EVRESP_H */
+#endif /* !__EVALRESP_EVALRESP_H__ */
