@@ -108,7 +108,7 @@ extern const char *log_level_strs[];
  * reqires data to be null in this case.
 
  @verbatim
- #include "log.h"
+ #include <evalresp_log/log.h>
  int log_func(evalresp_log_msg_t *msg, void *data)
  {
     if (!data)
@@ -146,7 +146,7 @@ extern const char *log_level_strs[];
  * To develop against libevalresp:
 
 @verbatim
-#include <log.h>
+#include <evalresp_log/log.h>
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -19,9 +19,10 @@ SORT_GROUP_NAMES = NO
 SHOW_USED_FILES = NO
 SHOW_FILES = NO
 INPUT = intro_dox.h \
-        ../src/evalresp.h \
-        ../src/evresp.h \
-        ../src
+        ../libsrc/evalresp/evalresp.h \
+        ../libsrc/evalrespevresp.h \
+        ../src \
+        ../libsrc
 FILE_PATTERNS = *.h *.c
 RECURSIVE = YES
 EXCLUDE_PATTERNS = 
