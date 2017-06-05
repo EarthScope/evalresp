@@ -20,7 +20,6 @@ SHOW_USED_FILES = NO
 SHOW_FILES = NO
 INPUT = intro_dox.h \
         ../libsrc/evalresp/evalresp.h \
-        ../libsrc/evalrespevresp.h \
         ../src \
         ../libsrc
 FILE_PATTERNS = *.h *.c
