@@ -10,7 +10,7 @@
 
 #include <stdlib.h>
 
-#include "./evresp.h"
+#include <evalresp/evalresp.h>
 
 void error_exit(int cond, char *msg, ...) {
     va_list ap;

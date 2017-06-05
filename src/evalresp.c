@@ -23,7 +23,7 @@
 #include "vcs_getopt.h"
 #endif
 
-#include <evalresp/evresp.h>
+#include <evalresp/evalresp.h>
 #include <evalresp_log/log.h>
 
 #define DATIMESIZE 32

@@ -22,5 +22,5 @@ libevalresp_la_LDFLAGS= -lspline -levalresp_log
 
 nobase_include_HEADERS = evalresp_log/log.h evalresp_log/examples/to_syslog.h\
 						 evalresp_log/examples/to_file.h spline/spline.h\
-						 evalresp/evalresp.h
+						 evalresp/evalresp.h evalresp/x2r.h
 

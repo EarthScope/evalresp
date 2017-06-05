@@ -14,7 +14,7 @@
 #include <config.h>
 #endif
 
-#include "./evresp.h"
+#include <evalresp/evalresp.h>
 #include <string.h>
 #include <stdlib.h>
 

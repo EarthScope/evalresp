@@ -62,7 +62,7 @@ Notes:
    2015-05-04 -- [AC]  Simplifed / fixed for fortran 95
 */
 
-#include "./evresp.h"
+#include <evalresp/evalresp.h>
 #include <evalresp/x2r/ws.h>
 #include <stdlib.h>
 #include <string.h>

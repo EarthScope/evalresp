@@ -9,7 +9,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "evresp.h"
+#include <evalresp/evalresp.h>
 #include "evr_spline.h"
 #include <evalresp_log/log.h>
 

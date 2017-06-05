@@ -35,7 +35,7 @@
 #include <time.h>            /* 'time.h' is not in 'sys/' */
 #endif
 #include <string.h>
-#include "evresp.h"
+#include <evalresp/evalresp.h>
 
 #ifdef _WIN32
 #include <io.h>         /* include header files for directory functions */

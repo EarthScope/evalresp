@@ -18,7 +18,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "./evresp.h"
+#include <evalresp/evalresp.h>
 double atof();
 
 int parse_pref(int *blkt_no, int *fld_no, char *line, evalresp_log_t *log) {

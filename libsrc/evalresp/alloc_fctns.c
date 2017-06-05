@@ -7,7 +7,7 @@
 #include <malloc.h>
 #endif
 
-#include "./evresp.h"
+#include <evalresp/evalresp.h>
 
 #include <stdlib.h>
 
