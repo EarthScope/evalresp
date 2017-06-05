@@ -1,5 +1,5 @@
 
-LDFLAGS+="-L../mxml"
+LDFLAGS+="-L../libsrc/mxml"
 
 bin_PROGRAMS = evalresp xml2resp
 
