@@ -11,7 +11,7 @@
 #include <string.h>
 #include "evresp.h"
 #include "evr_spline.h"
-#include "log.h"
+#include <evalresp_log/log.h>
 
 void merge_lists(struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t *log) {
     int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;

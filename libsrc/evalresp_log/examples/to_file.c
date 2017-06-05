@@ -1,8 +1,8 @@
-#include "../log.h"
+#include <evalresp_log/log.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include "to_file.h"
+#include <evalresp_log/examples/to_file.h>
 
 int evalresp_log_intialize_log_for_file(evalresp_log_t *log, FILE *fd)
 {

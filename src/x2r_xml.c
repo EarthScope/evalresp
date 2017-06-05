@@ -1,7 +1,7 @@
 
 #include <string.h>
 #include <mxml.h>
-#include <log.h>
+#include <evalresp_log/log.h>
 
 #include "x2r.h"
 #include "x2r_xml.h"

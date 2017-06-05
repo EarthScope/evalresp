@@ -1,6 +1,6 @@
 #ifndef __EVALRESP_SPLINE_H__
 #define __EVALRESP_SPLINE_H__
-#include <log.h>
+#include <evalresp_log/log.h>
 
 double basis_function_b_val ( double tdata[], double tval );
 double basis_function_beta_val ( double beta1, double beta2, double tdata[],

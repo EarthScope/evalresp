@@ -7,7 +7,7 @@
 #include "x2r_log.h"
 #include "x2r_xml.h"
 #include "x2r_ws.h"
-#include "log.h"
+#include <evalresp_log/log.h>
 
 
 // This file generates response formatted data from the in-memory model of

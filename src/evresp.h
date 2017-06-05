@@ -134,7 +134,7 @@
 #include <setjmp.h>
 #include <stdarg.h>
 
-#include <log.h>
+#include <evalresp_log/log.h>
 
 /* if Windows compiler then redefine 'complex' to */
 /*  differentiate it from the existing struct,    */

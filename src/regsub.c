@@ -25,7 +25,7 @@
 #include <string.h>          /* added 8/28/2001 -- [ET] */
 #include "regexp.h"
 #include "regmagic.h"
-#include "log.h"
+#include <evalresp_log/log.h>
 
 #ifndef CHARBITS
 #define    UCHARAT(p)    ((int)*(unsigned char *)(p))

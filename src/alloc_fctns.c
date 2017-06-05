@@ -13,7 +13,7 @@
 
 #include <string.h>
 
-#include <log.h>
+#include <evalresp_log/log.h>
 
 struct evr_complex *alloc_complex(int npts, evalresp_log_t *log) {
     struct evr_complex *cptr;

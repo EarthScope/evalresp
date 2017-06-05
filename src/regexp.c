@@ -39,7 +39,7 @@
 #include "regexp.h"
 #include "regmagic.h"
 
-#include "log.h"
+#include <evalresp_log/log.h>
 
 /*
  * The "internal use only" fields in regexp.h are present to pass info from

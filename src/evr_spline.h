@@ -1,6 +1,6 @@
 #ifndef __EVALRESP_EVR_SPLINE_H__
 #define __EVALRESP_EVR_SPLINE_H__
-#include <log.h>
+#include <evalresp_log/log.h>
 /**
  * @mainpage Introduction
  *

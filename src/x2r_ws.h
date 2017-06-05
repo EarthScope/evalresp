@@ -30,7 +30,7 @@
 
 #include "x2r_log.h"
 #include "x2r_xml.h"
-#include <log.h>
+#include <evalresp_log/log.h>
 
 /**
  * @private

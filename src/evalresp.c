@@ -23,7 +23,7 @@
 #else
 #include "vcs_getopt.h"
 #endif
-#include <log.h>
+#include <evalresp_log/log.h>
 
 #define DATIMESIZE 32
 #define TODAYSIZE 10

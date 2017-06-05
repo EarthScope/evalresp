@@ -30,7 +30,7 @@
 #include <stdio.h>
 
 #include "x2r_log.h"
-#include <log.h>
+#include <evalresp_log/log.h>
 
 
 // This is the in-memory model of the station.xml file.

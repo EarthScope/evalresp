@@ -1,7 +1,7 @@
 #include <syslog.h>
-#include "../log.h"
 #include <stdlib.h>
-#include "to_syslog.h"
+#include <evalresp_log/log.h>
+#include <evalresp_log/examples/to_syslog.h>
 
 int evalresp_log_intialize_log_for_syslog(evalresp_log_t *log, evalresp_syslog_data_t *data)
 {

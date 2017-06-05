@@ -27,7 +27,7 @@
 
 #ifndef __evalresp_log_to_file_h__
 #define __evalresp_log_to_file_h__
-#include "../log.h"
+#include "evalresp_log/log.h"
 
 /**
  * @private

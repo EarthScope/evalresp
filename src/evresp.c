@@ -66,7 +66,7 @@ Notes:
 #include "x2r_ws.h"
 #include <stdlib.h>
 #include <string.h>
-#include <log.h>
+#include <evalresp_log/log.h>
 
 /* define a global flag to use if using "default" units */
 int def_units_flag;

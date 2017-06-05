@@ -10,7 +10,7 @@
 #include "x2r.h"
 #include "x2r_log.h"
 #include "x2r_ws.h"
-#include "log.h"
+#include <evalresp_log/log.h>
 
 
 FILE *open_path(const char *dir, const char *file, const char *mode) {

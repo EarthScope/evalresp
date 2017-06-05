@@ -1,4 +1,4 @@
-#include "../log.h"
+#include <evalresp_log/log.h>
 #include <stdlib.h>
 
 evalresp_log_t *evalresp_log_t_alloc(evalresp_log_func_t log_func, void *func_data)

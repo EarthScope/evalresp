@@ -5,7 +5,7 @@
 # include <string.h>
 
 # include "spline.h"
-#include "log.h"
+#include <evalresp_log/log.h>
 
 /******************************************************************************/
 
