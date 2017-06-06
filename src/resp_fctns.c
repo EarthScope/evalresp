@@ -505,7 +505,8 @@ void check_channel(struct channel *chan, evalresp_log_t *log) {
     if((stage_type == IIR_TYPE || stage_type == FIR_TYPE || stage_type == IIR_COEFFS_TYPE) && !deci_flag)
     {
         evalresp_log(log, ERROR, 0, "check_channel; required decimation blockette for IIR or FIR filter missing");
-        return; /*TODO ILLEGAL_RESP_FORMAT */
+	exit(1); /* IGD 06/06/2017 To satisfy failure of RESP.BK.BDM..UCD; need return error and process it */
+       /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
         /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; required decimation blockette for IIR or FIR filter missing"); */
     }
 
