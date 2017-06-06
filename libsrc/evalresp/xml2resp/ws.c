@@ -3,10 +3,10 @@
 #include <stdarg.h>
 #include <string.h>
 
-#include <evalresp/x2r.h>
-#include <evalresp/x2r/log.h>
-#include <evalresp/x2r/xml.h>
-#include <evalresp/x2r/ws.h>
+#include <evalresp/xml2resp.h>
+#include <evalresp/xml2resp/log.h>
+#include <evalresp/xml2resp/xml.h>
+#include <evalresp/xml2resp/ws.h>
 #include <evalresp_log/log.h>
 
 

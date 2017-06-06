@@ -7,9 +7,9 @@
 #include <math.h>
 
 #include <evalresp/evalresp.h>
-#include <evalresp/x2r.h>
-#include <evalresp/x2r/log.h>
-#include <evalresp/x2r/ws.h>
+#include <evalresp/xml2resp.h>
+#include <evalresp/xml2resp/log.h>
+#include <evalresp/xml2resp/ws.h>
 
 
 FILE *open_path(const char *dir, const char *file) {

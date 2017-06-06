@@ -3,9 +3,9 @@
 #include <check.h>
 #include <fcntl.h>
 
-#include <evalresp/x2r.h>
-#include <evalresp/x2r/log.h>
-#include <evalresp/x2r/ws.h>
+#include <evalresp/xml2resp.h>
+#include <evalresp/xml2resp/log.h>
+#include <evalresp/xml2resp/ws.h>
 #include <evalresp_log/log.h>
 
 

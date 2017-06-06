@@ -63,7 +63,7 @@ Notes:
 */
 
 #include <evalresp/evalresp.h>
-#include <evalresp/x2r/ws.h>
+#include <evalresp/xml2resp/ws.h>
 #include <stdlib.h>
 #include <string.h>
 #include <evalresp_log/log.h>

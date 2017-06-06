@@ -4,10 +4,10 @@
 #include <string.h>
 #include <ctype.h>
 
-#include <evalresp/x2r.h>
-#include <evalresp/x2r/log.h>
-#include <evalresp/x2r/ws.h>
-#include <evalresp/x2r/xml.h>
+#include <evalresp/xml2resp.h>
+#include <evalresp/xml2resp/log.h>
+#include <evalresp/xml2resp/ws.h>
+#include <evalresp/xml2resp/xml.h>
 
 #include <config.h>
 #ifdef HAVE_GETOPT_H
