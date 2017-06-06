@@ -523,12 +523,21 @@ void parse_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eva
         return; /*TODO */
     }
     stage_ptr->input_units = check_units(line, log);
+    if (UNDEF_UNITS == stage_ptr->input_units)
+    {
+         return; /* TODO */
+    }
 
     if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
     {
         return; /*TODO */
     }
     stage_ptr->output_units = check_units(line, log);
+    if (UNDEF_UNITS == stage_ptr->output_units)
+    {
+        return; /* TODO */
+    }
+
 
     /* the number of coefficients */
 
