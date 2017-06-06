@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include <evalresp/xml2resp.h>
-#include <evalresp/xml2resp/log.h>
+#include <evalresp/stationxml2resp.h>
+#include <evalresp/stationxml2resp/log.h>
 
 
 static char *labels[] = {"ERROR", "WARN", "INFO", "DEBUG"};

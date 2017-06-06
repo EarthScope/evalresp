@@ -15,12 +15,14 @@ libevalresp_la_SOURCES = evalresp/regexp.c evalresp/regerror.c\
 						 evalresp/libevalresp.c evalresp/alloc_fctns.c\
 						 evalresp/parse_fctns.c evalresp/print_fctns.c\
 						 evalresp/string_fctns.c evalresp/error_fctns.c\
-						 evalresp/spline.c evalresp/xml2resp/log.c\
-						 evalresp/xml2resp/ws.c evalresp/xml2resp/xml.c
+						 evalresp/spline.c evalresp/stationxml2resp/log.c\
+						 evalresp/stationxml2resp/ws.c\
+						 evalresp/stationxml2resp/xml.c
+
 libevalresp_la_LDFLAGS= -lspline -levalresp_log
 
 
 nobase_include_HEADERS = evalresp_log/log.h evalresp_log/examples/to_syslog.h\
 						 evalresp_log/examples/to_file.h spline/spline.h\
-						 evalresp/evalresp.h evalresp/xml2resp.h
+						 evalresp/evalresp.h evalresp/stationxml2resp.h
 

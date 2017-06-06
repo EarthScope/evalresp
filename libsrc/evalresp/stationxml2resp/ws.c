@@ -3,10 +3,10 @@
 #include <stdarg.h>
 #include <string.h>
 
-#include <evalresp/xml2resp.h>
-#include <evalresp/xml2resp/log.h>
-#include <evalresp/xml2resp/xml.h>
-#include <evalresp/xml2resp/ws.h>
+#include <evalresp/stationxml2resp.h>
+#include <evalresp/stationxml2resp/log.h>
+#include <evalresp/stationxml2resp/xml.h>
+#include <evalresp/stationxml2resp/ws.h>
 #include <evalresp_log/log.h>
 
 
