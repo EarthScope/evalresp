@@ -1,6 +1,8 @@
 
-LDFLAGS+="-L../../libsrc/mxml"
-AM_LDFLAGS=-L../../libsrc -levalresp -levalresp_log -lmxmlev
+AM_LDFLAGS = -L../../libsrc/evalresp -levalresp\
+			 -L../../libsrc/spline -lspline\
+			 -L../../libsrc/evalresp_log -levalresp_log\
+			 -L../../libsrc/mxml -lmxmlev
 AM_CFLAGS=-I../../libsrc 
 
 EXTRA_DIST = data

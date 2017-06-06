@@ -1,5 +1,4 @@
 
-AM_CFLAGS= -Ilibsrc
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = libsrc src doc tests
