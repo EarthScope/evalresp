@@ -625,11 +625,11 @@ int check_units(char *line, evalresp_log_t *log) {
         return (VOLTS);
     }
 #ifdef LIB_MODE
-    return (DEFAULT);
+    return (UNDEF_UNITS);
 #else
     evalresp_log(log, ERROR, 0,
             "check_units; units found ('%s') are not supported", line);
-    return (DEFAULT);
+    return (UNDEF_UNITS);
     /*XXX error_return(UNRECOG_UNITS,
             "check_units; units found ('%s') are not supported", line); */
 #endif
