@@ -138,12 +138,20 @@ void parse_pz(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalre
         return; /*TODO */
     }
     stage_ptr->input_units = check_units(line, log);
+    if (UNDEF_UNITS == stage_ptr->input_units)
+    {
+         return; /* TODO */
+    }
 
     if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
     {
         return; /*TODO */
     }
     stage_ptr->output_units = check_units(line, log);
+    if (UNDEF_UNITS == stage_ptr->input_units)
+    {
+         return; /* TODO */
+    }
 
     /* then the A0 normalization factor */
 
@@ -352,12 +360,20 @@ void parse_iir_coeff(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr,
         return; /*TODO */
     }
     stage_ptr->input_units = check_units(line, log);
+    if (UNDEF_UNITS == stage_ptr->input_units)
+    {
+         return; /* TODO */
+    }
 
     if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
     {
         return; /*TODO */
     }
     stage_ptr->output_units = check_units(line, log);
+    if (UNDEF_UNITS == stage_ptr->input_units)
+    {
+         return; /* TODO */
+    }
 
     /* the number of coefficients */
 
@@ -663,12 +679,20 @@ void parse_list(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eval
     /* the units (in first, then out) */
 
     stage_ptr->input_units = check_units(line, log);
+    if (UNDEF_UNITS == stage_ptr->input_units)
+    {
+         return; /* TODO */
+    }
 
     if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
     {
         return; /*TODO */
     }
     stage_ptr->output_units = check_units(line, log);
+    if (UNDEF_UNITS == stage_ptr->input_units)
+    {
+         return; /* TODO */
+    }
 
     /* the number of responses */
 
@@ -861,12 +885,20 @@ void parse_generic(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, e
     /* next (from the file) should be the units (in first, then out) */
 
     stage_ptr->input_units = check_units(line, log);
+    if (UNDEF_UNITS == stage_ptr->input_units)
+    {
+         return; /* TODO */
+    }
 
     if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
     {
         return; /*TODO */
     }
     stage_ptr->output_units = check_units(line, log);
+    if (UNDEF_UNITS == stage_ptr->input_units)
+    {
+         return; /* TODO */
+    }
 
     /* the number of responses */
 
@@ -1185,12 +1217,20 @@ void parse_polynomial(FILE *fptr, struct blkt *blkt_ptr,
         return; /*TODO */
     }
     stage_ptr->input_units = check_units(line, log);
+    if (UNDEF_UNITS == stage_ptr->input_units)
+    {
+         return; /* TODO */
+    }
 
     if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
     {
         return; /*TODO */
     }
     stage_ptr->output_units = check_units(line, log);
+    if (UNDEF_UNITS == stage_ptr->input_units)
+    {
+         return; /* TODO */
+    }
 
     /* Polynomial Approximation Type */
     if (0 > get_field(fptr, field, blkt_read, check_fld++, ":", 0, log))
@@ -1385,12 +1425,20 @@ void parse_fir(FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalr
         return; /*TODO */
     }
     stage_ptr->input_units = check_units(line, log);
+    if (UNDEF_UNITS == stage_ptr->input_units)
+    {
+         return; /* TODO */
+    }
 
     if ( 0 > get_line(fptr, line, blkt_read, check_fld++, ":", log))
     {
         return; /*TODO */
     }
     stage_ptr->output_units = check_units(line, log);
+    if (UNDEF_UNITS == stage_ptr->input_units)
+    {
+         return; /* TODO */
+    }
 
     /* the number of coefficients */
 

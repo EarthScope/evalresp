@@ -647,7 +647,8 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage, evalresp_l
             if (chan->sensit == 0.0) {
                 evalresp_log(log, ERROR, 0,
                         "norm_resp; no stage gain defined, zero sensitivity");
-                return; /*TODO ILLEGAL_RESP_FORMAT */
+                exit(1); /*TODO IGD 06/06/2017: Exit to satisfy test RESP.UW.STOR..ACE; need to return int */
+                /* return; */  /*TODO ILLEGAL_RESP_FORMAT */
                 /*XXX error_return(ILLEGAL_RESP_FORMAT,
                         "norm_resp; no stage gain defined, zero sensitivity"); */
             } else {
@@ -690,7 +691,8 @@ void norm_resp(struct channel *chan, int start_stage, int stop_stage, evalresp_l
         while (fil) {
             if (fil->type == GAIN && fil->blkt_info.gain.gain == 0.0) {
                 evalresp_log(log, ERROR, 0, "norm_resp; zero stage gain");
-                return; /*TODO ILLEGAL_RESP_FORMAT */
+                exit(1); /* IGD 06/06/2017 TODO ILLEGAL_RESP_FORMAT */
+               /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
                 /*XXX error_return(ILLEGAL_RESP_FORMAT, "norm_resp; zero stage gain"); */
             }
             fil = fil->next_blkt;
