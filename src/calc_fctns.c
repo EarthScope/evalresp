@@ -363,7 +363,8 @@ void calc_polynomial(struct blkt *blkt_ptr,  struct evr_complex *out,
         evalresp_log(log, ERROR, 0,
                 "Cannot compute B62 response for negative or zero input: %f",
                 x_for_b62);
-        return; /*TODO IMPROP_DATA_TYPE */
+	exit(1); /* TODO IGD 06/06/2017 To allow passing of the test: next, the function should become int */
+        /* return; */ /*TODO IMPROP_DATA_TYPE */
         /*XXX error_return(IMPROP_DATA_TYPE,
                 "Cannot compute B62 response for negative or zero input: %f",
                 x_for_b62); */
