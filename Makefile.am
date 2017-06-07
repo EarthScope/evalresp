@@ -1,7 +1,7 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = mxml src doc tests
+SUBDIRS = libsrc src doc tests
 
 EXTRA_DIST = INSTALL.unix INSTALL.ms README.old MKDIST
 

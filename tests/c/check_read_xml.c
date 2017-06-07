@@ -3,10 +3,10 @@
 #include <check.h>
 #include <fcntl.h>
 
-#include "x2r.h"
-#include "x2r_log.h"
-#include "x2r_xml.h"
-#include "log.h"
+#include <evalresp/stationxml2resp.h>
+#include <evalresp/stationxml2resp/log.h>
+#include <evalresp/stationxml2resp/xml.h>
+#include <evalresp_log/log.h>
 
 
 START_TEST (test_read_xml)

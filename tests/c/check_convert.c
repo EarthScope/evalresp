@@ -3,10 +3,10 @@
 #include <check.h>
 #include <fcntl.h>
 
-#include "x2r.h"
-#include "x2r_log.h"
-#include "x2r_ws.h"
-#include "log.h"
+#include <evalresp/stationxml2resp.h>
+#include <evalresp/stationxml2resp/log.h>
+#include <evalresp/stationxml2resp/ws.h>
+#include <evalresp_log/log.h>
 
 
 void run_test(char *station, char *response) {

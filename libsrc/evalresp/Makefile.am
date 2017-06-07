@@ -1,0 +1,16 @@
+
+lib_LTLIBRARIES = libevalresp.la
+
+libevalresp_la_SOURCES = regexp.c regerror.c\
+						 regsub.c calc_fctns.c\
+						 resp_fctns.c file_ops.c\
+						 libevalresp.c alloc_fctns.c\
+						 parse_fctns.c print_fctns.c\
+						 string_fctns.c error_fctns.c\
+						 spline.c stationxml2resp/log.c\
+						 stationxml2resp/ws.c\
+						 stationxml2resp/xml.c
+libevalresp_la_CFLAGS = -I../
+
+evalresp_includedir=$(includedir)/evalresp
+nobase_evalresp_include_HEADERS = evalresp.h stationxml2resp.h
