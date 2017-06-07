@@ -491,6 +491,7 @@ void check_channel(struct channel *chan, evalresp_log_t *log) {
          stage_ptr->input_units)
       {
         evalresp_log(log, ERROR, 0, "check_channel; units mismatch between stages");
+        exit(1); /*IGD 06/06/2017  TODO ILLEGAL_RESP_FORMAT */
         return; /*TODO ILLEGAL_RESP_FORMAT */
         /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; units mismatch between stages"); */
       }
