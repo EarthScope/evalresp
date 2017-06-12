@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# run this cript to make sure that all appropriate files are formatted
+# correctly.
+
+type clang-format >/dev/null 2>&1 || {
+     echo
+     echo "ERROR: clang-format must be installed"
+     echo "On CentOS, install the clang package"
+     exit 1
+}
+
+version=`clang-format -version | grep 'LLVM version' | cut -d ' ' -f5`
+if [ -z "$version" ]; then
+    version=`clang-format -version | cut -d ' ' -f3`
+fi
+major=`echo "$version" | cut -d '.' -f1`
+minor=`echo "$version" | cut -d '.' -f2`
+# echo "version $version -> $major $minor"
+if [ "$major" -lt 3 ]; then
+    echo
+    echo "ERROR: clang-format must be at least version 3.5"
+    exit 1
+elif [[ "$major" -eq 3 && "$minor" -lt 5 ]]; then
+    echo
+    echo "ERROR: clang-format must be at least version 3.5"
+    exit 1
+fi
+
+for dir in src libsrc/evalresp libsrc/evalresp_log libsrc/evalresp_log/examples; do
+    pushd $dir >/dev/null 2>&1
+    for file in `ls *.c *.h`; do
+	clang-format -i -style=file $file
+# this reverts all files to previous state
+#	rm $file
+#	git checkout $file
+    done
+    popd >/dev/null 2>&1
+done
+

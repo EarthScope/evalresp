@@ -28,8 +28,8 @@
 #ifndef __EVALRESP_LOG_H__
 #define __EVALRESP_LOG_H__
 
-#include <time.h>
 #include <stdarg.h>
+#include <time.h>
 
 #ifndef MAX_LOG_MSG_LEN
 #define MAX_LOG_MSG_LEN 256
@@ -43,10 +43,10 @@
  */
 typedef struct evalresp_log_msg
 {
-    char msg[MAX_LOG_MSG_LEN]; /**< the message itself */
-    int log_level; /**<  at what log_level_ref this message should be at */
-    int verbosity_level; /**< the verbosity level that this message is */
-    time_t timestamp; /**< seconds since epoch that this message was created */
+  char msg[MAX_LOG_MSG_LEN]; /**< the message itself */
+  int log_level;             /**<  at what log_level_ref this message should be at */
+  int verbosity_level;       /**< the verbosity level that this message is */
+  time_t timestamp;          /**< seconds since epoch that this message was created */
 } evalresp_log_msg_t;
 
 /**
@@ -54,7 +54,7 @@ typedef struct evalresp_log_msg
  * @ingroup evalresp_private_log
  * @brief A convience data type of the logging function.
  */
-typedef int (*evalresp_log_func_t)(evalresp_log_msg_t *, void *);
+typedef int (*evalresp_log_func_t) (evalresp_log_msg_t *, void *);
 
 /**
  * @private
@@ -66,8 +66,8 @@ typedef int (*evalresp_log_func_t)(evalresp_log_msg_t *, void *);
  */
 typedef struct evalresp_log
 {
-    evalresp_log_func_t log_func; /**< the function that the loger should call back */
-    void *func_data; /**< a pointer to the data portion that should be sent to the callback function */
+  evalresp_log_func_t log_func; /**< the function that the loger should call back */
+  void *func_data;              /**< a pointer to the data portion that should be sent to the callback function */
 } evalresp_log_t;
 
 /**
@@ -75,12 +75,11 @@ typedef struct evalresp_log
  * @ingroup evalresp_private_log
  * @brief an enum of the different logging levels to expect in evalresp
  */
-typedef enum log_level_ref
-{
-    ERROR=0, /**< level when reporting an error */
-    WARN, /**< level when a warning occurs */
-    INFO, /**< the level that information should be presented to user */
-    DEBUG /**< level for the most information */
+typedef enum log_level_ref {
+  ERROR = 0, /**< level when reporting an error */
+  WARN,      /**< level when a warning occurs */
+  INFO,      /**< the level that information should be presented to user */
+  DEBUG      /**< level for the most information */
 } log_level_ref_t;
 
 /**
@@ -285,7 +284,7 @@ extern int evalresp_log_v (evalresp_log_func_t log_func, void *log_func_data, in
  * @returns pointer to log object
  * @retval NULL on error
  */
-extern evalresp_log_t *evalresp_log_t_alloc(evalresp_log_func_t log_func, void *func_data);
+extern evalresp_log_t *evalresp_log_t_alloc (evalresp_log_func_t log_func, void *func_data);
 
 /**
  * @private
@@ -296,7 +295,7 @@ extern evalresp_log_t *evalresp_log_t_alloc(evalresp_log_func_t log_func, void *
  *
  * @param[in] log Logging structure.
  */
-extern void evalresp_log_t_free(evalresp_log_t *log);
+extern void evalresp_log_t_free (evalresp_log_t *log);
 
 /**
  * @private
@@ -309,6 +308,6 @@ extern void evalresp_log_t_free(evalresp_log_t *log);
  * @retval EXIT_SUCCESS if initialized successfully
  * @retval EXIT_FAILURE if failed to initialize, generaly log was NULL
  */
-extern int evalresp_log_t_init(evalresp_log_t *log, evalresp_log_func_t log_func, void *func_data);
+extern int evalresp_log_t_init (evalresp_log_t *log, evalresp_log_func_t log_func, void *func_data);
 
 #endif /* __EVALRESP_LOG_H__ */
