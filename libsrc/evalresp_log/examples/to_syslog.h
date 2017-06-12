@@ -44,7 +44,7 @@
  * @retval EXIT_FAILURE when fails to write to file
  * @sa evalresp_log
  */
-extern int evalresp_log_to_syslog(evalresp_log_msg_t *msg, void *data);
+extern int evalresp_log_to_syslog (evalresp_log_msg_t *msg, void *data);
 
 /**
  * @private
@@ -53,9 +53,9 @@ extern int evalresp_log_to_syslog(evalresp_log_msg_t *msg, void *data);
  */
 typedef struct evalresp_syslog_data
 {
-    int option;  /**< Option to pass to openlog(). */
-    int facility;  /**< The Facility that this program is using. THis is passed to openlog() */
-    char *ident;  /**< The name of the program you want to be displayed in the syslog  */
+  int option;   /**< Option to pass to openlog(). */
+  int facility; /**< The Facility that this program is using. THis is passed to openlog() */
+  char *ident;  /**< The name of the program you want to be displayed in the syslog  */
 } evalresp_syslog_data_t;
 
 /**
@@ -65,7 +65,7 @@ typedef struct evalresp_syslog_data
  *
  * @param[in] log_opt object to be free'd
  */
-extern void evalresp_log_syslog_data_free(evalresp_syslog_data_t *log_opt);
+extern void evalresp_log_syslog_data_free (evalresp_syslog_data_t *log_opt);
 
 /**
  * @private
@@ -78,7 +78,7 @@ extern void evalresp_log_syslog_data_free(evalresp_syslog_data_t *log_opt);
  * @returns pointer to a evalresp_syslog_data_t object
  * @retval NULL on error
  */
-extern evalresp_syslog_data_t * evalresp_log_syslog_data_alloc(char *ident, int option, int facility);
+extern evalresp_syslog_data_t *evalresp_log_syslog_data_alloc (char *ident, int option, int facility);
 
 /**
  * @private
@@ -90,6 +90,6 @@ extern evalresp_syslog_data_t * evalresp_log_syslog_data_alloc(char *ident, int 
  * @retval EXIT_SUCCESS when on success
  * @retval EXIT_FAILURE when fails, typically log is NULL
  */
-extern int evalresp_log_intialize_log_for_syslog(evalresp_log_t *log, evalresp_syslog_data_t *data);
+extern int evalresp_log_intialize_log_for_syslog (evalresp_log_t *log, evalresp_syslog_data_t *data);
 
 #endif /* __evalresp_log_to_syslog_h__*/

@@ -41,7 +41,7 @@
  * @retval EXIT_FAILURE when fails to write to file
  * @sa evalresp_log
  */
-int evalresp_log_to_file(evalresp_log_msg_t *msg, void *data);
+int evalresp_log_to_file (evalresp_log_msg_t *msg, void *data);
 
 /**
  * @private
@@ -53,6 +53,6 @@ int evalresp_log_to_file(evalresp_log_msg_t *msg, void *data);
  * @retval EXIT_SUCCESS when on success
  * @retval EXIT_FAILURE when fails, typically log or fd is NULL
  */
-int evalresp_log_intialize_log_for_file(evalresp_log_t *log, FILE *fd);
+int evalresp_log_intialize_log_for_file (evalresp_log_t *log, FILE *fd);
 
 #endif /* __evalresp_log_to_file_h__*/
