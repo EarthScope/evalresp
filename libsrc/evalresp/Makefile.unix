@@ -1,0 +1,37 @@
+CFLAGS=-I.. -I../mxml
+
+EVALRESP_SRC= alloc_fctns.c calc_fctns.c file_ops.c libevalresp.c parse_fctns.c\
+			  regexp.c regsub.c resp_fctns.c spline.c string_fctns.c\
+			  print_fctns.c error_fctns.c\
+			  stationxml2resp/log.c stationxml2resp/ws.c stationxml2resp/xml.c
+EVALRESP_HEADERS= evalresp.h stationxml2resp.h
+
+#OBJ=$(patsubst %,$(BUILD_DIR)/%,$(patsubst %.c,%.o,$(EVALRESP_LOG_SRC)))
+vpath %.c stationxml2resp
+OBJ=$(addprefix $(BUILD_DIR)/, $(patsubst %.c, %.o,$(notdir $(EVALRESP_SRC))))
+TARGET=libevalresp.a
+.PHONY: all clean install
+.SUFFIXES:
+.SUFFIXES: .c .o
+
+all: $(BUILD_DIR)/$(TARGET)
+
+$(BUILD_DIR)/%.o: %.c $(BUILD_DIR) $(BUILD_DIR)
+	$(CC) -c -o $@ $(CFLAGS) $<
+
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+$(BUILD_DIR)/$(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $^
+
+clean:
+	rm -f $(BUILD_DIR)/$(TARGET) $(OBJ)
+ifneq ("$(BUILD_DIR)",".")
+	rm -rf $(BUILD_DIR)
+endif
+
+install: $(BUILD_DIR)/$(TARGET)
+	cp $(BUILD_DIR)/$(TARGET) $(LIB_DIR)/$(TARGET)
+	mkdir -p $(INCLUDE_DIR)/evalresp
+	cp $(EVALRESP_LOG_HEADERS) $(INCLUDE_DIR)/evalresp/
