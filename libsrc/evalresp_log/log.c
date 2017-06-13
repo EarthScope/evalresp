@@ -3,7 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
 const char *log_level_strs[] = {"ERROR", "WARN", "INFO", "DEBUG"};
+
 int
 evalresp_log (evalresp_log_t *log, int level, int verbosity, char *fmt, ...)
 {
