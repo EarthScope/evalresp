@@ -5,8 +5,8 @@
 
 type clang-format >/dev/null 2>&1 || {
      echo
-     echo "ERROR: clang-format must be installed"
-     echo "On CentOS, install the clang package"
+     echo "ERROR: clang-format (v3.5+) must be installed"
+     echo
      exit 1
 }
 
@@ -20,10 +20,12 @@ minor=`echo "$version" | cut -d '.' -f2`
 if [ "$major" -lt 3 ]; then
     echo
     echo "ERROR: clang-format must be at least version 3.5"
+    echo
     exit 1
 elif [[ "$major" -eq 3 && "$minor" -lt 5 ]]; then
     echo
     echo "ERROR: clang-format must be at least version 3.5"
+    echo
     exit 1
 fi
 
