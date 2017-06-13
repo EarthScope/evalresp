@@ -76,7 +76,7 @@
 #define X2R_ERR_DATE 6
 
 #ifdef __GNUC__
-#define UNUSED __attribute__((unused))
+#define UNUSED __attribute__ ((unused))
 #else
 #define UNUSED
 #endif

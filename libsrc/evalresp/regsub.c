@@ -21,62 +21,71 @@
  *   1/18/2006 -- [ET]  Renamed function to prevent name clashes with
  *                      other libraries.
  */
-#include <stdio.h>
-#include <string.h>          /* added 8/28/2001 -- [ET] */
 #include "regexp.h"
 #include "regmagic.h"
 #include <evalresp_log/log.h>
+#include <stdio.h>
+#include <string.h> /* added 8/28/2001 -- [ET] */
 
 #ifndef CHARBITS
-#define    UCHARAT(p)    ((int)*(unsigned char *)(p))
+#define UCHARAT(p) ((int)*(unsigned char *)(p))
 #else
-#define    UCHARAT(p)    ((int)*(p)&CHARBITS)
+#define UCHARAT(p) ((int)*(p)&CHARBITS)
 #endif
 
 /*
  - evr_regsub - perform substitutions after a regexp match
  */
-void evr_regsub(prog, source, dest, log)
-    regexp *prog;char *source;char *dest;evalresp_log_t *log; {
-    register char *src;
-    register char *dst;
-    register char c;
-    register int no;
-    register int len;
+void evr_regsub (prog, source, dest, log)
+    regexp *prog;
+char *source;
+char *dest;
+evalresp_log_t *log;
+{
+  register char *src;
+  register char *dst;
+  register char c;
+  register int no;
+  register int len;
 
-    if (prog == NULL || source == NULL || dest == NULL) {
-        evalresp_log(log, ERROR, 0, "NULL parm to evr_regsub");
-        /*XXX evr_regerror("NULL parm to evr_regsub"); */
+  if (prog == NULL || source == NULL || dest == NULL)
+  {
+    evalresp_log (log, ERROR, 0, "NULL parm to evr_regsub");
+    /*XXX evr_regerror("NULL parm to evr_regsub"); */
+    return;
+  }
+  if (UCHARAT (prog->program) != MAGIC)
+  {
+    evalresp_log (log, ERROR, 0, "damaged regexp fed to evr_regsub");
+    /*XXX evr_regerror("damaged regexp fed to evr_regsub"); */
+    return;
+  }
+
+  src = source;
+  dst = dest;
+  while ((c = *src++) != '\0')
+  {
+    if (c == '&')
+      no = 0;
+    else if (c == '\\' && '0' <= *src && *src <= '9')
+      no = *src++ - '0';
+    else
+      no = -1;
+
+    if (no < 0) /* Ordinary character. */
+      *dst++ = c;
+    else if (prog->startp[no] != NULL && prog->endp[no] != NULL)
+    {
+      len = prog->endp[no] - prog->startp[no];
+      (void)strncpy (dst, prog->startp[no], len);
+      dst += len;
+      if (*(dst - 1) == '\0')
+      { /* strncpy hit NUL. */
+        evalresp_log (log, ERROR, 0, "damaged match string");
+        /*XXX evr_regerror("damaged match string"); */
         return;
+      }
     }
-    if (UCHARAT(prog->program) != MAGIC) {
-        evalresp_log(log, ERROR, 0,"damaged regexp fed to evr_regsub");
-        /*XXX evr_regerror("damaged regexp fed to evr_regsub"); */
-        return;
-    }
-
-    src = source;
-    dst = dest;
-    while ((c = *src++) != '\0') {
-        if (c == '&')
-            no = 0;
-        else if (c == '\\' && '0' <= *src && *src <= '9')
-            no = *src++ - '0';
-        else
-            no = -1;
-
-        if (no < 0) /* Ordinary character. */
-            *dst++ = c;
-        else if (prog->startp[no] != NULL && prog->endp[no] != NULL) {
-            len = prog->endp[no] - prog->startp[no];
-            (void) strncpy(dst, prog->startp[no], len);
-            dst += len;
-            if (*(dst - 1) == '\0') { /* strncpy hit NUL. */
-                evalresp_log(log, ERROR, 0,"damaged match string");
-                /*XXX evr_regerror("damaged match string"); */
-                return;
-            }
-        }
-    }
-    *dst++ = '\0';
+  }
+  *dst++ = '\0';
 }

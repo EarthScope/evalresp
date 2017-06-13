@@ -53,9 +53,9 @@
  * @param[in] log Logging structure.
  * @return @c NULL if successful; an error message string if not.
  */
-char * evr_spline(int num_points, double *t, double *y,
+char *evr_spline (int num_points, double *t, double *y,
                   double tension, /* Not used anymore */
-                  double k, /* Not used anymore */
+                  double k,       /* Not used anymore */
                   double *xvals_arr, int num_xvals,
                   double **p_retvals_arr, int *p_num_retvals, evalresp_log_t *log);
 #endif /* __EVALRESP_EVR_SPLINE_H__ */
