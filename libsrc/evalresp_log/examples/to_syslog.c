@@ -71,6 +71,7 @@ evalresp_log_to_syslog (evalresp_log_msg_t *msg, void *data)
     break;
   case DEBUG:
     level = LOG_DEBUG;
+    break;
   default:
     level = LOG_INFO;
   }
