@@ -447,7 +447,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
     {
 
       /* convert from xml format if necessary, logging error messages to stderr. */
-      if (x2r_xml2resp_on_flag (&fptr, xml_flag, X2R_ERROR, log))
+      if (x2r_xml2resp_on_flag (&fptr, xml_flag, log))
         return NULL;
       //if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
 
@@ -665,7 +665,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
         {
 
           /* convert from xml format if necessary, logging error messages to stderr. */
-          if (x2r_xml2resp_on_flag (&fptr, xml_flag, X2R_ERROR, log))
+          if (x2r_xml2resp_on_flag (&fptr, xml_flag, log))
             return NULL;
           //if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
 

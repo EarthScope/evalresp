@@ -29,7 +29,6 @@
 #include <time.h>
 #include <stdio.h>
 
-#include <evalresp/stationxml2resp/log.h>
 #include <evalresp_log/log.h>
 
 

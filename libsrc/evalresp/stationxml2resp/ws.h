@@ -28,7 +28,6 @@
 
 #include <stdio.h>
 
-#include <evalresp/stationxml2resp/log.h>
 #include <evalresp/stationxml2resp/xml.h>
 #include <evalresp_log/log.h>
 
@@ -45,7 +44,7 @@ int x2r_resp_util_write(evalresp_log_t *log, FILE *out, const x2r_fdsn_station_x
  * @brief If xml_flag is set, convert the file and replace *in. Otherwise, do
  *        nothing.
  */
-int x2r_xml2resp_on_flag(FILE **in, int xml_flag, int log_level, evalresp_log_t *log);
+int x2r_xml2resp_on_flag(FILE **in, int xml_flag, evalresp_log_t *log);
 
 /**
  * @private
@@ -53,6 +52,6 @@ int x2r_xml2resp_on_flag(FILE **in, int xml_flag, int log_level, evalresp_log_t 
  * @brief Check the given file, to see if the first character as <, and if so,
  *        convert and replace *in.
  */
-int x2r_xml2resp_auto(FILE **in, int log_level, evalresp_log_t *log);
+int x2r_xml2resp_auto(FILE **in, evalresp_log_t *log);
 
 #endif

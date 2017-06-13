@@ -7,7 +7,7 @@ libevalresp_la_SOURCES = regexp.c regerror.c\
 						 libevalresp.c alloc_fctns.c\
 						 parse_fctns.c print_fctns.c\
 						 string_fctns.c error_fctns.c\
-						 spline.c stationxml2resp/log.c\
+						 spline.c\
 						 stationxml2resp/ws.c\
 						 stationxml2resp/xml.c
 libevalresp_la_CFLAGS = -I../
