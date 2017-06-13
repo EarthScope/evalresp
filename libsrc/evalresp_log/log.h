@@ -44,7 +44,7 @@
 typedef struct evalresp_log_msg
 {
   char msg[MAX_LOG_MSG_LEN]; /**< the message itself */
-  int log_level;             /**<  at what log_level_ref this message should be at */
+  int log_level;             /**< what log_level_ref this message should be at */
   int verbosity_level;       /**< the verbosity level that this message is */
   time_t timestamp;          /**< seconds since epoch that this message was created */
 } evalresp_log_msg_t;

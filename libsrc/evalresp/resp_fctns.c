@@ -8,7 +8,7 @@
 */
 
 #include "evr_spline.h"
-#include <evalresp/evalresp.h>
+#include <evalresp/evalresp_private.h>
 #include <evalresp_log/log.h>
 #include <stdlib.h>
 #include <string.h>

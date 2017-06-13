@@ -15,6 +15,7 @@
 #endif
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 #ifdef HAVE_GETOPT_H
@@ -23,11 +24,10 @@
 #include "vcs_getopt.h"
 #endif
 
-#include <evalresp/evalresp.h>
-#include <evalresp_log/log.h>
+#include "evalresp/evalresp_public.h"
+#include "evalresp/evalresp_private.h"
+#include "evalresp_log/log.h"
 
-#define DATIMESIZE 32
-#define TODAYSIZE 10
 
 void
 usage (char *prgName)

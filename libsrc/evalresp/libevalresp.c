@@ -62,11 +62,13 @@ Notes:
    2015-05-04 -- [AC]  Simplifed / fixed for fortran 95
 */
 
-#include <evalresp/evalresp.h>
-#include <evalresp/stationxml2resp/ws.h>
-#include <evalresp_log/log.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "evalresp/evalresp_public.h"
+#include "evalresp/evalresp_private.h"
+#include "evalresp/stationxml2resp/ws.h"
+#include "evalresp_log/log.h"
 
 /* define a global flag to use if using "default" units */
 int def_units_flag;

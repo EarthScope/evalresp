@@ -35,7 +35,7 @@
 #include <string.h>
 
 #include "./regexp.h"
-#include <evalresp/evalresp.h>
+#include <evalresp/evalresp_private.h>
 
 struct string_array *
 ev_parse_line (char *line, evalresp_log_t *log)

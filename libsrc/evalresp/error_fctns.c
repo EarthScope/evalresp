@@ -10,7 +10,7 @@
 
 #include <stdlib.h>
 
-#include <evalresp/evalresp.h>
+#include <evalresp/evalresp_private.h>
 
 void
 error_exit (int cond, char *msg, ...)

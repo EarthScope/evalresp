@@ -14,7 +14,7 @@
 #include <config.h>
 #endif
 
-#include <evalresp/evalresp.h>
+#include <evalresp/evalresp_private.h>
 #include <stdlib.h>
 #include <string.h>
 

@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <evalresp/evalresp.h>
+#include <evalresp/evalresp_private.h>
 double atof ();
 
 int

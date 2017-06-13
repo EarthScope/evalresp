@@ -34,7 +34,7 @@
 #else             /* if Windows compiler then */
 #include <time.h> /* 'time.h' is not in 'sys/' */
 #endif
-#include <evalresp/evalresp.h>
+#include <evalresp/evalresp_private.h>
 #include <string.h>
 
 #ifdef _WIN32
