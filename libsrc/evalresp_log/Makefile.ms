@@ -1,10 +1,10 @@
 
-OBJ=log.obj to_file.obj
+OBJ=log.obj examples/to_file.obj
 
 all: evalresp_log.lib
 
 .c.obj:
-	$(CC) /c /I ..\ $<
+	$(CC) /c $*.c /I ..\ /Fo$@
 
 evalresp_log.lib: $(OBJ)
 	link /lib $(OBJ) /OUT:evalresp_log.lib
