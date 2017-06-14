@@ -116,7 +116,7 @@ typedef struct
 {
   double gain;      /**< Gain. (blockettes [48] or [58]) */
   double gain_freq; /**< Frequency where gain is computed. */
-} evalresp_gain ;
+} evalresp_gain;
 
 /**
  * @private
@@ -145,17 +145,17 @@ typedef struct evalresp_blkt_s
 {
   int type; /**< Blockette type. */
   union {
-    evalresp_pole_zero pole_zero;     /**< Poles and zeros structure. */
-    evalresp_coeff coeff;             /**< Coefficients structure. */
-    evalresp_fir fir;                 /**< FIR structure. */
-    evalresp_list list;               /**< List structure. */
-    evalresp_generic generic;         /**< Generic response structure. */
-    evalresp_decimation decimation;   /**< Decimation blockette structure. */
-    evalresp_gain gain;               /**< Gain structure. */
-    evalresp_refer reference;         /**< Reference structure. */
-    evalresp_polynomial polynomial;   /**< Polynomial type structure. */
-  } blkt_info;                        /**< Blockette info. */
-  struct evalresp_blkt_s *next_blkt;  /**< Pointer to next blockette. */
+    evalresp_pole_zero pole_zero;    /**< Poles and zeros structure. */
+    evalresp_coeff coeff;            /**< Coefficients structure. */
+    evalresp_fir fir;                /**< FIR structure. */
+    evalresp_list list;              /**< List structure. */
+    evalresp_generic generic;        /**< Generic response structure. */
+    evalresp_decimation decimation;  /**< Decimation blockette structure. */
+    evalresp_gain gain;              /**< Gain structure. */
+    evalresp_refer reference;        /**< Reference structure. */
+    evalresp_polynomial polynomial;  /**< Polynomial type structure. */
+  } blkt_info;                       /**< Blockette info. */
+  struct evalresp_blkt_s *next_blkt; /**< Pointer to next blockette. */
 } evalresp_blkt;
 
 /**
@@ -169,10 +169,10 @@ typedef struct evalresp_blkt_s
  */
 typedef struct evalresp_stage_s
 {
-  int sequence_no;          /**< Sequence number. */
-  int input_units;          /**< Input units. */
-  int output_units;         /**< Output units. */
-  evalresp_blkt *first_blkt;  /**< Pointer to first blockette of the filter. */
+  int sequence_no;                     /**< Sequence number. */
+  int input_units;                     /**< Input units. */
+  int output_units;                    /**< Output units. */
+  evalresp_blkt *first_blkt;           /**< Pointer to first blockette of the filter. */
   struct evalresp_stage_s *next_stage; /**< Pointer to the next stage in the response. */
 } evalresp_stage;
 

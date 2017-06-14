@@ -10,9 +10,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "evr_spline.h"
 #include "evalresp/evalresp_private.h"
 #include "evalresp_log/log.h"
+#include "evr_spline.h"
 
 void
 merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log)

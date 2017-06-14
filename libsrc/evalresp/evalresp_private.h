@@ -145,9 +145,9 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "evalresp_log/log.h"
-#include "evalresp/evalresp_ugly.h"
 #include "evalresp/evalresp_public_seed.h"
+#include "evalresp/evalresp_ugly.h"
+#include "evalresp_log/log.h"
 
 /* if Windows compiler then redefine 'complex' to */
 /*  differentiate it from the existing struct,    */
@@ -364,8 +364,6 @@ struct scn_list
   int nscn;             /**< Number of network-station-locid-channel objects. */
   struct scn **scn_vec; /**< Array of network-station-locid-channel objects. */
 };
-
-
 
 /**
  * @private
@@ -1815,8 +1813,6 @@ void print_resp_itp (double *freqs, int nfreqs, struct response *first,
                      char *rtype, int stdio_flag, int listinterp_out_flag,
                      double listinterp_tension, int unwrap_flag, evalresp_log_t *log);
 
-
-
 /**
  * @private
  * @ingroup evalresp_private_response
@@ -1838,7 +1834,6 @@ void interpolate_list_blockette (double **frequency_ptr,
                                  double **amplitude_ptr, double **phase_ptr,
                                  int *p_number_points, double *req_freq_arr,
                                  int req_num_freqs, double tension, evalresp_log_t *log);
-
 
 /**
  * @private
@@ -1884,4 +1879,3 @@ u *          want to change the number of arguments in evresp() function which
 int use_estimated_delay (int flag);
 
 #endif
-

@@ -14,8 +14,8 @@
 #include <config.h>
 #endif
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #ifdef HAVE_GETOPT_H
@@ -24,10 +24,9 @@
 #include "vcs_getopt.h"
 #endif
 
-#include "evalresp/evalresp_public.h"
 #include "evalresp/evalresp_private.h"
+#include "evalresp/evalresp_public.h"
 #include "evalresp_log/log.h"
-
 
 void
 usage (char *prgName)

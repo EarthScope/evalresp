@@ -10,9 +10,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "evalresp_log/log.h"
 #include "evalresp/evalresp_private.h"
 #include "evalresp/evalresp_public_seed.h"
+#include "evalresp_log/log.h"
 
 struct evr_complex *
 alloc_complex (int npts, evalresp_log_t *log)

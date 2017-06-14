@@ -21,7 +21,7 @@
 #include "evalresp/evalresp_private.h"
 #include "evalresp/evalresp_public_seed.h"
 
-double atof ();  // TODO - why are we declaring this?!
+double atof (); // TODO - why are we declaring this?!
 
 int
 parse_pref (int *blkt_no, int *fld_no, char *line, evalresp_log_t *log)

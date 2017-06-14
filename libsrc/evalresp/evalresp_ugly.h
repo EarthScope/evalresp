@@ -4,7 +4,6 @@
 
 #include <setjmp.h>
 
-
 /**
  * @private
  * @ingroup evalresp_private
@@ -105,7 +104,6 @@
  */
 #define MAXLINELEN 256
 
-
 /**
  * @private
  * @ingroup evalresp_private
@@ -202,7 +200,6 @@ extern int curr_seq_no;
  */
 extern jmp_buf jump_buffer;
 
-
 /**
  * @private
  * @ingroup evalresp_private
@@ -211,8 +208,6 @@ extern jmp_buf jump_buffer;
  */
 extern char myLabel[20];
 //char myLabel[20] = "aa";
-
-
 
 #define DATIMESIZE 32
 #define TODAYSIZE 10

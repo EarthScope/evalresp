@@ -20,7 +20,6 @@
 #include "evalresp/evalresp_private.h"
 #include "evalresp/evalresp_public_seed.h"
 
-
 /* function declarations for forward references */
 int arrays_equal (double *arr1, double *arr2, int arr_size);
 void evresp_adjust_phase (double *pha, int len, double min, double max);
