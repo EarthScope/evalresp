@@ -1,12 +1,12 @@
 
-OBJ= mxml-attr.o mxml-entity.o mxml-file.o mxml-get.o \
-     mxml-index.o mxml-node.o mxml-search.o mxml-set.o \
-     mxml-private.o mxml-string.o
+OBJ= mxml-attr.obj mxml-entity.obj mxml-file.obj mxml-get.obj \
+     mxml-index.obi mxml-node.obj mxml-search.obj mxml-set.obj \
+     mxml-private.obj mxml-string.obj
 
 all: mxmlev.lib
 
 .c.obj:
-	$(CC) /c /I ..\ $<
+	$(CC) /c $*.c /I ..\ /Fo$@
 
 mxmlev.lib: $(OBJ)
 	link /lib $(OBJ) /OUT:mxmlev.lib
