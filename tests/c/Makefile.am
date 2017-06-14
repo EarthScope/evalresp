@@ -9,11 +9,11 @@ EXTRA_DIST = data
 
 if USE_CHECK
 TESTS = check_read_xml check_convert check_parse_datetime check_response \
-	check_count check_auto check_match check_log
+	check_count check_auto check_match check_log check_input
 #TESTS = check_match
 
 check_PROGRAMS = check_read_xml check_convert check_parse_datetime check_response \
-	check_count check_auto check_match check_log
+	check_count check_auto check_match check_log check_input
 
 check_read_xml_SOURCES = check_read_xml.c
 check_read_xml_CFLAGS = @CHECK_CFLAGS@ -I../../src/ $(AM_CFLAGS)
@@ -46,6 +46,10 @@ check_match_LDADD = @CHECK_LIBS@ $(AM_LDFLAGS)
 check_log_SOURCES = check_log.c
 check_log_CFLAGS = @CHECK_CFLAGS@ -I../../src/ -I../../src/log $(AM_CFLAGS)
 check_log_LDADD = @CHECK_LIBS@ $(AM_LDFLAGS)
+
+check_input_SOURCES = check_input.c
+check_input_CFLAGS = @CHECK_CFLAGS@ -I../../src/ -I../../src/log $(AM_CFLAGS)
+check_input_LDADD = @CHECK_LIBS@ $(AM_LDFLAGS)
 endif
 
 clean-local:

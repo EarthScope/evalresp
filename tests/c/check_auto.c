@@ -3,9 +3,9 @@
 #include <check.h>
 #include <fcntl.h>
 
-#include <evalresp/stationxml2resp.h>
-#include <evalresp/stationxml2resp/ws.h>
-#include <evalresp_log/log.h>
+#include "evalresp/stationxml2resp.h"
+#include "evalresp/stationxml2resp/ws.h"
+#include "evalresp_log/log.h"
 
 
 void run_test(char *input, char *response) {

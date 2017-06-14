@@ -13,10 +13,22 @@
 void
 slurp_line(char **seed, char *line, int maxlen)
 {
-  int i;
-  for (i = 0; **seed && **seed != '\n' && i < maxlen-1; i++, (*seed)++) line[i] = **seed;
-  line[i] = '\0';
-  if (**seed == '\n') (*seed)++;
+  int i = 0;
+  for(;;) {
+    char c = **seed;
+    line[i++] = c;
+    if (!c) {
+      // don't move past end of input
+      // already appended NULL
+      return;
+    } else {
+      (*seed)++;
+      if (c == '\n' || i == maxlen - 1) {
+        line[i] = '\0';
+        return;
+      }
+    }
+  }
 }
 
 //int

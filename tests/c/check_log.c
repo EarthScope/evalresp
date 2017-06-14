@@ -3,9 +3,9 @@
 #include <check.h>
 #include <fcntl.h>
 
-#include <evalresp_log/log.h>
-#include <evalresp_log/examples/to_syslog.h>
-#include <evalresp_log/examples/to_file.h>
+#include "evalresp_log/log.h"
+#include "evalresp_log/examples/to_syslog.h"
+#include "evalresp_log/examples/to_file.h"
 
 void run_test(evalresp_log_func_t log_func,  void *data, char is_syslog)
 {
