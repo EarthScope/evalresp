@@ -1,3 +1,4 @@
+
 /* This file is modified by I.Dricker I.dricker@isti.com for version 3.2.17 of evalresp*/
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -10,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "evalresp/evalresp_private.h"
+#include <private.h>
 #include "evalresp/evalresp_public_seed.h"
 #include "evalresp_log/log.h"
 

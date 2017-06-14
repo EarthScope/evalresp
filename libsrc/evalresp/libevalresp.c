@@ -65,7 +65,7 @@ Notes:
 #include <stdlib.h>
 #include <string.h>
 
-#include "evalresp/evalresp_private.h"
+#include <private.h>
 #include "evalresp/evalresp_public.h"
 #include "evalresp/stationxml2resp/ws.h"
 #include "evalresp_log/log.h"

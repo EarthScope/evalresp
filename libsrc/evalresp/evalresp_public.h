@@ -9,7 +9,7 @@
 #define REVNUM "4.0.6"
 #endif
 
-#include "evalresp/evalresp_public_api.h"
+#include "public_api.h"
 #include "evalresp/evalresp_public_compat.h"
 #include "evalresp/evalresp_public_seed.h"
 #include "evalresp_log/log.h"

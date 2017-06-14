@@ -137,8 +137,8 @@
  10/02/2013 -- [IGD] Version 3.3.4: Adding DEGREE CENTIGRADE as units
  */
 
-#ifndef EVALRESP_PRIVATE_H
-#define EVALRESP_PRIVATE_H
+#ifndef PRIVATE_H
+#define PRIVATE_H
 
 #include <ctype.h>
 #include <math.h>
