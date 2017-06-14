@@ -133,5 +133,4 @@ int evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
               int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
               int xml_flag);
 
-
 #endif
