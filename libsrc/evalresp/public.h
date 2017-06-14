@@ -9,9 +9,8 @@
 #define REVNUM "4.0.6"
 #endif
 
-#include "public_api.h"
-#include "evalresp/public_compat.h"
-#include "evalresp/public_channels.h"
-#include "evalresp_log/log.h"
+#include "./public_api.h"
+#include "./public_compat.h"
+#include "./public_channels.h"
 
 #endif

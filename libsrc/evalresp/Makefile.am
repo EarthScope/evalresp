@@ -14,4 +14,5 @@ libevalresp_la_SOURCES = input.c\
 libevalresp_la_CFLAGS = -I../
 
 evalresp_includedir=$(includedir)/evalresp
-nobase_evalresp_include_HEADERS = evalresp.h stationxml2resp.h
+
+nobase_evalresp_include_HEADERS = public.h public_compat.h public_api.h public_channels.h stationxml2resp.h
