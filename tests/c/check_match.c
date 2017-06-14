@@ -6,11 +6,10 @@
 #include <fcntl.h>
 #include <math.h>
 
-#include <evalresp/evalresp.h>
-#include <evalresp/stationxml2resp.h>
-#include <evalresp/stationxml2resp/log.h>
-#include <evalresp/stationxml2resp/ws.h>
-#include <evalresp_log/log.h>
+#include "evalresp/public_compat.h"
+#include "evalresp/private.h"
+#include "evalresp/stationxml2resp.h"
+#include "evalresp/stationxml2resp/ws.h"
 
 
 FILE *open_path(const char *dir, const char *file, const char *mode) {

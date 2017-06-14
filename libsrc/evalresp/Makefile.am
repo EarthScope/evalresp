@@ -1,7 +1,8 @@
 
 lib_LTLIBRARIES = libevalresp.la
 
-libevalresp_la_SOURCES = regexp.c regerror.c\
+libevalresp_la_SOURCES = input.c\
+						 regexp.c regerror.c\
 						 regsub.c calc_fctns.c\
 						 resp_fctns.c file_ops.c\
 						 libevalresp.c alloc_fctns.c\

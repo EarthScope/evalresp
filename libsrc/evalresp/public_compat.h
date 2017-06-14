@@ -3,6 +3,7 @@
 #define EVALRESP_PUBLIC_COMPAT_H
 
 #include "evalresp/public_channels.h"
+#include "evalresp_log/log.h"
 
 // TODO - this should become evresp.h eventually
 

@@ -4,7 +4,6 @@
 #include <fcntl.h>
 
 #include <evalresp/stationxml2resp.h>
-#include <evalresp/stationxml2resp/log.h>
 #include <evalresp/stationxml2resp/ws.h>
 #include <evalresp_log/log.h>
 
@@ -13,7 +12,7 @@ void run_test(char *input, char *response) {
     FILE *in;
     evalresp_log_t *log = NULL;
     fail_if(!(in = fopen(input, "r")));
-    fail_if(x2r_xml2resp_auto(&in, X2R_DEBUG, log));
+    fail_if(x2r_xml2resp_auto(&in, log));
     FILE *expect;
     fail_if(!(expect = fopen(response, "r")));
     char a[1000], b[1000];

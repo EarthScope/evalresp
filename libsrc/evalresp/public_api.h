@@ -11,10 +11,6 @@ typedef struct
 {
 } evalresp_filter;
 
-typedef struct
-{
-} evalresp_channels;
-
 // TODO - sncl may want expanding
 int new_filter (evalresp_log_t *log, const char *sncl, int year, int julian_day,
                 evalresp_filter **filter);

@@ -2,7 +2,7 @@
 #ifndef EVALRESP_PUBLIC_CHANNELS_H
 #define EVALRESP_PUBLIC_CHANNELS_H
 
-#include "evalresp/evalresp_ugly.h"
+#include "evalresp/ugly.h"
 
 // TODO - all comments about private need to be changed (and group)
 
@@ -224,5 +224,11 @@ typedef struct evalresp_channel_s
   evalresp_stage *first_stage;  /**< Pointer to the head of a linked list of
                                    stage. */
 } evalresp_channel;
+
+typedef struct
+{
+  int nchannels;
+  evalresp_channel **channels;
+} evalresp_channels;
 
 #endif

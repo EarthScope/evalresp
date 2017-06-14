@@ -4,7 +4,6 @@
 #include <fcntl.h>
 
 #include <evalresp/stationxml2resp.h>
-#include <evalresp/stationxml2resp/log.h>
 #include <evalresp/stationxml2resp/xml.h>
 #include <evalresp_log/log.h>
 

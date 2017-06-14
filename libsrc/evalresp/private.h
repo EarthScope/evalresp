@@ -146,7 +146,7 @@
 #include <stdio.h>
 
 #include "evalresp/public_channels.h"
-#include "evalresp/evalresp_ugly.h"
+#include "evalresp/ugly.h"
 #include "evalresp_log/log.h"
 
 /* if Windows compiler then redefine 'complex' to */
