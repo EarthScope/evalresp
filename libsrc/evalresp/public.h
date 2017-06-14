@@ -11,7 +11,7 @@
 
 #include "public_api.h"
 #include "evalresp/public_compat.h"
-#include "evalresp/evalresp_public_seed.h"
+#include "evalresp/public_channels.h"
 #include "evalresp_log/log.h"
 
 #endif

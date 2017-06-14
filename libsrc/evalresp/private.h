@@ -145,7 +145,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "evalresp/evalresp_public_seed.h"
+#include "evalresp/public_channels.h"
 #include "evalresp/evalresp_ugly.h"
 #include "evalresp_log/log.h"
 

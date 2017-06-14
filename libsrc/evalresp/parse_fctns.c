@@ -19,7 +19,7 @@
 #include <string.h>
 
 #include <private.h>
-#include "evalresp/evalresp_public_seed.h"
+#include "evalresp/public_channels.h"
 
 double atof (); // TODO - why are we declaring this?!
 

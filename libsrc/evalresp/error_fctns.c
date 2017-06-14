@@ -10,8 +10,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <private.h>
-#include "evalresp/evalresp_public_seed.h"
+#include "./private.h"
+#include "evalresp/public_channels.h"
 
 void
 error_exit (int cond, char *msg, ...)

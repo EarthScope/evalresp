@@ -2,7 +2,7 @@
 #ifndef EVALRESP_PUBLIC_COMPAT_H
 #define EVALRESP_PUBLIC_COMPAT_H
 
-#include "evalresp/evalresp_public_seed.h"
+#include "evalresp/public_channels.h"
 
 // TODO - this should become evresp.h eventually
 

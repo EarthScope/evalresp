@@ -43,7 +43,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "private.h"
+#include "./private.h"
 
 /*=================================================================
  *                   Calculate response

@@ -2,7 +2,7 @@
 #ifndef EVALRESP_PUBLIC_API_H
 #define EVALRESP_PUBLIC_API_H
 
-#include "evalresp/evalresp_public_seed.h"
+#include "evalresp/public_channels.h"
 #include "evalresp_log/log.h"
 
 // TODO - see design doc for details that should go into comments

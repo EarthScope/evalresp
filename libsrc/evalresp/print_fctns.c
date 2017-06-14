@@ -17,8 +17,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <private.h>
-#include "evalresp/evalresp_public_seed.h"
+#include "./private.h"
+#include "evalresp/public_channels.h"
 
 /* function declarations for forward references */
 int arrays_equal (double *arr1, double *arr2, int arr_size);

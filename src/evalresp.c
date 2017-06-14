@@ -25,7 +25,7 @@
 #endif
 
 #include "../libsrc/evalresp/private.h"
-#include "evalresp/evalresp_public.h"
+#include "evalresp/public.h"
 #include "evalresp_log/log.h"
 
 void

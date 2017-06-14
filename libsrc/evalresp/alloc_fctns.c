@@ -11,8 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <private.h>
-#include "evalresp/evalresp_public_seed.h"
+#include "./private.h"
+#include "evalresp/public_channels.h"
 #include "evalresp_log/log.h"
 
 struct evr_complex *
