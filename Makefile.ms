@@ -1,3 +1,3 @@
 clean all:
-    cd libsrc && $(MAKE) $*
-    cd src && $(MAKE) $*
+	cd libsrc && $(MAKE) /F Makefile.ms $*
+	cd src && $(MAKE) /F Makefile.ms $*

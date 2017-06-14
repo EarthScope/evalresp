@@ -1,15 +1,14 @@
 
-OBJ = splin.obj
+OBJ = spline.obj
 
 all: spline.lib
 
 .c.obj:
-    $(CC) /c /I ..\ $<
+	$(CC) /c /I ..\ $<
 
 spline.lib: $(OBJ)
-    $(LINK) /lib $< /OUT:spline.lib
+	link /lib $(OBJ) /OUT:spline.lib
 
 clean:
-    del spline.lib
-    del $(OBJ)
-
+	del spline.lib
+	del $(OBJ)

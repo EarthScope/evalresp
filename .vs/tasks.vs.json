@@ -1,0 +1,20 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskName": "task-Makefile",
+      "appliesTo": "Makefile.ms",
+      "type": "command",
+      "contextType": "build",
+      "command": "nmake",
+      "args": [
+        "all"
+      ]
+    },
+    {
+      "taskName": "task-Makefile",
+      "appliesTo": "Makefile.ms",
+      "type": "command"
+    }
+  ]
+}

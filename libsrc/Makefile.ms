@@ -1,6 +1,6 @@
 clean all:
-    cd mxml && $(MAKE) $*
-    cd evalresp_log && $(MAKE) $*
-    cd spline && $(MAKE) $*
-    cd evalresp && $(MAKE) $*
+	cd evalresp_log && $(MAKE) /F Makefile.ms $*
+	cd spline && $(MAKE) /F Makefile.ms $*
+	cd mxml && $(MAKE) $*
+	cd evalresp && $(MAKE) $*
 
