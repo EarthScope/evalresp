@@ -8,7 +8,7 @@ XR_OBJS = xml2resp.obj
 LIBS = /libpath:..\libsrc\evalresp_log evalresp_log.lib\
        /libpath:..\libsrc\spline spline.lib\
        /libpath:..\libsrc\evalresp evalresp.lib\
-       /libpath:..\libsrc\mxml libmxmlev.lib
+       /libpath:..\libsrc\mxml mxmlev.lib
 
 # don't forget that you also need (at the very least) before running
 # compiled commands
