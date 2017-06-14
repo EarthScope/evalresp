@@ -22,6 +22,8 @@ stamp*
 build-aux
 doc/latex
 
+.vs/
+
 env
 install
 
