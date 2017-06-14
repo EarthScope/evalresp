@@ -1,6 +1,6 @@
 
-#ifndef EVALRESP_PUBLIC_API_H
-#define EVALRESP_PUBLIC_API_H
+#ifndef PUBLIC_API_H
+#define UBLIC_API_H
 
 #include "evalresp/evalresp_public_seed.h"
 #include "evalresp_log/log.h"
