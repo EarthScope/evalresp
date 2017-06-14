@@ -1,6 +1,6 @@
 
-#ifndef EVALRESP_PUBLIC_SEED_H
-#define EVALRESP_PUBLIC_SEED_H
+#ifndef EVALRESP_PUBLIC_CHANNELS_H
+#define EVALRESP_PUBLIC_CHANNELS_H
 
 #include "evalresp/evalresp_ugly.h"
 
