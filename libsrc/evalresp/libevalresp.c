@@ -65,10 +65,10 @@ Notes:
 #include <stdlib.h>
 #include <string.h>
 
-#include <private.h>
 #include "evalresp/public.h"
 #include "evalresp/stationxml2resp/ws.h"
 #include "evalresp_log/log.h"
+#include <private.h>
 
 /* define a global flag to use if using "default" units */
 int def_units_flag;

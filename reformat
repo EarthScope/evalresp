@@ -31,7 +31,7 @@ fi
 
 for dir in src libsrc/evalresp libsrc/evalresp_log libsrc/evalresp_log/examples tests/c; do
     pushd $dir >/dev/null 2>&1
-    for file in `ls *.c *.h`; do
+    for file in `ls *.c *.h 2>/dev/null`; do
 	clang-format -i -style=file $file
 # this reverts all files to previous state
 #	rm $file

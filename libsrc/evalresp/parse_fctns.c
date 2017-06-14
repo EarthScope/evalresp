@@ -18,8 +18,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <private.h>
 #include "evalresp/public_channels.h"
+#include <private.h>
 
 double atof (); // TODO - why are we declaring this?!
 

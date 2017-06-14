@@ -2,8 +2,8 @@
 #ifndef EVALRESP_INPUT_H
 #define EVALRESP_INPUT_H
 
-#include "./ugly.h"
 #include "./private.h"
+#include "./ugly.h"
 #include "evalresp/public_channels.h"
 #include "evalresp_log/log.h"
 
@@ -11,19 +11,24 @@
 // read from strings rather than files.
 
 void
-slurp_line(char **seed, char *line, int maxlen)
+slurp_line (char **seed, char *line, int maxlen)
 {
   int i = 0;
-  for(;;) {
+  for (;;)
+  {
     char c = **seed;
     line[i++] = c;
-    if (!c) {
+    if (!c)
+    {
       // don't move past end of input
       // already appended NULL
       return;
-    } else {
+    }
+    else
+    {
       (*seed)++;
-      if (c == '\n' || i == maxlen - 1) {
+      if (c == '\n' || i == maxlen - 1)
+      {
         line[i] = '\0';
         return;
       }
@@ -295,6 +300,5 @@ slurp_line(char **seed, char *line, int maxlen)
 //
 //  return (1);
 //}
-
 
 #endif
