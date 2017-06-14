@@ -34,8 +34,9 @@
 
 #include <string.h>
 
-#include "./regexp.h"
-#include <evalresp/evalresp_private.h>
+#include "./regexp.h"  // TODO - should all private imports be relative like this?
+#include "evalresp/evalresp_private.h"
+#include "evalresp/evalresp_public_seed.h"
 
 struct string_array *
 ev_parse_line (char *line, evalresp_log_t *log)

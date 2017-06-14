@@ -137,8 +137,8 @@
  10/02/2013 -- [IGD] Version 3.3.4: Adding DEGREE CENTIGRADE as units
  */
 
-#ifndef __EVALRESP_EVALRESP_H__
-#define __EVALRESP EVALRESP_H__
+#ifndef EVALRESP_PRIVATE_H
+#define EVALRESP_PRIVATE_H
 
 #include <ctype.h>
 #include <math.h>
@@ -147,6 +147,7 @@
 
 #include "evalresp_log/log.h"
 #include "evalresp/evalresp_ugly.h"
+#include "evalresp/evalresp_public_seed.h"
 
 /* if Windows compiler then redefine 'complex' to */
 /*  differentiate it from the existing struct,    */
@@ -364,224 +365,7 @@ struct scn_list
   struct scn **scn_vec; /**< Array of network-station-locid-channel objects. */
 };
 
-/* define structures for the various types of filters defined in seed */
 
-/**
- * @private
- * @ingroup evalresp_private
- * @brief A Response (Poles & Zeros) blockette.
- */
-struct pole_zeroType
-{
-  int nzeros;                /**< Number of zeros (blockettes [43] or [53]). */
-  int npoles;                /**< Number of poles. */
-  double a0;                 /**< Poles and zeros normaliztion factor. */
-  double a0_freq;            /**< Poles and zeros normaliztion frequency. */
-  struct evr_complex *zeros; /**< Array of zeros (complex). */
-  struct evr_complex *poles; /**< Array of poles (complex). */
-};
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief A Response (Coefficients) blockette.
- */
-struct coeffType
-{
-  int nnumer;                     /**< Length of numerator vector . (blockettes [44] or [54]) */
-  int ndenom;                     /**< Length of denominator vector. */
-  double *numer;                  /**< Numerator vector. */
-  double *denom;                  /**< Denominator vector. */
-  double h0; /**< Sensitivity. */ /* IGD this field is new v 3.2.17 */
-};
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief A Response (Coefficients) blockette.
- */
-struct polynomialType
-{
-  unsigned char approximation_type; /**< Approximation type. (blockettes [42] or [62]) */ /* IGD 05/31/2013 */
-  unsigned char frequency_units;                                                          /**< Frequency unit. */
-  double lower_freq_bound;                                                                /**< Lower frequency bound. */
-  double upper_freq_bound;                                                                /**< Upper frequency bound. */
-  double lower_approx_bound;                                                              /**< Lower approximation bound. */
-  double upper_approx_bound;                                                              /**< Upper approximation bound. */
-  double max_abs_error;                                                                   /**< Maximum absolute error. */
-  int ncoeffs;                                                                            /**< Length of coefficients vector. */
-  double *coeffs;                                                                         /**< Coefficients vector. */
-  double *coeffs_err;                                                                     /**< Error vector. */
-};
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief A FIR Response blockette.
- */
-struct firType
-{
-  int ncoeffs;    /**< Number of coefficients (blockettes [41] or [61]). */
-  double *coeffs; /**< Array of coefficients. */
-  double h0;      /**< Sensitivity. */
-};
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief A Response (List) blockette.
- */
-struct listType
-{
-  int nresp;     /**< Number of responses (blockettes [45] or [55]). */
-  double *freq;  /**< Array of freqencies. */
-  double *amp;   /**< Array of amplitudes. */
-  double *phase; /**< Array of phases. */
-};
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief A Generic Response blockette.
- */
-struct genericType
-{
-  int ncorners;         /**< Number of corners. (blockettes [46] or [56]) */
-  double *corner_freq;  /**< Corner frequency vector. */
-  double *corner_slope; /**< Corner slope vector. */
-};
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief A Decimation blockette.
- */
-struct decimationType
-{
-  double sample_int;   /**< Sample interval. (blockettes [47] or [57]) */
-  int deci_fact;       /**< Decimation factor. */
-  int deci_offset;     /**< Decimation offset. */
-  double estim_delay;  /**< Estimated delay. */
-  double applied_corr; /**< Applied correction. */
-};
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief A Channel Sensitivity/Gain blockette.
- */
-struct gainType
-{
-  double gain;      /**< Gain. (blockettes [48] or [58]) */
-  double gain_freq; /**< Frequency where gain is computed. */
-};
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief A Response Reference blockette.
- */
-struct referType
-{
-  int num_stages;    /**< Total number of stages. */
-  int stage_num;     /**< Stage number. */
-  int num_responses; /**< Number of responses. */
-};
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief Define a blkt as a structure containing the blockette type, a union
- *        (blkt_info) containing the blockette info, and a pointer to the
- *        next blockette in the filter sequence.
- * @details The structures will be assembled to form a linked list of
- *          blockettes that make up a filter, with the last blockette
- *          containing a '(struct blkt *)NULL' pointer in the 'next_blkt'
- *          position.
- */
-struct blkt
-{
-  int type; /**< Blockette type. */
-  union {
-    struct pole_zeroType pole_zero;   /**< Poles and zeros structure. */
-    struct coeffType coeff;           /**< Coefficients structure. */
-    struct firType fir;               /**< FIR structure. */
-    struct listType list;             /**< List structure. */
-    struct genericType generic;       /**< Generic response structure. */
-    struct decimationType decimation; /**< Decimation blockette structure. */
-    struct gainType gain;             /**< Gain structure. */
-    struct referType reference;       /**< Reference structure. */
-    struct polynomialType polynomial; /**< Polynomial type structure. */
-  } blkt_info;                        /**< Blockette info. */
-  struct blkt *next_blkt;             /**< Pointer to next blockette. */
-};
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief Define a stage as a structure that contains the sequence number, the
- *        input and output units, a pointer to the first blockette of the
- *        filter, and a pointer to the next stage in the response.
- * @details Again, the last stage in the response will be indicated by a
- *          '(struct stage *)NULL pointer in the 'next_stage' position.
- */
-struct stage
-{
-  int sequence_no;          /**< Sequence number. */
-  int input_units;          /**< Input units. */
-  int output_units;         /**< Output units. */
-  struct blkt *first_blkt;  /**< Pointer to first blockette of the filter. */
-  struct stage *next_stage; /**< Pointer to the next stage in the response. */
-};
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief And define a channel as a structure containing a pointer to the head
- *        of a linked list of stages.
- * @details Will access the pieces one stages at a time in the same order that
- *          they were read from the input file, so a linked list is the
- *          easiest way to do this (since we don't have to worry about the
- *          time penalty inherent in following the chain). As an example, if
- *          the first stage read was a pole-zero stage, then the parts of that
- *          stage contained in a channel structure called "ch" would be
- *          accessed as:
-
-@verbatim
-struct stage *stage_ptr;
-struct blkt *blkt_ptr;
-
-stage_ptr = ch.first_stage;
-blkt_ptr = stage_ptr->first_blkt;
-if(blkt_ptr->type == LAPLACE_PZ || blkt_ptr->type == ANALOG_PZ ||
-blkt_ptr->type == IIR_PZ){
-nzeros = blkt_ptr->blkt_info.poles_zeros.nzeros;
-........
-}
-@endverbatim
-
- */
-struct channel
-{
-  char staname[STALEN];         /**< Station name. */
-  char network[NETLEN];         /**< Network name. */
-  char locid[LOCIDLEN];         /**< Location ID. */
-  char chaname[CHALEN];         /**< Channel name. */
-  char beg_t[DATIMLEN];         /**< Start time (string). */
-  char end_t[DATIMLEN];         /**< End time (string). */
-  char first_units[MAXLINELEN]; /**< Units of the first stage. */
-  char last_units[MAXLINELEN];  /**< Units of the last stage. */
-  double sensit;                /**< Sensitivity. */
-  double sensfreq;              /**< Freuqncy at sensitivity. */
-  double calc_sensit;           /**< Calculated sensitivity. */
-  double calc_delay;            /**< Calculated delay. */
-  double estim_delay;           /**< Estimated delay. */
-  double applied_corr;          /**< Applied correction. */
-  double sint;                  /**< inversed sample rate (sample interval). */
-  int nstages;                  /**< Number of stages. */
-  struct stage *first_stage;    /**< Pointer to the head of a linked list of
-                                   stage. */
-};
 
 /**
  * @private
@@ -922,7 +706,7 @@ int is_IIR_coeffs (FILE *fp, int position);
  *       information to be reread.
  */
 int find_resp (FILE *fptr, struct scn_list *scn_lst, char *datime,
-               struct channel *this_channel, evalresp_log_t *log);
+               evalresp_channel *this_channel, evalresp_log_t *log);
 
 /**
  * @private
@@ -948,7 +732,7 @@ int find_resp (FILE *fptr, struct scn_list *scn_lst, char *datime,
  *       information to be reread.
  */
 int get_resp (FILE *fptr, struct scn *scn, char *datime,
-              struct channel *this_channel, evalresp_log_t *log);
+              evalresp_channel *this_channel, evalresp_log_t *log);
 
 /**
  * @private
@@ -965,7 +749,7 @@ int get_resp (FILE *fptr, struct scn *scn, char *datime,
  * @returns 1 on success.
  * @returns 0 on failure.
  */
-int get_channel (FILE *fptr, struct channel *chan, evalresp_log_t *log);
+int get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log);
 
 /**
  * @private
@@ -1175,7 +959,7 @@ char **alloc_char_ptr (int len, evalresp_log_t *log);
  *       parsed.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_pz (evalresp_log_t *log);
+evalresp_blkt *alloc_pz (evalresp_log_t *log);
 
 /**
  * @private
@@ -1188,7 +972,7 @@ struct blkt *alloc_pz (evalresp_log_t *log);
  *       parse_fir()).
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_coeff (evalresp_log_t *log);
+evalresp_blkt *alloc_coeff (evalresp_log_t *log);
 
 /**
  * @private
@@ -1201,7 +985,7 @@ struct blkt *alloc_coeff (evalresp_log_t *log);
  *       parse_fir()).
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_fir (evalresp_log_t *log);
+evalresp_blkt *alloc_fir (evalresp_log_t *log);
 
 /**
  * @private
@@ -1211,7 +995,7 @@ struct blkt *alloc_fir (evalresp_log_t *log);
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_ref (evalresp_log_t *log);
+evalresp_blkt *alloc_ref (evalresp_log_t *log);
 
 /**
  * @private
@@ -1225,7 +1009,7 @@ struct blkt *alloc_ref (evalresp_log_t *log);
  *       partially parsed.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_gain (evalresp_log_t *log);
+evalresp_blkt *alloc_gain (evalresp_log_t *log);
 
 /**
  * @private
@@ -1238,7 +1022,7 @@ struct blkt *alloc_gain (evalresp_log_t *log);
  *       the number of frequencies is known.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_list (evalresp_log_t *log);
+evalresp_blkt *alloc_list (evalresp_log_t *log);
 
 /**
  * @private
@@ -1251,7 +1035,7 @@ struct blkt *alloc_list (evalresp_log_t *log);
  *       the number of frequencies is known.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_generic (evalresp_log_t *log);
+evalresp_blkt *alloc_generic (evalresp_log_t *log);
 
 /**
  * @private
@@ -1261,7 +1045,7 @@ struct blkt *alloc_generic (evalresp_log_t *log);
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-struct blkt *alloc_deci (evalresp_log_t *log);
+evalresp_blkt *alloc_deci (evalresp_log_t *log);
 
 /**
  * @private
@@ -1272,7 +1056,7 @@ struct blkt *alloc_deci (evalresp_log_t *log);
  * @warning Exits with error if allocation fails.
  * @author 05/31/2013: IGD.
  */
-struct blkt *alloc_polynomial (evalresp_log_t *log);
+evalresp_blkt *alloc_polynomial (evalresp_log_t *log);
 
 /**
  * @private
@@ -1282,7 +1066,7 @@ struct blkt *alloc_polynomial (evalresp_log_t *log);
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-struct stage *alloc_stage (evalresp_log_t *log);
+evalresp_stage *alloc_stage (evalresp_log_t *log);
 
 /* routines to free up space associated with dynamically allocated
  structure members */
@@ -1339,7 +1123,7 @@ void free_file_list (struct file_list *lst);
  *        filter.
  * @param[in,out] blkt_ptr Pole-zero type filter blockette structure.
  */
-void free_pz (struct blkt *blkt_ptr);
+void free_pz (evalresp_blkt *blkt_ptr);
 
 /**
  * @private
@@ -1348,7 +1132,7 @@ void free_pz (struct blkt *blkt_ptr);
  *        type filter.
  * @param[in,out] blkt_ptr Coefficients type filter blockette structure.
  */
-void free_coeff (struct blkt *blkt_ptr);
+void free_coeff (evalresp_blkt *blkt_ptr);
 
 /**
  * @private
@@ -1356,7 +1140,7 @@ void free_coeff (struct blkt *blkt_ptr);
  * @brief A routine that frees up the space associated with a fir type filter.
  * @param[in,out] blkt_ptr Fir type filter blockette structure.
  */
-void free_fir (struct blkt *blkt_ptr);
+void free_fir (evalresp_blkt *blkt_ptr);
 
 /**
  * @private
@@ -1365,7 +1149,7 @@ void free_fir (struct blkt *blkt_ptr);
  *        filter.
  * @param[in,out] blkt_ptr List type filter blockette structure.
  */
-void free_list (struct blkt *blkt_ptr);
+void free_list (evalresp_blkt *blkt_ptr);
 
 /**
  * @private
@@ -1374,7 +1158,7 @@ void free_list (struct blkt *blkt_ptr);
  *        filter.
  * @param[in,out] blkt_ptr Generic type filter blockette structure.
  */
-void free_generic (struct blkt *blkt_ptr);
+void free_generic (evalresp_blkt *blkt_ptr);
 
 /**
  * @private
@@ -1383,7 +1167,7 @@ void free_generic (struct blkt *blkt_ptr);
  *        filter.
  * @param[in,out] blkt_ptr Gain type filter blockette structure.
  */
-void free_gain (struct blkt *blkt_ptr);
+void free_gain (evalresp_blkt *blkt_ptr);
 
 /**
  * @private
@@ -1392,7 +1176,7 @@ void free_gain (struct blkt *blkt_ptr);
  *        filter.
  * @param[in,out] blkt_ptr Decimation type filter blockette structure.
  */
-void free_deci (struct blkt *blkt_ptr);
+void free_deci (evalresp_blkt *blkt_ptr);
 
 /**
  * @private
@@ -1401,7 +1185,7 @@ void free_deci (struct blkt *blkt_ptr);
  *        reference type filter.
  * @param[in,out] blkt_ptr Response reference type filter blockette structure.
  */
-void free_ref (struct blkt *blkt_ptr);
+void free_ref (evalresp_blkt *blkt_ptr);
 
 /**
  * @private
@@ -1410,7 +1194,7 @@ void free_ref (struct blkt *blkt_ptr);
  *        channel's response.
  * @param[in,out] stage_ptr Stage structure.
  */
-void free_stages (struct stage *stage_ptr);
+void free_stages (evalresp_stage *stage_ptr);
 
 /**
  * @private
@@ -1419,7 +1203,7 @@ f * @brief A routine that frees up the space associated with a channel's filter
  *        sequence.
  * @param[in,out] chan_ptr Channel structure.
  */
-void free_channel (struct channel *chan_ptr);
+void free_channel (evalresp_channel *chan_ptr);
 
 /**
  * @private
@@ -1478,7 +1262,7 @@ void error_return (int cond, char *msg, ...);
  * @param[in] log Logging structure.
  * @returns First field number.
  */
-int parse_channel (FILE *fptr, struct channel *chan, evalresp_log_t *log);
+int parse_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log);
 
 /* parsing routines for various types of filters */
 
@@ -1514,7 +1298,7 @@ int parse_pref (int *blkt_no, int *fld_no, char *line, evalresp_log_t *log);
  * @param[in,out] stage_ptr Stage structure.
  * @param[in] log Logging structure.
  */
-void parse_pz (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
+void parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1530,7 +1314,7 @@ void parse_pz (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalr
  * @param[in,out] stage_ptr Stage structure.
  * @param[in] log Logging structure.
  */
-void parse_coeff (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
+void parse_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1548,7 +1332,7 @@ void parse_coeff (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, ev
  * @param[in] log Logging structure.
  * @author 06/27/00: I.Dricker (i.dricker@isti.com) for 2.3.17 iir.
  */
-void parse_iir_coeff (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
+void parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1568,7 +1352,7 @@ void parse_iir_coeff (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr
  *         Since currently the blockette 55 is not supported, we do not
  *         anticipate problems caused by this change.
  */
-void parse_list (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
+void parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1584,7 +1368,7 @@ void parse_list (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eva
  * @param[in,out] stage_ptr Stage structure.
  * @param[in] log Logging structure.
  */
-void parse_generic (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
+void parse_generic (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1600,7 +1384,7 @@ void parse_generic (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, 
  * @param[in] log Logging structure.
  * @returns Sequence number of the stage for verification.
  */
-int parse_deci (FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log);
+int parse_deci (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1616,7 +1400,7 @@ int parse_deci (FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log);
  * @param[in] log Logging structure.
  * @returns Sequence number of the stage for verification.
  */
-int parse_gain (FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log);
+int parse_gain (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1632,7 +1416,7 @@ int parse_gain (FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log);
  * @param[in,out] stage_ptr Stage structure.
  * @param[in] log Logging structure.
  */
-void parse_fir (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
+void parse_fir (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1648,7 +1432,7 @@ void parse_fir (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eval
  * @param[in,out] stage_ptr Stage structure.
  * @param[in] log Logging structure.
  */
-void parse_ref (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log);
+void parse_ref (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1664,8 +1448,8 @@ void parse_ref (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eval
  * @param[in] log Logging structure.
  * @author 05/31/2013: IGD.
  */
-void parse_polynomial (FILE *fptr, struct blkt *blkt_ptr,
-                       struct stage *stage_ptr, evalresp_log_t *log);
+void parse_polynomial (FILE *fptr, evalresp_blkt *blkt_ptr,
+                       evalresp_stage *stage_ptr, evalresp_log_t *log);
 
 /**
  * @private
@@ -1705,7 +1489,7 @@ int add_null (char *s, int len, char where);
  * @param[in,out] second_blkt Second filter.
  * @param[in] log Logging structure.
  */
-void merge_coeffs (struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t *log);
+void merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log);
 
 /**
  * @private
@@ -1725,7 +1509,7 @@ void merge_coeffs (struct blkt *first_blkt, struct blkt **second_blkt, evalresp_
  * @author 07/07/00: Ilya Dricker IGD (i.dricker@isti.com): Modified from
  *         merge_coeffs() for 3.2.17 of evalresp.
  */
-void merge_lists (struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t *log);
+void merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log);
 
 /**
  * @private
@@ -1756,7 +1540,7 @@ void merge_lists (struct blkt *first_blkt, struct blkt **second_blkt, evalresp_l
  * @param[in] chan Channel structure.
  * @param[in] log Logging structure.
  */
-void check_channel (struct channel *chan, evalresp_log_t *log);
+void check_channel (evalresp_channel *chan, evalresp_log_t *log);
 
 /**
  * @private
@@ -1768,7 +1552,7 @@ void check_channel (struct channel *chan, evalresp_log_t *log);
  * @param[in] chan Channel structure.
  * @param[in] log Logging structure.
  */
-void check_sym (struct blkt *f, struct channel *chan, evalresp_log_t *log);
+void check_sym (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log);
 
 /* routines used to calculate the instrument responses */
 
@@ -1788,7 +1572,7 @@ void check_sym (struct blkt *f, struct channel *chan, evalresp_log_t *log);
  * @param[in] x_for_b62 Frequency for polynomial response (b62).
  * @param[in] log Logging structure.
  */
-void calc_resp (struct channel *chan, double *freq, int nfreqs,
+void calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
                 struct evr_complex *output, char *out_units, int start_stage,
                 int stop_stage, int useTotalSensitivityFlag, double x_for_b62, evalresp_log_t *log);
 
@@ -1813,7 +1597,7 @@ void convert_to_units (int inp, char *out_units, struct evr_complex *data,
  * @param[in] freq Frequency.
  * @param[out] out Response.
  */
-void analog_trans (struct blkt *blkt_ptr, double freq, struct evr_complex *out);
+void analog_trans (evalresp_blkt *blkt_ptr, double freq, struct evr_complex *out);
 
 /**
  * @private
@@ -1823,7 +1607,7 @@ void analog_trans (struct blkt *blkt_ptr, double freq, struct evr_complex *out);
  * @param[in] w Frequency.
  * @param[out] out Response.
  */
-void fir_sym_trans (struct blkt *blkt_ptr, double w, struct evr_complex *out);
+void fir_sym_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out);
 
 /**
  * @private
@@ -1833,7 +1617,7 @@ void fir_sym_trans (struct blkt *blkt_ptr, double w, struct evr_complex *out);
  * @param[in] w Frequency.
  * @param[out] out Response.
  */
-void fir_asym_trans (struct blkt *blkt_ptr, double w, struct evr_complex *out);
+void fir_asym_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out);
 
 /**
  * @private
@@ -1843,7 +1627,7 @@ void fir_asym_trans (struct blkt *blkt_ptr, double w, struct evr_complex *out);
  * @param[in] w Frequency.
  * @param[out] out Response.
  */
-void iir_pz_trans (struct blkt *blkt_ptr, double w, struct evr_complex *out);
+void iir_pz_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out);
 
 /**
  * @private
@@ -1875,7 +1659,7 @@ void zmul (struct evr_complex *val1, struct evr_complex *val2);
  * @param[in] stop_stage Stop stage.
  * @param[in] log Logging structure.
  */
-void norm_resp (struct channel *chan, int start_stage, int stop_stage, evalresp_log_t *log);
+void norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log_t *log);
 
 /**
  * @private
@@ -1887,7 +1671,7 @@ void norm_resp (struct channel *chan, int start_stage, int stop_stage, evalresp_
  * @author 06/22/00: Ilya Dricker ISTI (.dricker@isti.com): Function
  *         introduced in version 3.2.17 of evalresp.
  */
-void calc_list (struct blkt *blkt_ptr, int i, struct evr_complex *out);
+void calc_list (evalresp_blkt *blkt_ptr, int i, struct evr_complex *out);
 
 /**
  * @private
@@ -1900,7 +1684,7 @@ void calc_list (struct blkt *blkt_ptr, int i, struct evr_complex *out);
  * @author 06/01/13: Ilya Dricker ISTI (.dricker@isti.com): Function
  *         introduced in version 3.3.4 of evalresp
  */
-void calc_polynomial (struct blkt *blkt_ptr, struct evr_complex *out,
+void calc_polynomial (evalresp_blkt *blkt_ptr, struct evr_complex *out,
                       double x_for_b62, evalresp_log_t *log);
 
 /**
@@ -1916,7 +1700,7 @@ void calc_polynomial (struct blkt *blkt_ptr, struct evr_complex *out,
  * @author 07/12/00: Ilya Dricker (ISTI), i.dricker@isti.com: C translation
  *         from FORTRAN function. Version 0.2. For version 3.2.17.
  */
-void iir_trans (struct blkt *blkt_ptr, double wint, struct evr_complex *out);
+void iir_trans (evalresp_blkt *blkt_ptr, double wint, struct evr_complex *out);
 
 /**
  * @private
@@ -1959,7 +1743,7 @@ int timecmp (struct dateTime *dt1, struct dateTime *dt2);
  *                                  compute response.
  * @param[in] log Logging structure.
  */
-void print_chan (struct channel *chan, int start_stage, int stop_stage,
+void print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
                  int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
                  int useTotalSensitivityFlag, evalresp_log_t *log);
 
@@ -2099,4 +1883,5 @@ u *          want to change the number of arguments in evresp() function which
  */
 int use_estimated_delay (int flag);
 
-#endif /* !__EVALRESP_EVALRESP_H__ */
+#endif
+

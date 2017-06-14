@@ -1,5 +1,9 @@
 
+#ifndef EVALRESP_PUBLIC_H
+#define EVALRESP_PUBLIC_H
+
 #include "evalresp_log/log.h"
+#include "evalresp/evalresp_public_seed.h"
 
 /* IGD 10/16/04 This is for Windows which does not use Makefile.am */
 #ifdef VERSION
@@ -134,3 +138,5 @@ int evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
               char *rtype, char *verbose, int start_stage, int stop_stage,
               int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
               int xml_flag);
+
+#endif

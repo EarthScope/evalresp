@@ -51,12 +51,12 @@
 
 /* IGD 10/04/13 Reformatted */
 void
-calc_resp (struct channel *chan, double *freq, int nfreqs,
+calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
            struct evr_complex *output, char *out_units, int start_stage,
            int stop_stage, int useTotalSensitivityFlag, double x_for_b62, evalresp_log_t *log)
 {
-  struct blkt *blkt_ptr;
-  struct stage *stage_ptr;
+  evalresp_blkt *blkt_ptr;
+  evalresp_stage *stage_ptr;
   int i, j, units_code, eval_flag = 0, nc = 0, sym_fir = 0;
   double w;
   int matching_stages = 0, has_stage0 = 0;
@@ -316,7 +316,7 @@ convert_to_units (int inp, char *out_units, struct evr_complex *data, double w, 
  * Version 0.2 07/12/00
  *================================================================*/
 void
-iir_trans (struct blkt *blkt_ptr, double wint, struct evr_complex *out)
+iir_trans (evalresp_blkt *blkt_ptr, double wint, struct evr_complex *out)
 {
 
   double h0;
@@ -326,7 +326,7 @@ iir_trans (struct blkt *blkt_ptr, double wint, struct evr_complex *out)
   double *cn, *cd; /* numerators and denominators */
   int nn, nd, in, id;
 
-  struct blkt *next_ptr;
+  evalresp_blkt *next_ptr;
 
   h0 = blkt_ptr->blkt_info.coeff.h0; /* set a sensitivity */
   next_ptr = blkt_ptr->next_blkt;
@@ -389,7 +389,7 @@ iir_trans (struct blkt *blkt_ptr, double wint, struct evr_complex *out)
  * Ilya Dricker ISTI (.dricker@isti.com) 06/01/13
  *===============================================================*/
 void
-calc_polynomial (struct blkt *blkt_ptr, struct evr_complex *out,
+calc_polynomial (evalresp_blkt *blkt_ptr, struct evr_complex *out,
                  double x_for_b62, evalresp_log_t *log)
 {
   double amp = 0, phase = 0;
@@ -432,7 +432,7 @@ calc_polynomial (struct blkt *blkt_ptr, struct evr_complex *out,
  * Ilya Dricker ISTI (.dricker@isti.com) 06/22/00
  *===============================================================*/
 void
-calc_list (struct blkt *blkt_ptr, int i, struct evr_complex *out)
+calc_list (evalresp_blkt *blkt_ptr, int i, struct evr_complex *out)
 {
   double amp, phase;
   double halfcirc = 180;
@@ -448,7 +448,7 @@ calc_list (struct blkt *blkt_ptr, int i, struct evr_complex *out)
  *                Response of analog filter
  *=================================================================*/
 void
-analog_trans (struct blkt *blkt_ptr, double freq, struct evr_complex *out)
+analog_trans (evalresp_blkt *blkt_ptr, double freq, struct evr_complex *out)
 {
   int nz, np, i;
   struct evr_complex *ze, *po, denom, num, omega, temp;
@@ -497,10 +497,10 @@ analog_trans (struct blkt *blkt_ptr, double freq, struct evr_complex *out)
  *                Response of symetrical FIR filters
  *=================================================================*/
 void
-fir_sym_trans (struct blkt *blkt_ptr, double w, struct evr_complex *out)
+fir_sym_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out)
 {
   double *a, h0, wsint;
-  struct blkt *next_ptr;
+  evalresp_blkt *next_ptr;
   int na;
   int k, fact;
   double R = 0.0, sint;
@@ -538,10 +538,10 @@ fir_sym_trans (struct blkt *blkt_ptr, double w, struct evr_complex *out)
  *                Response of asymetrical FIR filters
  *=================================================================*/
 void
-fir_asym_trans (struct blkt *blkt_ptr, double w, struct evr_complex *out)
+fir_asym_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out)
 {
   double *a, h0, sint;
-  struct blkt *next_ptr;
+  evalresp_blkt *next_ptr;
   int na;
   int k;
   double R = 0.0, I = 0.0;
@@ -590,11 +590,11 @@ fir_asym_trans (struct blkt *blkt_ptr, double w, struct evr_complex *out)
  *                Response of IIR filters
  *=================================================================*/
 void
-iir_pz_trans (struct blkt *blkt_ptr, double w, struct evr_complex *out)
+iir_pz_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out)
 {
   struct evr_complex *ze, *po;
   double h0, sint, wsint;
-  struct blkt *next_ptr;
+  evalresp_blkt *next_ptr;
   int nz, np;
   int i;
   double mod = 1.0, pha = 0.0;
@@ -664,11 +664,11 @@ zmul (struct evr_complex *val1, struct evr_complex *val2)
  *                   Normalize response
  *=================================================================*/
 void
-norm_resp (struct channel *chan, int start_stage, int stop_stage, evalresp_log_t *log)
+norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log_t *log)
 {
-  struct stage *stage_ptr;
+  evalresp_stage *stage_ptr;
   // TODO - NULL assignments below made blindly to fix compiler warning.  bug?
-  struct blkt *fil, *last_fil = NULL, *main_filt = NULL;
+  evalresp_blkt *fil, *last_fil = NULL, *main_filt = NULL;
   int i, main_type, reset_gain, skipped_stages = 0;
   double w, f;
   double percent_diff;
@@ -688,12 +688,12 @@ norm_resp (struct channel *chan, int start_stage, int stop_stage, evalresp_log_t
   { /* has no stage 0, does it have a gain??? */
     stage_ptr = chan->first_stage;
     fil = stage_ptr->first_blkt;
-    while (fil != (struct blkt *)NULL && fil->type != GAIN)
+    while (fil != (evalresp_blkt *)NULL && fil->type != GAIN)
     {
       last_fil = fil;
       fil = last_fil->next_blkt;
     }
-    if (fil == (struct blkt *)NULL && last_fil->type != POLYNOMIAL)
+    if (fil == (evalresp_blkt *)NULL && last_fil->type != POLYNOMIAL)
     {
       evalresp_log (log, ERROR, 0,
                     "norm_resp; no stage gain defined, zero sensitivity");
@@ -706,12 +706,12 @@ norm_resp (struct channel *chan, int start_stage, int stop_stage, evalresp_log_t
   { /* has a stage 0??? */
     stage_ptr = chan->first_stage;
     fil = stage_ptr->first_blkt;
-    while (fil != (struct blkt *)NULL && fil->type != GAIN)
+    while (fil != (evalresp_blkt *)NULL && fil->type != GAIN)
     {
       last_fil = fil;
       fil = last_fil->next_blkt;
     }
-    if (fil == (struct blkt *)NULL && last_fil->type != POLYNOMIAL)
+    if (fil == (evalresp_blkt *)NULL && last_fil->type != POLYNOMIAL)
     {
       if (chan->sensit == 0.0)
       {

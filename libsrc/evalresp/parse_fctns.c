@@ -18,8 +18,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <evalresp/evalresp_private.h>
-double atof ();
+#include "evalresp/evalresp_private.h"
+#include "evalresp/evalresp_public_seed.h"
+
+double atof ();  // TODO - why are we declaring this?!
 
 int
 parse_pref (int *blkt_no, int *fld_no, char *line, evalresp_log_t *log)
@@ -58,7 +60,7 @@ parse_pref (int *blkt_no, int *fld_no, char *line, evalresp_log_t *log)
 }
 
 void
-parse_pz (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log)
+parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log)
 {
   int i, blkt_typ, check_fld;
   int blkt_read;
@@ -293,7 +295,7 @@ parse_pz (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_l
 
 /*TODO this should be int to error out the rest of the  processing */
 void
-parse_iir_coeff (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log)
+parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log)
 {
   int i, blkt_typ, check_fld;
   int blkt_read;
@@ -480,7 +482,7 @@ parse_iir_coeff (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, eva
 
 /*TODO this should be int to error out the rest of the  processing */
 void
-parse_coeff (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log)
+parse_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log)
 {
   int i, blkt_typ, check_fld;
   int blkt_read;
@@ -648,7 +650,7 @@ parse_coeff (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalres
 
 /*TODO this should be int to error out the rest of the  processing */
 void
-parse_list (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log)
+parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log)
 {
   int i, blkt_typ = LIST;
   int blkt_read, check_fld;
@@ -865,7 +867,7 @@ parse_list (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp
 }
 
 void
-parse_generic (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log)
+parse_generic (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log)
 {
   int i, blkt_typ = GENERIC;
   int blkt_read, check_fld;
@@ -993,7 +995,7 @@ parse_generic (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalr
 }
 
 int
-parse_deci (FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log)
+parse_deci (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_log_t *log)
 {
   int blkt_typ = DECIMATION;
   int blkt_read, check_fld;
@@ -1101,7 +1103,7 @@ parse_deci (FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log)
 }
 
 int
-parse_gain (FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log)
+parse_gain (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_log_t *log)
 {
   int i, blkt_typ = GAIN;
   int blkt_read, check_fld;
@@ -1200,8 +1202,8 @@ parse_gain (FILE *fptr, struct blkt *blkt_ptr, evalresp_log_t *log)
 }
 
 void
-parse_polynomial (FILE *fptr, struct blkt *blkt_ptr,
-                  struct stage *stage_ptr, evalresp_log_t *log)
+parse_polynomial (FILE *fptr, evalresp_blkt *blkt_ptr,
+                  evalresp_stage *stage_ptr, evalresp_log_t *log)
 {
   int i, blkt_typ;
   int blkt_read, check_fld;
@@ -1399,7 +1401,7 @@ parse_polynomial (FILE *fptr, struct blkt *blkt_ptr,
 }
 
 void
-parse_fir (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log)
+parse_fir (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log)
 {
   int i, blkt_typ;
   int blkt_read, check_fld;
@@ -1549,13 +1551,13 @@ parse_fir (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_
 }
 
 void
-parse_ref (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_log_t *log)
+parse_ref (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log)
 {
   int this_blkt_no = 60, blkt_no, fld_no, i, j, prev_blkt_no = 60;
   int nstages, stage_num, nresps, lcl_nstages;
   char field[MAXFLDLEN];
-  struct blkt *last_blkt;
-  struct stage *last_stage, *this_stage;
+  evalresp_blkt *last_blkt;
+  evalresp_stage *last_stage, *this_stage;
 
   /* set the filter type for, then start parsing the stages */
 
@@ -1751,18 +1753,18 @@ parse_ref (FILE *fptr, struct blkt *blkt_ptr, struct stage *stage_ptr, evalresp_
 }
 
 int
-parse_channel (FILE *fptr, struct channel *chan, evalresp_log_t *log)
+parse_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
 {
 
   // TODO - assigments for no_units and tmp_stage2 made blindly to fix compiler warning.  bug?
   int blkt_no, read_blkt = 0, fld_no, no_units = 0;
   int curr_seq_no, last_seq_no;
-  struct blkt *blkt_ptr, *last_blkt = NULL;
-  struct stage *this_stage, *last_stage, *tmp_stage, *tmp_stage2 = NULL;
+  evalresp_blkt *blkt_ptr, *last_blkt = NULL;
+  evalresp_stage *this_stage, *last_stage, *tmp_stage, *tmp_stage2 = NULL;
 
   /* initialize the channel's sequence of stages */
 
-  last_stage = (struct stage *)NULL;
+  last_stage = (evalresp_stage *)NULL;
   curr_seq_no = last_seq_no = 0;
   this_stage = alloc_stage (log);
   chan->first_stage = this_stage;
@@ -1891,19 +1893,19 @@ parse_channel (FILE *fptr, struct channel *chan, evalresp_log_t *log)
       {
         blkt_ptr = tmp_stage2->first_blkt;
         last_blkt->next_blkt = blkt_ptr;
-        if (this_stage != (struct stage *)NULL && tmp_stage2->next_stage != (struct stage *)NULL)
+        if (this_stage != (evalresp_stage *)NULL && tmp_stage2->next_stage != (evalresp_stage *)NULL)
         {
           this_stage->next_stage = tmp_stage2->next_stage;
         }
       }
 
-      while (this_stage->next_stage != (struct stage *)NULL)
+      while (this_stage->next_stage != (evalresp_stage *)NULL)
       {
         this_stage = this_stage->next_stage;
         chan->nstages++;
       }
       blkt_ptr = this_stage->first_blkt;
-      while (blkt_ptr->next_blkt != (struct blkt *)NULL)
+      while (blkt_ptr->next_blkt != (evalresp_blkt *)NULL)
       {
         blkt_ptr = blkt_ptr->next_blkt;
       }
@@ -1918,7 +1920,7 @@ parse_channel (FILE *fptr, struct channel *chan, evalresp_log_t *log)
 }
 
 int
-get_channel (FILE *fptr, struct channel *chan, evalresp_log_t *log)
+get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
 {
   int blkt_no, fld_no;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -2204,7 +2206,7 @@ in_epoch (const char *datime, const char *beg_t, const char *end_t)
 
 int
 find_resp (FILE *fptr, struct scn_list *scn_lst, char *datime,
-           struct channel *this_channel, evalresp_log_t *log)
+           evalresp_channel *this_channel, evalresp_log_t *log)
 {
   int test, i;
   struct scn *scn = NULL;
@@ -2230,7 +2232,7 @@ find_resp (FILE *fptr, struct scn_list *scn_lst, char *datime,
 
 int
 get_resp (FILE *fptr, struct scn *scn, char *datime,
-          struct channel *this_channel, evalresp_log_t *log)
+          evalresp_channel *this_channel, evalresp_log_t *log)
 {
   int test;
 

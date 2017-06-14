@@ -1,4 +1,7 @@
 
+#ifndef EVALRESP_UGLY_H
+#define EVALRESP_UGLY_H
+
 #include <setjmp.h>
 
 
@@ -164,7 +167,7 @@ extern int def_units_flag;
  *        input and output units if using "default" units and for use in error
  *        output.
  */
-extern struct channel *GblChanPtr;
+extern struct evalresp_channel_s *GblChanPtr;
 
 /**
  * @private
@@ -213,3 +216,5 @@ extern char myLabel[20];
 
 #define DATIMESIZE 32
 #define TODAYSIZE 10
+
+#endif

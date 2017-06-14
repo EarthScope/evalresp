@@ -7,10 +7,10 @@
 #endif
 
 #include <string.h>
-
 #include <stdlib.h>
 
-#include <evalresp/evalresp_private.h>
+#include "evalresp/evalresp_public_seed.h"
+#include "evalresp/evalresp_private.h"
 
 void
 error_exit (int cond, char *msg, ...)

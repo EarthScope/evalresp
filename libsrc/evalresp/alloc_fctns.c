@@ -7,13 +7,12 @@
 #include <malloc.h>
 #endif
 
-#include <evalresp/evalresp_private.h>
-
 #include <stdlib.h>
-
 #include <string.h>
 
-#include <evalresp_log/log.h>
+#include "evalresp_log/log.h"
+#include "evalresp/evalresp_private.h"
+#include "evalresp/evalresp_public_seed.h"
 
 struct evr_complex *
 alloc_complex (int npts, evalresp_log_t *log)
@@ -313,12 +312,12 @@ alloc_char_ptr (int len, evalresp_log_t *log)
   return (cptr);
 }
 
-struct blkt *
+evalresp_blkt *
 alloc_pz (evalresp_log_t *log)
 {
-  struct blkt *blkt_ptr;
+  evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (struct blkt *)malloc (sizeof (struct blkt))) == (struct blkt *)NULL)
+  if ((blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_pz; malloc() failed for (Poles & Zeros) blkt structure");
@@ -328,7 +327,7 @@ alloc_pz (evalresp_log_t *log)
   }
 
   blkt_ptr->type = 0;
-  blkt_ptr->next_blkt = (struct blkt *)NULL;
+  blkt_ptr->next_blkt = (evalresp_blkt *)NULL;
   blkt_ptr->blkt_info.pole_zero.zeros = (struct evr_complex *)NULL;
   blkt_ptr->blkt_info.pole_zero.poles = (struct evr_complex *)NULL;
   blkt_ptr->blkt_info.pole_zero.nzeros = 0;
@@ -337,12 +336,12 @@ alloc_pz (evalresp_log_t *log)
   return (blkt_ptr);
 }
 
-struct blkt *
+evalresp_blkt *
 alloc_coeff (evalresp_log_t *log)
 {
-  struct blkt *blkt_ptr;
+  evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (struct blkt *)malloc (sizeof (struct blkt))) == (struct blkt *)NULL)
+  if ((blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_coeff; malloc() failed for (FIR) blkt structure");
@@ -352,7 +351,7 @@ alloc_coeff (evalresp_log_t *log)
   }
 
   blkt_ptr->type = 0;
-  blkt_ptr->next_blkt = (struct blkt *)NULL;
+  blkt_ptr->next_blkt = (evalresp_blkt *)NULL;
   blkt_ptr->blkt_info.coeff.numer = (double *)NULL;
   blkt_ptr->blkt_info.coeff.denom = (double *)NULL;
   blkt_ptr->blkt_info.coeff.nnumer = 0;
@@ -362,12 +361,12 @@ alloc_coeff (evalresp_log_t *log)
   return (blkt_ptr);
 }
 
-struct blkt *
+evalresp_blkt *
 alloc_polynomial (evalresp_log_t *log)
 {
-  struct blkt *blkt_ptr;
+  evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (struct blkt *)calloc (1, sizeof (struct blkt))) == (struct blkt *)NULL)
+  if ((blkt_ptr = (evalresp_blkt *)calloc (1, sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_polynomial; calloc() failed for polynomial blkt structure");
@@ -379,12 +378,12 @@ alloc_polynomial (evalresp_log_t *log)
   return (blkt_ptr);
 }
 
-struct blkt *
+evalresp_blkt *
 alloc_fir (evalresp_log_t *log)
 {
-  struct blkt *blkt_ptr;
+  evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (struct blkt *)malloc (sizeof (struct blkt))) == (struct blkt *)NULL)
+  if ((blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_fir; malloc() failed for (FIR) blkt structure");
@@ -394,7 +393,7 @@ alloc_fir (evalresp_log_t *log)
   }
 
   blkt_ptr->type = 0;
-  blkt_ptr->next_blkt = (struct blkt *)NULL;
+  blkt_ptr->next_blkt = (evalresp_blkt *)NULL;
   blkt_ptr->blkt_info.fir.coeffs = (double *)NULL;
   blkt_ptr->blkt_info.fir.ncoeffs = 0;
   blkt_ptr->blkt_info.fir.h0 = 1.0;
@@ -402,12 +401,12 @@ alloc_fir (evalresp_log_t *log)
   return (blkt_ptr);
 }
 
-struct blkt *
+evalresp_blkt *
 alloc_ref (evalresp_log_t *log)
 {
-  struct blkt *blkt_ptr;
+  evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (struct blkt *)malloc (sizeof (struct blkt))) == (struct blkt *)NULL)
+  if ((blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_ref; malloc() failed for (Resp. Ref.) blkt structure");
@@ -417,7 +416,7 @@ alloc_ref (evalresp_log_t *log)
   }
 
   blkt_ptr->type = REFERENCE;
-  blkt_ptr->next_blkt = (struct blkt *)NULL;
+  blkt_ptr->next_blkt = (evalresp_blkt *)NULL;
   blkt_ptr->blkt_info.reference.num_stages = 0;
   blkt_ptr->blkt_info.reference.stage_num = 0;
   blkt_ptr->blkt_info.reference.num_responses = 0;
@@ -425,12 +424,12 @@ alloc_ref (evalresp_log_t *log)
   return (blkt_ptr);
 }
 
-struct blkt *
+evalresp_blkt *
 alloc_gain (evalresp_log_t *log)
 {
-  struct blkt *blkt_ptr;
+  evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (struct blkt *)malloc (sizeof (struct blkt))) == (struct blkt *)NULL)
+  if ((blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_gain; malloc() failed for (Gain) blkt structure");
@@ -440,19 +439,19 @@ alloc_gain (evalresp_log_t *log)
   }
 
   blkt_ptr->type = GAIN;
-  blkt_ptr->next_blkt = (struct blkt *)NULL;
+  blkt_ptr->next_blkt = (evalresp_blkt *)NULL;
   blkt_ptr->blkt_info.gain.gain = 0;
   blkt_ptr->blkt_info.gain.gain_freq = 0;
 
   return (blkt_ptr);
 }
 
-struct blkt *
+evalresp_blkt *
 alloc_list (evalresp_log_t *log)
 {
-  struct blkt *blkt_ptr;
+  evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (struct blkt *)malloc (sizeof (struct blkt))) == (struct blkt *)NULL)
+  if ((blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_list; malloc() failed for (List) blkt structure");
@@ -462,7 +461,7 @@ alloc_list (evalresp_log_t *log)
   }
 
   blkt_ptr->type = LIST;
-  blkt_ptr->next_blkt = (struct blkt *)NULL;
+  blkt_ptr->next_blkt = (evalresp_blkt *)NULL;
   blkt_ptr->blkt_info.list.freq = (double *)NULL;
   blkt_ptr->blkt_info.list.amp = (double *)NULL;
   blkt_ptr->blkt_info.list.phase = (double *)NULL;
@@ -471,12 +470,12 @@ alloc_list (evalresp_log_t *log)
   return (blkt_ptr);
 }
 
-struct blkt *
+evalresp_blkt *
 alloc_generic (evalresp_log_t *log)
 {
-  struct blkt *blkt_ptr;
+  evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (struct blkt *)malloc (sizeof (struct blkt))) == (struct blkt *)NULL)
+  if ((blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_generic; malloc() failed for (Generic) blkt structure");
@@ -486,7 +485,7 @@ alloc_generic (evalresp_log_t *log)
   }
 
   blkt_ptr->type = GENERIC;
-  blkt_ptr->next_blkt = (struct blkt *)NULL;
+  blkt_ptr->next_blkt = (evalresp_blkt *)NULL;
   blkt_ptr->blkt_info.generic.corner_slope = (double *)NULL;
   blkt_ptr->blkt_info.generic.corner_freq = (double *)NULL;
   blkt_ptr->blkt_info.generic.ncorners = 0;
@@ -494,12 +493,12 @@ alloc_generic (evalresp_log_t *log)
   return (blkt_ptr);
 }
 
-struct blkt *
+evalresp_blkt *
 alloc_deci (evalresp_log_t *log)
 {
-  struct blkt *blkt_ptr;
+  evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (struct blkt *)malloc (sizeof (struct blkt))) == (struct blkt *)NULL)
+  if ((blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_deci; malloc() failed for (Decimation) blkt structure");
@@ -509,7 +508,7 @@ alloc_deci (evalresp_log_t *log)
   }
 
   blkt_ptr->type = DECIMATION;
-  blkt_ptr->next_blkt = (struct blkt *)NULL;
+  blkt_ptr->next_blkt = (evalresp_blkt *)NULL;
   blkt_ptr->blkt_info.decimation.sample_int = 0;
   blkt_ptr->blkt_info.decimation.deci_fact = 0;
   blkt_ptr->blkt_info.decimation.deci_offset = 0;
@@ -519,12 +518,12 @@ alloc_deci (evalresp_log_t *log)
   return (blkt_ptr);
 }
 
-struct stage *
+evalresp_stage *
 alloc_stage (evalresp_log_t *log)
 {
-  struct stage *stage_ptr;
+  evalresp_stage *stage_ptr;
 
-  if ((stage_ptr = (struct stage *)malloc (sizeof (struct stage))) == (struct stage *)NULL)
+  if ((stage_ptr = (evalresp_stage *)malloc (sizeof (evalresp_stage))) == (evalresp_stage *)NULL)
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_stage; malloc() failed for stage structure");
@@ -536,8 +535,8 @@ alloc_stage (evalresp_log_t *log)
   stage_ptr->sequence_no = 0;
   stage_ptr->output_units = 0;
   stage_ptr->input_units = 0;
-  stage_ptr->first_blkt = (struct blkt *)NULL;
-  stage_ptr->next_stage = (struct stage *)NULL;
+  stage_ptr->first_blkt = (evalresp_blkt *)NULL;
+  stage_ptr->next_stage = (evalresp_stage *)NULL;
 
   return (stage_ptr);
 }
@@ -621,9 +620,9 @@ free_file_list (struct file_list *lst)
 }
 
 void
-free_pz (struct blkt *blkt_ptr)
+free_pz (evalresp_blkt *blkt_ptr)
 {
-  if (blkt_ptr != (struct blkt *)NULL)
+  if (blkt_ptr != (evalresp_blkt *)NULL)
   {
     if (blkt_ptr->blkt_info.pole_zero.zeros != (struct evr_complex *)NULL)
       free (blkt_ptr->blkt_info.pole_zero.zeros);
@@ -634,9 +633,9 @@ free_pz (struct blkt *blkt_ptr)
 }
 
 void
-free_coeff (struct blkt *blkt_ptr)
+free_coeff (evalresp_blkt *blkt_ptr)
 {
-  if (blkt_ptr != (struct blkt *)NULL)
+  if (blkt_ptr != (evalresp_blkt *)NULL)
   {
     if (blkt_ptr->blkt_info.coeff.numer != (double *)NULL)
       free (blkt_ptr->blkt_info.coeff.numer);
@@ -647,9 +646,9 @@ free_coeff (struct blkt *blkt_ptr)
 }
 
 void
-free_fir (struct blkt *blkt_ptr)
+free_fir (evalresp_blkt *blkt_ptr)
 {
-  if (blkt_ptr != (struct blkt *)NULL)
+  if (blkt_ptr != (evalresp_blkt *)NULL)
   {
     if (blkt_ptr->blkt_info.fir.coeffs != (double *)NULL)
       free (blkt_ptr->blkt_info.fir.coeffs);
@@ -658,9 +657,9 @@ free_fir (struct blkt *blkt_ptr)
 }
 
 void
-free_list (struct blkt *blkt_ptr)
+free_list (evalresp_blkt *blkt_ptr)
 {
-  if (blkt_ptr != (struct blkt *)NULL)
+  if (blkt_ptr != (evalresp_blkt *)NULL)
   {
     if (blkt_ptr->blkt_info.list.freq != (double *)NULL)
       free (blkt_ptr->blkt_info.list.freq);
@@ -673,9 +672,9 @@ free_list (struct blkt *blkt_ptr)
 }
 
 void
-free_generic (struct blkt *blkt_ptr)
+free_generic (evalresp_blkt *blkt_ptr)
 {
-  if (blkt_ptr != (struct blkt *)NULL)
+  if (blkt_ptr != (evalresp_blkt *)NULL)
   {
     if (blkt_ptr->blkt_info.generic.corner_slope != (double *)NULL)
       free (blkt_ptr->blkt_info.generic.corner_slope);
@@ -686,43 +685,43 @@ free_generic (struct blkt *blkt_ptr)
 }
 
 void
-free_gain (struct blkt *blkt_ptr)
+free_gain (evalresp_blkt *blkt_ptr)
 {
-  if (blkt_ptr != (struct blkt *)NULL)
+  if (blkt_ptr != (evalresp_blkt *)NULL)
   {
     free (blkt_ptr);
   }
 }
 
 void
-free_deci (struct blkt *blkt_ptr)
+free_deci (evalresp_blkt *blkt_ptr)
 {
-  if (blkt_ptr != (struct blkt *)NULL)
+  if (blkt_ptr != (evalresp_blkt *)NULL)
   {
     free (blkt_ptr);
   }
 }
 
 void
-free_ref (struct blkt *blkt_ptr)
+free_ref (evalresp_blkt *blkt_ptr)
 {
 
-  if (blkt_ptr != (struct blkt *)NULL)
+  if (blkt_ptr != (evalresp_blkt *)NULL)
   {
     free (blkt_ptr);
   }
 }
 
 void
-free_stages (struct stage *stage_ptr)
+free_stages (evalresp_stage *stage_ptr)
 {
-  struct blkt *this_blkt, *next_blkt;
+  evalresp_blkt *this_blkt, *next_blkt;
 
-  if (stage_ptr != (struct stage *)NULL)
+  if (stage_ptr != (evalresp_stage *)NULL)
   {
     free_stages (stage_ptr->next_stage);
     this_blkt = stage_ptr->first_blkt;
-    while (this_blkt != (struct blkt *)NULL)
+    while (this_blkt != (evalresp_blkt *)NULL)
     {
       next_blkt = this_blkt->next_blkt;
       switch (this_blkt->type)
@@ -765,7 +764,7 @@ free_stages (struct stage *stage_ptr)
 }
 
 void
-free_channel (struct channel *chan_ptr)
+free_channel (evalresp_channel *chan_ptr)
 {
 
   free_stages (chan_ptr->first_stage);

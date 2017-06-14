@@ -7,18 +7,19 @@
     11/2/2005 -- [ET]  Implemented 'interpolate_list_blockette()' function.
 */
 
-#include "evr_spline.h"
-#include <evalresp/evalresp_private.h>
-#include <evalresp_log/log.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "evr_spline.h"
+#include "evalresp/evalresp_private.h"
+#include "evalresp_log/log.h"
+
 void
-merge_lists (struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t *log)
+merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log)
 {
   int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;
   double *amp1, *amp2, *phase1, *phase2, *freq1, *freq2;
-  struct blkt *tmp_blkt;
+  evalresp_blkt *tmp_blkt;
 
   tmp_blkt = *second_blkt;
   switch (first_blkt->type)
@@ -106,11 +107,11 @@ merge_lists (struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t 
 }
 
 void
-merge_coeffs (struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t *log)
+merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log)
 {
   int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;
   double *coeffs1, *coeffs2;
-  struct blkt *tmp_blkt;
+  evalresp_blkt *tmp_blkt;
 
   tmp_blkt = *second_blkt;
   switch (first_blkt->type)
@@ -173,12 +174,12 @@ merge_coeffs (struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t
 }
 
 void
-check_channel (struct channel *chan, evalresp_log_t *log)
+check_channel (evalresp_channel *chan, evalresp_log_t *log)
 {
   // TODO - assignments below (0 + NULL) made blindly to fix compiler warning.  bug?
-  struct stage *stage_ptr, *next_stage, *prev_stage;
-  struct blkt *blkt_ptr, *next_blkt;
-  struct blkt *filt_blkt = NULL, *deci_blkt = NULL, *gain_blkt = NULL, *ref_blkt = NULL;
+  evalresp_stage *stage_ptr, *next_stage, *prev_stage;
+  evalresp_blkt *blkt_ptr, *next_blkt;
+  evalresp_blkt *filt_blkt = NULL, *deci_blkt = NULL, *gain_blkt = NULL, *ref_blkt = NULL;
   int stage_type;
   int gain_flag, deci_flag, ref_flag;
   int i, j, nc = 0;
@@ -212,7 +213,7 @@ check_channel (struct channel *chan, evalresp_log_t *log)
             number of poles or zeros */
 
   stage_ptr = chan->first_stage;
-  prev_stage = (struct stage *)NULL;
+  prev_stage = (evalresp_stage *)NULL;
   for (i = 0; i < chan->nstages; i++)
   {
     j = 0;
@@ -273,7 +274,7 @@ check_channel (struct channel *chan, evalresp_log_t *log)
 
         /* First we merge blocketes if the list spans for more than a single blockette */
 
-        while (next_blkt != (struct blkt *)NULL && next_blkt->type == blkt_ptr->type)
+        while (next_blkt != (evalresp_blkt *)NULL && next_blkt->type == blkt_ptr->type)
         {
           merge_lists (blkt_ptr, &next_blkt, log);
         }
@@ -327,7 +328,7 @@ check_channel (struct channel *chan, evalresp_log_t *log)
         }
         /* check to see if next blockette(s) is(are) a continuation of this one.
         If so, merge them into one blockette */
-        if (next_blkt != (struct blkt *)NULL && next_blkt->type == blkt_ptr->type)
+        if (next_blkt != (evalresp_blkt *)NULL && next_blkt->type == blkt_ptr->type)
         {
           evalresp_log (log, ERROR, 0,
                         "check_channel; multiple 55 blockettes in GENERIC stages are not supported yet");
@@ -357,7 +358,7 @@ check_channel (struct channel *chan, evalresp_log_t *log)
 
         /* check to see if next blockette(s) is(are) a continuation of this one.
            If so, merge them into one blockette */
-        while (next_blkt != (struct blkt *)NULL && next_blkt->type == blkt_ptr->type)
+        while (next_blkt != (evalresp_blkt *)NULL && next_blkt->type == blkt_ptr->type)
           merge_coeffs (blkt_ptr, &next_blkt, log);
 
         /* set the stage type to be FIR_TYPE */
@@ -388,7 +389,7 @@ check_channel (struct channel *chan, evalresp_log_t *log)
         }
         /* check to see if next blockette(s) is(are) a continuation of this one.
         If so, merge them into one blockette */
-        if (next_blkt != (struct blkt *)NULL && next_blkt->type == blkt_ptr->type)
+        if (next_blkt != (evalresp_blkt *)NULL && next_blkt->type == blkt_ptr->type)
         {
           evalresp_log (log, ERROR, 0,
                         "check_channel; multiple 55 blockettes in IIR stages are not supported yet");
@@ -466,27 +467,27 @@ check_channel (struct channel *chan, evalresp_log_t *log)
         ref_blkt->next_blkt = filt_blkt;
         filt_blkt->next_blkt = deci_blkt;
         deci_blkt->next_blkt = gain_blkt;
-        gain_blkt->next_blkt = (struct blkt *)NULL;
+        gain_blkt->next_blkt = (evalresp_blkt *)NULL;
       }
       else if (deci_flag)
       {
         stage_ptr->first_blkt = filt_blkt;
         filt_blkt->next_blkt = deci_blkt;
         deci_blkt->next_blkt = gain_blkt;
-        gain_blkt->next_blkt = (struct blkt *)NULL;
+        gain_blkt->next_blkt = (evalresp_blkt *)NULL;
       }
       else if (ref_flag)
       {
         stage_ptr->first_blkt = ref_blkt;
         ref_blkt->next_blkt = filt_blkt;
         filt_blkt->next_blkt = gain_blkt;
-        gain_blkt->next_blkt = (struct blkt *)NULL;
+        gain_blkt->next_blkt = (evalresp_blkt *)NULL;
       }
       else if (gain_flag)
       {
         stage_ptr->first_blkt = filt_blkt;
         filt_blkt->next_blkt = gain_blkt;
-        gain_blkt->next_blkt = (struct blkt *)NULL;
+        gain_blkt->next_blkt = (evalresp_blkt *)NULL;
       }
     }
 
@@ -500,7 +501,7 @@ check_channel (struct channel *chan, evalresp_log_t *log)
     if (stage_type == PZ_TYPE || stage_type == FIR_TYPE ||
         stage_type == IIR_TYPE || stage_type == IIR_COEFFS_TYPE || stage_type == LIST_TYPE)
     {
-      if (prev_stage != (struct stage *)NULL && prev_stage->output_units != stage_ptr->input_units)
+      if (prev_stage != (evalresp_stage *)NULL && prev_stage->output_units != stage_ptr->input_units)
       {
         evalresp_log (log, ERROR, 0, "check_channel; units mismatch between stages");
         exit (1); /*IGD 06/06/2017  TODO ILLEGAL_RESP_FORMAT */
@@ -536,7 +537,7 @@ check_channel (struct channel *chan, evalresp_log_t *log)
 }
 
 void
-check_sym (struct blkt *f, struct channel *chan, evalresp_log_t *log)
+check_sym (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log)
 {
   int nc, n0, k;
   double sum = 0.0;

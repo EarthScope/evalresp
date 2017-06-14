@@ -75,7 +75,7 @@ int def_units_flag;
 
 /* define a pointer to a channel structure to use in determining the input and
  output units if using "default" units and for use in error output*/
-struct channel *GblChanPtr;
+evalresp_channel *GblChanPtr;
 float unitScaleFact;
 
 /* define global variables for use in printing error messages */
@@ -247,7 +247,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
             double listinterp_tension, int useTotalSensitivityFlag,
             double x_for_b62, int xml_flag, evalresp_log_t *log)
 {
-  struct channel this_channel;
+  evalresp_channel this_channel;
   struct scn *scn;
   struct string_array *sta_list, *chan_list;
   struct string_array *locid_list;
@@ -312,7 +312,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 
   /* and initialize the linked list of pointers to filters */
 
-  this_channel.first_stage = (struct stage *)NULL;
+  this_channel.first_stage = (evalresp_stage *)NULL;
 
   /* parse the "stalst" string to form a list of stations */
 

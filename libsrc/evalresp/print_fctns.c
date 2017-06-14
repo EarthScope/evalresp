@@ -14,9 +14,12 @@
 #include <config.h>
 #endif
 
-#include <evalresp/evalresp_private.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "evalresp/evalresp_private.h"
+#include "evalresp/evalresp_public_seed.h"
+
 
 /* function declarations for forward references */
 int arrays_equal (double *arr1, double *arr2, int arr_size);
@@ -24,12 +27,12 @@ void evresp_adjust_phase (double *pha, int len, double min, double max);
 int evresp_vector_minmax (double *pha, int len, double *min, double *max);
 
 void
-print_chan (struct channel *chan, int start_stage, int stop_stage,
+print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
             int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
             int useTotalSensitivityFlag, evalresp_log_t *log)
 {
-  struct stage *this_stage, *last_stage, *first_stage;
-  struct blkt *this_blkt;
+  evalresp_stage *this_stage, *last_stage, *first_stage;
+  evalresp_blkt *this_blkt;
   char tmp_str[TMPSTRLEN], out_str[OUTPUTLEN];
   int in_units = 0;
   int out_units = 0;
@@ -57,7 +60,7 @@ print_chan (struct channel *chan, int start_stage, int stop_stage,
     if (last_stage->output_units)
       out_units = last_stage->output_units;
     this_stage = last_stage->next_stage;
-    if (this_stage != (struct stage *)NULL)
+    if (this_stage != (evalresp_stage *)NULL)
       this_blkt = this_stage->first_blkt;
   }
 
