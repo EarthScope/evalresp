@@ -5,11 +5,14 @@ OBJ= mxml-attr.obj mxml-entity.obj mxml-file.obj mxml-get.obj \
 
 all: mxmlev.lib
 
-.c.obj:
+.c.obj: config.h
 	$(CC) /c $*.c /I ..\ /Fo$@
 
 mxmlev.lib: $(OBJ)
 	link /lib $(OBJ) /OUT:mxmlev.lib
+
+config.h: config.h.in
+	copy config.h.in config.h
 
 clean:
 	del mxmlev.lib
