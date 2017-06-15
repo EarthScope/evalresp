@@ -1,14 +1,14 @@
 
 OBJ= mxml-attr.obj mxml-entity.obj mxml-file.obj mxml-get.obj \
-     mxml-index.obi mxml-node.obj mxml-search.obj mxml-set.obj \
+     mxml-index.obj mxml-node.obj mxml-search.obj mxml-set.obj \
      mxml-private.obj mxml-string.obj
 
 all: mxmlev.lib
 
-.c.obj: config.h
-	$(CC) /c $*.c /I ..\ /Fo$@
+.c.obj:
+	$(CC) /c $*.c /I ..\ /Wall /DWIN32 /Fo$@
 
-mxmlev.lib: $(OBJ)
+mxmlev.lib: config.h $(OBJ)
 	link /lib $(OBJ) /OUT:mxmlev.lib
 
 config.h: config.h.in
