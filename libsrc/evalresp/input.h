@@ -20,9 +20,9 @@ find_field (evalresp_log_t *log, char **seed, char *sep,
             int blkt_no, int fld_no, int fld_wanted, char *return_field);
 
 int
-open_file(evalresp_log_t *log, const char *filename, FILE **in);
+open_file (evalresp_log_t *log, const char *filename, FILE **in);
 
 int
-file_to_char(evalresp_log_t *log, FILE *in, char **seed);
+file_to_char (evalresp_log_t *log, FILE *in, char **seed);
 
 #endif

@@ -1984,62 +1984,77 @@ read_channel_data (evalresp_log_t *log, char **seed, evalresp_channel *chan)
 }
 
 int
-open_file(evalresp_log_t *log, const char *filename, FILE **in)
+open_file (evalresp_log_t *log, const char *filename, FILE **in)
 {
   int status = EVALRESP_OK;
-  if (!(*in = fopen(filename, "r"))) {
-    evalresp_log(log, ERROR, ERROR, "Cannot open %s", filename);
+  if (!(*in = fopen (filename, "r")))
+  {
+    evalresp_log (log, ERROR, ERROR, "Cannot open %s", filename);
     status = EVALRESP_IO;
   }
   return status;
 }
 
 int
-file_to_char(evalresp_log_t *log, FILE *in, char **seed)
+file_to_char (evalresp_log_t *log, FILE *in, char **seed)
 {
   size_t buffer_len = 1024, used_len = 0, space;
   int status = EVALRESP_OK;
 
   *seed = NULL;
-  if (!(*seed = malloc(buffer_len))) {
-    evalresp_log(log, ERROR, ERROR, "Cannot allocate buffer memory");
+  if (!(*seed = malloc (buffer_len)))
+  {
+    evalresp_log (log, ERROR, ERROR, "Cannot allocate buffer memory");
     status = EVALRESP_MEM;
-  } else {
-    while (!status && !feof(in)) {
-      if (!(space = buffer_len - used_len)) {
+  }
+  else
+  {
+    while (!status && !feof (in))
+    {
+      if (!(space = buffer_len - used_len))
+      {
         buffer_len *= 2;
-        if (!(*seed = realloc(*seed, buffer_len))) {
-          evalresp_log(log, ERROR, ERROR, "Cannot reallocate buffer memory");
+        if (!(*seed = realloc (*seed, buffer_len)))
+        {
+          evalresp_log (log, ERROR, ERROR, "Cannot reallocate buffer memory");
           status = EVALRESP_MEM;
         }
         space = buffer_len - used_len;
       }
-      if (!status) {
-        used_len += fread(*seed + used_len, 1, space, in);
-        if (ferror(in)) {
-          evalresp_log(log, ERROR, ERROR, "Error reading input");
+      if (!status)
+      {
+        used_len += fread (*seed + used_len, 1, space, in);
+        if (ferror (in))
+        {
+          evalresp_log (log, ERROR, ERROR, "Error reading input");
           status = EVALRESP_IO;
         }
       }
     }
   }
-  if (!status && used_len == buffer_len) {
-    if (!(*seed = realloc(*seed, ++buffer_len))) {
-      evalresp_log(log, ERROR, ERROR, "Cannot reallocate buffer memory");
+  if (!status && used_len == buffer_len)
+  {
+    if (!(*seed = realloc (*seed, ++buffer_len)))
+    {
+      evalresp_log (log, ERROR, ERROR, "Cannot reallocate buffer memory");
       status = EVALRESP_MEM;
     }
   }
-  if (!status) {
+  if (!status)
+  {
     *(*seed + used_len) = '\0';
-  } else {
-    free(*seed);
+  }
+  else
+  {
+    free (*seed);
     *seed = NULL;
   }
   return status;
 }
 
-int evalresp_filename_to_channels (evalresp_log_t *log, const char *filename,
-                               const evalresp_filter *filter, evalresp_channels *channels) {
+int
+evalresp_filename_to_channels (evalresp_log_t *log, const char *filename,
+                               const evalresp_filter *filter, evalresp_channels *channels)
+{
   return EVALRESP_OK;
 }
-

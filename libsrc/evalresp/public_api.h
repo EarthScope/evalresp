@@ -19,7 +19,7 @@ typedef struct
 
 // TODO - sncl may want expanding
 int evalresp_new_filter (evalresp_log_t *log, const char *sncl, int year, int julian_day,
-                evalresp_filter **filter);
+                         evalresp_filter **filter);
 
 int evalresp_free_filter (evalresp_filter **filter);
 
