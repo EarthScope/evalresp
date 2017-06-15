@@ -456,6 +456,7 @@ count_delim_fields (char *line, char *delim)
   return (nfields);
 }
 
+// TODO - log at start, errors, etc
 int
 parse_field (char *line, int fld_no, char *return_field, evalresp_log_t *log)
 {

@@ -53,6 +53,21 @@ START_TEST (test_read_line)
 }
 END_TEST
 
+START_TEST (test_read_field)
+{
+  char *input = "B999F99 name1: a b c \nB666F66 name2: value2", *start;
+  char field[MAXLINELEN];
+  start = input;
+  fail_if (!read_field (NULL, &start, field, 999, 99, ":", 0));
+  fail_if (strcmp (field, "a"), "'%s'", field);
+  fail_if (!read_field (NULL, &start, field, 666, 66, ":", 0));
+  fail_if (strcmp (field, "value2"), "'%s'", field);
+  start = input;
+  fail_if (!read_field (NULL, &start, field, 999, 99, ":", 2));
+  fail_if (strcmp (field, "c"), "'%s'", field);
+}
+END_TEST
+
 int
 main (void)
 {
@@ -62,6 +77,7 @@ main (void)
   tcase_add_test (tc, test_slurp_line);
   tcase_add_test (tc, test_slurp_line_buffer);
   tcase_add_test (tc, test_read_line);
+  tcase_add_test (tc, test_read_field);
   suite_add_tcase (s, tc);
   SRunner *sr = srunner_create (s);
   srunner_set_xml (sr, "check-log.xml");

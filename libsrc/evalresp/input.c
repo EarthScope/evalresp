@@ -112,19 +112,19 @@ read_line (evalresp_log_t *log, char **seed, char *return_line, int blkt_no, int
   return strlen (return_line);
 }
 
-//int
-//read_field (evalresp_log_t *log, char **seed, char *return_field,
-//    int blkt_no, int fld_no, char *sep, int fld_wanted)
-//{
-//  char line[MAXLINELEN];
-//
-//  /* first get the next non-comment line */
-//  read_line (log, seed, line, blkt_no, fld_no, sep);
-//
-//  /* then parse the field that the user wanted from the line get_line returned */
-//  return parse_field (line, fld_wanted, return_field, log);
-//}
-//
+int
+read_field (evalresp_log_t *log, char **seed, char *return_field,
+    int blkt_no, int fld_no, char *sep, int fld_wanted)
+{
+  char line[MAXLINELEN];
+
+  /* first get the next non-comment line */
+  read_line (log, seed, line, blkt_no, fld_no, sep);
+
+  /* then parse the field that the user wanted from the line read_line returned */
+  return parse_field (line, fld_wanted, return_field, log);
+}
+
 //int
 //read_channel (evalresp_log_t *log, char **seed, evalresp_channel *chan)
 //{
