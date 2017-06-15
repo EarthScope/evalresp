@@ -286,7 +286,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 
   if (verbose && !strcmp (verbose, "-v"))
   {
-    evalresp_log (log, INFO, 0, "<< EVALRESP RESPONSE OUTPUT V%s >>", REVNUM);
+    evalresp_log (log, EV_INFO, 0, "<< EVALRESP RESPONSE OUTPUT V%s >>", REVNUM);
     /*XXX fprintf(stderr, "<< EVALRESP RESPONSE OUTPUT V%s >>\n", REVNUM);
         fflush(stderr); */
   }
@@ -413,7 +413,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
     curr_file = file;
     if (!(fptr = fopen (file, "r")))
     {
-      evalresp_log (log, ERROR, 0, "%s failed to open file %s\n", myLabel, file);
+      evalresp_log (log, EV_ERROR, 0, "%s failed to open file %s\n", myLabel, file);
       return NULL;
       /*XXX
 #ifdef LIB_MODE
@@ -750,14 +750,14 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                   {
                     if (strcmp (units, "DEF") != 0)
                     {
-                      evalresp_log (log, WARN, 0,
+                      evalresp_log (log, EV_WARN, 0,
                                     "%s: OUTPUT %s does not make sense if INPUT is PRESSURE\n",
                                     myLabel, units);
                       /*XXX fprintf(stderr,
                                                     "%s WARNING: OUTPUT %s does not make sense if INPUT is PRESSURE\n",
                                                     myLabel, units); */
                       strcpy (units, "VEL");
-                      evalresp_log (log, WARN, 0,
+                      evalresp_log (log, EV_WARN, 0,
                                     "%s      OUTPUT units are reset and interpreted as PRESSURE\n",
                                     myLabel);
                       /*XXX fprintf(stderr,
@@ -774,14 +774,14 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                   {
                     if (strcmp (units, "DEF") != 0)
                     {
-                      evalresp_log (log, WARN, 0,
+                      evalresp_log (log, EV_WARN, 0,
                                     "%s: OUTPUT %s does not make sense if INPUT is MAGNETIC FLUX\n",
                                     myLabel, units);
                       /*XXX fprintf(stderr,
                                                     "%s WARNING: OUTPUT %s does not make sense if INPUT is MAGNETIC FLUX\n",
                                                     myLabel, units); */
                       strcpy (units, "VEL");
-                      evalresp_log (log, WARN, 0,
+                      evalresp_log (log, EV_WARN, 0,
                                     "%s      OUTPUT units are reset and interpreted as TESLA\n",
                                     myLabel);
                       /*XXX fprintf(stderr,
@@ -799,14 +799,14 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                   {
                     if (strcmp (units, "DEF") != 0)
                     {
-                      evalresp_log (log, WARN, 0,
+                      evalresp_log (log, EV_WARN, 0,
                                     "%s: OUTPUT %s does not make sense if INPUT is TEMPERATURE\n",
                                     myLabel, units);
                       /*XXX fprintf(stderr,
                                                     "%s WARNING: OUTPUT %s does not make sense if INPUT is TEMPERATURE\n",
                                                     myLabel, units); */
                       strcpy (units, "VEL");
-                      evalresp_log (log, WARN, 0,
+                      evalresp_log (log, EV_WARN, 0,
                                     "%s      OUTPUT units are reset and interpreted as  DEGREES CENTIGRADE\n",
                                     myLabel);
                       /*XXX fprintf(stderr,
@@ -1006,7 +1006,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
     scn = scns->scn_vec[i];
     if (!scn->found)
     {
-      evalresp_log (log, WARN, 0,
+      evalresp_log (log, EV_WARN, 0,
                     "%s: no response found for NET=%s,STA=%s,LOCID=%s,CHAN=%s,DATE=%s\n",
                     myLabel, scn->network, scn->station, scn->locid,
                     scn->channel, date_time);

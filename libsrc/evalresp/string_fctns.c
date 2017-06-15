@@ -62,7 +62,7 @@ ev_parse_line (char *line, evalresp_log_t *log)
       if ((lcl_strings->strings[i] = (char *)malloc (
                fld_len * sizeof (char))) == (char *)NULL)
       {
-        evalresp_log (log, ERROR, 0,
+        evalresp_log (log, EV_ERROR, 0,
                       "ev_parse_line; malloc() failed for (char) vector");
         break;
         /*XXX error_exit(OUT_OF_MEMORY,
@@ -91,7 +91,7 @@ ev_parse_line (char *line, evalresp_log_t *log)
     }
     if ((lcl_strings->strings[0] = (char *)malloc (sizeof (char))) == (char *)NULL)
     {
-      evalresp_log (log, ERROR, 0,
+      evalresp_log (log, EV_ERROR, 0,
                     "ev_parse_line; malloc() failed for (char) vector");
       free (lcl_strings->strings);
       free (lcl_strings);
@@ -130,7 +130,7 @@ parse_delim_line (char *line, char *delim, evalresp_log_t *log)
       if ((lcl_strings->strings[i] = (char *)malloc (
                fld_len * sizeof (char))) == (char *)NULL)
       {
-        evalresp_log (log, ERROR, 0,
+        evalresp_log (log, EV_ERROR, 0,
                       "parse_delim_line; malloc() failed for (char) vector");
         break;
         /*XXX error_exit(OUT_OF_MEMORY,
@@ -159,7 +159,7 @@ parse_delim_line (char *line, char *delim, evalresp_log_t *log)
     }
     if ((lcl_strings->strings[0] = (char *)malloc (sizeof (char))) == (char *)NULL)
     {
-      evalresp_log (log, ERROR, 0,
+      evalresp_log (log, EV_ERROR, 0,
                     "parse_delim_line; malloc() failed for (char) vector");
       free (lcl_strings->strings);
       free (lcl_strings);
@@ -266,7 +266,7 @@ get_line (FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, eva
   test = parse_pref (&lcl_blkt, &lcl_fld, line, log);
   if (!test)
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "get_line; unrecogn. prefix on the following line:\n\t  '%s'",
                   line);
     return UNDEF_PREFIX;
@@ -305,13 +305,13 @@ get_line (FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, eva
 
   if ((lcl_ptr = strstr (line, sep)) == (char *)NULL)
   {
-    evalresp_log (log, ERROR, 0, "get_line; seperator string not found");
+    evalresp_log (log, EV_ERROR, 0, "get_line; seperator string not found");
     return UNDEF_SEPSTR;
     /*XXX error_return(UNDEF_SEPSTR, "get_line; seperator string not found"); */
   }
   else if ((lcl_ptr - line) > (int)(strlen (line) - 1))
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "get_line; nothing to parse after seperator string");
     return UNDEF_SEPSTR;
     /*XXX error_return(UNDEF_SEPSTR,
@@ -326,7 +326,7 @@ get_line (FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, eva
 
   if ((lcl_ptr - line) > (int)strlen (line))
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "get_line; no non-white space after seperator string");
     return UNDEF_SEPSTR;
     /*XXX error_return(UNDEF_SEPSTR,
@@ -379,7 +379,7 @@ next_line (FILE *fptr, char *return_line, int *blkt_no, int *fld_no,
   test = parse_pref (blkt_no, fld_no, line, log);
   if (!test)
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "get_field; unrecogn. prefix on the following line:\n\t  '%s'",
                   line);
     return 0 /*TODO UNDEF_PREFIX */;
@@ -390,13 +390,13 @@ next_line (FILE *fptr, char *return_line, int *blkt_no, int *fld_no,
 
   if ((lcl_ptr = strstr (line, sep)) == (char *)NULL)
   {
-    evalresp_log (log, ERROR, 0, "get_field; seperator string not found");
+    evalresp_log (log, EV_ERROR, 0, "get_field; seperator string not found");
     return 0 /*TODO UNDER_SEPSTR */;
     /*XXX error_return(UNDEF_SEPSTR, "get_field; seperator string not found"); */
   }
   else if ((lcl_ptr - line) > (int)(strlen (line) - 1))
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "get_field; nothing to parse after seperator string");
     return 0 /*TODO UNDER_SEPSTR */;
     /*XXX error_return(UNDEF_SEPSTR,
@@ -467,7 +467,7 @@ parse_field (char *line, int fld_no, char *return_field, evalresp_log_t *log)
   {
     if (nfields > 0)
     {
-      evalresp_log (log, ERROR, 0, "%s%d%s%d%s",
+      evalresp_log (log, EV_ERROR, 0, "%s%d%s%d%s",
                     "parse_field; Input field number (", fld_no,
                     ") exceeds number of fields on line(", nfields, ")");
       /*XXX error_return(PARSE_ERROR, "%s%d%s%d%s",
@@ -476,7 +476,7 @@ parse_field (char *line, int fld_no, char *return_field, evalresp_log_t *log)
     }
     else
     {
-      evalresp_log (log, ERROR, 0, "%s",
+      evalresp_log (log, EV_ERROR, 0, "%s",
                     "parse_field; Data fields not found on line");
       /*XXX error_return(PARSE_ERROR, "%s",
                     "parse_field; Data fields not found on line"); */
@@ -511,7 +511,7 @@ parse_delim_field (char *line, int fld_no, char *delim, char *return_field, eval
   {
     if (nfields > 0)
     {
-      evalresp_log (log, ERROR, 0, "%s%d%s%d%s",
+      evalresp_log (log, EV_ERROR, 0, "%s%d%s%d%s",
                     "parse_delim_field; Input field number (", fld_no,
                     ") exceeds number of fields on line(", nfields, ")");
       return PARSE_ERROR;
@@ -521,7 +521,7 @@ parse_delim_field (char *line, int fld_no, char *delim, char *return_field, eval
     }
     else
     {
-      evalresp_log (log, ERROR, 0, "%s",
+      evalresp_log (log, EV_ERROR, 0, "%s",
                     "parse_delim_field; Data fields not found on line");
       return PARSE_ERROR;
       /*XXX error_return(PARSE_ERROR, "%s",
@@ -593,7 +593,7 @@ check_line (FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_log_t
   test = parse_pref (blkt_no, fld_no, line, log);
   if (!test)
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "check_line; unrecogn. prefix on the following line:\n\t  '%s'",
                   line);
     return 0 /*TODO UNDEF_PREFIX */;
@@ -613,7 +613,7 @@ get_int (char *in_line, evalresp_log_t *log)
 
   if (!is_int (in_line, log))
   {
-    evalresp_log (log, ERROR, 0, "get_int; '%s' is not an integer",
+    evalresp_log (log, EV_ERROR, 0, "get_int; '%s' is not an integer",
                   in_line);
     /*XXX error_return(IMPROP_DATA_TYPE, "get_int; '%s' is not an integer",
                 in_line); */
@@ -629,7 +629,7 @@ get_double (char *in_line, evalresp_log_t *log)
 
   if (!is_real (in_line, log))
   {
-    evalresp_log (log, ERROR, 0, "get_double; '%s' is not a real number",
+    evalresp_log (log, EV_ERROR, 0, "get_double; '%s' is not a real number",
                   in_line);
     /*XXX error_return(IMPROP_DATA_TYPE, "get_double; '%s' is not a real number",
                 in_line); */
@@ -718,7 +718,7 @@ check_units (char *line, evalresp_log_t *log)
 #ifdef LIB_MODE
   return (UNDEF_UNITS);
 #else
-  evalresp_log (log, ERROR, 0,
+  evalresp_log (log, EV_ERROR, 0,
                 "check_units; units found ('%s') are not supported", line);
   return (UNDEF_UNITS);
 /*XXX error_return(UNRECOG_UNITS,
@@ -745,7 +745,7 @@ string_match (const char *string, char *expr, char *type_flag, evalresp_log_t *l
     glob_type = 1;
   else
   {
-    evalresp_log (log, ERROR, 0, "%s string_match; improper pattern type (%s)\n",
+    evalresp_log (log, EV_ERROR, 0, "%s string_match; improper pattern type (%s)\n",
                   myLabel, type_flag);
     return 0; /*TODO better error */
               /*XXX fprintf(stderr, "%s string_match; improper pattern type (%s)\n",
@@ -773,7 +773,7 @@ string_match (const char *string, char *expr, char *type_flag, evalresp_log_t *l
 
   if ((prog = evr_regcomp (regexp_pattern, log)) == NULL)
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "string_match; pattern '%s' didn't compile", regexp_pattern);
     return 0; /*TODO RE_COMP_FAILED*/
               /*XXX error_return(RE_COMP_FAILED,

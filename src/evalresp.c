@@ -162,7 +162,7 @@ main (int argc, char *argv[])
     ;
   if (fswidx < 5)
   {
-    evalresp_log (log, ERROR, 0, "Not all of the required inputs are \n\t"
+    evalresp_log (log, EV_ERROR, 0, "Not all of the required inputs are \n\t"
                                  "present (%d missing), type '%s' for usage",
                   8 - fswidx,
                   prog_name);
@@ -182,7 +182,7 @@ main (int argc, char *argv[])
   {
     if (argv[i] != NULL && argv[i][0] != '\0')
     {
-      evalresp_log (log, WARN, 0, "Unrecognized parameter:  %s\n", argv[i]);
+      evalresp_log (log, EV_WARN, 0, "Unrecognized parameter:  %s\n", argv[i]);
       /*XXX fprintf(stderr, "WARNING:  Unrecognized parameter:  %s\n", argv[i]); */
     }
   }
@@ -228,7 +228,7 @@ main (int argc, char *argv[])
       case 's': /*space*/
         if (strcmp (optarg, "lin") & strcmp (optarg, "log"))
         {
-          evalresp_log (log, ERROR, 0, "%s: option '-s' illegal type '%s'",
+          evalresp_log (log, EV_ERROR, 0, "%s: option '-s' illegal type '%s'",
                         prog_name, type);
           exit (USAGE_ERROR);
           /*XXX error_exit(USAGE_ERROR, "%s: option '-s' illegal type '%s'",
@@ -252,7 +252,7 @@ main (int argc, char *argv[])
         }
         else
         {
-          evalresp_log (log, ERROR, 0, param_err_msgstr, prog_name, optarg);
+          evalresp_log (log, EV_ERROR, 0, param_err_msgstr, prog_name, optarg);
           exit (USAGE_ERROR);
           /*XXX error_exit(USAGE_ERROR, param_err_msgstr, prog_name, optarg); */
         }
@@ -281,7 +281,7 @@ main (int argc, char *argv[])
         }
         else
         {
-          evalresp_log (log, ERROR, 0,
+          evalresp_log (log, EV_ERROR, 0,
                         "%s:  illegal value for 'it' parameter:  %s",
                         prog_name, optarg);
           exit (USAGE_ERROR);
@@ -309,12 +309,12 @@ main (int argc, char *argv[])
           errflag[0] = optopt;
           err = errflag;
         }
-        evalresp_log (log, ERROR, 0, param_err_msgstr, prog_name, err);
+        evalresp_log (log, EV_ERROR, 0, param_err_msgstr, prog_name, err);
         exit (USAGE_ERROR);
         /*XXX error_exit(USAGE_ERROR, param_err_msgstr, prog_name, err); */
         break;
       case '?': /* unrecognized flag */
-        evalresp_log (log, WARN, 0, "Unrecognized parameter:  %s\n", flagv[optind - 1]);
+        evalresp_log (log, EV_WARN, 0, "Unrecognized parameter:  %s\n", flagv[optind - 1]);
         /*XXX fprintf(stderr, "WARNING:  Unrecognized parameter:  %s\n", flagv[optind-1]); */
         break;
       }
@@ -327,20 +327,20 @@ main (int argc, char *argv[])
 
   if (!is_int (argv[3], log))
   {
-    evalresp_log (log, ERROR, 0, "Year must be an integer, found '%s'", argv[3]);
+    evalresp_log (log, EV_ERROR, 0, "Year must be an integer, found '%s'", argv[3]);
     exit (USAGE_ERROR);
     //error_exit(USAGE_ERROR, "year must be an integer, found '%s'", argv[3]);
   }
   if (!is_int (argv[4], log))
   {
-    evalresp_log (log, ERROR, 0, "Julian day must be an integer, found '%s'", argv[4]);
+    evalresp_log (log, EV_ERROR, 0, "Julian day must be an integer, found '%s'", argv[4]);
     exit (USAGE_ERROR);
     //error_exit(USAGE_ERROR, "julian day must be an integer, found '%s'",
     //        argv[4]);
   }
   if (!is_time (t_o_day, log))
   {
-    evalresp_log (log, ERROR, 0, "'Time of day' must have format "
+    evalresp_log (log, EV_ERROR, 0, "'Time of day' must have format "
                                  "'hh[:mm[:ss[.#####]]]', found '%s'",
                   t_o_day);
     exit (USAGE_ERROR);
@@ -357,7 +357,7 @@ main (int argc, char *argv[])
 
   if (!is_real (minfstr, log) || !is_real (maxfstr, log))
   {
-    evalresp_log (log, ERROR, 0, "freq_lims must be real numbers, found (%s,%s)",
+    evalresp_log (log, EV_ERROR, 0, "freq_lims must be real numbers, found (%s,%s)",
                   minfstr, maxfstr);
     exit (USAGE_ERROR);
     /*XXX error_exit(USAGE_ERROR, "freq_lims must be real numbers, found (%s,%s)",
@@ -367,7 +367,7 @@ main (int argc, char *argv[])
   freq_lims[1] = atof (maxfstr);
   if ((freq_lims[0] == 0.0 || freq_lims[1] == 0.0) && (type == NULL || strcmp (type, "lin") != 0))
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   " freq lims can't equal 0 if log spacing is used");
     exit (USAGE_ERROR);
     /*XXX error_exit(USAGE_ERROR,
@@ -375,7 +375,7 @@ main (int argc, char *argv[])
   }
   if (!is_int (numfstr, log))
   {
-    evalresp_log (log, ERROR, 0, "nfreqs must be an integer, found '%s'",
+    evalresp_log (log, EV_ERROR, 0, "nfreqs must be an integer, found '%s'",
                   numfstr);
     exit (USAGE_ERROR);
     /*XXX error_exit(USAGE_ERROR, "nfreqs must be an integer, found '%s'",
@@ -393,7 +393,7 @@ main (int argc, char *argv[])
   }
   else if (nfreqs <= 0)
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "nfreqs value entered must be positive, entered %d", nfreqs);
     exit (USAGE_ERROR);
     /*XXX error_exit(USAGE_ERROR,
@@ -455,7 +455,7 @@ main (int argc, char *argv[])
     { /* if invalid value then abort */
       if ((strcmp (rtype, "FAP") != 0))
       {
-        evalresp_log (log, ERROR, 0,
+        evalresp_log (log, EV_ERROR, 0,
                       "evalresp; rtype entered ('%s') not a recognized string (see usage)",
                       rtype);
         exit (USAGE_ERROR);
@@ -478,7 +478,7 @@ main (int argc, char *argv[])
     }
     if (strcmp (units, "DIS") && strcmp (units, "VEL") && strcmp (units, "ACC") && strcmp (units, "DEF"))
     {
-      evalresp_log (log, ERROR, 0,
+      evalresp_log (log, EV_ERROR, 0,
                     "evalresp; units entered ('%s') not a recognized string (see usage)",
                     units);
       exit (USAGE_ERROR);
@@ -521,7 +521,7 @@ main (int argc, char *argv[])
                       useTotalSensitivityFlag, x_for_b62, xml_flag, log);
   if (!first)
   {
-    evalresp_log (log, WARN, 0, "EVRESP FAILED\n");
+    evalresp_log (log, EV_WARN, 0, "EVRESP FAILED\n");
     /*XXX fprintf(stderr, "EVRESP FAILED\n"); */
     exit (EXIT_FAILURE);
   }

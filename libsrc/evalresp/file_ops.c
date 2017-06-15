@@ -91,7 +91,7 @@ find_files (char *file, struct scn_list *scn_lst,
         nfiles = get_names (comp_name, flst_ptr, log);
         if (!nfiles && !loc_wild)
         {
-          evalresp_log (log, WARN, 0, "evresp_; no files match '%s'",
+          evalresp_log (log, EV_WARN, 0, "evresp_; no files match '%s'",
                         comp_name);
           /*XXX fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
                             comp_name);
@@ -106,7 +106,7 @@ find_files (char *file, struct scn_list *scn_lst,
           nfiles = get_names (comp_name, flst_ptr, log);
           if (!nfiles)
           {
-            evalresp_log (log, WARN, 0,
+            evalresp_log (log, EV_WARN, 0,
                           "evresp_; no files match '%s' (or globbed location)",
                           comp_name);
             /*XXX fprintf(stderr,
@@ -151,7 +151,7 @@ find_files (char *file, struct scn_list *scn_lst,
       nfiles = get_names (comp_name, flst_ptr, log);
       if (!nfiles && strcmp (scn_ptr->locid, "*"))
       {
-        evalresp_log (log, WARN, 0, "evresp_; no files match '%s'",
+        evalresp_log (log, EV_WARN, 0, "evresp_; no files match '%s'",
                       comp_name);
         /*XXX fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
                         comp_name);
@@ -178,7 +178,7 @@ find_files (char *file, struct scn_list *scn_lst,
         nfiles = get_names (comp_name, flst_ptr, log);
         if (!nfiles)
         {
-          evalresp_log (log, WARN, 0, "evresp_; no files match '%s'",
+          evalresp_log (log, EV_WARN, 0, "evresp_; no files match '%s'",
                         comp_name);
           /*fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
                             comp_name);

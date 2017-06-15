@@ -111,14 +111,14 @@ parse_opts (int argc, char *argv[], evalresp_log_t **log, FILE **in, FILE **out)
         }
         return status;
     } */
-  evalresp_log (*log, INFO, 0, "Logging to stderr");
+  evalresp_log (*log, EV_INFO, 0, "Logging to stderr");
   /*XXX x2r_info(*log, "Logging to stderr"); */
 
   if (input)
   {
     if (!(*in = fopen (input, "r")))
     {
-      evalresp_log (*log, ERROR, 0, "Cannot open %s to read", input);
+      evalresp_log (*log, EV_ERROR, 0, "Cannot open %s to read", input);
       status = X2R_ERR_IO;
       /*XXX status = x2r_error(*log, X2R_ERR_IO, "Cannot open %s to read", input); */
       if (output)
@@ -128,12 +128,12 @@ parse_opts (int argc, char *argv[], evalresp_log_t **log, FILE **in, FILE **out)
       free (input);
       return status;
     }
-    evalresp_log (*log, INFO, 0, "Input from %s", input);
+    evalresp_log (*log, EV_INFO, 0, "Input from %s", input);
     /*XXX x2r_info(*log, "Input from %s", input); */
   }
   else
   {
-    evalresp_log (*log, INFO, 0, "Input from stdin");
+    evalresp_log (*log, EV_INFO, 0, "Input from stdin");
     /*XXX x2r_info(*log, "Input from stdin"); */
   }
 
@@ -141,7 +141,7 @@ parse_opts (int argc, char *argv[], evalresp_log_t **log, FILE **in, FILE **out)
   {
     if (!(*out = fopen (output, "w")))
     {
-      evalresp_log (*log, ERROR, 0, "Cannot open %s to write", output);
+      evalresp_log (*log, EV_ERROR, 0, "Cannot open %s to write", output);
       status = X2R_ERR_IO;
       /*XXX status = x2r_error(*log, X2R_ERR_IO, "Cannot open %s to write", output); */
       if (input)
@@ -151,12 +151,12 @@ parse_opts (int argc, char *argv[], evalresp_log_t **log, FILE **in, FILE **out)
       free (output);
       return status;
     }
-    evalresp_log (*log, INFO, 0, "Output to %s", output);
+    evalresp_log (*log, EV_INFO, 0, "Output to %s", output);
     /*XXX x2r_info(*log, "Output to %s", output); */
   }
   else
   {
-    evalresp_log (*log, INFO, 0, "Output to stdout");
+    evalresp_log (*log, EV_INFO, 0, "Output to stdout");
     /*XXX x2r_info(*log, "Output to stdout"); */
   }
 
