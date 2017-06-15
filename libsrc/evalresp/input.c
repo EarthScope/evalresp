@@ -6,6 +6,7 @@
 
 #include "./private.h"
 #include "./ugly.h"
+#include "./input.h"
 #include "evalresp/public_channels.h"
 #include "evalresp_log/log.h"
 
@@ -80,21 +81,21 @@ remove_tabs_and_crlf(char *line) {
 // TODO - return code is both length and error number (do we use these different error values?)
 // TODO - error handling without multiple returns
 // TODO - return_line must be MAXLINELEN in size (document this?  allocate it?)
+// TODO - fld_no seems to be length in the seed specs?!  why are we checking this?!
 int
-read_line (evalresp_log_t *log, char **seed, char *return_line, int blkt_no, int fld_no, char *sep)
+read_line (evalresp_log_t *log, char **seed, char *sep,
+    int *blkt_no, int *fld_no, char *return_line)
 {
   char *lcl_ptr, line[MAXLINELEN];
-  int lcl_blkt = -1, lcl_fld = -1;
 
-  while (!end_of_string(seed) && (lcl_blkt != blkt_no || lcl_fld != fld_no)) {
-    drop_comments_and_blank_lines(seed);
-    if (end_of_string(seed)) return 0;
-    slurp_line(seed, line, MAXLINELEN);
-    remove_tabs_and_crlf(line);
-    if (!parse_pref (&lcl_blkt, &lcl_fld, line, log)) {
-      evalresp_log (log, ERROR, 0, "unrecognised prefix: '%s'", line);
-      return UNDEF_PREFIX;
-    }
+  drop_comments_and_blank_lines(seed);
+  if (end_of_string(seed)) return 0;
+
+  slurp_line(seed, line, MAXLINELEN);
+  remove_tabs_and_crlf(line);
+  if (!parse_pref (blkt_no, fld_no, line, log)) {
+    evalresp_log (log, ERROR, 0, "unrecognised prefix: '%s'", line);
+    return UNDEF_PREFIX;
   }
 
   return_line[0] = '\0';
@@ -112,143 +113,154 @@ read_line (evalresp_log_t *log, char **seed, char *return_line, int blkt_no, int
   return strlen (return_line);
 }
 
+// TODO - return code is both length and error number (do we use these different error values?)
+// TODO - error handling without multiple returns
+// TODO - return_line must be MAXLINELEN in size (document this?  allocate it?)
+// TODO - fld_no seems to be length in the seed specs?!  why are we checking this?!
 int
-read_field (evalresp_log_t *log, char **seed, char *return_field,
-    int blkt_no, int fld_no, char *sep, int fld_wanted)
+find_line (evalresp_log_t *log, char **seed, char *sep, int blkt_no, int fld_no, char *return_line)
+{
+  int lcl_blkt, lcl_fld, length;
+
+  while (!end_of_string(seed)) {
+    // TODO - do we need to suppress error logging in failures here
+    if ((length = read_line(log, seed, sep, &lcl_blkt, &lcl_fld, return_line))) {
+      if (blkt_no == lcl_blkt && fld_no == lcl_fld) return length;
+    }
+  }
+
+  // TODO - extra error here?
+  return 0;
+}
+
+int
+find_field (evalresp_log_t *log, char **seed, char *sep,
+    int blkt_no, int fld_no, int fld_wanted, char *return_field)
 {
   char line[MAXLINELEN];
 
   /* first get the next non-comment line */
-  read_line (log, seed, line, blkt_no, fld_no, sep);
+  find_line (log, seed, sep, blkt_no, fld_no, line);
 
   /* then parse the field that the user wanted from the line read_line returned */
   return parse_field (line, fld_wanted, return_field, log);
 }
 
-//int
-//read_channel (evalresp_log_t *log, char **seed, evalresp_channel *chan)
-//{
-//  int blkt_no, fld_no;
-//  char field[MAXFLDLEN], line[MAXLINELEN];
-//
-//  /* check to make sure a non-comment field exists and it is the sta/chan/date info.
-//     Note:  If it is the first channel (and, as a result, FirstLine contains a null
-//     string), then we have to get the next line.  Otherwise, the FirstLine argument
-//     has been set by a previous call to 'next_line' in another routine (when parsing
-//     a previous station-channel-network tuple's information) and this is the
-//     line that should be parsed to get the station name */
-//
-//  chan->nstages = 0;
-//  chan->sensfreq = 0.0;
-//  chan->sensit = 0.0;
-//  chan->calc_sensit = 0.0;
-//  chan->calc_delay = 0.0;
-//  chan->estim_delay = 0.0;
-//  chan->applied_corr = 0.0;
-//  chan->sint = 0.0;
-//
-//  if (0 > read_field (log, seed, field, 50, 3, ":", 0))
-//  {
-//    return 0 /*TODO PARSE_ERROR should be returned */;
-//  }
-//
-//  strncpy (chan->staname, field, STALEN);
-//
-//  /* then (from the file) the Network ID */
-//
-//  if (0 > get_field (fptr, field, 50, 16, ":", 0, log))
-//  {
-//    return 0 /*TODO PARSE_ERROR should be returned */;
-//  }
-//  if (!strncmp (field, "??", 2))
-//  {
-//    strncpy (chan->network, "", NETLEN);
-//  }
-//  else
-//  {
-//    strncpy (chan->network, field, NETLEN);
-//  }
-//
-//  /* then (from the file) the Location Identifier (if it exists ... it won't for
-//     "old style" RESP files so assume old style RESP files contain a null location
-//     identifier) and the channel name */
-//
-//  /* Modified to use 'next_line()' and 'parse_field()' directly
-//     to handle case where file contains "B052F03 Location:" and
-//     nothing afterward -- 10/19/2005 -- [ET] */
-//  /*  test_field(fptr,field,&blkt_no,&fld_no,":",0); */
-//
-//  next_line (fptr, line, &blkt_no, &fld_no, ":", log);
-//  if (strlen (line) > 0) /* if data after "Location:" then */
-//  {
-//    if (0 > parse_field (line, 0, field, log)) /* parse location data */
-//    {
-//      return 0 /*TODO PARSE_ERROR should be returned */;
-//    }
-//  }
-//  else
-//  {
-//    /* if no data after "Location:" then */
-//    field[0] = '\0'; /* clear 'field' string */
-//  }
-//
-//  if (blkt_no == 52 && fld_no == 3)
-//  {
-//    if (strlen (field) <= 0 || !strncmp (field, "??", 2))
-//    {
-//      strncpy (chan->locid, "", LOCIDLEN);
-//    }
-//    else
-//    {
-//      strncpy (chan->locid, field, LOCIDLEN);
-//    }
-//    if (0 > get_field (fptr, field, 52, 4, ":", 0, log))
-//    {
-//      return 0 /*TODO PARSE_ERROR should be returned */;
-//    }
-//    strncpy (chan->chaname, field, CHALEN);
-//  }
-//  else if (blkt_no == 52 && fld_no == 4)
-//  {
-//    strncpy (chan->locid, "", LOCIDLEN);
-//    strncpy (chan->chaname, field, CHALEN);
-//  }
-//  else
-//  {
-//#ifdef LIB_MODE
-//    return 0;
-//#else
-//    evalresp_log (log, ERROR, 0,
-//                  "get_line; %s%s%3.3d%s%3.3d%s[%2.2d|%2.2d]%s%2.2d", "blkt",
-//                  " and fld numbers do not match expected values\n\tblkt_xpt=B",
-//                  52, ", blkt_found=B", blkt_no, "; fld_xpt=F", 3, 4,
-//                  ", fld_found=F", fld_no);
-//    return 0; /*TODO error code maybe? */
-///*XXX error_return(PARSE_ERROR,
-//                "get_line; %s%s%3.3d%s%3.3d%s[%2.2d|%2.2d]%s%2.2d", "blkt",
-//                " and fld numbers do not match expected values\n\tblkt_xpt=B",
-//                52, ", blkt_found=B", blkt_no, "; fld_xpt=F", 3, 4,
-//                ", fld_found=F", fld_no);*/
-//#endif
-//  }
-//
-//  /* get the Start Date */
-//
-//  if (0 > get_line (fptr, line, 52, 22, ":", log))
-//  {
-//    return 0; /*TODO */
-//  }
-//  strncpy (chan->beg_t, line, DATIMLEN);
-//
-//  /* get the End Date */
-//
-//  if (0 > get_line (fptr, line, 52, 23, ":", log))
-//  {
-//    return 0; /*TODO */
-//  }
-//  strncpy (chan->end_t, line, DATIMLEN);
-//
-//  return (1);
-//}
+int
+read_channel (evalresp_log_t *log, char **seed, evalresp_channel *chan)
+{
+  int blkt_no, fld_no;
+  char field[MAXFLDLEN], line[MAXLINELEN];
+
+  /* check to make sure a non-comment field exists and it is the sta/chan/date info.
+     Note:  If it is the first channel (and, as a result, FirstLine contains a null
+     string), then we have to get the next line.  Otherwise, the FirstLine argument
+     has been set by a previous call to 'next_line' in another routine (when parsing
+     a previous station-channel-network tuple's information) and this is the
+     line that should be parsed to get the station name */
+
+  chan->nstages = 0;
+  chan->sensfreq = 0.0;
+  chan->sensit = 0.0;
+  chan->calc_sensit = 0.0;
+  chan->calc_delay = 0.0;
+  chan->estim_delay = 0.0;
+  chan->applied_corr = 0.0;
+  chan->sint = 0.0;
+
+  if (0 > find_field (log, seed, ":", 50, 3, 0, field))
+  {
+    return 0 /*TODO PARSE_ERROR should be returned */;
+  }
+
+  strncpy (chan->staname, field, STALEN);
+
+  /* then (from the file) the Network ID */
+
+  if (0 > find_field (log, seed, ":", 50, 16, 0, field))
+  {
+    return 0 /*TODO PARSE_ERROR should be returned */;
+  }
+  if (!strncmp (field, "??", 2))
+  {
+    strncpy (chan->network, "", NETLEN);
+  }
+  else
+  {
+    strncpy (chan->network, field, NETLEN);
+  }
+
+  /* then (from the file) the Location Identifier (if it exists ... it won't for
+     "old style" RESP files so assume old style RESP files contain a null location
+     identifier) and the channel name */
+
+  /* Modified to use 'next_line()' and 'parse_field()' directly
+     to handle case where file contains "B052F03 Location:" and
+     nothing afterward -- 10/19/2005 -- [ET] */
+  /*  test_field(fptr,field,&blkt_no,&fld_no,":",0); */
+
+  read_line (log, seed, ":", &blkt_no, &fld_no, line);
+  if (strlen (line) > 0) /* if data after "Location:" then */
+  {
+    if (0 > parse_field (line, 0, field, log)) /* parse location data */
+    {
+      return 0 /*TODO PARSE_ERROR should be returned */;
+    }
+  }
+  else
+  {
+    /* if no data after "Location:" then */
+    field[0] = '\0'; /* clear 'field' string */
+  }
+
+  if (blkt_no == 52 && fld_no == 3)
+  {
+    if (strlen (field) <= 0 || !strncmp (field, "??", 2))
+    {
+      strncpy (chan->locid, "", LOCIDLEN);
+    }
+    else
+    {
+      strncpy (chan->locid, field, LOCIDLEN);
+    }
+    if (0 > find_field (log, seed, ":", 52, 4, 0, field))
+    {
+      return 0 /*TODO PARSE_ERROR should be returned */;
+    }
+    strncpy (chan->chaname, field, CHALEN);
+  }
+  else if (blkt_no == 52 && fld_no == 4)
+  {
+    strncpy (chan->locid, "", LOCIDLEN);
+    strncpy (chan->chaname, field, CHALEN);
+  }
+  else
+  {
+    evalresp_log (log, ERROR, 0,
+                  "get_line; %s%s%3.3d%s%3.3d%s[%2.2d|%2.2d]%s%2.2d", "blkt",
+                  " and fld numbers do not match expected values\n\tblkt_xpt=B",
+                  52, ", blkt_found=B", blkt_no, "; fld_xpt=F", 3, 4,
+                  ", fld_found=F", fld_no);
+    return 0; /*TODO error code maybe? */
+  }
+
+  /* get the Start Date */
+
+  if (0 > find_line (log, seed, ":", 52, 22, line))
+  {
+    return 0; /*TODO */
+  }
+  strncpy (chan->beg_t, line, DATIMLEN);
+
+  /* get the End Date */
+
+  if (0 > find_line (log, seed, ":", 52, 23, line))
+  {
+    return 0; /*TODO */
+  }
+  strncpy (chan->end_t, line, DATIMLEN);
+
+  return (1);
+}
 
 #endif

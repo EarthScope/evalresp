@@ -10,10 +10,11 @@ void
 slurp_line (char **seed, char *line, int maxlen);
 
 int
-read_line (evalresp_log_t *log, char **seed, char *return_line, int blkt_no, int fld_no, char *sep);
+find_line (evalresp_log_t *log, char **seed, char *sep,
+    int blkt_no, int fld_no, char *return_line);
 
 int
-read_field (evalresp_log_t *log, char **seed, char *return_field,
-    int blkt_no, int fld_no, char *sep, int fld_wanted);
+find_field (evalresp_log_t *log, char **seed, char *sep,
+    int blkt_no, int fld_no, int fld_wanted, char *return_field);
 
 #endif
