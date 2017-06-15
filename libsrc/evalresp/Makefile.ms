@@ -7,10 +7,10 @@ OBJ = alloc_fctns.obj calc_fctns.obj file_ops.obj libevalresp.obj parse_fctns.ob
 all: evalresp.lib
 
 .c.obj:
-	$(CC) /c $*.c /I ..\ /I ..\mxml\ /Fo$@
+	$(CC) /c $*.c /I ..\ /I ..\mxml\ /Wall /WX /Fo$@
 
 evalresp.lib: $(OBJ)
-    $(LINK) /lib $(OBJ) /OUT:evalresp.lib
+    link /lib $(OBJ) /OUT:evalresp.lib
 
 clean:
     del evalresp.lib
