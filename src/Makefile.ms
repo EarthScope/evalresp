@@ -23,4 +23,4 @@ xml2resp.exe: $(XR_OBJS)
 	link $(LIBS) $(XR_OBJS) /out:xml2resp.exe
 
 .c.obj:
-	cl /c /I ..\libsrc\mxml\ /I ..\libsrc\  $<
+	cl /c /I ..\libsrc\mxml\ /I ..\libsrc\ /Wall /WX $<
