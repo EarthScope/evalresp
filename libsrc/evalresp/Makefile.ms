@@ -10,7 +10,7 @@ all: evalresp.lib
 	$(CC) /c $*.c /I ..\ /I ..\mxml\ /Fo$@
 
 evalresp.lib: $(OBJ)
-    $(LINK) /lib $< /OUT:evalresp.lib
+    $(LINK) /lib $(OBJ) /OUT:evalresp.lib
 
 clean:
     del evalresp.lib
