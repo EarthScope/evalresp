@@ -2,6 +2,8 @@
 #ifndef EVALRESP_INPUT_H
 #define EVALRESP_INPUT_H
 
+#include <string.h>
+
 #include "./private.h"
 #include "./ugly.h"
 #include "evalresp/public_channels.h"
@@ -10,7 +12,7 @@
 // code from parse_fctns.c heavily refactored to (1) parse all lines and (2)
 // read from strings rather than files.
 
-void
+void  // non-static only for testing
 slurp_line (char **seed, char *line, int maxlen)
 {
   int i = 0;
@@ -36,128 +38,80 @@ slurp_line (char **seed, char *line, int maxlen)
   }
 }
 
-//int
-//read_line (evalresp_log_t *log, char **seed, char *return_line, int blkt_no, int fld_no, char *sep)
-//{
-//  char *lcl_ptr, *start, line[MAXLINELEN];
-//  int lcl_blkt, lcl_fld, test;
-//  int tmpint;
-//  char tmpstr[200];
-//  int i;
-//
-//  start = *seed;
-//  while (*test && *test == '#')
-//  {
-//    strncpy (line, "", MAXLINELEN - 1);
-//    (void)fgets (line, MAXLINELEN, fptr);
-//    test = fgetc (fptr);
-//  }
-//
-//  if (test == EOF)
-//  {
-//    return (0);
-//  }
-//  else
-//  {
-//    ungetc (test, fptr);
-//    (void)fgets (line, MAXLINELEN, fptr);
-//
-//    for (i = 0; i < strlen (line); i++)
-//    {
-//      if ('\t' == line[i])
-//        line[i] = ' ';
-//    }
-//
-//    /* check for blank line */
-//    tmpint = sscanf (line, "%s", tmpstr);
-//
-//    if (tmpint == EOF)
-//    {
-//      return get_line (fptr, return_line, blkt_no, fld_no, sep, log);
-//    }
-//
-//    tmpint = strlen (line); /* strip any trailing CR or LF chars */
-//    while (tmpint > 0 && line[tmpint - 1] < ' ')
-//      line[--tmpint] = '\0';
-//  }
-//
-//  /*if(!line)
-//     error_return(UNEXPECTED_EOF, "get_line; no more non-comment lines found in file");*/
-//
-//  test = parse_pref (&lcl_blkt, &lcl_fld, line, log);
-//  if (!test)
-//  {
-//    evalresp_log (log, ERROR, 0,
-//                  "get_line; unrecogn. prefix on the following line:\n\t  '%s'",
-//                  line);
-//    return UNDEF_PREFIX;
-//    /*XXX error_return(UNDEF_PREFIX,
-//                "get_line; unrecogn. prefix on the following line:\n\t  '%s'",
-//                line); */
-//  }
-//
-//  /* check the blockette and field numbers found on the line versus the expected values */
-//
-//  if (blkt_no != lcl_blkt)
-//  {
-//    /* try to parse the next line */
-//    return get_line (fptr, return_line, blkt_no, fld_no, sep, log);
-//    /*
-//         removed by SBH 2004.079
-//         if(fld_no != lcl_fld) {
-//         error_return(PARSE_ERROR,"get_line; %s%s%3.3d%s%3.3d%s%2.2d%s%2.2d","blkt",
-//         " and fld numbers do not match expected values\n\tblkt_xpt=B",
-//         blkt_no, ", blkt_found=B", lcl_blkt, "; fld_xpt=F", fld_no,
-//         ", fld_found=F", lcl_fld);
-//         }
-//         */
-//  }
-//  else if (fld_no != lcl_fld)
-//  {
-//    /* try to parse the next line */
-//    return get_line (fptr, return_line, blkt_no, fld_no, sep, log);
-//    /*
-//         removed by SBH 2004.079
-//         error_return(PARSE_ERROR,"get_line (parsing blockette [%3.3d]); %s%2.2d%s%2.2d",
-//         lcl_blkt, "unexpected fld number\n\tfld_xpt=F", fld_no,
-//         ", fld_found=F", lcl_fld, lcl_blkt);
-//         */
-//  }
-//
-//  if ((lcl_ptr = strstr (line, sep)) == (char *)NULL)
-//  {
-//    evalresp_log (log, ERROR, 0, "get_line; seperator string not found");
-//    return UNDEF_SEPSTR;
-//    /*XXX error_return(UNDEF_SEPSTR, "get_line; seperator string not found"); */
-//  }
-//  else if ((lcl_ptr - line) > (int)(strlen (line) - 1))
-//  {
-//    evalresp_log (log, ERROR, 0,
-//                  "get_line; nothing to parse after seperator string");
-//    return UNDEF_SEPSTR;
-//    /*XXX error_return(UNDEF_SEPSTR,
-//                "get_line; nothing to parse after seperator string"); */
-//  }
-//
-//  lcl_ptr++;
-//  while (*lcl_ptr && isspace (*lcl_ptr))
-//  {
-//    lcl_ptr++;
-//  }
-//
-//  if ((lcl_ptr - line) > (int)strlen (line))
-//  {
-//    evalresp_log (log, ERROR, 0,
-//                  "get_line; no non-white space after seperator string");
-//    return UNDEF_SEPSTR;
-//    /*XXX error_return(UNDEF_SEPSTR,
-//                "get_line; no non-white space after seperator string"); */
-//  }
-//
-//  strncpy (return_line, lcl_ptr, MAXLINELEN);
-//  return (strlen (return_line));
-//}
-//
+static int
+end_of_string(char **seed) {
+  return !**seed;
+}
+
+static int
+blank_line(char *line) {
+  int i;
+  for (i = 0; i < strlen(line); ++i) {
+    if (!isspace(line[i])) return 0;
+  }
+  return 1;
+}
+
+static void
+drop_comments_and_blank_lines(char **seed) {
+  char line[MAXLINELEN], *lookahead;
+  while (!end_of_string(seed)) {
+    lookahead = *seed;
+    slurp_line(&lookahead, line, MAXLINELEN);
+    if (*line != '#' && !blank_line(line)) return;
+    *seed = lookahead;
+  }
+}
+
+static void
+remove_tabs_and_crlf(char *line) {
+  int i;
+  for (i = 0; i < strlen (line); ++i)
+  {
+    if (line[i] == '\t') {
+      line[i] = ' ';
+    }
+  }
+  for (--i; i && strspn(line+i, "\n\r"); --i) {
+    line[i] = '\0';
+  }
+}
+
+// TODO - return code is both length and error number (do we use these different error values?)
+// TODO - error handling without multiple returns
+// TODO - return_line must be MAXLINELEN in size (document this?  allocate it?)
+int
+read_line (evalresp_log_t *log, char **seed, char *return_line, int blkt_no, int fld_no, char *sep)
+{
+  char *lcl_ptr, line[MAXLINELEN];
+  int lcl_blkt = -1, lcl_fld = -1;
+
+  while (!end_of_string(seed) && (lcl_blkt != blkt_no || lcl_fld != fld_no)) {
+    drop_comments_and_blank_lines(seed);
+    if (end_of_string(seed)) return 0;
+    slurp_line(seed, line, MAXLINELEN);
+    remove_tabs_and_crlf(line);
+    if (!parse_pref (&lcl_blkt, &lcl_fld, line, log)) {
+      evalresp_log (log, ERROR, 0, "unrecognised prefix: '%s'", line);
+      return UNDEF_PREFIX;
+    }
+  }
+
+  return_line[0] = '\0';
+  if (!(lcl_ptr = strstr (line, sep)))
+  {
+    evalresp_log (log, ERROR, 0, "separator '%s' not found in '%s'", sep, line);
+    return UNDEF_SEPSTR;
+  }
+  for (lcl_ptr++; *lcl_ptr && isspace (*lcl_ptr); lcl_ptr++);
+  if (!*lcl_ptr) {
+    evalresp_log (log, ERROR, 0, "nothing to parse after '%s' in '%s'", sep, line);
+    return UNDEF_SEPSTR;
+  }
+  strncpy (return_line, lcl_ptr, MAXLINELEN);
+  return strlen (return_line);
+}
+
 //int
 //read_field (evalresp_log_t *log, char **seed, char *return_field,
 //    int blkt_no, int fld_no, char *sep, int fld_wanted)
@@ -168,11 +122,7 @@ slurp_line (char **seed, char *line, int maxlen)
 //  read_line (log, seed, line, blkt_no, fld_no, sep);
 //
 //  /* then parse the field that the user wanted from the line get_line returned */
-//  return (parse_field (line, fld_wanted, return_field, log));
-//
-//  /* and return the length of the field */
-//  /*XXX this is the same as what parse_field returns
-//    return (strlen(return_field)); */
+//  return parse_field (line, fld_wanted, return_field, log);
 //}
 //
 //int

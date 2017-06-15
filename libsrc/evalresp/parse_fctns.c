@@ -23,6 +23,10 @@
 
 double atof (); // TODO - why are we declaring this?!
 
+// TODO - log at start of arg list
+// TODO - error handling without multiple returns
+// TODO - length and errors mixed together in return value
+// TODO - name "parse_prefix"
 int
 parse_pref (int *blkt_no, int *fld_no, char *line, evalresp_log_t *log)
 {

@@ -52,7 +52,7 @@ typedef struct evalresp_log_msg
 /**
  * @private
  * @ingroup evalresp_private_log
- * @brief A convience data type of the logging function.
+ * @brief A convenience data type of the logging function.
  */
 typedef int (*evalresp_log_func_t) (evalresp_log_msg_t *, void *);
 
@@ -66,7 +66,7 @@ typedef int (*evalresp_log_func_t) (evalresp_log_msg_t *, void *);
  */
 typedef struct evalresp_log
 {
-  evalresp_log_func_t log_func; /**< the function that the loger should call back */
+  evalresp_log_func_t log_func; /**< the function that the logger should call back */
   void *func_data;              /**< a pointer to the data portion that should be sent to the callback function */
 } evalresp_log_t;
 
@@ -87,8 +87,8 @@ typedef enum log_level_ref {
  * @ingroup evalresp_private_log
  * @brief Array of the log levels in plain text.
  * 
- * Using the values from log_level_ref_t will directly corespond to the
- * plaintext. Eg, log_level_strs[ERROR] == "DEBUG".
+ * Using the values from log_level_ref_t will directly correspond to the
+ * plaintext. Eg, log_level_strs[ERROR] == "ERROR".
  */
 extern const char *log_level_strs[];
 
@@ -104,7 +104,7 @@ extern const char *log_level_strs[];
  * to operate.
  * 
  * Example use of how to use, note the data is null because the log_func
- * reqires data to be null in this case.
+ * requires data to be null in this case.
 
  @verbatim
  #include <evalresp_log/log.h>

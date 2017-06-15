@@ -38,6 +38,21 @@ START_TEST (test_slurp_line_buffer)
 }
 END_TEST
 
+START_TEST (test_read_line)
+{
+  char *input = "B999F99 name1: value1 \nB666F66 name2: value2", *start;
+  char line[MAXLINELEN];
+  start = input;
+  fail_if (!read_line (NULL, &start, line, 999, 99, ":"));
+  fail_if (strcmp (line, "value1 "), "'%s'", line);
+  fail_if (!read_line (NULL, &start, line, 666, 66, ":"));
+  fail_if (strcmp (line, "value2"), "'%s'", line);
+  start = input;
+  fail_if (!read_line (NULL, &start, line, 666, 66, ":"));
+  fail_if (strcmp (line, "value2"), "'%s'", line);
+}
+END_TEST
+
 int
 main (void)
 {
@@ -46,6 +61,7 @@ main (void)
   TCase *tc = tcase_create ("case");
   tcase_add_test (tc, test_slurp_line);
   tcase_add_test (tc, test_slurp_line_buffer);
+  tcase_add_test (tc, test_read_line);
   suite_add_tcase (s, tc);
   SRunner *sr = srunner_create (s);
   srunner_set_xml (sr, "check-log.xml");
