@@ -2,20 +2,20 @@
 #ifndef EVALRESP_INPUT_H
 #define EVALRESP_INPUT_H
 
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
+#include "./input.h"
 #include "./private.h"
 #include "./ugly.h"
-#include "./input.h"
 #include "evalresp/public_channels.h"
 #include "evalresp_log/log.h"
 
 // code from parse_fctns.c heavily refactored to (1) parse all lines and (2)
 // read from strings rather than files.
 
-void  // non-static only for testing
-slurp_line (char **seed, char *line, int maxlen)
+void // non-static only for testing
+    slurp_line (char **seed, char *line, int maxlen)
 {
   int i = 0;
   for (;;)
@@ -41,40 +41,50 @@ slurp_line (char **seed, char *line, int maxlen)
 }
 
 static int
-end_of_string(char **seed) {
+end_of_string (char **seed)
+{
   return !**seed;
 }
 
 static int
-blank_line(char *line) {
+blank_line (char *line)
+{
   int i;
-  for (i = 0; i < strlen(line); ++i) {
-    if (!isspace(line[i])) return 0;
+  for (i = 0; i < strlen (line); ++i)
+  {
+    if (!isspace (line[i]))
+      return 0;
   }
   return 1;
 }
 
 static void
-drop_comments_and_blank_lines(char **seed) {
+drop_comments_and_blank_lines (char **seed)
+{
   char line[MAXLINELEN], *lookahead;
-  while (!end_of_string(seed)) {
+  while (!end_of_string (seed))
+  {
     lookahead = *seed;
-    slurp_line(&lookahead, line, MAXLINELEN);
-    if (*line != '#' && !blank_line(line)) return;
+    slurp_line (&lookahead, line, MAXLINELEN);
+    if (*line != '#' && !blank_line (line))
+      return;
     *seed = lookahead;
   }
 }
 
 static void
-remove_tabs_and_crlf(char *line) {
+remove_tabs_and_crlf (char *line)
+{
   int i;
   for (i = 0; i < strlen (line); ++i)
   {
-    if (line[i] == '\t') {
+    if (line[i] == '\t')
+    {
       line[i] = ' ';
     }
   }
-  for (--i; i && strspn(line+i, "\n\r"); --i) {
+  for (--i; i && strspn (line + i, "\n\r"); --i)
+  {
     line[i] = '\0';
   }
 }
@@ -87,16 +97,18 @@ remove_tabs_and_crlf(char *line) {
 // TODO - warning - original returned fld_no (as return val as well as param)
 int
 read_line (evalresp_log_t *log, char **seed, char *sep,
-    int *blkt_no, int *fld_no, char *return_line)
+           int *blkt_no, int *fld_no, char *return_line)
 {
   char *lcl_ptr, line[MAXLINELEN];
 
-  drop_comments_and_blank_lines(seed);
-  if (end_of_string(seed)) return 0;
+  drop_comments_and_blank_lines (seed);
+  if (end_of_string (seed))
+    return 0;
 
-  slurp_line(seed, line, MAXLINELEN);
-  remove_tabs_and_crlf(line);
-  if (!parse_pref (blkt_no, fld_no, line, log)) {
+  slurp_line (seed, line, MAXLINELEN);
+  remove_tabs_and_crlf (line);
+  if (!parse_pref (blkt_no, fld_no, line, log))
+  {
     evalresp_log (log, ERROR, 0, "unrecognised prefix: '%s'", line);
     return UNDEF_PREFIX;
   }
@@ -107,8 +119,10 @@ read_line (evalresp_log_t *log, char **seed, char *sep,
     evalresp_log (log, ERROR, 0, "separator '%s' not found in '%s'", sep, line);
     return UNDEF_SEPSTR;
   }
-  for (lcl_ptr++; *lcl_ptr && isspace (*lcl_ptr); lcl_ptr++);
-  if (!*lcl_ptr) {
+  for (lcl_ptr++; *lcl_ptr && isspace (*lcl_ptr); lcl_ptr++)
+    ;
+  if (!*lcl_ptr)
+  {
     evalresp_log (log, ERROR, 0, "nothing to parse after '%s' in '%s'", sep, line);
     return UNDEF_SEPSTR;
   }
@@ -126,10 +140,13 @@ find_line (evalresp_log_t *log, char **seed, char *sep, int blkt_no, int fld_no,
 {
   int lcl_blkt, lcl_fld, length;
 
-  while (!end_of_string(seed)) {
+  while (!end_of_string (seed))
+  {
     // TODO - do we need to suppress error logging in failures here
-    if ((length = read_line(log, seed, sep, &lcl_blkt, &lcl_fld, return_line))) {
-      if (blkt_no == lcl_blkt && fld_no == lcl_fld) return length;
+    if ((length = read_line (log, seed, sep, &lcl_blkt, &lcl_fld, return_line)))
+    {
+      if (blkt_no == lcl_blkt && fld_no == lcl_fld)
+        return length;
     }
   }
 
@@ -139,7 +156,7 @@ find_line (evalresp_log_t *log, char **seed, char *sep, int blkt_no, int fld_no,
 
 int
 find_field (evalresp_log_t *log, char **seed, char *sep,
-    int blkt_no, int fld_no, int fld_wanted, char *return_field)
+            int blkt_no, int fld_no, int fld_wanted, char *return_field)
 {
   char line[MAXLINELEN];
 
@@ -272,7 +289,7 @@ read_channel_header (evalresp_log_t *log, char **seed, evalresp_channel *chan)
 // TODO - add error returns
 void
 read_pz (evalresp_log_t *log, char **seed, int first_field, char *first_line,
-    evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
+         evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, check_fld, blkt_read, npoles, nzeros;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -504,13 +521,15 @@ is_iir_coeffs (char **seed)
   for (i = 0; i < 80; i++)
   { /* enough to make sure we are getting field 10; not to much to get to the next blockette */
     (void)sscanf (lookahead, "%s", line);
-    if (!strncmp (line, "B054F10", 7)) {
+    if (!strncmp (line, "B054F10", 7))
+    {
       break;
     }
   }
   if (!strncmp (line, "B054F10", 7))
   {
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
       (void)sscanf (lookahead, "%s", line);
     }
     denoms = atoi (line);
@@ -525,8 +544,8 @@ is_iir_coeffs (char **seed)
 // this was parse_iir_coeff
 /*TODO this should be int to error out the rest of the  processing */
 void
-read_iir_coeff (evalresp_log_t *log, char **seed,  int first_field, char *first_line,
-    evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
+read_iir_coeff (evalresp_log_t *log, char **seed, int first_field, char *first_line,
+                evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, check_fld, blkt_read, ncoeffs, ndenom;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -692,7 +711,7 @@ read_iir_coeff (evalresp_log_t *log, char **seed,  int first_field, char *first_
 /*TODO this should be int to error out the rest of the  processing */
 void
 read_coeff (evalresp_log_t *log, char **seed, int first_field, char *first_line,
-    evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
+            evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, check_fld, blkt_read, ncoeffs, ndenom;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -840,7 +859,7 @@ read_coeff (evalresp_log_t *log, char **seed, int first_field, char *first_line,
 /*TODO this should be int to error out the rest of the  processing */
 void
 read_list (evalresp_log_t *log, char **seed, int first_field, char *first_line,
-    evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
+           evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, blkt_read, check_fld, nresp, format;
   char field[MAXFLDLEN], line[MAXLINELEN], *lookahead;
@@ -1031,7 +1050,7 @@ read_list (evalresp_log_t *log, char **seed, int first_field, char *first_line,
 // this was "parse_generic"
 void
 read_generic (evalresp_log_t *log, char **seed, int first_field, char *first_line,
-    evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
+              evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, blkt_read, check_fld, ncorners;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -1147,7 +1166,7 @@ read_generic (evalresp_log_t *log, char **seed, int first_field, char *first_lin
 // this was "parse_deci"
 int
 read_deci (evalresp_log_t *log, char **seed, int first_field, char *first_line,
-    evalresp_blkt *blkt_ptr)
+           evalresp_blkt *blkt_ptr)
 {
   int blkt_read, check_fld, sequence_no = 0;
   double srate;
@@ -1238,7 +1257,7 @@ read_deci (evalresp_log_t *log, char **seed, int first_field, char *first_line,
 // this was "parse_gain"
 int
 read_gain (evalresp_log_t *log, char **seed, int first_field, char *first_line,
-    evalresp_blkt *blkt_ptr)
+           evalresp_blkt *blkt_ptr)
 {
   int i, blkt_read, check_fld, sequence_no = 0, nhist = 0;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -1320,7 +1339,7 @@ read_gain (evalresp_log_t *log, char **seed, int first_field, char *first_line,
 // this was "parse_fir"
 void
 read_fir (evalresp_log_t *log, char **seed, int first_field, char *first_line,
-    evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
+          evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, blkt_read, check_fld, ncoeffs;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -1448,7 +1467,7 @@ read_fir (evalresp_log_t *log, char **seed, int first_field, char *first_line,
 // this was "parse_ref"
 void
 read_ref (evalresp_log_t *log, char **seed, int first_field, char *first_line,
-    evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
+          evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int this_blkt_no = 60, blkt_no, fld_no, i, j, prev_blkt_no = 60;
   int nstages, stage_num, nresps, lcl_nstages;
@@ -1623,7 +1642,7 @@ read_ref (evalresp_log_t *log, char **seed, int first_field, char *first_line,
 // this was "parse_polynomial"
 void
 read_polynomial (evalresp_log_t *log, char **seed, int first_field, char *first_line,
-    evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
+                 evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, blkt_read, check_fld, ncoeffs;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -1966,6 +1985,5 @@ read_channel_data (evalresp_log_t *log, char **seed, evalresp_channel *chan)
   free_stages (tmp_stage);
   return (FirstField);
 }
-
 
 #endif
