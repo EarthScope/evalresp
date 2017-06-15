@@ -212,7 +212,7 @@ main (int argc, char *argv[])
       case 0: /* This is to handle ones that get set automatically */
         break;
       case 'f': /*file*/
-        file = strndup (optarg, MAXFLDLEN);
+        file = strdup (optarg);//, MAXFLDLEN);
         break;
       case 'u': /*units*/
         strncpy (units, optarg, MAXFLDLEN);
@@ -234,13 +234,13 @@ main (int argc, char *argv[])
           /*XXX error_exit(USAGE_ERROR, "%s: option '-s' illegal type '%s'",
                                 prog_name, type); */
         }
-        type = strndup (optarg, MAXFLDLEN);
+        type = strdup (optarg);//, MAXFLDLEN);
         break;
       case 'n': /*network*/
-        net_code = strndup (optarg, MAXFLDLEN);
+        net_code = strdup (optarg);//, MAXFLDLEN);
         break;
       case 'l': /*location*/
-        locid = strndup (optarg, MAXFLDLEN);
+        locid = strdup (optarg);//, MAXFLDLEN);
         break;
       case 'r': /*response*/
         strncpy (rtype, optarg, MAXFLDLEN);
