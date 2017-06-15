@@ -608,6 +608,7 @@ check_line (FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_log_t
   return (1);
 }
 
+// TODO - log at start
 int
 get_int (char *in_line, evalresp_log_t *log)
 {

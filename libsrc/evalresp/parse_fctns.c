@@ -23,6 +23,26 @@
 
 double atof (); // TODO - why are we declaring this?!
 
+
+
+
+
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// WARNING WARNING
+// DO NOT TRY TIDYING THIS FILE
+// MUCH WILL BE REPLACED BY INPUT.C
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+
+
+
+
+
 // TODO - log at start of arg list
 // TODO - error handling without multiple returns
 // TODO - length and errors mixed together in return value
