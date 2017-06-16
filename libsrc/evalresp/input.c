@@ -100,6 +100,8 @@ read_line (evalresp_log_t *log, const char **seed, char *sep,
 {
   char *lcl_ptr, line[MAXLINELEN];
 
+  return_line[0] = '\0';
+
   drop_comments_and_blank_lines (seed);
   if (end_of_string (seed))
     return 0;
@@ -112,7 +114,6 @@ read_line (evalresp_log_t *log, const char **seed, char *sep,
     return UNDEF_PREFIX;
   }
 
-  return_line[0] = '\0';
   if (!(lcl_ptr = strstr (line, sep)))
   {
     evalresp_log (log, ERROR, 0, "separator '%s' not found in '%s'", sep, line);
@@ -134,23 +135,33 @@ read_line (evalresp_log_t *log, const char **seed, char *sep,
 // TODO - return code is both length and error number (do we use these different error values?)
 // TODO - error handling without multiple returns
 // TODO - return_line must be MAXLINELEN in size (document this?  allocate it?)
-// TODO - fld_no seems to be length in the seed specs?!  why are we checking this?!
 int
 find_line (evalresp_log_t *log, const char **seed, char *sep, int blkt_no, int fld_no, char *return_line)
 {
-  int lcl_blkt, lcl_fld, length;
+  int lcl_blkt, lcl_fld;
+  char line[MAXLINELEN];
+  const char *lookahead;
 
   while (!end_of_string (seed))
   {
-    // TODO - do we need to suppress error logging in failures here
-    if ((length = read_line (log, seed, sep, &lcl_blkt, &lcl_fld, return_line)))
+    drop_comments_and_blank_lines (seed);
+    if (end_of_string (seed))
+      break;
+
+    lookahead = *seed;
+    slurp_line (&lookahead, line, MAXLINELEN);
+    remove_tabs_and_crlf (line);
+    if (!parse_pref (&lcl_blkt, &lcl_fld, line, log))
     {
-      if (blkt_no == lcl_blkt && fld_no == lcl_fld)
-        return length;
+      evalresp_log (log, ERROR, 0, "unrecognised prefix: '%s'", line);
+      return UNDEF_PREFIX;
+    } else if (blkt_no == lcl_blkt && fld_no == lcl_fld) {
+      return read_line(log, seed, sep, &lcl_blkt, &lcl_fld, return_line);
+    } else {
+      *seed = lookahead;
     }
   }
 
-  // TODO - extra error here?
   return 0;
 }
 
@@ -162,7 +173,8 @@ find_field (evalresp_log_t *log, const char **seed, char *sep,
   char line[MAXLINELEN];
 
   /* first get the next non-comment line */
-  find_line (log, seed, sep, blkt_no, fld_no, line);
+  if (0 >= find_line (log, seed, sep, blkt_no, fld_no, line))
+    return 0;
 
   /* then parse the field that the user wanted from the line find_line returned */
   // TODO - how come length(return_field) isn't passed in here (or to this function)?
@@ -177,8 +189,8 @@ read_channel_header (evalresp_log_t *log, const char **seed, evalresp_channel *c
   char field[MAXFLDLEN], line[MAXLINELEN];
 
   /* check to make sure a non-comment field exists and it is the sta/chan/date info.
-     Note:  If it is the first channel (and, as a result, FirstLine contains a null
-     string), then we have to get the next line.  Otherwise, the FirstLine argument
+     Note:  If it is the first channel (and, as a result, first_line contains a null
+     string), then we have to get the next line.  Otherwise, the first_line argument
      has been set by a previous call to 'next_line' in another routine (when parsing
      a previous station-channel-network tuple's information) and this is the
      line that should be parsed to get the station name */
@@ -260,7 +272,7 @@ read_channel_header (evalresp_log_t *log, const char **seed, evalresp_channel *c
   else
   {
     evalresp_log (log, ERROR, 0,
-                  "get_line; %s%s%3.3d%s%3.3d%s[%2.2d|%2.2d]%s%2.2d", "blkt",
+                  "read_channel_header; %s%s%3.3d%s%3.3d%s[%2.2d|%2.2d]%s%2.2d", "blkt",
                   " and fld numbers do not match expected values\n\tblkt_xpt=B",
                   52, ", blkt_found=B", blkt_no, "; fld_xpt=F", 3, 4,
                   ", fld_found=F", fld_no);
@@ -561,7 +573,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
     evalresp_log (log, ERROR, 0, "parse_coeff; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
-                  ", fld_found=F", FirstField);
+                  ", fld_found=F", first_field);
     return /*TODO PARSE_ERROR should be returned */;
   }
 
@@ -606,7 +618,6 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
   }
 
   /* next should be the units (in first, then out) */
-
   if (0 > find_line (log, seed, ":", blkt_read, check_fld++, line))
   {
     return; /*TODO */
@@ -637,16 +648,13 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
   blkt_ptr->blkt_info.coeff.nnumer = ncoeffs;
 
   /* remember to allocate enough space for the number of coefficients to follow */
-
   blkt_ptr->blkt_info.coeff.numer = alloc_double (ncoeffs, log);
 
   /* set the expected field to the current value (8 or 9 for [54] or [44])
      to the current value + 2 (10 or 11 for [54] or [44] respectively) */
-
   check_fld += 2;
 
   /* the number of denominators */
-
   if (0 > find_field (log, seed, ":", blkt_read, check_fld, 0, field))
   {
     return /*TODO PARSE_ERROR should be returned */;
@@ -727,11 +735,11 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
     evalresp_log (log, ERROR, 0, "parse_coeff; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
-                  ", fld_found=F", FirstField);
+                  ", fld_found=F", first_field);
     return /*TODO PARSE_ERROR should be returned */;
   }
 
-  blkt_read = FirstField == 3 ? 54 : 44;
+  blkt_read = first_field == 3 ? 54 : 44;
 
   if (0 > parse_field (first_line, 0, field, log))
   {
@@ -758,7 +766,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
   }
 
   /* set the check-field counter to the next expected field */
-  check_fld = FirstField + 1;
+  check_fld = first_field + 1;
 
   /* then, if is a B054F04, get the stage sequence number (from the file) */
   if (check_fld == 4)
@@ -874,17 +882,17 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
     evalresp_log (log, ERROR, 0, "parse_list; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
-                  ", fld_found=F", FirstField);
+                  ", fld_found=F", first_field);
     return /*TODO PARSE_ERROR should be returned */;
   }
 
-  blkt_read = FirstField == 3 ? 55 : 45;
+  blkt_read = first_field == 3 ? 55 : 45;
 
   /* set the check-field counter to the next expected field */
-  check_fld = FirstField;
+  check_fld = first_field;
 
-  /* then, if first is a B055F03, get the stage sequence number (from FirstLine)
-     and the input units (from the file), otherwise, get the input units (from FirstLine) */
+  /* then, if first is a B055F03, get the stage sequence number (from first_line)
+     and the input units (from the file), otherwise, get the input units (from first_line) */
 
   if (check_fld == 3)
   {
@@ -1067,7 +1075,7 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
     evalresp_log (log, ERROR, 0, "parse_generic; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
-                  ", fld_found=F", FirstField);
+                  ", fld_found=F", first_field);
     return /*TODO PARSE_ERROR should be returned */;
   }
 
@@ -1075,10 +1083,10 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
 
   /* set the check-field counter to the next expected field */
 
-  check_fld = FirstField;
+  check_fld = first_field;
 
-  /* then, if first is a B056F03, get the stage sequence number (from FirstLine)
-     and the input units (from the file), otherwise, get the input units (from FirstLine) */
+  /* then, if first is a B056F03, get the stage sequence number (from first_line)
+     and the input units (from the file), otherwise, get the input units (from first_line) */
 
   if (check_fld == 3)
   {
@@ -1096,7 +1104,7 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
   }
   else
   {
-    strncpy (line, FirstLine, MAXLINELEN);
+    strncpy (line, first_line, MAXLINELEN);
     check_fld++;
   }
 
@@ -1184,15 +1192,15 @@ read_deci (evalresp_log_t *log, const char **seed, int first_field, char *first_
     evalresp_log (log, ERROR, 0, "parse_deci; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
-                  ", fld_found=F", FirstField);
+                  ", fld_found=F", first_field);
     return PARSE_ERROR;
   }
 
   blkt_read = first_field == 3 ? 57 : 47;
   check_fld = first_field;
 
-  /* then, if first is a B057F03, get the stage sequence number (from FirstLine)
-     and the input units (from the file), otherwise, get the input units (from FirstLine) */
+  /* then, if first is a B057F03, get the stage sequence number (from first_line)
+     and the input units (from the file), otherwise, get the input units (from first_line) */
 
   if (check_fld == 3)
   {
@@ -1274,15 +1282,15 @@ read_gain (evalresp_log_t *log, const char **seed, int first_field, char *first_
     evalresp_log (log, ERROR, 0, "parse_gain; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 of F05",
-                  ", fld_found=F", FirstField);
+                  ", fld_found=F", first_field);
     return PARSE_ERROR;
   }
 
   blkt_read = first_field == 3 ? 58 : 48;
   check_fld = first_field;
 
-  /* then, if first is a B058F03, get the stage sequence number (from FirstLine)
-     and the symmetry type (from the file), otherwise, get the symmetry (from FirstLine) */
+  /* then, if first is a B058F03, get the stage sequence number (from first_line)
+     and the symmetry type (from the file), otherwise, get the symmetry (from first_line) */
 
   if (check_fld == 3)
   {
@@ -1354,15 +1362,15 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
     evalresp_log (log, ERROR, 0, "parse_fir; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
-                  ", fld_found=F", FirstField);
+                  ", fld_found=F", first_field);
     return /*TODO PARSE_ERROR should be returned */;
   }
 
   blkt_read = first_field == 3 ? 61 : 41;
   check_fld = first_field;
 
-  /* then, if first is a B061F03, get the stage sequence number (from FirstLine)
-     and the symmetry type (from the file), otherwise, get the symmetry (from FirstLine) */
+  /* then, if first is a B061F03, get the stage sequence number (from first_line)
+     and the symmetry type (from the file), otherwise, get the symmetry (from first_line) */
 
   if (check_fld == 3)
   {
@@ -1488,7 +1496,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
     evalresp_log (log, ERROR, 0, "parse_ref; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03",
-                  ", fld_found=F", FirstField);
+                  ", fld_found=F", first_field);
     return /*TODO PARSE_ERROR should be returned */;
   }
   if (0 > parse_field (first_line, 0, field, log))
@@ -1657,7 +1665,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
     evalresp_log (log, ERROR, 0, "parse_polynomial; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
-                  ", fld_found=F", FirstField);
+                  ", fld_found=F", first_field);
     return /*TODO PARSE_ERROR should be returned */;
   }
 
@@ -1986,7 +1994,7 @@ read_channel_data (evalresp_log_t *log, const char **seed, evalresp_channel *cha
     }
   }
   free_stages (tmp_stage);
-  return (FirstField);
+  return (first_field);
 }
 
 // non-static only for testing
@@ -2083,24 +2091,26 @@ int
 evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
                            const evalresp_filter *filter, evalresp_channels **channels)
 {
-  const char *seed_ptr = seed_or_xml;
+  const char *read_ptr = seed_or_xml;
   evalresp_channel *channel;
   int status = EVALRESP_OK;
 
   *channels = NULL;
   if (!(status = alloc_channels (log, channels)))
   {
-    if (!(channel = calloc (1, sizeof (*channel))))
-    {
-      evalresp_log (log, ERROR, ERROR, "Cannot allocate memory for channel");
-      status = EVALRESP_MEM;
-    }
-    else
-    {
-      // TODO - add status handling
-      read_channel_header (log, &seed_ptr, channel);
-      read_channel_data (log, &seed_ptr, channel);
-      status = add_channel (log, channel, *channels);
+    while (!status && !end_of_string(&read_ptr)) {
+      if (!(channel = calloc (1, sizeof (*channel))))
+      {
+        evalresp_log (log, ERROR, ERROR, "Cannot allocate memory for channel");
+        status = EVALRESP_MEM;
+      }
+      else
+      {
+        // TODO - add error handling
+        read_channel_header (log, &read_ptr, channel);
+        read_channel_data (log, &read_ptr, channel);
+        status = add_channel (log, channel, *channels);
+      }
     }
   }
 
