@@ -38,11 +38,11 @@
  * @returns Responses.
  */
 evalresp_response *evresp (char *stalst, char *chalst, char *net_code,
-                         char *locidlst, char *date_time, char *units,
-                         char *file, double *freqs, int nfreqs, char *rtype,
-                         char *verbose, int start_stage, int stop_stage,
-                         int stdio_flag, int useTotalSensitivityFlag,
-                         double x_for_b62, int xml_flag, evalresp_log_t *log);
+                           char *locidlst, char *date_time, char *units,
+                           char *file, double *freqs, int nfreqs, char *rtype,
+                           char *verbose, int start_stage, int stop_stage,
+                           int stdio_flag, int useTotalSensitivityFlag,
+                           double x_for_b62, int xml_flag, evalresp_log_t *log);
 
 /**
  * @private
@@ -73,14 +73,14 @@ evalresp_response *evresp (char *stalst, char *chalst, char *net_code,
  * @returns Responses.
  */
 evalresp_response *evresp_itp (char *stalst, char *chalst, char *net_code,
-                             char *locidlst, char *date_time, char *units,
-                             char *file, double *freqs, int nfreqs,
-                             char *rtype, char *verbose, int start_stage,
-                             int stop_stage, int stdio_flag,
-                             int listinterp_out_flag, int listinterp_in_flag,
-                             double listinterp_tension,
-                             int useTotalSensitivityFlag, double x_for_b62,
-                             int xml_flag, evalresp_log_t *log);
+                               char *locidlst, char *date_time, char *units,
+                               char *file, double *freqs, int nfreqs,
+                               char *rtype, char *verbose, int start_stage,
+                               int stop_stage, int stdio_flag,
+                               int listinterp_out_flag, int listinterp_in_flag,
+                               double listinterp_tension,
+                               int useTotalSensitivityFlag, double x_for_b62,
+                               int xml_flag, evalresp_log_t *log);
 
 /**
  * @private

@@ -11,7 +11,7 @@
 
 #include "./public_api.h"
 #include "./public_channels.h"
-#include "./public_responses.h"
 #include "./public_compat.h"
+#include "./public_responses.h"
 
 #endif

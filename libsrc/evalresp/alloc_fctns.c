@@ -26,7 +26,7 @@ alloc_complex (int npts, evalresp_log_t *log)
     {
       evalresp_log (log, ERROR, 0,
                     "alloc_complex; malloc() failed for (complex) vector");
-      return NULL;  // TODO - return EVALRESP_MEM
+      return NULL; // TODO - return EVALRESP_MEM
     }
   }
   else
@@ -47,7 +47,7 @@ alloc_string_array (int nstrings, evalresp_log_t *log)
     {
       evalresp_log (log, ERROR, 0,
                     "alloc_string_array; malloc() failed for (string_array)");
-      return NULL;  // TODO - return EVALRESP_MEM
+      return NULL; // TODO - return EVALRESP_MEM
     }
     if ((sl_ptr->strings = (char **)malloc (nstrings * sizeof (char *))) == (char **)NULL)
     {

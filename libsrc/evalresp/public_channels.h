@@ -42,11 +42,11 @@ typedef struct
  */
 typedef struct
 {
-  int nnumer;     /**< Length of numerator vector . (blockettes [44] or [54]) */
-  int ndenom;     /**< Length of denominator vector. */
-  double *numer;  /**< Numerator vector. */
-  double *denom;  /**< Denominator vector. */
-  double h0;      /**< Sensitivity. */ /* IGD this field is new v 3.2.17 */
+  int nnumer;                     /**< Length of numerator vector . (blockettes [44] or [54]) */
+  int ndenom;                     /**< Length of denominator vector. */
+  double *numer;                  /**< Numerator vector. */
+  double *denom;                  /**< Denominator vector. */
+  double h0; /**< Sensitivity. */ /* IGD this field is new v 3.2.17 */
 } evalresp_coeff;
 
 /**
@@ -244,9 +244,9 @@ typedef struct
 } evalresp_channels;
 
 int
-alloc_channels(evalresp_log_t *log, evalresp_channels **channels);
+alloc_channels (evalresp_log_t *log, evalresp_channels **channels);
 
 void
-free_channels(evalresp_channels **channels);
+free_channels (evalresp_channels **channels);
 
 #endif
