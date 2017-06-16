@@ -1,4 +1,9 @@
 
+all: Makefile
+	$(MAKE) libmxmlev.a
+
+install: Makefile
+	$(MAKE) install-libmxmlev.a
 %: Makefile
 	$(MAKE) $*
 
@@ -6,4 +11,6 @@ Makefile: configure
 	./configure --prefix=$(INSTALL_DIR)
 
 configure:
+	rm -rf m4
+	mkdir m4
 	autoreconf -fi
