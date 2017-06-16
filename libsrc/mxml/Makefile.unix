@@ -8,9 +8,9 @@ install: Makefile
 	$(MAKE) $*
 
 Makefile: configure
-	./configure --prefix=`readline -f $(INSTALL_DIR)`
+	./configure --prefix=`readline -f $(INSTALL_DIR)` --disable-threads
 
-configure:
+configure: configure.ac
 	rm -rf m4
 	mkdir m4
 	-autoreconf -fi
