@@ -72,20 +72,22 @@ START_TEST (test_file_to_char)
 {
   char *seed = NULL;
   FILE *in = NULL;
-  fail_if(open_file(NULL, "./data/RESP.IU.ANMO..BHZ", &in));
-  fail_if(file_to_char(NULL, in, &seed));
-  int len = strlen(seed);
-  fail_if(len != 192511, "wrong length: %d", len);  // value checks with wc
+  fail_if (open_file (NULL, "./data/RESP.IU.ANMO..BHZ", &in));
+  fail_if (file_to_char (NULL, in, &seed));
+  int len = strlen (seed);
+  fail_if (len != 192511, "wrong length: %d", len); // value checks with wc
   char start[40];
   int i;
-  for (i = 0; i < 39; ++i) start[i] = seed[i];
+  for (i = 0; i < 39; ++i)
+    start[i] = seed[i];
   start[40] = '\0';
-  fail_if(strncmp(seed, "#\t\t<< IRIS SEED Reader, Release 4.16 >>", 39),
-      "Bad start: '%s'", start);
+  fail_if (strncmp (seed, "#\t\t<< IRIS SEED Reader, Release 4.16 >>", 39),
+           "Bad start: '%s'", start);
   char end[40];
-  for (i = 0; i < 40; ++i) end[i] = seed[i+192511-40];
-  fail_if(strncmp(seed+192511-40, "of calibrations:                0\r\n#\t\t\r\n", 40),
-      "Bad end: '%s'", end);
+  for (i = 0; i < 40; ++i)
+    end[i] = seed[i + 192511 - 40];
+  fail_if (strncmp (seed + 192511 - 40, "of calibrations:                0\r\n#\t\t\r\n", 40),
+           "Bad end: '%s'", end);
 }
 END_TEST
 

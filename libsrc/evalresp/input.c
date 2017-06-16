@@ -2060,28 +2060,31 @@ file_to_char (evalresp_log_t *log, FILE *in, char **seed)
   return status;
 }
 
-int evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
-                               const evalresp_filter *filter, evalresp_channels **channels)
+int
+evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
+                           const evalresp_filter *filter, evalresp_channels **channels)
 {
   const char *seed_ptr = seed_or_xml;
   evalresp_channel channel;
   int status = EVALRESP_OK;
 
-  status = read_channel_header(log, &seed_ptr, &channel);
-  status = read_channel_data(log, &seed_ptr, &channel);
+  status = read_channel_header (log, &seed_ptr, &channel);
+  status = read_channel_data (log, &seed_ptr, &channel);
 
   return status;
 }
 
-int evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
-                               const evalresp_filter *filter, evalresp_channels **channels)
+int
+evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
+                           const evalresp_filter *filter, evalresp_channels **channels)
 {
   char *seed = NULL;
   int status = EVALRESP_OK;
-  if (!(status = file_to_char(log, file, &seed))) {
+  if (!(status = file_to_char (log, file, &seed)))
+  {
     status = evalresp_char_to_channels (log, seed, filter, channels);
   }
-  free(seed);
+  free (seed);
   return status;
 }
 
@@ -2091,11 +2094,13 @@ evalresp_filename_to_channels (evalresp_log_t *log, const char *filename,
 {
   FILE *file = NULL;
   int status = EVALRESP_OK;
-  if (!(status = open_file (log, filename, &file))) {
+  if (!(status = open_file (log, filename, &file)))
+  {
     status = evalresp_file_to_channels (log, file, filter, channels);
   }
-  if (file) {
-    fclose(file);
+  if (file)
+  {
+    fclose (file);
   }
   return status;
 }
