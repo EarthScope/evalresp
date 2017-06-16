@@ -8,7 +8,7 @@ install: Makefile
 	$(MAKE) $*
 
 Makefile: configure
-	./configure --prefix=$(INSTALL_DIR)
+	./configure --prefix=`readline -f $(INSTALL_DIR)`
 
 configure:
 	rm -rf m4
