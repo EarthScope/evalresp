@@ -2,7 +2,7 @@
 .PHONY: all clean
 
 all:
-	$(MAKE) -C mxml
+	$(MAKE) -C mxml -f Makefile.unix
 	$(MAKE) -C evalresp_log -f Makefile.unix
 	$(MAKE) -C spline -f Makefile.unix
 	$(MAKE) -C evalresp -f Makefile.unix

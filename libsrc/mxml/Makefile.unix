@@ -1,0 +1,9 @@
+
+%: Makefile
+	$(MAKE) $*
+
+Makefile: configure
+	./configure --prefix=$(INSTALL_DIR)
+
+configure:
+	autoreconf -fi
