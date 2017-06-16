@@ -11,8 +11,9 @@
 // code from parse_fctns.c heavily refactored to (1) parse all lines and (2)
 // read from strings rather than files.
 
-void // non-static only for testing
-    slurp_line (char **seed, char *line, int maxlen)
+// non-static only for testing
+void
+slurp_line (const char **seed, char *line, int maxlen)
 {
   int i = 0;
   for (;;)
@@ -38,7 +39,7 @@ void // non-static only for testing
 }
 
 static int
-end_of_string (char **seed)
+end_of_string (const char **seed)
 {
   return !**seed;
 }
@@ -56,9 +57,10 @@ blank_line (char *line)
 }
 
 static void
-drop_comments_and_blank_lines (char **seed)
+drop_comments_and_blank_lines (const char **seed)
 {
-  char line[MAXLINELEN], *lookahead;
+  char line[MAXLINELEN];
+  const char *lookahead;
   while (!end_of_string (seed))
   {
     lookahead = *seed;
@@ -92,8 +94,8 @@ remove_tabs_and_crlf (char *line)
 // TODO - return_line must be MAXLINELEN in size (document this?  allocate it?)
 // TODO - fld_no seems to be length in the seed specs?!  why are we checking this?!
 // TODO - warning - original returned fld_no (as return val as well as param)
-int
-read_line (evalresp_log_t *log, char **seed, char *sep,
+static int
+read_line (evalresp_log_t *log, const char **seed, char *sep,
            int *blkt_no, int *fld_no, char *return_line)
 {
   char *lcl_ptr, line[MAXLINELEN];
@@ -127,13 +129,14 @@ read_line (evalresp_log_t *log, char **seed, char *sep,
   return strlen (return_line);
 }
 
+// non-static only for testing
 // this was "get_line"
 // TODO - return code is both length and error number (do we use these different error values?)
 // TODO - error handling without multiple returns
 // TODO - return_line must be MAXLINELEN in size (document this?  allocate it?)
 // TODO - fld_no seems to be length in the seed specs?!  why are we checking this?!
 int
-find_line (evalresp_log_t *log, char **seed, char *sep, int blkt_no, int fld_no, char *return_line)
+find_line (evalresp_log_t *log, const char **seed, char *sep, int blkt_no, int fld_no, char *return_line)
 {
   int lcl_blkt, lcl_fld, length;
 
@@ -151,8 +154,9 @@ find_line (evalresp_log_t *log, char **seed, char *sep, int blkt_no, int fld_no,
   return 0;
 }
 
+// non-static only for testing
 int
-find_field (evalresp_log_t *log, char **seed, char *sep,
+find_field (evalresp_log_t *log, const char **seed, char *sep,
             int blkt_no, int fld_no, int fld_wanted, char *return_field)
 {
   char line[MAXLINELEN];
@@ -166,8 +170,8 @@ find_field (evalresp_log_t *log, char **seed, char *sep,
 }
 
 // this was "read_channel"
-int
-read_channel_header (evalresp_log_t *log, char **seed, evalresp_channel *chan)
+static int
+read_channel_header (evalresp_log_t *log, const char **seed, evalresp_channel *chan)
 {
   int blkt_no, fld_no;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -284,8 +288,8 @@ read_channel_header (evalresp_log_t *log, char **seed, evalresp_channel *chan)
 
 // this was parse_pz
 // TODO - add error returns
-void
-read_pz (evalresp_log_t *log, char **seed, int first_field, char *first_line,
+static void
+read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
          evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, check_fld, blkt_read, npoles, nzeros;
@@ -498,8 +502,8 @@ read_pz (evalresp_log_t *log, char **seed, int first_field, char *first_line,
 }
 
 // was is_IIR_coeffs
-int
-is_iir_coeffs (char **seed)
+static int
+is_iir_coeffs (const char **seed)
 {
   /* IGD Very narrow-specified function.                                    */
   /* It is used to check out if we are using a FIR or IIR coefficients      */
@@ -513,7 +517,8 @@ is_iir_coeffs (char **seed)
   /* 1 if it is IIR; 0 if it is not IIR;                                    */
   /*  it returns 0  in case of the error, so use it with a caution!         */
   /* IGD I.Dricker ISTI i.dricker@isti.com 07/00 for evalresp 3.2.17        */
-  char line[MAXLINELEN], *lookahead = *seed;
+  char line[MAXLINELEN];
+  const char *lookahead = *seed;
   int i, denoms;
   for (i = 0; i < 80; i++)
   { /* enough to make sure we are getting field 10; not to much to get to the next blockette */
@@ -540,8 +545,8 @@ is_iir_coeffs (char **seed)
 
 // this was parse_iir_coeff
 /*TODO this should be int to error out the rest of the  processing */
-void
-read_iir_coeff (evalresp_log_t *log, char **seed, int first_field, char *first_line,
+static void
+read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
                 evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, check_fld, blkt_read, ncoeffs, ndenom;
@@ -706,8 +711,8 @@ read_iir_coeff (evalresp_log_t *log, char **seed, int first_field, char *first_l
 
 // this was "parse_coeff"
 /*TODO this should be int to error out the rest of the  processing */
-void
-read_coeff (evalresp_log_t *log, char **seed, int first_field, char *first_line,
+static void
+read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
             evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, check_fld, blkt_read, ncoeffs, ndenom;
@@ -854,12 +859,13 @@ read_coeff (evalresp_log_t *log, char **seed, int first_field, char *first_line,
 
 // this was "parse_list"
 /*TODO this should be int to error out the rest of the  processing */
-void
-read_list (evalresp_log_t *log, char **seed, int first_field, char *first_line,
+static void
+read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
            evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, blkt_read, check_fld, nresp, format;
-  char field[MAXFLDLEN], line[MAXLINELEN], *lookahead;
+  char field[MAXFLDLEN], line[MAXLINELEN];
+  const char *lookahead;
 
   blkt_ptr->type = LIST;
 
@@ -1045,8 +1051,8 @@ read_list (evalresp_log_t *log, char **seed, int first_field, char *first_line,
 }
 
 // this was "parse_generic"
-void
-read_generic (evalresp_log_t *log, char **seed, int first_field, char *first_line,
+static void
+read_generic (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
               evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, blkt_read, check_fld, ncorners;
@@ -1161,8 +1167,8 @@ read_generic (evalresp_log_t *log, char **seed, int first_field, char *first_lin
 }
 
 // this was "parse_deci"
-int
-read_deci (evalresp_log_t *log, char **seed, int first_field, char *first_line,
+static int
+read_deci (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
            evalresp_blkt *blkt_ptr)
 {
   int blkt_read, check_fld, sequence_no = 0;
@@ -1252,8 +1258,8 @@ read_deci (evalresp_log_t *log, char **seed, int first_field, char *first_line,
 }
 
 // this was "parse_gain"
-int
-read_gain (evalresp_log_t *log, char **seed, int first_field, char *first_line,
+static int
+read_gain (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
            evalresp_blkt *blkt_ptr)
 {
   int i, blkt_read, check_fld, sequence_no = 0, nhist = 0;
@@ -1334,8 +1340,8 @@ read_gain (evalresp_log_t *log, char **seed, int first_field, char *first_line,
 }
 
 // this was "parse_fir"
-void
-read_fir (evalresp_log_t *log, char **seed, int first_field, char *first_line,
+static void
+read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
           evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, blkt_read, check_fld, ncoeffs;
@@ -1462,8 +1468,8 @@ read_fir (evalresp_log_t *log, char **seed, int first_field, char *first_line,
 }
 
 // this was "parse_ref"
-void
-read_ref (evalresp_log_t *log, char **seed, int first_field, char *first_line,
+static void
+read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
           evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int this_blkt_no = 60, blkt_no, fld_no, i, j, prev_blkt_no = 60;
@@ -1637,8 +1643,8 @@ read_ref (evalresp_log_t *log, char **seed, int first_field, char *first_line,
 }
 
 // this was "parse_polynomial"
-void
-read_polynomial (evalresp_log_t *log, char **seed, int first_field, char *first_line,
+static void
+read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
                  evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, blkt_read, check_fld, ncoeffs;
@@ -1814,8 +1820,8 @@ read_polynomial (evalresp_log_t *log, char **seed, int first_field, char *first_
 }
 
 // this was "parse_channel"
-int
-read_channel_data (evalresp_log_t *log, char **seed, evalresp_channel *chan)
+static int
+read_channel_data (evalresp_log_t *log, const char **seed, evalresp_channel *chan)
 {
 
   // TODO - assigments for no_units and tmp_stage2 made blindly to fix compiler warning.  bug?
@@ -1983,6 +1989,7 @@ read_channel_data (evalresp_log_t *log, char **seed, evalresp_channel *chan)
   return (FirstField);
 }
 
+// non-static only for testing
 int
 open_file (evalresp_log_t *log, const char *filename, FILE **in)
 {
@@ -1995,6 +2002,7 @@ open_file (evalresp_log_t *log, const char *filename, FILE **in)
   return status;
 }
 
+// non-static only for testing
 int
 file_to_char (evalresp_log_t *log, FILE *in, char **seed)
 {
@@ -2052,9 +2060,42 @@ file_to_char (evalresp_log_t *log, FILE *in, char **seed)
   return status;
 }
 
+int evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
+                               const evalresp_filter *filter, evalresp_channels **channels)
+{
+  const char *seed_ptr = seed_or_xml;
+  evalresp_channel channel;
+  int status = EVALRESP_OK;
+
+  status = read_channel_header(log, &seed_ptr, &channel);
+  status = read_channel_data(log, &seed_ptr, &channel);
+
+  return status;
+}
+
+int evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
+                               const evalresp_filter *filter, evalresp_channels **channels)
+{
+  char *seed = NULL;
+  int status = EVALRESP_OK;
+  if (!(status = file_to_char(log, file, &seed))) {
+    status = evalresp_char_to_channels (log, seed, filter, channels);
+  }
+  free(seed);
+  return status;
+}
+
 int
 evalresp_filename_to_channels (evalresp_log_t *log, const char *filename,
-                               const evalresp_filter *filter, evalresp_channels *channels)
+                               const evalresp_filter *filter, evalresp_channels **channels)
 {
-  return EVALRESP_OK;
+  FILE *file = NULL;
+  int status = EVALRESP_OK;
+  if (!(status = open_file (log, filename, &file))) {
+    status = evalresp_file_to_channels (log, file, filter, channels);
+  }
+  if (file) {
+    fclose(file);
+  }
+  return status;
 }

@@ -9,14 +9,14 @@
 // private functions exposed only for testing
 
 void
-slurp_line (char **seed, char *line, int maxlen);
+slurp_line (const char **seed, char *line, int maxlen);
 
 int
-find_line (evalresp_log_t *log, char **seed, char *sep,
+find_line (evalresp_log_t *log, const char **seed, char *sep,
            int blkt_no, int fld_no, char *return_line);
 
 int
-find_field (evalresp_log_t *log, char **seed, char *sep,
+find_field (evalresp_log_t *log, const char **seed, char *sep,
             int blkt_no, int fld_no, int fld_wanted, char *return_field);
 
 int

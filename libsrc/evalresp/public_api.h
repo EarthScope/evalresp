@@ -26,13 +26,13 @@ int evalresp_free_filter (evalresp_filter **filter);
 int evalresp_add_constraint (evalresp_log_t *log, const char *snclq, evalresp_filter **filter);
 
 int evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
-                               const evalresp_filter *filter, evalresp_channels *channels);
+                               const evalresp_filter *filter, evalresp_channels **channels);
 
 int evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
-                               const evalresp_filter *filter, evalresp_channels *channels);
+                               const evalresp_filter *filter, evalresp_channels **channels);
 
 int evalresp_filename_to_channels (evalresp_log_t *log, const char *filename,
-                                   const evalresp_filter *filter, evalresp_channels *channels);
+                                   const evalresp_filter *filter, evalresp_channels **channels);
 
 typedef struct
 {

@@ -8,8 +8,8 @@
 
 START_TEST (test_slurp_line)
 {
-  char *input = "line 1\nline 2\nline 3";
-  char *start = input;
+  const char *input = "line 1\nline 2\nline 3";
+  const char *start = input;
   char line[MAXLINELEN];
   slurp_line (&start, line, MAXLINELEN);
   fail_if (strcmp (line, "line 1\n"), "Slurped [%s] (size %d)", line, strlen (line));
@@ -26,8 +26,8 @@ END_TEST
 
 START_TEST (test_slurp_line_buffer)
 {
-  char *input = "\n1\n12\n123\n";
-  char *start = input;
+  const char *input = "\n1\n12\n123\n";
+  const char *start = input;
   char line[3];
   slurp_line (&start, line, 3);
   fail_if (strcmp (line, "\n"), "Slurped [%s] (size %d)", line, strlen (line));
@@ -40,7 +40,7 @@ END_TEST
 
 START_TEST (test_find_line)
 {
-  char *input = "B999F99 name1: value1 \nB666F66 name2: value2", *start;
+  const char *input = "B999F99 name1: value1 \nB666F66 name2: value2", *start;
   char line[MAXLINELEN];
   start = input;
   fail_if (!find_line (NULL, &start, ":", 999, 99, line));
@@ -55,7 +55,7 @@ END_TEST
 
 START_TEST (test_find_field)
 {
-  char *input = "B999F99 name1: a b c \nB666F66 name2: value2", *start;
+  const char *input = "B999F99 name1: a b c \nB666F66 name2: value2", *start;
   char field[MAXLINELEN];
   start = input;
   fail_if (!find_field (NULL, &start, ":", 999, 99, 0, field));
@@ -65,6 +65,27 @@ START_TEST (test_find_field)
   start = input;
   fail_if (!find_field (NULL, &start, ":", 999, 99, 2, field));
   fail_if (strcmp (field, "c"), "'%s'", field);
+}
+END_TEST
+
+START_TEST (test_file_to_char)
+{
+  char *seed = NULL;
+  FILE *in = NULL;
+  fail_if(open_file(NULL, "./data/RESP.IU.ANMO..BHZ", &in));
+  fail_if(file_to_char(NULL, in, &seed));
+  int len = strlen(seed);
+  fail_if(len != 192511, "wrong length: %d", len);  // value checks with wc
+  char start[40];
+  int i;
+  for (i = 0; i < 39; ++i) start[i] = seed[i];
+  start[40] = '\0';
+  fail_if(strncmp(seed, "#\t\t<< IRIS SEED Reader, Release 4.16 >>", 39),
+      "Bad start: '%s'", start);
+  char end[40];
+  for (i = 0; i < 40; ++i) end[i] = seed[i+192511-40];
+  fail_if(strncmp(seed+192511-40, "of calibrations:                0\r\n#\t\t\r\n", 40),
+      "Bad end: '%s'", end);
 }
 END_TEST
 
@@ -78,6 +99,7 @@ main (void)
   tcase_add_test (tc, test_slurp_line_buffer);
   tcase_add_test (tc, test_find_line);
   tcase_add_test (tc, test_find_field);
+  tcase_add_test (tc, test_file_to_char);
   suite_add_tcase (s, tc);
   SRunner *sr = srunner_create (s);
   srunner_set_xml (sr, "check-log.xml");
