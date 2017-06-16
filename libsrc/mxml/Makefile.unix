@@ -1,0 +1,16 @@
+
+all: Makefile
+	$(MAKE) libmxmlev.a
+
+install: Makefile
+	$(MAKE) install-libmxmlev.a
+%: Makefile
+	$(MAKE) $*
+
+Makefile: configure
+	./configure --prefix=`readline -f $(INSTALL_DIR)` --disable-threads
+
+configure: configure.ac
+	rm -rf m4
+	mkdir m4
+	-autoreconf -fi

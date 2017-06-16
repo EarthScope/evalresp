@@ -76,10 +76,10 @@ typedef struct evalresp_log
  * @brief an enum of the different logging levels to expect in evalresp
  */
 typedef enum log_level_ref {
-  ERROR = 0, /**< level when reporting an error */
-  WARN,      /**< level when a warning occurs */
-  INFO,      /**< the level that information should be presented to user */
-  DEBUG      /**< level for the most information */
+  EV_ERROR = 0, /**< level when reporting an error */
+  EV_WARN,      /**< level when a warning occurs */
+  EV_INFO,      /**< the level that information should be presented to user */
+  EV_DEBUG      /**< level for the most information */
 } log_level_ref_t;
 
 /**
@@ -132,7 +132,7 @@ extern const char *log_level_strs[];
     //do something
     if ((retval = something()))
     {
-        evalresp_log(log, WARN, 2, "Something didn't work right, something"
+        evalresp_log(log, EV_WARN, 2, "Something didn't work right, something"
                                    " at line %d failed with error cod %d",
                                    __LINE__ - 4, retval);
     }
@@ -227,7 +227,7 @@ extern int evalresp_log (evalresp_log_t *log, int level, int verbosity, char *fm
     //do something
     if ((retval = something()))
     {
-        evalresp_log_basic(log_func, NULL, WARN, 2, "Something didn't work right, something"
+        evalresp_log_basic(log_func, NULL, EV_WARN, 2, "Something didn't work right, something"
                                    " at line %d failed with error cod %d",
                                    __LINE__ - 4, retval);
     }
