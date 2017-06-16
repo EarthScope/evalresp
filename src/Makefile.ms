@@ -24,3 +24,7 @@ xml2resp.exe: $(XR_OBJS)
 
 .c.obj:
 	cl /c /I ..\libsrc\mxml\ /I ..\libsrc\ /Wall $<
+
+clean:
+	del evalresp.exe $(EV_OBJS)
+	del xml2resp.exe $(XR_OBJS)
