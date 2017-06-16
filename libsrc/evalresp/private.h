@@ -573,11 +573,12 @@ double get_double (char *in_line, evalresp_log_t *log);
  *          condition is signaled. If the user specified that 'default' unit
  *          should be used, then the line is simply saved as the value of
  *          'SEEDUNITS[DEFAULT]' and no check of the units is made.
+ * @param[in] channel Current channel.
  * @param[in] line Incoming line.
  * @param[in] log Logging structure.
  * @see units
  */
-int check_units (char *line, evalresp_log_t *log);
+int check_units (evalresp_channel *channel, char *line, evalresp_log_t *log);
 
 /**
  * @private

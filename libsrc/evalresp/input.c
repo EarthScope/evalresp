@@ -290,7 +290,7 @@ read_channel_header (evalresp_log_t *log, const char **seed, evalresp_channel *c
 // TODO - add error returns
 static void
 read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
-         evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
+         evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, check_fld, blkt_read, npoles, nzeros;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -361,7 +361,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
   {
     return; /*TODO */
   }
-  stage_ptr->input_units = check_units (line, log);
+  stage_ptr->input_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -371,7 +371,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
   {
     return; /*TODO */
   }
-  stage_ptr->output_units = check_units (line, log);
+  stage_ptr->output_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -547,7 +547,7 @@ is_iir_coeffs (const char **seed)
 /*TODO this should be int to error out the rest of the  processing */
 static void
 read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
-                evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
+                evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, check_fld, blkt_read, ncoeffs, ndenom;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -611,7 +611,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
   {
     return; /*TODO */
   }
-  stage_ptr->input_units = check_units (line, log);
+  stage_ptr->input_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -621,7 +621,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
   {
     return; /*TODO */
   }
-  stage_ptr->output_units = check_units (line, log);
+  stage_ptr->output_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -713,7 +713,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
 /*TODO this should be int to error out the rest of the  processing */
 static void
 read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
-            evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
+            evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, check_fld, blkt_read, ncoeffs, ndenom;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -777,7 +777,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
   {
     return; /*TODO */
   }
-  stage_ptr->input_units = check_units (line, log);
+  stage_ptr->input_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -787,7 +787,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
   {
     return; /*TODO */
   }
-  stage_ptr->output_units = check_units (line, log);
+  stage_ptr->output_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->output_units)
   {
     return; /* TODO */
@@ -861,7 +861,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
 /*TODO this should be int to error out the rest of the  processing */
 static void
 read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
-           evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
+           evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, blkt_read, check_fld, nresp, format;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -908,7 +908,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
 
   /* the units (in first, then out) */
 
-  stage_ptr->input_units = check_units (line, log);
+  stage_ptr->input_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -918,7 +918,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
   {
     return; /*TODO */
   }
-  stage_ptr->output_units = check_units (line, log);
+  stage_ptr->output_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -1053,7 +1053,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
 // this was "parse_generic"
 static void
 read_generic (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
-              evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
+              evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, blkt_read, check_fld, ncorners;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -1102,7 +1102,7 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
 
   /* next (from the file) should be the units (in first, then out) */
 
-  stage_ptr->input_units = check_units (line, log);
+  stage_ptr->input_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -1112,7 +1112,7 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
   {
     return; /*TODO */
   }
-  stage_ptr->output_units = check_units (line, log);
+  stage_ptr->output_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -1342,7 +1342,7 @@ read_gain (evalresp_log_t *log, const char **seed, int first_field, char *first_
 // this was "parse_fir"
 static void
 read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
-          evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
+          evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, blkt_read, check_fld, ncoeffs;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -1420,7 +1420,7 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
   {
     return; /*TODO */
   }
-  stage_ptr->input_units = check_units (line, log);
+  stage_ptr->input_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -1430,7 +1430,7 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
   {
     return; /*TODO */
   }
-  stage_ptr->output_units = check_units (line, log);
+  stage_ptr->output_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -1470,7 +1470,7 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
 // this was "parse_ref"
 static void
 read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
-          evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
+          evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int this_blkt_no = 60, blkt_no, fld_no, i, j, prev_blkt_no = 60;
   int nstages, stage_num, nresps, lcl_nstages;
@@ -1554,19 +1554,19 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
       {
       case 43:
         blkt_ptr = alloc_pz (log);
-        read_pz (log, seed, first_field, first_line, blkt_ptr, this_stage);
+        read_pz (log, seed, first_field, first_line, channel, blkt_ptr, this_stage);
         break;
       case 44:
         blkt_ptr = alloc_fir (log);
-        read_coeff (log, seed, first_field, first_line, blkt_ptr, this_stage);
+        read_coeff (log, seed, first_field, first_line, channel, blkt_ptr, this_stage);
         break;
       case 45:
         blkt_ptr = alloc_list (log);
-        read_list (log, seed, first_field, first_line, blkt_ptr, this_stage);
+        read_list (log, seed, first_field, first_line, channel, blkt_ptr, this_stage);
         break;
       case 46:
         blkt_ptr = alloc_generic (log);
-        read_generic (log, seed, first_field, first_line, blkt_ptr, this_stage);
+        read_generic (log, seed, first_field, first_line, channel, blkt_ptr, this_stage);
         break;
       case 47:
         blkt_ptr = alloc_deci (log);
@@ -1578,7 +1578,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
         break;
       case 41:
         blkt_ptr = alloc_fir (log);
-        read_fir (log, seed, first_field, first_line, blkt_ptr, this_stage);
+        read_fir (log, seed, first_field, first_line, channel, blkt_ptr, this_stage);
         break;
       case 60:
         evalresp_log (log, ERROR, 0,
@@ -1645,7 +1645,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
 // this was "parse_polynomial"
 static void
 read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
-                 evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
+                 evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int i, blkt_read, check_fld, ncoeffs;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -1705,7 +1705,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
   {
     return; /*TODO */
   }
-  stage_ptr->input_units = check_units (line, log);
+  stage_ptr->input_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -1715,7 +1715,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
   {
     return; /*TODO */
   }
-  stage_ptr->output_units = check_units (line, log);
+  stage_ptr->output_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -1821,7 +1821,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
 
 // this was "parse_channel"
 static int
-read_channel_data (evalresp_log_t *log, const char **seed, evalresp_channel *chan)
+read_channel_data (evalresp_log_t *log, const char **seed, evalresp_channel *channel)
 {
 
   // TODO - assignments for no_units and tmp_stage2 made blindly to fix compiler warning.  bug?
@@ -1837,8 +1837,8 @@ read_channel_data (evalresp_log_t *log, const char **seed, evalresp_channel *cha
   last_stage = (evalresp_stage *)NULL;
   curr_seq_no = last_seq_no = 0;
   this_stage = alloc_stage (log);
-  chan->first_stage = this_stage;
-  chan->nstages++;
+  channel->first_stage = this_stage;
+  channel->nstages++;
   tmp_stage = alloc_stage (log);
 
   /* start processing the response information */
@@ -1849,7 +1849,7 @@ read_channel_data (evalresp_log_t *log, const char **seed, evalresp_channel *cha
     {
     case 53:
       blkt_ptr = alloc_pz (log);
-      read_pz (log, seed, first_field, first_line, blkt_ptr, tmp_stage);
+      read_pz (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       curr_seq_no = tmp_stage->sequence_no;
       break;
     case 54:
@@ -1858,23 +1858,23 @@ read_channel_data (evalresp_log_t *log, const char **seed, evalresp_channel *cha
       if (is_iir_coeffs (seed))
       { /*IGD New IIR case */
         blkt_ptr = alloc_coeff (log);
-        read_iir_coeff (log, seed, first_field, first_line, blkt_ptr, tmp_stage);
+        read_iir_coeff (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       }
       else
       { /*IGD this is the original case here */
         blkt_ptr = alloc_fir (log);
-        read_coeff (log, seed, first_field, first_line, blkt_ptr, tmp_stage);
+        read_coeff (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       }
       curr_seq_no = tmp_stage->sequence_no;
       break;
     case 55:
       blkt_ptr = alloc_list (log);
-      read_list (log, seed, first_field, first_line, blkt_ptr, tmp_stage);
+      read_list (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       curr_seq_no = tmp_stage->sequence_no;
       break;
     case 56:
       blkt_ptr = alloc_generic (log);
-      read_generic (log, seed, first_field, first_line, blkt_ptr, tmp_stage);
+      read_generic (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       curr_seq_no = tmp_stage->sequence_no;
       break;
     case 57:
@@ -1888,18 +1888,18 @@ read_channel_data (evalresp_log_t *log, const char **seed, evalresp_channel *cha
     case 60: /* never see a blockette [41], [43]-[48] without a [60], parse_ref handles these */
       blkt_ptr = alloc_ref (log);
       tmp_stage2 = alloc_stage (log);
-      read_ref (log, seed, first_field, first_line, blkt_ptr, tmp_stage2);
+      read_ref (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage2);
       curr_seq_no = tmp_stage2->sequence_no;
       tmp_stage2->first_blkt = blkt_ptr;
       break;
     case 61:
       blkt_ptr = alloc_fir (log);
-      read_fir (log, seed, first_field, first_line, blkt_ptr, tmp_stage);
+      read_fir (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       curr_seq_no = tmp_stage->sequence_no;
       break;
     case 62:
       blkt_ptr = alloc_polynomial (log);
-      read_polynomial (log, seed, first_field, first_line, blkt_ptr, tmp_stage);
+      read_polynomial (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       curr_seq_no = tmp_stage->sequence_no;
       break;
     default:
@@ -1923,7 +1923,7 @@ read_channel_data (evalresp_log_t *log, const char **seed, evalresp_channel *cha
       }
       else if (last_seq_no != curr_seq_no)
       {
-        chan->nstages++;
+        channel->nstages++;
         last_stage = this_stage;
         this_stage = alloc_stage (log);
         this_stage->sequence_no = curr_seq_no;
@@ -1950,14 +1950,14 @@ read_channel_data (evalresp_log_t *log, const char **seed, evalresp_channel *cha
       if (!read_blkt++)
       {
         this_stage = tmp_stage2;
-        free_stages (chan->first_stage);
-        chan->first_stage = this_stage;
+        free_stages (channel->first_stage);
+        channel->first_stage = this_stage;
       }
       else if (last_seq_no != curr_seq_no)
       {
         this_stage = tmp_stage2;
         last_stage->next_stage = this_stage;
-        chan->nstages++;
+        channel->nstages++;
       }
       else
       {
@@ -1972,7 +1972,7 @@ read_channel_data (evalresp_log_t *log, const char **seed, evalresp_channel *cha
       while (this_stage->next_stage != (evalresp_stage *)NULL)
       {
         this_stage = this_stage->next_stage;
-        chan->nstages++;
+        channel->nstages++;
       }
       blkt_ptr = this_stage->first_blkt;
       while (blkt_ptr->next_blkt != (evalresp_blkt *)NULL)

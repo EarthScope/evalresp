@@ -642,18 +642,18 @@ get_double (char *in_line, evalresp_log_t *log)
 }
 
 int
-check_units (char *line, evalresp_log_t *log)
+check_units (evalresp_channel *channel, char *line, evalresp_log_t *log)
 {
   int i, first_flag = 0;
 
-  if (!strlen (GblChanPtr->first_units))
+  if (!strlen (channel->first_units))
   {
     first_flag = 1;
-    strncpy (GblChanPtr->first_units, line, MAXLINELEN);
+    strncpy (channel->first_units, line, MAXLINELEN);
     unitScaleFact = 1.0; /* global variable used to change to MKS units */
   }
   else
-    strncpy (GblChanPtr->last_units, line, MAXLINELEN);
+    strncpy (channel->last_units, line, MAXLINELEN);
 
   if (def_units_flag)
   {

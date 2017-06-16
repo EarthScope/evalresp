@@ -157,7 +157,7 @@ parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalre
   {
     return; /*TODO */
   }
-  stage_ptr->input_units = check_units (line, log);
+  stage_ptr->input_units = check_units (GblChanPtr, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -167,7 +167,7 @@ parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalre
   {
     return; /*TODO */
   }
-  stage_ptr->output_units = check_units (line, log);
+  stage_ptr->output_units = check_units (GblChanPtr, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -386,7 +386,7 @@ parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr,
   {
     return; /*TODO */
   }
-  stage_ptr->input_units = check_units (line, log);
+  stage_ptr->input_units = check_units (GblChanPtr, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -396,7 +396,7 @@ parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr,
   {
     return; /*TODO */
   }
-  stage_ptr->output_units = check_units (line, log);
+  stage_ptr->output_units = check_units (GblChanPtr, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -573,7 +573,7 @@ parse_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eva
   {
     return; /*TODO */
   }
-  stage_ptr->input_units = check_units (line, log);
+  stage_ptr->input_units = check_units (GblChanPtr, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -583,7 +583,7 @@ parse_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eva
   {
     return; /*TODO */
   }
-  stage_ptr->output_units = check_units (line, log);
+  stage_ptr->output_units = check_units (GblChanPtr, line, log);
   if (UNDEF_UNITS == stage_ptr->output_units)
   {
     return; /* TODO */
@@ -719,7 +719,7 @@ parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eval
 
   /* the units (in first, then out) */
 
-  stage_ptr->input_units = check_units (line, log);
+  stage_ptr->input_units = check_units (GblChanPtr, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -729,7 +729,7 @@ parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eval
   {
     return; /*TODO */
   }
-  stage_ptr->output_units = check_units (line, log);
+  stage_ptr->output_units = check_units (GblChanPtr, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -936,7 +936,7 @@ parse_generic (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, e
 
   /* next (from the file) should be the units (in first, then out) */
 
-  stage_ptr->input_units = check_units (line, log);
+  stage_ptr->input_units = check_units (GblChanPtr, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -946,7 +946,7 @@ parse_generic (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, e
   {
     return; /*TODO */
   }
-  stage_ptr->output_units = check_units (line, log);
+  stage_ptr->output_units = check_units (GblChanPtr, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -1292,7 +1292,7 @@ parse_polynomial (FILE *fptr, evalresp_blkt *blkt_ptr,
   {
     return; /*TODO */
   }
-  stage_ptr->input_units = check_units (line, log);
+  stage_ptr->input_units = check_units (GblChanPtr, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -1302,7 +1302,7 @@ parse_polynomial (FILE *fptr, evalresp_blkt *blkt_ptr,
   {
     return; /*TODO */
   }
-  stage_ptr->output_units = check_units (line, log);
+  stage_ptr->output_units = check_units (GblChanPtr, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -1511,7 +1511,7 @@ parse_fir (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalr
   {
     return; /*TODO */
   }
-  stage_ptr->input_units = check_units (line, log);
+  stage_ptr->input_units = check_units (GblChanPtr, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
@@ -1521,7 +1521,7 @@ parse_fir (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalr
   {
     return; /*TODO */
   }
-  stage_ptr->output_units = check_units (line, log);
+  stage_ptr->output_units = check_units (GblChanPtr, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
     return; /* TODO */
