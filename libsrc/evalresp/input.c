@@ -155,9 +155,13 @@ find_line (evalresp_log_t *log, const char **seed, char *sep, int blkt_no, int f
     {
       evalresp_log (log, ERROR, 0, "unrecognised prefix: '%s'", line);
       return UNDEF_PREFIX;
-    } else if (blkt_no == lcl_blkt && fld_no == lcl_fld) {
-      return read_line(log, seed, sep, &lcl_blkt, &lcl_fld, return_line);
-    } else {
+    }
+    else if (blkt_no == lcl_blkt && fld_no == lcl_fld)
+    {
+      return read_line (log, seed, sep, &lcl_blkt, &lcl_fld, return_line);
+    }
+    else
+    {
       *seed = lookahead;
     }
   }
@@ -2098,7 +2102,8 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
   *channels = NULL;
   if (!(status = alloc_channels (log, channels)))
   {
-    while (!status && !end_of_string(&read_ptr)) {
+    while (!status && !end_of_string (&read_ptr))
+    {
       if (!(channel = calloc (1, sizeof (*channel))))
       {
         evalresp_log (log, ERROR, ERROR, "Cannot allocate memory for channel");
