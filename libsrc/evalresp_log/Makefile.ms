@@ -1,5 +1,5 @@
 
-OBJ=log.obj examples/to_file.obj
+OBJ=log.obj examples\to_file.obj
 
 all: evalresp_log.lib
 
