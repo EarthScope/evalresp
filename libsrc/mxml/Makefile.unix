@@ -13,4 +13,4 @@ Makefile: configure
 configure:
 	rm -rf m4
 	mkdir m4
-	autoreconf -fi
+	-autoreconf -fi
