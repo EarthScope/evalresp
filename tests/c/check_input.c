@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "evalresp/public_api.h"
 #include "evalresp/input.h"
+#include "evalresp/public_api.h"
 #include "evalresp/ugly.h"
 
 START_TEST (test_slurp_line)
@@ -95,8 +95,8 @@ END_TEST
 START_TEST (test_filename_to_channels)
 {
   evalresp_channels *channels = NULL;
-  fail_if(evalresp_filename_to_channels(NULL, "./data/RESP.IU.ANMO..BHZ", NULL,
-      &channels));
+  fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", NULL,
+                                          &channels));
 }
 END_TEST
 

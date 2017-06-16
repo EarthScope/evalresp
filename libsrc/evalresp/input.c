@@ -2062,15 +2062,19 @@ file_to_char (evalresp_log_t *log, FILE *in, char **seed)
 }
 
 static int
-add_channel(evalresp_log_t *log, evalresp_channel *channel, evalresp_channels *channels) {
+add_channel (evalresp_log_t *log, evalresp_channel *channel, evalresp_channels *channels)
+{
   int status = EVALRESP_OK;
   channels->nchannels++;
-  if (!(channels->channels = realloc(channels->channels,
-      sizeof(evalresp_channel*) * channels->nchannels))) {
-    evalresp_log(log, ERROR, ERROR, "Cannot reallocate channels memory");
+  if (!(channels->channels = realloc (channels->channels,
+                                      sizeof (evalresp_channel *) * channels->nchannels)))
+  {
+    evalresp_log (log, ERROR, ERROR, "Cannot reallocate channels memory");
     status = EVALRESP_MEM;
-  } else {
-    channels->channels[channels->nchannels-1] = channel;
+  }
+  else
+  {
+    channels->channels[channels->nchannels - 1] = channel;
   }
   return status;
 }
@@ -2086,14 +2090,17 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
   *channels = NULL;
   if (!(status = alloc_channels (log, channels)))
   {
-    if (!(channel = calloc(1, sizeof(*channel)))) {
-      evalresp_log(log, ERROR, ERROR, "Cannot allocate memory for channel");
+    if (!(channel = calloc (1, sizeof (*channel))))
+    {
+      evalresp_log (log, ERROR, ERROR, "Cannot allocate memory for channel");
       status = EVALRESP_MEM;
-    } else {
+    }
+    else
+    {
       // TODO - add status handling
       read_channel_header (log, &seed_ptr, channel);
       read_channel_data (log, &seed_ptr, channel);
-      status = add_channel(log, channel, *channels);
+      status = add_channel (log, channel, *channels);
     }
   }
 
