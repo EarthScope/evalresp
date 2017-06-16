@@ -51,7 +51,7 @@ int evalresp_channels_to_responses (evalresp_log_t *log, const evalresp_channels
                                     evalresp_responses **responses);
 
 typedef enum {
-  evalresp_frequency_format,
+  evalresp_fap_format,
   evalresp_amplitude_format,
   evalresp_phase_format,
   evalresp_complex_format
