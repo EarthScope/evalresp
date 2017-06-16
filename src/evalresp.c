@@ -110,7 +110,7 @@ main (int argc, char *argv[])
   char *datime;
   double incr, freq_lims[2], temp_val, *freqs;
   double val;
-  struct response *first;
+  evalresp_response *first;
   char *minfstr, *maxfstr, *numfstr;
   char param_err_msgstr[] = "%s: missing option to argument '%s'";
   int useTotalSensitivityFlag = 0; /* IGD 01/29/10 */

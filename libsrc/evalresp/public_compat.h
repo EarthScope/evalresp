@@ -37,7 +37,7 @@
  * @remark Calls evresp_itp() but with listinterp_tension set to 0.
  * @returns Responses.
  */
-struct response *evresp (char *stalst, char *chalst, char *net_code,
+evalresp_response *evresp (char *stalst, char *chalst, char *net_code,
                          char *locidlst, char *date_time, char *units,
                          char *file, double *freqs, int nfreqs, char *rtype,
                          char *verbose, int start_stage, int stop_stage,
@@ -72,7 +72,7 @@ struct response *evresp (char *stalst, char *chalst, char *net_code,
  * @param[in] log Logging structure.
  * @returns Responses.
  */
-struct response *evresp_itp (char *stalst, char *chalst, char *net_code,
+evalresp_response *evresp_itp (char *stalst, char *chalst, char *net_code,
                              char *locidlst, char *date_time, char *units,
                              char *file, double *freqs, int nfreqs,
                              char *rtype, char *verbose, int start_stage,

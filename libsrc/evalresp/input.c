@@ -1824,7 +1824,7 @@ static int
 read_channel_data (evalresp_log_t *log, const char **seed, evalresp_channel *chan)
 {
 
-  // TODO - assigments for no_units and tmp_stage2 made blindly to fix compiler warning.  bug?
+  // TODO - assignments for no_units and tmp_stage2 made blindly to fix compiler warning.  bug?
   int blkt_no, read_blkt = 0, no_units = 0;
   int curr_seq_no, last_seq_no;
   evalresp_blkt *blkt_ptr, *last_blkt = NULL;
@@ -2040,6 +2040,7 @@ file_to_char (evalresp_log_t *log, FILE *in, char **seed)
       }
     }
   }
+  // TODO - avoid this extra byte alloc by reading less above?
   if (!status && used_len == buffer_len)
   {
     if (!(*seed = realloc (*seed, ++buffer_len)))
@@ -2061,6 +2062,28 @@ file_to_char (evalresp_log_t *log, FILE *in, char **seed)
 }
 
 int
+alloc_channels(evalresp_log_t *log, evalresp_channels **channels)
+{
+  int status = EVALRESP_OK;
+  if (!(*channels = calloc(1, sizeof(**channels)))) {
+    evalresp_log(log, ERROR, ERROR, "Cannot allocate space for channels");
+    status = EVALRESP_MEM;
+  }
+  return status;
+}
+
+void
+free_channels(evalresp_channels **channels)
+{
+  int i;
+  for (i = 0; i < (*channels)->nchannels; ++i) {
+
+  }
+  free(*channels);
+  *channels = NULL;
+}
+
+int
 evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
                            const evalresp_filter *filter, evalresp_channels **channels)
 {
@@ -2068,8 +2091,17 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
   evalresp_channel channel;
   int status = EVALRESP_OK;
 
-  status = read_channel_header (log, &seed_ptr, &channel);
-  status = read_channel_data (log, &seed_ptr, &channel);
+  *channels = NULL;
+  if (!(status = alloc_channels(log, channels))) {
+    if (!(status = read_channel_header (log, &seed_ptr, &channel)))
+    {
+      status = read_channel_data (log, &seed_ptr, &channel);
+    }
+  }
+
+  if (status) {
+    free_channels(channels);
+  }
 
   return status;
 }

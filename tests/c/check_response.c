@@ -62,7 +62,7 @@ START_TEST (test_response)
   char tmpdir[] = "/tmp/check_response_XXXXXX";
   int n_freq = 19, i;
   double lof = 0.1, hif = 10, delta, *freqs = NULL, err;
-  struct response *response = NULL;
+  evalresp_response *response = NULL;
   evalresp_log_t *log = NULL;
 
   fail_if (!mkdtemp (tmpdir));

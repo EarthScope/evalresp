@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "evalresp/public_channels.h"
+#include "evalresp/public_responses.h"
 #include "evalresp_log/log.h"
 
 #define EVALRESP_OK 0
@@ -37,23 +38,15 @@ int evalresp_filename_to_channels (evalresp_log_t *log, const char *filename,
 typedef struct
 {
 
-} evalresp_result;
-
-typedef struct
-{
-
-} evalresp_results;
-
-typedef struct
-{
-
 } evalresp_eval_options;
 
-int evalresp_channel_to_result (evalresp_log_t *log, const evalresp_channel *channel,
-                                const evalresp_eval_options *eval_options, evalresp_result **result);
+int evalresp_channel_to_response (evalresp_log_t *log, const evalresp_channel *channel,
+                                const evalresp_eval_options *eval_options,
+                                evalresp_responses **responses);
 
-int evalresp_channels_to_results (evalresp_log_t *log, const evalresp_channels *channels,
-                                  const evalresp_eval_options *eval_options, evalresp_results **results);
+int evalresp_channels_to_responses (evalresp_log_t *log, const evalresp_channels *channels,
+                                  const evalresp_eval_options *eval_options,
+                                  evalresp_responses **responses);
 
 typedef enum {
   evalresp_frequency_format,
@@ -62,10 +55,10 @@ typedef enum {
   evalresp_complex_format
 } evalresp_format;
 
-int evalresp_result_to_char (evalresp_log_t *log, const evalresp_result *result,
+int evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *response,
                              evalresp_format format, char **output);
 
-int evalresp_result_to_file (evalresp_log_t *log, const evalresp_result *result,
+int evalresp_response_to_file (evalresp_log_t *log, const evalresp_response *response,
                              evalresp_format format, const char *filename);
 
 typedef struct
@@ -73,7 +66,7 @@ typedef struct
 
 } evalresp_output_options;
 
-int evalresp_results_to_dir (evalresp_log_t *log, const evalresp_results *results,
+int evalresp_responses_to_dir (evalresp_log_t *log, const evalresp_responses *responses,
                              evalresp_output_options *output_options, const char *dir);
 
 int evalresp_dir_to_dir (evalresp_log_t *log, const char *dir,

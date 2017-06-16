@@ -3,6 +3,7 @@
 #define EVALRESP_PUBLIC_CHANNELS_H
 
 #include "evalresp/ugly.h"
+#include "evalresp_log/log.h"
 
 // TODO - all comments about private need to be changed (and group)
 
@@ -11,16 +12,27 @@
 /**
  * @private
  * @ingroup evalresp_private
+ * @brief Complex data type.
+ */
+typedef struct
+{
+  double real; /**< Real part. */
+  double imag; /**< Imaginary part. */
+} evalresp_complex;
+
+/**
+ * @private
+ * @ingroup evalresp_private
  * @brief A Response (Poles & Zeros) blockette.
  */
 typedef struct
 {
-  int nzeros;                /**< Number of zeros (blockettes [43] or [53]). */
-  int npoles;                /**< Number of poles. */
-  double a0;                 /**< Poles and zeros normaliztion factor. */
-  double a0_freq;            /**< Poles and zeros normaliztion frequency. */
-  struct evr_complex *zeros; /**< Array of zeros (complex). */
-  struct evr_complex *poles; /**< Array of poles (complex). */
+  int nzeros;              /**< Number of zeros (blockettes [43] or [53]). */
+  int npoles;              /**< Number of poles. */
+  double a0;               /**< Poles and zeros normaliztion factor. */
+  double a0_freq;          /**< Poles and zeros normaliztion frequency. */
+  evalresp_complex *zeros; /**< Array of zeros (complex). */
+  evalresp_complex *poles; /**< Array of poles (complex). */
 } evalresp_pole_zero;
 
 /**
@@ -30,11 +42,11 @@ typedef struct
  */
 typedef struct
 {
-  int nnumer;                     /**< Length of numerator vector . (blockettes [44] or [54]) */
-  int ndenom;                     /**< Length of denominator vector. */
-  double *numer;                  /**< Numerator vector. */
-  double *denom;                  /**< Denominator vector. */
-  double h0; /**< Sensitivity. */ /* IGD this field is new v 3.2.17 */
+  int nnumer;     /**< Length of numerator vector . (blockettes [44] or [54]) */
+  int ndenom;     /**< Length of denominator vector. */
+  double *numer;  /**< Numerator vector. */
+  double *denom;  /**< Denominator vector. */
+  double h0;      /**< Sensitivity. */ /* IGD this field is new v 3.2.17 */
 } evalresp_coeff;
 
 /**
@@ -230,5 +242,11 @@ typedef struct
   int nchannels;
   evalresp_channel **channels;
 } evalresp_channels;
+
+int
+alloc_channels(evalresp_log_t *log, evalresp_channels **channels);
+
+void
+free_channels(evalresp_channels **channels);
 
 #endif

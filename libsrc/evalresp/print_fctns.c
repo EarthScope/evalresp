@@ -347,7 +347,7 @@ print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
 }
 
 void
-print_resp_itp (double *freqs, int nfreqs, struct response *first,
+print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
                 char *rtype, int stdio_flag, int listinterp_out_flag,
                 double listinterp_tension, int unwrap_flag, evalresp_log_t *log)
 {
@@ -355,8 +355,8 @@ print_resp_itp (double *freqs, int nfreqs, struct response *first,
   double amp, pha;
   char filename[MAXLINELEN];
   FILE *fptr1, *fptr2;
-  struct response *resp;
-  struct evr_complex *output;
+  evalresp_response *resp;
+  evalresp_complex *output;
   double *amp_arr;
   double *pha_arr;
   double *freq_arr;
@@ -368,7 +368,7 @@ print_resp_itp (double *freqs, int nfreqs, struct response *first,
   double phas1 = 0.0;
 
   resp = first;
-  while (resp != (struct response *)NULL)
+  while (resp != (evalresp_response *)NULL)
   {
     output = resp->rvec;
     if ((0 == strcasecmp (rtype, "AP")) || (0 == strcasecmp (rtype, "FAP")))
@@ -588,7 +588,7 @@ print_resp_itp (double *freqs, int nfreqs, struct response *first,
 }
 
 void
-print_resp (double *freqs, int nfreqs, struct response *first, char *rtype,
+print_resp (double *freqs, int nfreqs, evalresp_response *first, char *rtype,
             int stdio_flag, evalresp_log_t *log)
 {
   print_resp_itp (freqs, nfreqs, first, rtype, stdio_flag, 0, 0.0, 0, log);

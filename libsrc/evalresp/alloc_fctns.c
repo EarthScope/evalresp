@@ -15,24 +15,22 @@
 #include "evalresp/public_channels.h"
 #include "evalresp_log/log.h"
 
-struct evr_complex *
+evalresp_complex *
 alloc_complex (int npts, evalresp_log_t *log)
 {
-  struct evr_complex *cptr;
+  evalresp_complex *cptr;
 
   if (npts)
   {
-    if ((cptr = (struct evr_complex *)malloc (npts * sizeof (struct evr_complex))) == (struct evr_complex *)NULL)
+    if (!(cptr = malloc (npts * sizeof (*cptr))))
     {
       evalresp_log (log, ERROR, 0,
                     "alloc_complex; malloc() failed for (complex) vector");
-      return NULL;
-      /*XXX error_exit(OUT_OF_MEMORY,
-                    "alloc_complex; malloc() failed for (complex) vector"); */
+      return NULL;  // TODO - return EVALRESP_MEM
     }
   }
   else
-    cptr = (struct evr_complex *)NULL;
+    cptr = NULL;
 
   return (cptr);
 }
@@ -45,14 +43,11 @@ alloc_string_array (int nstrings, evalresp_log_t *log)
 
   if (nstrings)
   {
-    if ((sl_ptr = (struct string_array *)malloc (
-             sizeof (struct string_array))) == (struct string_array *)NULL)
+    if (!(sl_ptr = (struct string_array *)malloc (sizeof (struct string_array))))
     {
       evalresp_log (log, ERROR, 0,
                     "alloc_string_array; malloc() failed for (string_array)");
-      return NULL;
-      /*XXX error_exit(OUT_OF_MEMORY,
-                    "alloc_string_array; malloc() failed for (string_array)"); */
+      return NULL;  // TODO - return EVALRESP_MEM
     }
     if ((sl_ptr->strings = (char **)malloc (nstrings * sizeof (char *))) == (char **)NULL)
     {
@@ -78,20 +73,20 @@ alloc_scn (evalresp_log_t *log)
 {
   struct scn *scn_ptr;
 
-  if ((scn_ptr = (struct scn *)malloc (sizeof (struct scn))) == (struct scn *)NULL)
+  if (!(scn_ptr = (struct scn *)malloc (sizeof (struct scn))))
   {
     evalresp_log (log, ERROR, 0, "alloc_scn; malloc() failed for (scn)");
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY, "alloc_scn; malloc() failed for (scn)"); */
   }
-  if ((scn_ptr->station = (char *)malloc (STALEN * sizeof (char))) == (char *)NULL)
+  if (!(scn_ptr->station = (char *)malloc (STALEN * sizeof (char))))
   {
     evalresp_log (log, ERROR, 0, "alloc_scn; malloc() failed for (station)");
     free (scn_ptr);
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY, "alloc_scn; malloc() failed for (station)"); */
   }
-  if ((scn_ptr->network = (char *)malloc (NETLEN * sizeof (char))) == (char *)NULL)
+  if (!(scn_ptr->network = (char *)malloc (NETLEN * sizeof (char))))
   {
     evalresp_log (log, ERROR, 0, "alloc_scn; malloc() failed for (station)");
     free (scn_ptr->station);
@@ -99,7 +94,7 @@ alloc_scn (evalresp_log_t *log)
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY, "alloc_scn; malloc() failed for (station)"); */
   }
-  if ((scn_ptr->locid = (char *)malloc (LOCIDLEN * sizeof (char))) == (char *)NULL)
+  if (!(scn_ptr->locid = (char *)malloc (LOCIDLEN * sizeof (char))))
   {
     evalresp_log (log, ERROR, 0, "alloc_scn; malloc() failed for (channel)");
     free (scn_ptr->network);
@@ -108,7 +103,7 @@ alloc_scn (evalresp_log_t *log)
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY, "alloc_scn; malloc() failed for (channel)"); */
   }
-  if ((scn_ptr->channel = (char *)malloc (CHALEN * sizeof (char))) == (char *)NULL)
+  if (!(scn_ptr->channel = (char *)malloc (CHALEN * sizeof (char))))
   {
     evalresp_log (log, ERROR, 0, "alloc_scn; malloc() failed for (channel)");
     free (scn_ptr->channel);
@@ -128,16 +123,16 @@ alloc_scn (evalresp_log_t *log)
   return (scn_ptr);
 }
 
-struct response *
+evalresp_response *
 alloc_response (int npts, evalresp_log_t *log)
 {
-  struct response *rptr;
-  struct evr_complex *cvec;
+  evalresp_response *rptr;
+  evalresp_complex *cvec;
   int k;
 
   if (npts)
   {
-    if ((rptr = (struct response *)malloc (sizeof (struct response))) == (struct response *)NULL)
+    if (!(rptr = (evalresp_response *)malloc (sizeof (evalresp_response))))
     {
       evalresp_log (log, ERROR, 0,
                     "alloc_response; malloc() failed for (response) vector");
@@ -156,13 +151,13 @@ alloc_response (int npts, evalresp_log_t *log)
       cvec[k].real = 0.0;
       cvec[k].imag = 0.0;
     }
-    rptr->next = (struct response *)NULL;
+    rptr->next = (evalresp_response *)NULL;
     /*IGD add freqs to this structure to process blockette 55 */
     rptr->nfreqs = 0;
     rptr->freqs = (double *)NULL;
   }
   else
-    rptr = (struct response *)NULL;
+    rptr = (evalresp_response *)NULL;
 
   return (rptr);
 }
@@ -175,7 +170,7 @@ alloc_scn_list (int nscn, evalresp_log_t *log)
 
   if (nscn)
   {
-    if ((sc_ptr = (struct scn_list *)malloc (sizeof (struct scn_list))) == (struct scn_list *)NULL)
+    if (!(sc_ptr = (struct scn_list *)malloc (sizeof (struct scn_list))))
     {
       evalresp_log (log, ERROR, 0,
                     "alloc_scn_list; malloc() failed for (scn_list)");
@@ -212,7 +207,7 @@ alloc_file_list (evalresp_log_t *log)
 {
   struct file_list *flst_ptr;
 
-  if ((flst_ptr = (struct file_list *)malloc (sizeof (struct file_list))) == (struct file_list *)NULL)
+  if (!(flst_ptr = (struct file_list *)malloc (sizeof (struct file_list))))
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_file_list; malloc() failed for (file_list)");
@@ -231,8 +226,7 @@ alloc_matched_files (evalresp_log_t *log)
 {
   struct matched_files *flst_ptr;
 
-  if ((flst_ptr = (struct matched_files *)malloc (
-           sizeof (struct matched_files))) == (struct matched_files *)NULL)
+  if (!(flst_ptr = (struct matched_files *)malloc (sizeof (struct matched_files))))
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_matched_files; malloc() failed for (matched_files)");
@@ -254,7 +248,7 @@ alloc_double (int npts, evalresp_log_t *log)
 
   if (npts)
   {
-    if ((dptr = (double *)malloc (npts * sizeof (double))) == (double *)NULL)
+    if (!(dptr = (double *)malloc (npts * sizeof (double))))
     {
       evalresp_log (log, ERROR, 0,
                     "alloc_double; malloc() failed for (double) vector");
@@ -276,7 +270,7 @@ alloc_char (int len, evalresp_log_t *log)
 
   if (len)
   {
-    if ((cptr = (char *)malloc (len * sizeof (char))) == (char *)NULL)
+    if (!(cptr = (char *)malloc (len * sizeof (char))))
     {
       evalresp_log (log, ERROR, 0,
                     "alloc_char; malloc() failed for (char) vector");
@@ -318,7 +312,7 @@ alloc_pz (evalresp_log_t *log)
 {
   evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
+  if (!(blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))))
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_pz; malloc() failed for (Poles & Zeros) blkt structure");
@@ -328,9 +322,9 @@ alloc_pz (evalresp_log_t *log)
   }
 
   blkt_ptr->type = 0;
-  blkt_ptr->next_blkt = (evalresp_blkt *)NULL;
-  blkt_ptr->blkt_info.pole_zero.zeros = (struct evr_complex *)NULL;
-  blkt_ptr->blkt_info.pole_zero.poles = (struct evr_complex *)NULL;
+  blkt_ptr->next_blkt = NULL;
+  blkt_ptr->blkt_info.pole_zero.zeros = NULL;
+  blkt_ptr->blkt_info.pole_zero.poles = NULL;
   blkt_ptr->blkt_info.pole_zero.nzeros = 0;
   blkt_ptr->blkt_info.pole_zero.npoles = 0;
 
@@ -342,7 +336,7 @@ alloc_coeff (evalresp_log_t *log)
 {
   evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
+  if (!(blkt_ptr = (evalresp_blkt *)malloc (sizeof (*blkt_ptr))))
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_coeff; malloc() failed for (FIR) blkt structure");
@@ -352,9 +346,9 @@ alloc_coeff (evalresp_log_t *log)
   }
 
   blkt_ptr->type = 0;
-  blkt_ptr->next_blkt = (evalresp_blkt *)NULL;
-  blkt_ptr->blkt_info.coeff.numer = (double *)NULL;
-  blkt_ptr->blkt_info.coeff.denom = (double *)NULL;
+  blkt_ptr->next_blkt = NULL;
+  blkt_ptr->blkt_info.coeff.numer = NULL;
+  blkt_ptr->blkt_info.coeff.denom = NULL;
   blkt_ptr->blkt_info.coeff.nnumer = 0;
   blkt_ptr->blkt_info.coeff.ndenom = 0;
   blkt_ptr->blkt_info.coeff.h0 = 1.0; /*IGD this field is new for v 3.2.17*/
@@ -367,7 +361,7 @@ alloc_polynomial (evalresp_log_t *log)
 {
   evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (evalresp_blkt *)calloc (1, sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
+  if (!(blkt_ptr = (evalresp_blkt *)calloc (1, sizeof (evalresp_blkt))))
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_polynomial; calloc() failed for polynomial blkt structure");
@@ -384,7 +378,7 @@ alloc_fir (evalresp_log_t *log)
 {
   evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
+  if (!(blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))))
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_fir; malloc() failed for (FIR) blkt structure");
@@ -407,7 +401,7 @@ alloc_ref (evalresp_log_t *log)
 {
   evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
+  if (!(blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))))
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_ref; malloc() failed for (Resp. Ref.) blkt structure");
@@ -430,7 +424,7 @@ alloc_gain (evalresp_log_t *log)
 {
   evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
+  if (!(blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))))
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_gain; malloc() failed for (Gain) blkt structure");
@@ -452,7 +446,7 @@ alloc_list (evalresp_log_t *log)
 {
   evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
+  if (!(blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))))
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_list; malloc() failed for (List) blkt structure");
@@ -476,7 +470,7 @@ alloc_generic (evalresp_log_t *log)
 {
   evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
+  if (!(blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))))
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_generic; malloc() failed for (Generic) blkt structure");
@@ -499,7 +493,7 @@ alloc_deci (evalresp_log_t *log)
 {
   evalresp_blkt *blkt_ptr;
 
-  if ((blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))) == (evalresp_blkt *)NULL)
+  if (!(blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))))
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_deci; malloc() failed for (Decimation) blkt structure");
@@ -524,7 +518,7 @@ alloc_stage (evalresp_log_t *log)
 {
   evalresp_stage *stage_ptr;
 
-  if ((stage_ptr = (evalresp_stage *)malloc (sizeof (evalresp_stage))) == (evalresp_stage *)NULL)
+  if (!(stage_ptr = (evalresp_stage *)malloc (sizeof (evalresp_stage))))
   {
     evalresp_log (log, ERROR, 0,
                   "alloc_stage; malloc() failed for stage structure");
@@ -536,8 +530,8 @@ alloc_stage (evalresp_log_t *log)
   stage_ptr->sequence_no = 0;
   stage_ptr->output_units = 0;
   stage_ptr->input_units = 0;
-  stage_ptr->first_blkt = (evalresp_blkt *)NULL;
-  stage_ptr->next_stage = (evalresp_stage *)NULL;
+  stage_ptr->first_blkt = NULL;
+  stage_ptr->next_stage = NULL;
 
   return (stage_ptr);
 }
@@ -593,7 +587,7 @@ free_scn_list (struct scn_list *lst)
 void
 free_matched_files (struct matched_files *lst)
 {
-  if (lst != (struct matched_files *)NULL)
+  if (lst)
   {
     free_matched_files (lst->ptr_next);
     if (lst->nfiles)
@@ -610,12 +604,12 @@ void
 free_file_list (struct file_list *lst)
 {
 
-  if (lst != (struct file_list *)NULL)
+  if (lst)
   {
     free_file_list (lst->next_file);
-    if (lst->name != (char *)NULL)
+    if (lst->name)
       free (lst->name);
-    if (lst->next_file != (struct file_list *)NULL)
+    if (lst->next_file)
       free (lst->next_file);
   }
 }
@@ -623,11 +617,11 @@ free_file_list (struct file_list *lst)
 void
 free_pz (evalresp_blkt *blkt_ptr)
 {
-  if (blkt_ptr != (evalresp_blkt *)NULL)
+  if (blkt_ptr)
   {
-    if (blkt_ptr->blkt_info.pole_zero.zeros != (struct evr_complex *)NULL)
+    if (blkt_ptr->blkt_info.pole_zero.zeros)
       free (blkt_ptr->blkt_info.pole_zero.zeros);
-    if (blkt_ptr->blkt_info.pole_zero.poles != (struct evr_complex *)NULL)
+    if (blkt_ptr->blkt_info.pole_zero.poles)
       free (blkt_ptr->blkt_info.pole_zero.poles);
     free (blkt_ptr);
   }
@@ -638,9 +632,9 @@ free_coeff (evalresp_blkt *blkt_ptr)
 {
   if (blkt_ptr != (evalresp_blkt *)NULL)
   {
-    if (blkt_ptr->blkt_info.coeff.numer != (double *)NULL)
+    if (blkt_ptr->blkt_info.coeff.numer)
       free (blkt_ptr->blkt_info.coeff.numer);
-    if (blkt_ptr->blkt_info.coeff.denom != (double *)NULL)
+    if (blkt_ptr->blkt_info.coeff.denom)
       free (blkt_ptr->blkt_info.coeff.denom);
     free (blkt_ptr);
   }
@@ -651,7 +645,7 @@ free_fir (evalresp_blkt *blkt_ptr)
 {
   if (blkt_ptr != (evalresp_blkt *)NULL)
   {
-    if (blkt_ptr->blkt_info.fir.coeffs != (double *)NULL)
+    if (blkt_ptr->blkt_info.fir.coeffs)
       free (blkt_ptr->blkt_info.fir.coeffs);
     free (blkt_ptr);
   }
@@ -662,11 +656,11 @@ free_list (evalresp_blkt *blkt_ptr)
 {
   if (blkt_ptr != (evalresp_blkt *)NULL)
   {
-    if (blkt_ptr->blkt_info.list.freq != (double *)NULL)
+    if (blkt_ptr->blkt_info.list.freq)
       free (blkt_ptr->blkt_info.list.freq);
-    if (blkt_ptr->blkt_info.list.amp != (double *)NULL)
+    if (blkt_ptr->blkt_info.list.amp)
       free (blkt_ptr->blkt_info.list.amp);
-    if (blkt_ptr->blkt_info.list.phase != (double *)NULL)
+    if (blkt_ptr->blkt_info.list.phase)
       free (blkt_ptr->blkt_info.list.phase);
     free (blkt_ptr);
   }
@@ -677,9 +671,9 @@ free_generic (evalresp_blkt *blkt_ptr)
 {
   if (blkt_ptr != (evalresp_blkt *)NULL)
   {
-    if (blkt_ptr->blkt_info.generic.corner_slope != (double *)NULL)
+    if (blkt_ptr->blkt_info.generic.corner_slope)
       free (blkt_ptr->blkt_info.generic.corner_slope);
-    if (blkt_ptr->blkt_info.generic.corner_freq != (double *)NULL)
+    if (blkt_ptr->blkt_info.generic.corner_freq)
       free (blkt_ptr->blkt_info.generic.corner_freq);
     free (blkt_ptr);
   }
@@ -780,12 +774,12 @@ free_channel (evalresp_channel *chan_ptr)
 }
 
 void
-free_response (struct response *resp_ptr)
+free_response (evalresp_response *resp_ptr)
 {
-  struct response *this_resp, *next_resp;
+  evalresp_response *this_resp, *next_resp;
 
   this_resp = resp_ptr;
-  while (this_resp != (struct response *)NULL)
+  while (this_resp != (evalresp_response *)NULL)
   {
     next_resp = this_resp->next;
     free (this_resp->rvec);

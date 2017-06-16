@@ -95,7 +95,7 @@ evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
           int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
           int xml_flag)
 {
-  struct response *first = (struct response *)NULL;
+  evalresp_response *first = (evalresp_response *)NULL;
   int i, j;
   evalresp_log_t *log = NULL;
 
@@ -110,11 +110,11 @@ evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
   /* check the output.  If no response found, return 1, else if more than one response
      found, return -1 */
 
-  if (first == (struct response *)NULL)
+  if (first == (evalresp_response *)NULL)
   {
     return (1);
   }
-  else if (first->next != (struct response *)NULL)
+  else if (first->next != (evalresp_response *)NULL)
   {
     free_response (first);
     return (-1);
@@ -239,7 +239,7 @@ int FirstField;
  for further explanation */
 
 /* IGD 09/30/13 reformatted the code */
-struct response *
+evalresp_response *
 evresp_itp (char *stalst, char *chalst, char *net_code,
             char *locidlst, char *date_time, char *units, char *file, double *freqs,
             int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
@@ -260,10 +260,10 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   struct matched_files *flst_ptr = NULL, *output_files = NULL;
   struct file_list *lst_ptr = NULL, *tmp_ptr = NULL, *out_file = NULL,
                    *tmp_file = NULL;
-  struct response *resp = NULL, *next_ptr = NULL;
-  struct response *prev_ptr = (struct response *)NULL;
-  struct response *first_resp = (struct response *)NULL;
-  struct evr_complex *output = NULL;
+  evalresp_response *resp = NULL, *next_ptr = NULL;
+  evalresp_response *prev_ptr = (evalresp_response *)NULL;
+  evalresp_response *first_resp = (evalresp_response *)NULL;
+  evalresp_complex *output = NULL;
   struct scn_list *scns = NULL;
   FILE *fptr = NULL;
   double *freqs_orig = NULL; /* for saving the original frequencies */
@@ -610,7 +610,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                          list and continue searching for the next match */
 
             free_channel (&this_channel);
-            if (first_resp == (struct response *)NULL)
+            if (first_resp == (evalresp_response *)NULL)
             {
               first_resp = resp;
             }
@@ -648,8 +648,8 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
       /* allocated one too many responses */
 
       free_response (resp);
-      if (prev_ptr != (struct response *)NULL)
-        prev_ptr->next = (struct response *)NULL;
+      if (prev_ptr != (evalresp_response *)NULL)
+        prev_ptr->next = (evalresp_response *)NULL;
       break;
     }
     else if (mode)
@@ -904,7 +904,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                                  next match */
 
                 free_channel (&this_channel);
-                if (first_resp == (struct response *)NULL)
+                if (first_resp == (evalresp_response *)NULL)
                 {
                   first_resp = resp;
                 }
@@ -989,8 +989,8 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
       /* allocated one too many responses */
 
       free_response (resp);
-      if (prev_ptr != (struct response *)NULL)
-        prev_ptr->next = (struct response *)NULL;
+      if (prev_ptr != (evalresp_response *)NULL)
+        prev_ptr->next = (evalresp_response *)NULL;
 
     } /* end else if mode */
 
@@ -1034,7 +1034,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 /* This version of the function does not include
  the 'listinterp...' parameters  */
 
-struct response *
+evalresp_response *
 evresp (char *stalst, char *chalst, char *net_code,
         char *locidlst, char *date_time, char *units, char *file, double *freqs,
         int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,

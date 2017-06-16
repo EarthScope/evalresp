@@ -30,7 +30,7 @@ run_test (const char *file)
   char tmpdir[] = "/tmp/check_count_XXXXXX";
   int n_freq = 19, i;
   double lof = 0.1, hif = 10, delta, *freqs = NULL;
-  struct response *response = NULL;
+  evalresp_response *response = NULL;
   evalresp_log_t *log = NULL;
 
   fail_if (!mkdtemp (tmpdir));

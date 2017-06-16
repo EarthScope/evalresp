@@ -146,6 +146,7 @@
 #include <stdio.h>
 
 #include "evalresp/public_channels.h"
+#include "evalresp/public_responses.h"
 #include "evalresp/ugly.h"
 #include "evalresp_log/log.h"
 
@@ -281,17 +282,6 @@ enum error_codes
 /**
  * @private
  * @ingroup evalresp_private
- * @brief Complex data type.
- */
-struct evr_complex
-{
-  double real; /**< Real part. */
-  double imag; /**< Imaginary part. */
-};
-
-/**
- * @private
- * @ingroup evalresp_private
  * @brief Array of string objects.
  */
 struct string_array
@@ -312,23 +302,6 @@ struct scn
   char *locid;   /**< Location ID. */
   char *channel; /**< Channel name. */
   int found;     /**< Flag (true/false) if found in the input RESP files. */
-};
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief Response object.
- */
-struct response
-{
-  char station[STALEN];                        /**< Station name. */
-  char network[NETLEN];                        /**< Network name. */
-  char locid[LOCIDLEN];                        /**< Location ID. */
-  char channel[CHALEN];                        /**< Channel name. */
-  struct evr_complex *rvec;                    /**< Output vector. */
-  int nfreqs; /**< Number of frequencies. */   /* Add by I.Dricker IGD to support blockette 55 */
-  double *freqs; /**< Array of frequencies. */ /* Add by I.Dricker IGD to support blockette 55 */
-  struct response *next;                       /**< Pointer to next response object. */
 };
 
 /**
@@ -835,7 +808,7 @@ int get_names (char *in_file, struct matched_files *file, evalresp_log_t *log);
  * @returns @c NULL if @p npts is zero.
  * @warning Exits with error if allocation fails.
  */
-struct evr_complex *alloc_complex (int npts, evalresp_log_t *log);
+evalresp_complex *alloc_complex (int npts, evalresp_log_t *log);
 
 /**
  * @private
@@ -850,7 +823,7 @@ struct evr_complex *alloc_complex (int npts, evalresp_log_t *log);
  * @returns @c NULL if @p npts is zero.
  * @warning Exits with error if allocation fails.
  */
-struct response *alloc_response (int npts, evalresp_log_t *log);
+evalresp_response *alloc_response (int npts, evalresp_log_t *log);
 
 /**
  * @private
@@ -1210,7 +1183,7 @@ void free_channel (evalresp_channel *chan_ptr);
  *        response information.
  * @param[in,out] resp_ptr Response structure.
  */
-void free_response (struct response *resp_ptr);
+void free_response (evalresp_response *resp_ptr);
 
 /* simple error handling routines to standardize the output error values and
  allow for control to return to 'evresp' if a recoverable error occurs */
@@ -1571,8 +1544,9 @@ void check_sym (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log);
  * @param[in] log Logging structure.
  */
 void calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
-                struct evr_complex *output, char *out_units, int start_stage,
-                int stop_stage, int useTotalSensitivityFlag, double x_for_b62, evalresp_log_t *log);
+                evalresp_complex *output, char *out_units, int start_stage,
+                int stop_stage, int useTotalSensitivityFlag, double x_for_b62,
+                evalresp_log_t *log);
 
 /**
  * @private
@@ -1584,7 +1558,7 @@ void calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
  * @param[in] w Frequency.
  * @param[in] log Logging structure.
  */
-void convert_to_units (int inp, char *out_units, struct evr_complex *data,
+void convert_to_units (int inp, char *out_units, evalresp_complex *data,
                        double w, evalresp_log_t *log);
 
 /**
@@ -1595,7 +1569,7 @@ void convert_to_units (int inp, char *out_units, struct evr_complex *data,
  * @param[in] freq Frequency.
  * @param[out] out Response.
  */
-void analog_trans (evalresp_blkt *blkt_ptr, double freq, struct evr_complex *out);
+void analog_trans (evalresp_blkt *blkt_ptr, double freq, evalresp_complex *out);
 
 /**
  * @private
@@ -1605,7 +1579,7 @@ void analog_trans (evalresp_blkt *blkt_ptr, double freq, struct evr_complex *out
  * @param[in] w Frequency.
  * @param[out] out Response.
  */
-void fir_sym_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out);
+void fir_sym_trans (evalresp_blkt *blkt_ptr, double w, evalresp_complex *out);
 
 /**
  * @private
@@ -1615,7 +1589,7 @@ void fir_sym_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out);
  * @param[in] w Frequency.
  * @param[out] out Response.
  */
-void fir_asym_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out);
+void fir_asym_trans (evalresp_blkt *blkt_ptr, double w, evalresp_complex *out);
 
 /**
  * @private
@@ -1625,7 +1599,7 @@ void fir_asym_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out)
  * @param[in] w Frequency.
  * @param[out] out Response.
  */
-void iir_pz_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out);
+void iir_pz_trans (evalresp_blkt *blkt_ptr, double w, evalresp_complex *out);
 
 /**
  * @private
@@ -1636,7 +1610,7 @@ void iir_pz_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out);
  * @param[in] w Frequency.
  * @param[out] out Phase shift equivalent.
  */
-void calc_time_shift (double delta, double w, struct evr_complex *out);
+void calc_time_shift (double delta, double w, evalresp_complex *out);
 
 /**
  * @private
@@ -1646,7 +1620,7 @@ void calc_time_shift (double delta, double w, struct evr_complex *out);
  * @param[in,out] val1 Complex number 1.
  * @param[in] val2 Complex number 2.
  */
-void zmul (struct evr_complex *val1, struct evr_complex *val2);
+void zmul (evalresp_complex *val1, evalresp_complex *val2);
 
 /**
  * @private
@@ -1669,7 +1643,7 @@ void norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalres
  * @author 06/22/00: Ilya Dricker ISTI (.dricker@isti.com): Function
  *         introduced in version 3.2.17 of evalresp.
  */
-void calc_list (evalresp_blkt *blkt_ptr, int i, struct evr_complex *out);
+void calc_list (evalresp_blkt *blkt_ptr, int i, evalresp_complex *out);
 
 /**
  * @private
@@ -1682,7 +1656,7 @@ void calc_list (evalresp_blkt *blkt_ptr, int i, struct evr_complex *out);
  * @author 06/01/13: Ilya Dricker ISTI (.dricker@isti.com): Function
  *         introduced in version 3.3.4 of evalresp
  */
-void calc_polynomial (evalresp_blkt *blkt_ptr, struct evr_complex *out,
+void calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
                       double x_for_b62, evalresp_log_t *log);
 
 /**
@@ -1698,7 +1672,7 @@ void calc_polynomial (evalresp_blkt *blkt_ptr, struct evr_complex *out,
  * @author 07/12/00: Ilya Dricker (ISTI), i.dricker@isti.com: C translation
  *         from FORTRAN function. Version 0.2. For version 3.2.17.
  */
-void iir_trans (evalresp_blkt *blkt_ptr, double wint, struct evr_complex *out);
+void iir_trans (evalresp_blkt *blkt_ptr, double wint, evalresp_complex *out);
 
 /**
  * @private
@@ -1774,7 +1748,7 @@ void print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
  * @note This version of the function does not include the 'listinterp...'
  *       parameters.
  */
-void print_resp (double *freqs, int nfreqs, struct response *first, char *rtype,
+void print_resp (double *freqs, int nfreqs, evalresp_response *first, char *rtype,
                  int stdio_flag, evalresp_log_t *log);
 
 /**
@@ -1809,7 +1783,7 @@ void print_resp (double *freqs, int nfreqs, struct response *first, char *rtype,
  * @see print_resp().
  * @note This version of the function includes the 'listinterp...' parameters.
  */
-void print_resp_itp (double *freqs, int nfreqs, struct response *first,
+void print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
                      char *rtype, int stdio_flag, int listinterp_out_flag,
                      double listinterp_tension, int unwrap_flag, evalresp_log_t *log);
 

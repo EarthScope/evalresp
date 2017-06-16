@@ -52,15 +52,16 @@
 /* IGD 10/04/13 Reformatted */
 void
 calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
-           struct evr_complex *output, char *out_units, int start_stage,
-           int stop_stage, int useTotalSensitivityFlag, double x_for_b62, evalresp_log_t *log)
+           evalresp_complex *output, char *out_units, int start_stage,
+           int stop_stage, int useTotalSensitivityFlag, double x_for_b62,
+           evalresp_log_t *log)
 {
   evalresp_blkt *blkt_ptr;
   evalresp_stage *stage_ptr;
   int i, j, units_code, eval_flag = 0, nc = 0, sym_fir = 0;
   double w;
   int matching_stages = 0, has_stage0 = 0;
-  struct evr_complex of, val;
+  evalresp_complex of, val;
   double corr_applied, calc_delay, estim_delay, delay;
 
   /*  if(start_stage && start_stage > chan->nstages) {
@@ -236,11 +237,11 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
  * Convert response to velocity first, then to specified units
  *=================================================================*/
 void
-convert_to_units (int inp, char *out_units, struct evr_complex *data, double w, evalresp_log_t *log)
+convert_to_units (int inp, char *out_units, evalresp_complex *data, double w, evalresp_log_t *log)
 {
   // TODO - 0 assignment below made blindly to fix compiler warning.  bug?
   int out = 0, l;
-  struct evr_complex scale_val;
+  evalresp_complex scale_val;
 
   /* if default units were specified by the user, no conversion is made,
      otherwise convert to unit the user specified. */
@@ -316,7 +317,7 @@ convert_to_units (int inp, char *out_units, struct evr_complex *data, double w, 
  * Version 0.2 07/12/00
  *================================================================*/
 void
-iir_trans (evalresp_blkt *blkt_ptr, double wint, struct evr_complex *out)
+iir_trans (evalresp_blkt *blkt_ptr, double wint, evalresp_complex *out)
 {
 
   double h0;
@@ -389,7 +390,7 @@ iir_trans (evalresp_blkt *blkt_ptr, double wint, struct evr_complex *out)
  * Ilya Dricker ISTI (.dricker@isti.com) 06/01/13
  *===============================================================*/
 void
-calc_polynomial (evalresp_blkt *blkt_ptr, struct evr_complex *out,
+calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
                  double x_for_b62, evalresp_log_t *log)
 {
   double amp = 0, phase = 0;
@@ -432,7 +433,7 @@ calc_polynomial (evalresp_blkt *blkt_ptr, struct evr_complex *out,
  * Ilya Dricker ISTI (.dricker@isti.com) 06/22/00
  *===============================================================*/
 void
-calc_list (evalresp_blkt *blkt_ptr, int i, struct evr_complex *out)
+calc_list (evalresp_blkt *blkt_ptr, int i, evalresp_complex *out)
 {
   double amp, phase;
   double halfcirc = 180;
@@ -448,10 +449,10 @@ calc_list (evalresp_blkt *blkt_ptr, int i, struct evr_complex *out)
  *                Response of analog filter
  *=================================================================*/
 void
-analog_trans (evalresp_blkt *blkt_ptr, double freq, struct evr_complex *out)
+analog_trans (evalresp_blkt *blkt_ptr, double freq, evalresp_complex *out)
 {
   int nz, np, i;
-  struct evr_complex *ze, *po, denom, num, omega, temp;
+  evalresp_complex *ze, *po, denom, num, omega, temp;
   double h0, mod_squared;
 
   if (blkt_ptr->type == LAPLACE_PZ)
@@ -497,7 +498,7 @@ analog_trans (evalresp_blkt *blkt_ptr, double freq, struct evr_complex *out)
  *                Response of symetrical FIR filters
  *=================================================================*/
 void
-fir_sym_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out)
+fir_sym_trans (evalresp_blkt *blkt_ptr, double w, evalresp_complex *out)
 {
   double *a, h0, wsint;
   evalresp_blkt *next_ptr;
@@ -538,7 +539,7 @@ fir_sym_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out)
  *                Response of asymetrical FIR filters
  *=================================================================*/
 void
-fir_asym_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out)
+fir_asym_trans (evalresp_blkt *blkt_ptr, double w, evalresp_complex *out)
 {
   double *a, h0, sint;
   evalresp_blkt *next_ptr;
@@ -590,9 +591,9 @@ fir_asym_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out)
  *                Response of IIR filters
  *=================================================================*/
 void
-iir_pz_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out)
+iir_pz_trans (evalresp_blkt *blkt_ptr, double w, evalresp_complex *out)
 {
-  struct evr_complex *ze, *po;
+  evalresp_complex *ze, *po;
   double h0, sint, wsint;
   evalresp_blkt *next_ptr;
   int nz, np;
@@ -641,7 +642,7 @@ iir_pz_trans (evalresp_blkt *blkt_ptr, double w, struct evr_complex *out)
  *      delta at the frequence w (rads/sec)
  *=================================================================*/
 void
-calc_time_shift (double delta, double w, struct evr_complex *out)
+calc_time_shift (double delta, double w, evalresp_complex *out)
 {
   out->real = cos (w * delta);
   out->imag = sin (w * delta);
@@ -651,7 +652,7 @@ calc_time_shift (double delta, double w, struct evr_complex *out)
  *    Complex multiplication:  complex version of val1 *= val2;
  *=================================================================*/
 void
-zmul (struct evr_complex *val1, struct evr_complex *val2)
+zmul (evalresp_complex *val1, evalresp_complex *val2)
 {
   double r, i;
   r = val1->real * val2->real - val1->imag * val2->imag;
@@ -672,7 +673,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
   int i, main_type, reset_gain, skipped_stages = 0;
   double w, f;
   double percent_diff;
-  struct evr_complex of, df;
+  evalresp_complex of, df;
 
   /* -------- TEST 1 -------- */
   /*
