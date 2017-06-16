@@ -35,6 +35,8 @@ int evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
 int evalresp_filename_to_channels (evalresp_log_t *log, const char *filename,
                                    const evalresp_filter *filter, evalresp_channels **channels);
 
+// TODO - everything below here needs implementing
+
 typedef struct
 {
 

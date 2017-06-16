@@ -12,7 +12,7 @@
 #include <string.h>
 
 #include "./private.h"
-#include "evalresp/public_channels.h"
+#include "evalresp/public_api.h"
 #include "evalresp_log/log.h"
 
 evalresp_complex *
@@ -787,4 +787,27 @@ free_response (evalresp_response *resp_ptr)
     free (this_resp);
     this_resp = next_resp;
   }
+}
+
+int
+alloc_channels (evalresp_log_t *log, evalresp_channels **channels)
+{
+  int status = EVALRESP_OK;
+  if (!(*channels = calloc (1, sizeof (**channels))))
+  {
+    evalresp_log (log, ERROR, ERROR, "Cannot allocate space for channels");
+    status = EVALRESP_MEM;
+  }
+  return status;
+}
+
+void
+free_channels (evalresp_channels **channels)
+{
+  int i;
+  for (i = 0; i < (*channels)->nchannels; ++i)
+  {
+  }
+  free (*channels);
+  *channels = NULL;
 }

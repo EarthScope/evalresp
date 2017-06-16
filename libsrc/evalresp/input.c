@@ -2061,27 +2061,18 @@ file_to_char (evalresp_log_t *log, FILE *in, char **seed)
   return status;
 }
 
-int
-alloc_channels (evalresp_log_t *log, evalresp_channels **channels)
-{
+static int
+add_channel(evalresp_log_t *log, evalresp_channel *channel, evalresp_channels *channels) {
   int status = EVALRESP_OK;
-  if (!(*channels = calloc (1, sizeof (**channels))))
-  {
-    evalresp_log (log, ERROR, ERROR, "Cannot allocate space for channels");
+  channels->nchannels++;
+  if (!(channels->channels = realloc(channels->channels,
+      sizeof(evalresp_channel*) * channels->nchannels))) {
+    evalresp_log(log, ERROR, ERROR, "Cannot reallocate channels memory");
     status = EVALRESP_MEM;
+  } else {
+    channels->channels[channels->nchannels-1] = channel;
   }
   return status;
-}
-
-void
-free_channels (evalresp_channels **channels)
-{
-  int i;
-  for (i = 0; i < (*channels)->nchannels; ++i)
-  {
-  }
-  free (*channels);
-  *channels = NULL;
 }
 
 int
@@ -2089,15 +2080,20 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
                            const evalresp_filter *filter, evalresp_channels **channels)
 {
   const char *seed_ptr = seed_or_xml;
-  evalresp_channel channel;
+  evalresp_channel *channel;
   int status = EVALRESP_OK;
 
   *channels = NULL;
   if (!(status = alloc_channels (log, channels)))
   {
-    if (!(status = read_channel_header (log, &seed_ptr, &channel)))
-    {
-      status = read_channel_data (log, &seed_ptr, &channel);
+    if (!(channel = calloc(1, sizeof(*channel)))) {
+      evalresp_log(log, ERROR, ERROR, "Cannot allocate memory for channel");
+      status = EVALRESP_MEM;
+    } else {
+      // TODO - add status handling
+      read_channel_header (log, &seed_ptr, channel);
+      read_channel_data (log, &seed_ptr, channel);
+      status = add_channel(log, channel, *channels);
     }
   }
 

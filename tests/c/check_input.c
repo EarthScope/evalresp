@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "evalresp/public_api.h"
 #include "evalresp/input.h"
 #include "evalresp/ugly.h"
 
@@ -91,6 +92,14 @@ START_TEST (test_file_to_char)
 }
 END_TEST
 
+START_TEST (test_filename_to_channels)
+{
+  evalresp_channels *channels = NULL;
+  fail_if(evalresp_filename_to_channels(NULL, "./data/RESP.IU.ANMO..BHZ", NULL,
+      &channels));
+}
+END_TEST
+
 int
 main (void)
 {
@@ -102,6 +111,7 @@ main (void)
   tcase_add_test (tc, test_find_line);
   tcase_add_test (tc, test_find_field);
   tcase_add_test (tc, test_file_to_char);
+  tcase_add_test (tc, test_filename_to_channels);
   suite_add_tcase (s, tc);
   SRunner *sr = srunner_create (s);
   srunner_set_xml (sr, "check-log.xml");
