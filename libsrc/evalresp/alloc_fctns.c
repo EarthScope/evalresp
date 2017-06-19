@@ -24,7 +24,7 @@ alloc_complex (int npts, evalresp_log_t *log)
   {
     if (!(cptr = malloc (npts * sizeof (*cptr))))
     {
-      evalresp_log (log, ERROR, 0,
+      evalresp_log (log, EV_ERROR, 0,
                     "alloc_complex; malloc() failed for (complex) vector");
       return NULL; // TODO - return EVALRESP_MEM
     }
@@ -45,13 +45,13 @@ alloc_string_array (int nstrings, evalresp_log_t *log)
   {
     if (!(sl_ptr = (struct string_array *)malloc (sizeof (struct string_array))))
     {
-      evalresp_log (log, ERROR, 0,
+      evalresp_log (log, EV_ERROR, 0,
                     "alloc_string_array; malloc() failed for (string_array)");
       return NULL; // TODO - return EVALRESP_MEM
     }
     if ((sl_ptr->strings = (char **)malloc (nstrings * sizeof (char *))) == (char **)NULL)
     {
-      evalresp_log (log, ERROR, 0,
+      evalresp_log (log, EV_ERROR, 0,
                     "alloc_string_array; malloc() failed for (char *) vector");
       free (sl_ptr);
       return NULL;
@@ -75,20 +75,20 @@ alloc_scn (evalresp_log_t *log)
 
   if (!(scn_ptr = (struct scn *)malloc (sizeof (struct scn))))
   {
-    evalresp_log (log, ERROR, 0, "alloc_scn; malloc() failed for (scn)");
+    evalresp_log (log, EV_ERROR, 0, "alloc_scn; malloc() failed for (scn)");
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY, "alloc_scn; malloc() failed for (scn)"); */
   }
   if (!(scn_ptr->station = (char *)malloc (STALEN * sizeof (char))))
   {
-    evalresp_log (log, ERROR, 0, "alloc_scn; malloc() failed for (station)");
+    evalresp_log (log, EV_ERROR, 0, "alloc_scn; malloc() failed for (station)");
     free (scn_ptr);
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY, "alloc_scn; malloc() failed for (station)"); */
   }
   if (!(scn_ptr->network = (char *)malloc (NETLEN * sizeof (char))))
   {
-    evalresp_log (log, ERROR, 0, "alloc_scn; malloc() failed for (station)");
+    evalresp_log (log, EV_ERROR, 0, "alloc_scn; malloc() failed for (station)");
     free (scn_ptr->station);
     free (scn_ptr);
     return NULL;
@@ -96,7 +96,7 @@ alloc_scn (evalresp_log_t *log)
   }
   if (!(scn_ptr->locid = (char *)malloc (LOCIDLEN * sizeof (char))))
   {
-    evalresp_log (log, ERROR, 0, "alloc_scn; malloc() failed for (channel)");
+    evalresp_log (log, EV_ERROR, 0, "alloc_scn; malloc() failed for (channel)");
     free (scn_ptr->network);
     free (scn_ptr->station);
     free (scn_ptr);
@@ -105,7 +105,7 @@ alloc_scn (evalresp_log_t *log)
   }
   if (!(scn_ptr->channel = (char *)malloc (CHALEN * sizeof (char))))
   {
-    evalresp_log (log, ERROR, 0, "alloc_scn; malloc() failed for (channel)");
+    evalresp_log (log, EV_ERROR, 0, "alloc_scn; malloc() failed for (channel)");
     free (scn_ptr->channel);
     free (scn_ptr->network);
     free (scn_ptr->station);
@@ -134,7 +134,7 @@ alloc_response (int npts, evalresp_log_t *log)
   {
     if (!(rptr = (evalresp_response *)malloc (sizeof (evalresp_response))))
     {
-      evalresp_log (log, ERROR, 0,
+      evalresp_log (log, EV_ERROR, 0,
                     "alloc_response; malloc() failed for (response) vector");
       return NULL;
       /*XXX error_exit(OUT_OF_MEMORY,
@@ -172,7 +172,7 @@ alloc_scn_list (int nscn, evalresp_log_t *log)
   {
     if (!(sc_ptr = (struct scn_list *)malloc (sizeof (struct scn_list))))
     {
-      evalresp_log (log, ERROR, 0,
+      evalresp_log (log, EV_ERROR, 0,
                     "alloc_scn_list; malloc() failed for (scn_list)");
       return NULL;
       /*XXX error_exit(OUT_OF_MEMORY,
@@ -181,7 +181,7 @@ alloc_scn_list (int nscn, evalresp_log_t *log)
     if ((sc_ptr->scn_vec = (struct scn **)malloc (
              nscn * sizeof (struct scn *))) == (struct scn **)NULL)
     {
-      evalresp_log (log, ERROR, 0,
+      evalresp_log (log, EV_ERROR, 0,
                     "alloc_scn_list; malloc() failed for (scn_vec)");
       free (sc_ptr);
       return NULL;
@@ -209,7 +209,7 @@ alloc_file_list (evalresp_log_t *log)
 
   if (!(flst_ptr = (struct file_list *)malloc (sizeof (struct file_list))))
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "alloc_file_list; malloc() failed for (file_list)");
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY,
@@ -228,7 +228,7 @@ alloc_matched_files (evalresp_log_t *log)
 
   if (!(flst_ptr = (struct matched_files *)malloc (sizeof (struct matched_files))))
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "alloc_matched_files; malloc() failed for (matched_files)");
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY,
@@ -250,7 +250,7 @@ alloc_double (int npts, evalresp_log_t *log)
   {
     if (!(dptr = (double *)malloc (npts * sizeof (double))))
     {
-      evalresp_log (log, ERROR, 0,
+      evalresp_log (log, EV_ERROR, 0,
                     "alloc_double; malloc() failed for (double) vector");
       return NULL;
       /*XXX error_exit(OUT_OF_MEMORY,
@@ -272,7 +272,7 @@ alloc_char (int len, evalresp_log_t *log)
   {
     if (!(cptr = (char *)malloc (len * sizeof (char))))
     {
-      evalresp_log (log, ERROR, 0,
+      evalresp_log (log, EV_ERROR, 0,
                     "alloc_char; malloc() failed for (char) vector");
       return NULL;
       /*XXX error_exit(OUT_OF_MEMORY,
@@ -294,7 +294,7 @@ alloc_char_ptr (int len, evalresp_log_t *log)
   {
     if ((cptr = (char **)malloc (len * sizeof (char *))) == (char **)NULL)
     {
-      evalresp_log (log, ERROR, 0,
+      evalresp_log (log, EV_ERROR, 0,
                     "alloc_char_ptr; malloc() failed for (char *) vector");
       return NULL;
       /*XXX error_exit(OUT_OF_MEMORY,
@@ -314,7 +314,7 @@ alloc_pz (evalresp_log_t *log)
 
   if (!(blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))))
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "alloc_pz; malloc() failed for (Poles & Zeros) blkt structure");
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY,
@@ -338,7 +338,7 @@ alloc_coeff (evalresp_log_t *log)
 
   if (!(blkt_ptr = (evalresp_blkt *)malloc (sizeof (*blkt_ptr))))
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "alloc_coeff; malloc() failed for (FIR) blkt structure");
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY,
@@ -363,7 +363,7 @@ alloc_polynomial (evalresp_log_t *log)
 
   if (!(blkt_ptr = (evalresp_blkt *)calloc (1, sizeof (evalresp_blkt))))
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "alloc_polynomial; calloc() failed for polynomial blkt structure");
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY,
@@ -380,7 +380,7 @@ alloc_fir (evalresp_log_t *log)
 
   if (!(blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))))
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "alloc_fir; malloc() failed for (FIR) blkt structure");
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY,
@@ -403,7 +403,7 @@ alloc_ref (evalresp_log_t *log)
 
   if (!(blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))))
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "alloc_ref; malloc() failed for (Resp. Ref.) blkt structure");
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY,
@@ -426,7 +426,7 @@ alloc_gain (evalresp_log_t *log)
 
   if (!(blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))))
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "alloc_gain; malloc() failed for (Gain) blkt structure");
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY,
@@ -448,7 +448,7 @@ alloc_list (evalresp_log_t *log)
 
   if (!(blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))))
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "alloc_list; malloc() failed for (List) blkt structure");
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY,
@@ -472,7 +472,7 @@ alloc_generic (evalresp_log_t *log)
 
   if (!(blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))))
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "alloc_generic; malloc() failed for (Generic) blkt structure");
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY,
@@ -495,7 +495,7 @@ alloc_deci (evalresp_log_t *log)
 
   if (!(blkt_ptr = (evalresp_blkt *)malloc (sizeof (evalresp_blkt))))
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "alloc_deci; malloc() failed for (Decimation) blkt structure");
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY,
@@ -520,7 +520,7 @@ alloc_stage (evalresp_log_t *log)
 
   if (!(stage_ptr = (evalresp_stage *)malloc (sizeof (evalresp_stage))))
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "alloc_stage; malloc() failed for stage structure");
     return NULL;
     /*XXX error_exit(OUT_OF_MEMORY,
