@@ -187,7 +187,8 @@ find_field (evalresp_log_t *log, const char **seed, char *sep,
 
 // this was "read_channel"
 static int
-read_channel_header (evalresp_log_t *log, const char **seed, evalresp_channel *chan)
+read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
+                     evalresp_channel *chan)
 {
   int blkt_no, fld_no;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -208,9 +209,19 @@ read_channel_header (evalresp_log_t *log, const char **seed, evalresp_channel *c
   chan->applied_corr = 0.0;
   chan->sint = 0.0;
 
-  if (0 > find_field (log, seed, ":", 50, 3, 0, field))
+  if (!strlen (first_line))
   {
-    return 0 /*TODO PARSE_ERROR should be returned */;
+    if (0 > find_field (log, seed, ":", 50, 3, 0, field))
+    {
+      return 0 /*TODO PARSE_ERROR should be returned */;
+    }
+  }
+  else
+  {
+    if (0 > parse_field (first_line, 0, field, log))
+    {
+      return 0 /*TODO PARSE_ERROR should be returned */;
+    }
   }
 
   strncpy (chan->staname, field, STALEN);
@@ -1833,7 +1844,8 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
 
 // this was "parse_channel"
 static int
-read_channel_data (evalresp_log_t *log, const char **seed, evalresp_channel *channel)
+read_channel_data (evalresp_log_t *log, const char **seed, char *first_line,
+                   evalresp_channel *channel)
 {
 
   // TODO - assignments for no_units and tmp_stage2 made blindly to fix compiler warning.  bug?
@@ -1842,7 +1854,6 @@ read_channel_data (evalresp_log_t *log, const char **seed, evalresp_channel *cha
   evalresp_blkt *blkt_ptr, *last_blkt = NULL;
   evalresp_stage *this_stage, *last_stage, *tmp_stage, *tmp_stage2 = NULL;
   int first_field;
-  char first_line[MAXLINELEN];
 
   /* initialize the channel's sequence of stages */
 
@@ -2098,6 +2109,9 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
   const char *read_ptr = seed_or_xml;
   evalresp_channel *channel;
   int status = EVALRESP_OK;
+  // TODO - first_line and first_field are lookaheads that can be eliminated since
+  // we are readig from char and can easily backstep (indeed, was possible even before...)
+  char first_line[MAXLINELEN] = "";
 
   *channels = NULL;
   if (!(status = alloc_channels (log, channels)))
@@ -2112,8 +2126,8 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
       else
       {
         // TODO - add error handling
-        read_channel_header (log, &read_ptr, channel);
-        read_channel_data (log, &read_ptr, channel);
+        read_channel_header (log, &read_ptr, first_line, channel);
+        read_channel_data (log, &read_ptr, first_line, channel);
         status = add_channel (log, channel, *channels);
       }
     }
