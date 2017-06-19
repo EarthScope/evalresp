@@ -795,7 +795,7 @@ alloc_channels (evalresp_log_t *log, evalresp_channels **channels)
   int status = EVALRESP_OK;
   if (!(*channels = calloc (1, sizeof (**channels))))
   {
-    evalresp_log (log, ERROR, ERROR, "Cannot allocate space for channels");
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate space for channels");
     status = EVALRESP_MEM;
   }
   return status;

@@ -110,20 +110,20 @@ read_line (evalresp_log_t *log, const char **seed, char *sep,
   remove_tabs_and_crlf (line);
   if (!parse_pref (blkt_no, fld_no, line, log))
   {
-    evalresp_log (log, ERROR, 0, "unrecognised prefix: '%s'", line);
+    evalresp_log (log, EV_ERROR, 0, "unrecognised prefix: '%s'", line);
     return UNDEF_PREFIX;
   }
 
   if (!(lcl_ptr = strstr (line, sep)))
   {
-    evalresp_log (log, ERROR, 0, "separator '%s' not found in '%s'", sep, line);
+    evalresp_log (log, EV_ERROR, 0, "separator '%s' not found in '%s'", sep, line);
     return UNDEF_SEPSTR;
   }
   for (lcl_ptr++; *lcl_ptr && isspace (*lcl_ptr); lcl_ptr++)
     ;
   if (!*lcl_ptr)
   {
-    evalresp_log (log, ERROR, 0, "nothing to parse after '%s' in '%s'", sep, line);
+    evalresp_log (log, EV_ERROR, 0, "nothing to parse after '%s' in '%s'", sep, line);
     return UNDEF_SEPSTR;
   }
   strncpy (return_line, lcl_ptr, MAXLINELEN);
@@ -153,7 +153,7 @@ find_line (evalresp_log_t *log, const char **seed, char *sep, int blkt_no, int f
     remove_tabs_and_crlf (line);
     if (!parse_pref (&lcl_blkt, &lcl_fld, line, log))
     {
-      evalresp_log (log, ERROR, 0, "unrecognised prefix: '%s'", line);
+      evalresp_log (log, EV_ERROR, 0, "unrecognised prefix: '%s'", line);
       return UNDEF_PREFIX;
     }
     else if (blkt_no == lcl_blkt && fld_no == lcl_fld)
@@ -275,7 +275,7 @@ read_channel_header (evalresp_log_t *log, const char **seed, evalresp_channel *c
   }
   else
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "read_channel_header; %s%s%3.3d%s%3.3d%s[%2.2d|%2.2d]%s%2.2d", "blkt",
                   " and fld numbers do not match expected values\n\tblkt_xpt=B",
                   52, ", blkt_found=B", blkt_no, "; fld_xpt=F", 3, 4,
@@ -317,7 +317,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
 
   if (first_field != 3 && first_field != 5)
   {
-    evalresp_log (log, ERROR, 0, "parse_pz; %s%s%s%2.2d",
+    evalresp_log (log, EV_ERROR, 0, "parse_pz; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", first_field);
@@ -332,7 +332,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
   }
   if (strlen (field) != 1)
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "parse_pz; parsing (Poles & Zeros), illegal filter type ('%s')",
                   field);
     return /*TODO PARSE_ERROR should be returned */;
@@ -350,7 +350,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
     blkt_ptr->type = IIR_PZ;
     break;
   default:
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "parse_pz; parsing (Poles & Zeros), unexpected filter type ('%c')",
                   *field);
     return /*TODO PARSE_ERROR should be returned */;
@@ -459,7 +459,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
     }
     if (!is_real (field, log))
     {
-      evalresp_log (log, ERROR, 0, "parse_pz: %s%s%s",
+      evalresp_log (log, EV_ERROR, 0, "parse_pz: %s%s%s",
                     "zeros must be real numbers (found '", field, "')");
       return /*TODO PARSE_ERROR should be returned */;
     }
@@ -470,7 +470,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
     }
     if (!is_real (field, log))
     {
-      evalresp_log (log, ERROR, 0, "parse_pz: %s%s%s",
+      evalresp_log (log, EV_ERROR, 0, "parse_pz: %s%s%s",
                     "zeros must be real numbers (found '", field, "')");
       return /*TODO PARSE_ERROR should be returned */;
     }
@@ -496,7 +496,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
     }
     if (!is_real (field, log))
     {
-      evalresp_log (log, ERROR, 0, "parse_pz: %s%s%s",
+      evalresp_log (log, EV_ERROR, 0, "parse_pz: %s%s%s",
                     "poles must be real numbers (found '", field, "')");
       /*XXX error_return(PARSE_ERROR, "parse_pz: %s%s%s",
                     "poles must be real numbers (found '", field, "')"); */
@@ -509,7 +509,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
     }
     if (!is_real (field, log))
     {
-      evalresp_log (log, ERROR, 0, "parse_pz: %s%s%s",
+      evalresp_log (log, EV_ERROR, 0, "parse_pz: %s%s%s",
                     "poles must be real numbers (found '", field, "')");
       return /*TODO PARSE_ERROR should be returned */;
     }
@@ -574,7 +574,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
 
   if (first_field != 3 && first_field != 5)
   {
-    evalresp_log (log, ERROR, 0, "parse_coeff; %s%s%s%2.2d",
+    evalresp_log (log, EV_ERROR, 0, "parse_coeff; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", first_field);
@@ -590,7 +590,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
   // TODO - collesce below to compare string
   if (strlen (field) != 1)
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "parse_coeff; parsing (IIR_COEFFS), illegal filter type ('%s')",
                   field);
     return /*TODO PARSE_ERROR should be returned */;
@@ -601,7 +601,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
   }
   else
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "parse_coeff; parsing (IIR_COEFFS), unexpected filter type ('%c')",
                   *field);
     return /*TODO PARSE_ERROR should be returned */;
@@ -670,7 +670,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
   if (ndenom == 0)
   {
     // TODO - all these weird log formats that could have simpler strings
-    evalresp_log (log, ERROR, 0, "%s%s",
+    evalresp_log (log, EV_ERROR, 0, "%s%s",
                   "parse_coeff; This is not IIR filter , because number of denominators is zero!\n",
                   "\tshould be represented as blockette [53] filters");
     return /*TODO UNRECOG_FILTYPE should be returned */;
@@ -696,7 +696,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
     }
     if (!is_real (field, log))
     {
-      evalresp_log (log, ERROR, 0, "parse_coeff: %s%s%s",
+      evalresp_log (log, EV_ERROR, 0, "parse_coeff: %s%s%s",
                     "numerators must be real numbers (found '", field, "')");
       return /*TODO PARSE_ERROR should be returned */;
     }
@@ -713,7 +713,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
     }
     if (!is_real (field, log))
     {
-      evalresp_log (log, ERROR, 0, "parse_coeff: %s%s%s",
+      evalresp_log (log, EV_ERROR, 0, "parse_coeff: %s%s%s",
                     "denominators must be real numbers (found '", field, "')");
       return /*TODO PARSE_ERROR should be returned */;
     }
@@ -736,7 +736,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
 
   if (first_field != 3 && first_field != 5)
   {
-    evalresp_log (log, ERROR, 0, "parse_coeff; %s%s%s%2.2d",
+    evalresp_log (log, EV_ERROR, 0, "parse_coeff; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", first_field);
@@ -751,7 +751,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
   }
   if (strlen (field) != 1)
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "parse_coeff; parsing (FIR_ASYM), illegal filter type ('%s')",
                   field);
     return /*TODO PARSE_ERROR should be returned */;
@@ -763,7 +763,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
   }
   else
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "parse_coeff; parsing (FIR_ASYM), unexpected filter type ('%c')",
                   *field);
     return /*TODO PARSE_ERROR should be returned */;
@@ -840,7 +840,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
 
   if (ndenom)
   {
-    evalresp_log (log, ERROR, 0, "%s%s",
+    evalresp_log (log, EV_ERROR, 0, "%s%s",
                   "parse_coeff; Unsupported filter type, IIR and Analog filters\n",
                   "\tshould be represented as blockette [53] filters");
     return /*TODO UNRECOG_FILTYPE should be returned */;
@@ -861,7 +861,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
     }
     if (!is_real (field, log))
     {
-      evalresp_log (log, ERROR, 0, "parse_coeff: %s%s%s",
+      evalresp_log (log, EV_ERROR, 0, "parse_coeff: %s%s%s",
                     "coeffs must be real numbers (found '", field, "')");
       return /*TODO PARSE_ERROR should be returned */;
     }
@@ -883,7 +883,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
 
   if (first_field != 3 && first_field != 5)
   {
-    evalresp_log (log, ERROR, 0, "parse_list; %s%s%s%2.2d",
+    evalresp_log (log, EV_ERROR, 0, "parse_list; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", first_field);
@@ -969,7 +969,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
 
     if (format > 1) /*Wrong format */
     {
-      evalresp_log (log, ERROR, 0, "parse_list: %s",
+      evalresp_log (log, EV_ERROR, 0, "parse_list: %s",
                     "Unknown format for B055F07-11");
       return /*TODO PARSE_ERROR should be returned */;
     }
@@ -986,7 +986,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
       }
       if (!is_real (field, log))
       {
-        evalresp_log (log, ERROR, 0, "parse_list: %s%s%s",
+        evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "freq vals must be real numbers (found '", field, "')");
         return /*TODO PARSE_ERROR should be returned */;
       }
@@ -997,7 +997,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
       }
       if (!is_real (field, log))
       {
-        evalresp_log (log, ERROR, 0, "parse_list: %s%s%s",
+        evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "amp vals must be real numbers (found '", field, "')");
         return /*TODO PARSE_ERROR should be returned */;
       }
@@ -1008,7 +1008,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
       }
       if (!is_real (field, log))
       {
-        evalresp_log (log, ERROR, 0, "parse_list: %s%s%s",
+        evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "phase vals must be real numbers (found '", field,
                       "')");
         return /*TODO PARSE_ERROR should be returned */;
@@ -1030,7 +1030,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
       }
       if (!is_real (field, log))
       {
-        evalresp_log (log, ERROR, 0, "parse_list: %s%s%s",
+        evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "freq vals must be real numbers (found '", field, "')");
         return /*TODO PARSE_ERROR should be returned */;
       }
@@ -1041,7 +1041,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
       }
       if (!is_real (field, log))
       {
-        evalresp_log (log, ERROR, 0, "parse_list: %s%s%s",
+        evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "amp vals must be real numbers (found '", field, "')");
         return /*TODO PARSE_ERROR should be returned */;
       }
@@ -1052,7 +1052,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
       }
       if (!is_real (field, log))
       {
-        evalresp_log (log, ERROR, 0, "parse_list: %s%s%s",
+        evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "phase vals must be real numbers (found '", field,
                       "')");
         return /*TODO PARSE_ERROR should be returned */;
@@ -1076,7 +1076,7 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
 
   if (first_field != 3 && first_field != 5)
   {
-    evalresp_log (log, ERROR, 0, "parse_generic; %s%s%s%2.2d",
+    evalresp_log (log, EV_ERROR, 0, "parse_generic; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", first_field);
@@ -1159,7 +1159,7 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
     }
     if (!is_real (field, log))
     {
-      evalresp_log (log, ERROR, 0, "parse_generic: %s%s%s",
+      evalresp_log (log, EV_ERROR, 0, "parse_generic: %s%s%s",
                     "corner_freqs must be real numbers (found '", field, "')");
       return /*TODO PARSE_ERROR should be returned */;
     }
@@ -1170,7 +1170,7 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
     }
     if (!is_real (field, log))
     {
-      evalresp_log (log, ERROR, 0, "parse_generic: %s%s%s",
+      evalresp_log (log, EV_ERROR, 0, "parse_generic: %s%s%s",
                     "corner_slopes must be real numbers (found '", field, "')");
       return /*TODO PARSE_ERROR should be returned */;
     }
@@ -1193,7 +1193,7 @@ read_deci (evalresp_log_t *log, const char **seed, int first_field, char *first_
 
   if (first_field != 3 && first_field != 5)
   {
-    evalresp_log (log, ERROR, 0, "parse_deci; %s%s%s%2.2d",
+    evalresp_log (log, EV_ERROR, 0, "parse_deci; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", first_field);
@@ -1283,7 +1283,7 @@ read_gain (evalresp_log_t *log, const char **seed, int first_field, char *first_
 
   if (first_field != 3 && first_field != 5)
   {
-    evalresp_log (log, ERROR, 0, "parse_gain; %s%s%s%2.2d",
+    evalresp_log (log, EV_ERROR, 0, "parse_gain; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 of F05",
                   ", fld_found=F", first_field);
@@ -1363,7 +1363,7 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
 
   if (first_field != 3 && first_field != 5)
   {
-    evalresp_log (log, ERROR, 0, "parse_fir; %s%s%s%2.2d",
+    evalresp_log (log, EV_ERROR, 0, "parse_fir; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", first_field);
@@ -1403,7 +1403,7 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
 
   if (strlen (field) != 1)
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "parse_fir; parsing (FIR), illegal symmetry type ('%s')",
                   field);
     return /*TODO PARSE_ERROR should be returned */;
@@ -1421,7 +1421,7 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
     blkt_ptr->type = FIR_SYM_2; /* even number coefficients with symmetry */
     break;
   default:
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "parse_fir; parsing (FIR), unexpected symmetry type ('%c')",
                   *field);
     return /*TODO PARSE_ERROR should be returned */;
@@ -1471,7 +1471,7 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
     }
     if (!is_real (field, log))
     {
-      evalresp_log (log, ERROR, 0, "parse_fir: %s%s%s",
+      evalresp_log (log, EV_ERROR, 0, "parse_fir: %s%s%s",
                     "coeffs must be real numbers (found '", field, "')");
       return /*TODO PARSE_ERROR should be returned */;
     }
@@ -1497,7 +1497,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
 
   if (first_field != 3)
   {
-    evalresp_log (log, ERROR, 0, "parse_ref; %s%s%s%2.2d",
+    evalresp_log (log, EV_ERROR, 0, "parse_ref; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03",
                   ", fld_found=F", first_field);
@@ -1509,7 +1509,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
   }
   if (!is_int (field, log))
   {
-    evalresp_log (log, ERROR, 0, "parse_ref; value '%s' %s", field,
+    evalresp_log (log, EV_ERROR, 0, "parse_ref; value '%s' %s", field,
                   " cannot be converted to the number of stages");
     return /*TODO PARSE_ERROR should be returned */;
   }
@@ -1528,7 +1528,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
     }
     if (!is_int (field, log))
     {
-      evalresp_log (log, ERROR, 0, "parse_ref; value '%s' %s", field,
+      evalresp_log (log, EV_ERROR, 0, "parse_ref; value '%s' %s", field,
                     " cannot be converted to the stage sequence number");
       return /*TODO PARSE_ERROR should be returned */;
     }
@@ -1548,7 +1548,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
     }
     if (!is_int (field, log))
     {
-      evalresp_log (log, ERROR, 0, "parse_ref; value '%s' %s", field,
+      evalresp_log (log, EV_ERROR, 0, "parse_ref; value '%s' %s", field,
                     " cannot be converted to the number of responses");
       return /*TODO PARSE_ERROR should be returned */;
     }
@@ -1593,7 +1593,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
         read_fir (log, seed, first_field, first_line, channel, blkt_ptr, this_stage);
         break;
       case 60:
-        evalresp_log (log, ERROR, 0,
+        evalresp_log (log, EV_ERROR, 0,
                       "parse_ref; unexpected end of stage (at blockette [%3.3d])",
                       prev_blkt_no);
         return /*TODO PARSE_ERROR should be returned */;
@@ -1602,7 +1602,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
                  example code to test it - SBH. 2004.079
                  If we want it, replace this error_return and break with a "continue;"
                  */
-        evalresp_log (log, ERROR, 0,
+        evalresp_log (log, EV_ERROR, 0,
                       "parse_ref; unexpected filter type (blockette [%3.3d])",
                       blkt_no);
         return /*TODO UNRECOG_FILTYPE should be returned */;
@@ -1635,7 +1635,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
       }
       if (!is_int (field, log))
       {
-        evalresp_log (log, ERROR, 0, "parse_ref; value '%s' %s", field,
+        evalresp_log (log, EV_ERROR, 0, "parse_ref; value '%s' %s", field,
                       " cannot be converted to the new stage sequence number");
         return /*TODO PARSE_ERROR should be returned */;
       }
@@ -1643,7 +1643,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
       lcl_nstages = atoi (field);
       if (lcl_nstages != nstages)
       {
-        evalresp_log (log, ERROR, 0,
+        evalresp_log (log, EV_ERROR, 0,
                       "parse_ref; internal RESP format error, %s%d%s%d",
                       "\n\tstage expected = ", nstages, ", stage found = ",
                       lcl_nstages);
@@ -1666,7 +1666,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
 
   if (first_field != 3 && first_field != 5)
   {
-    evalresp_log (log, ERROR, 0, "parse_polynomial; %s%s%s%2.2d",
+    evalresp_log (log, EV_ERROR, 0, "parse_polynomial; %s%s%s%2.2d",
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", first_field);
@@ -1682,7 +1682,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
   // TODO - coallesce into strcmp
   if (strlen (field) != 1)
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "parse_polynomial; parsing (Polynomial), illegal filter type ('%s')",
                   field);
     return /*TODO PARSE_ERROR should be returned */;
@@ -1693,7 +1693,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
   }
   else
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "parse_polynomial; parsing (Polynomial), unexpected filter type ('%c')",
                   *field);
     return /*TODO PARSE_ERROR should be returned */;
@@ -1812,7 +1812,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
     }
     if (!is_real (field, log))
     {
-      evalresp_log (log, ERROR, 0, "polynomial: %s%s%s",
+      evalresp_log (log, EV_ERROR, 0, "polynomial: %s%s%s",
                     "coeffs must be real numbers (found '", field, "')");
       return /*TODO PARSE_ERROR should be returned */;
     }
@@ -1823,7 +1823,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
     }
     if (!is_real (field, log))
     {
-      evalresp_log (log, ERROR, 0, "polynomial: %s%s%s",
+      evalresp_log (log, EV_ERROR, 0, "polynomial: %s%s%s",
                     "coeffs errors must be real numbers (found '", field, "')");
       return /*TODO PARSE_ERROR should be returned */;
     }
@@ -2008,7 +2008,7 @@ open_file (evalresp_log_t *log, const char *filename, FILE **in)
   int status = EVALRESP_OK;
   if (!(*in = fopen (filename, "r")))
   {
-    evalresp_log (log, ERROR, ERROR, "Cannot open %s", filename);
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot open %s", filename);
     status = EVALRESP_IO;
   }
   return status;
@@ -2024,7 +2024,7 @@ file_to_char (evalresp_log_t *log, FILE *in, char **seed)
   *seed = NULL;
   if (!(*seed = malloc (buffer_len)))
   {
-    evalresp_log (log, ERROR, ERROR, "Cannot allocate buffer memory");
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate buffer memory");
     status = EVALRESP_MEM;
   }
   else
@@ -2036,7 +2036,7 @@ file_to_char (evalresp_log_t *log, FILE *in, char **seed)
         buffer_len *= 2;
         if (!(*seed = realloc (*seed, buffer_len)))
         {
-          evalresp_log (log, ERROR, ERROR, "Cannot reallocate buffer memory");
+          evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot reallocate buffer memory");
           status = EVALRESP_MEM;
         }
         space = buffer_len - used_len;
@@ -2046,7 +2046,7 @@ file_to_char (evalresp_log_t *log, FILE *in, char **seed)
         used_len += fread (*seed + used_len, 1, space, in);
         if (ferror (in))
         {
-          evalresp_log (log, ERROR, ERROR, "Error reading input");
+          evalresp_log (log, EV_ERROR, EV_ERROR, "Error reading input");
           status = EVALRESP_IO;
         }
       }
@@ -2057,7 +2057,7 @@ file_to_char (evalresp_log_t *log, FILE *in, char **seed)
   {
     if (!(*seed = realloc (*seed, ++buffer_len)))
     {
-      evalresp_log (log, ERROR, ERROR, "Cannot reallocate buffer memory");
+      evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot reallocate buffer memory");
       status = EVALRESP_MEM;
     }
   }
@@ -2081,7 +2081,7 @@ add_channel (evalresp_log_t *log, evalresp_channel *channel, evalresp_channels *
   if (!(channels->channels = realloc (channels->channels,
                                       sizeof (evalresp_channel *) * channels->nchannels)))
   {
-    evalresp_log (log, ERROR, ERROR, "Cannot reallocate channels memory");
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot reallocate channels memory");
     status = EVALRESP_MEM;
   }
   else
@@ -2106,7 +2106,7 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
     {
       if (!(channel = calloc (1, sizeof (*channel))))
       {
-        evalresp_log (log, ERROR, ERROR, "Cannot allocate memory for channel");
+        evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate memory for channel");
         status = EVALRESP_MEM;
       }
       else
