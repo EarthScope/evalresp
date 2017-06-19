@@ -98,13 +98,13 @@ parse_opts (int argc, char *argv[], evalresp_log_t **log, FILE **in, FILE **out)
     input = strdup (argv[optind]);
   }
 
-  evalresp_log (*log, INFO, 0, "Logging to stderr");
+  evalresp_log (*log, EV_INFO, 0, "Logging to stderr");
 
   if (input)
   {
     if (!(*in = fopen (input, "r")))
     {
-      evalresp_log (*log, ERROR, 0, "Cannot open %s to read", input);
+      evalresp_log (*log, EV_ERROR, 0, "Cannot open %s to read", input);
       status = X2R_ERR_IO;
       if (output)
       {
@@ -113,18 +113,18 @@ parse_opts (int argc, char *argv[], evalresp_log_t **log, FILE **in, FILE **out)
       free (input);
       return status;
     }
-    evalresp_log (*log, INFO, 0, "Input from %s", input);
+    evalresp_log (*log, EV_INFO, 0, "Input from %s", input);
   }
   else
   {
-    evalresp_log (*log, INFO, 0, "Input from stdin");
+    evalresp_log (*log, EV_INFO, 0, "Input from stdin");
   }
 
   if (output)
   {
     if (!(*out = fopen (output, "w")))
     {
-      evalresp_log (*log, ERROR, 0, "Cannot open %s to write", output);
+      evalresp_log (*log, EV_ERROR, 0, "Cannot open %s to write", output);
       status = X2R_ERR_IO;
       if (input)
       {
@@ -133,11 +133,11 @@ parse_opts (int argc, char *argv[], evalresp_log_t **log, FILE **in, FILE **out)
       free (output);
       return status;
     }
-    evalresp_log (*log, INFO, 0, "Output to %s", output);
+    evalresp_log (*log, EV_INFO, 0, "Output to %s", output);
   }
   else
   {
-    evalresp_log (*log, INFO, 0, "Output to stdout");
+    evalresp_log (*log, EV_INFO, 0, "Output to stdout");
   }
 
   if (output)

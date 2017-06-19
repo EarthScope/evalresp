@@ -1,0 +1,20 @@
+
+.PHONY: all clean
+
+all:
+	$(MAKE) -C mxml -f Makefile.unix
+	$(MAKE) -C evalresp_log -f Makefile.unix
+	$(MAKE) -C spline -f Makefile.unix
+	$(MAKE) -C evalresp -f Makefile.unix
+	
+clean:
+	$(MAKE) -C mxml clean
+	$(MAKE) -C evalresp_log -f Makefile.unix clean
+	$(MAKE) -C spline -f Makefile.unix clean
+	$(MAKE) -C evalresp -f Makefile.unix clean
+	
+install:
+	$(MAKE) -C mxml install
+	$(MAKE) -C evalresp_log -f Makefile.unix install
+	$(MAKE) -C spline -f Makefile.unix install
+	$(MAKE) -C evalresp -f Makefile.unix install

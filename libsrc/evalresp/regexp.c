@@ -145,7 +145,7 @@
 
 #define FAIL(m, log)                 \
   {                                  \
-    evalresp_log (log, ERROR, 0, m); \
+    evalresp_log (log, EV_ERROR, 0, m); \
     return (NULL);                   \
   }
 /*XXX #define    FAIL(m)    { evr_regerror(m); return(NULL); } */
@@ -742,7 +742,7 @@ evalresp_log_t *log;
   /* Be paranoid... */
   if (prog == NULL || string == NULL)
   {
-    evalresp_log (log, ERROR, 0, "NULL parameter");
+    evalresp_log (log, EV_ERROR, 0, "NULL parameter");
     /*XXX evr_regerror("NULL parameter"); */
     return (0);
   }
@@ -750,7 +750,7 @@ evalresp_log_t *log;
   /* Check validity of program. */
   if (UCHARAT (prog->program) != MAGIC)
   {
-    evalresp_log (log, ERROR, 0, "NULL parameter");
+    evalresp_log (log, EV_ERROR, 0, "NULL parameter");
     /*XXX evr_regerror("corrupted program"); */
     return (0);
   }
@@ -852,7 +852,7 @@ evalresp_log_t *log;
 #ifdef DEBUG
   if (scan != NULL && regnarrate)
   {
-    evalresp_log (log, DEBUG, 0, "%s(", regprop (scan));
+    evalresp_log (log, EV_DEBUG, 0, "%s(", regprop (scan));
   }
 /*XXX fprintf(stderr, "%s(\n", regprop(scan)); */
 #endif
@@ -861,7 +861,7 @@ evalresp_log_t *log;
 #ifdef DEBUG
     if (regnarrate)
     {
-      evalresp_log (log, DEBUG, 0, "%s...", regprop (scan));
+      evalresp_log (log, EV_DEBUG, 0, "%s...", regprop (scan));
       /*XXX fprintf(stderr, "%s...\n", regprop(scan)); */ /
     }
 #endif
@@ -1029,7 +1029,7 @@ evalresp_log_t *log;
       return (1); /* Success! */
       break;
     default:
-      evalresp_log (log, ERROR, 0, "memory corruption");
+      evalresp_log (log, EV_ERROR, 0, "memory corruption");
       /*XXX evr_regerror("memory corruption"); */
       return (0);
       break;
@@ -1042,7 +1042,7 @@ evalresp_log_t *log;
      * We get here only if there's trouble -- normally "case END" is
      * the terminating point.
      */
-  evalresp_log (log, ERROR, 0, "corrupted pointers");
+  evalresp_log (log, EV_ERROR, 0, "corrupted pointers");
   /*XXX evr_regerror("corrupted pointers"); */
   return (0);
 }
@@ -1087,7 +1087,7 @@ evalresp_log_t *log;
     }
     break;
   default: /* Oh dear.  Called inappropriately. */
-    evalresp_log (log, ERROR, 0, "internal foulup");
+    evalresp_log (log, EV_ERROR, 0, "internal foulup");
     /*XXX evr_regerror("internal foulup"); */
     count = 0; /* Best compromise. */
     break;
@@ -1240,7 +1240,7 @@ static char *
     p = "PLUS";
     break;
   default:
-    evalresp_log (log, ERROR, 0, "corrupted opcode");
+    evalresp_log (log, EV_ERROR, 0, "corrupted opcode");
     /*XXX evr_regerror("corrupted opcode"); */
     break;
   }

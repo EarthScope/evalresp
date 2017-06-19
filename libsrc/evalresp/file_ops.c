@@ -91,7 +91,7 @@ find_files (char *file, struct scn_list *scn_lst,
         nfiles = get_names (comp_name, flst_ptr, log);
         if (!nfiles && !loc_wild)
         {
-          evalresp_log (log, WARN, 0, "evresp_; no files match '%s'",
+          evalresp_log (log, EV_WARN, 0, "evresp_; no files match '%s'",
                         comp_name);
           /*XXX fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
                             comp_name);
@@ -106,7 +106,7 @@ find_files (char *file, struct scn_list *scn_lst,
           nfiles = get_names (comp_name, flst_ptr, log);
           if (!nfiles)
           {
-            evalresp_log (log, WARN, 0,
+            evalresp_log (log, EV_WARN, 0,
                           "evresp_; no files match '%s' (or globbed location)",
                           comp_name);
             /*XXX fprintf(stderr,
@@ -151,7 +151,7 @@ find_files (char *file, struct scn_list *scn_lst,
       nfiles = get_names (comp_name, flst_ptr, log);
       if (!nfiles && strcmp (scn_ptr->locid, "*"))
       {
-        evalresp_log (log, WARN, 0, "evresp_; no files match '%s'",
+        evalresp_log (log, EV_WARN, 0, "evresp_; no files match '%s'",
                       comp_name);
         /*XXX fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
                         comp_name);
@@ -178,7 +178,7 @@ find_files (char *file, struct scn_list *scn_lst,
         nfiles = get_names (comp_name, flst_ptr, log);
         if (!nfiles)
         {
-          evalresp_log (log, WARN, 0, "evresp_; no files match '%s'",
+          evalresp_log (log, EV_WARN, 0, "evresp_; no files match '%s'",
                         comp_name);
           /*fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
                             comp_name);
@@ -280,7 +280,7 @@ get_names (char *in_file, struct matched_files *files, evalresp_log_t *log)
  matching the expression in 'in_file'. */
 
 int
-get_names (char *in_file, struct matched_files *files)
+get_names (char *in_file, struct matched_files *files, evalresp_log_t* log)
 {
   struct file_list *lst_ptr, *tmp_ptr;
   struct _finddata_t fblk; /* define block for 'findfirst()' fn */
@@ -297,7 +297,7 @@ get_names (char *in_file, struct matched_files *files)
     return 0;
   }
 
-  files->first_list = alloc_file_list ();
+  files->first_list = alloc_file_list (log);
   lst_ptr = files->first_list;
 
   /* retrieve the files and build up a linked
@@ -305,9 +305,9 @@ get_names (char *in_file, struct matched_files *files)
   do
   {
     files->nfiles++;
-    lst_ptr->name = alloc_char (strlen (fblk.ff_name) + 1);
+    lst_ptr->name = alloc_char (strlen (fblk.ff_name) + 1, log);
     strcpy (lst_ptr->name, fblk.ff_name);
-    lst_ptr->next_file = alloc_file_list ();
+    lst_ptr->next_file = alloc_file_list (log);
     tmp_ptr = lst_ptr;
     lst_ptr = lst_ptr->next_file;
   } while (findnext (&fblk) >= 0);

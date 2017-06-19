@@ -191,7 +191,7 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
 
     if (!matching_stages && !has_stage0)
     {
-      evalresp_log (log, ERROR, 0,
+      evalresp_log (log, EV_ERROR, 0,
                     "calc_resp: %s start_stage=%d, highest stage found=%d)",
                     "No Matching Stages Found (requested", start_stage,
                     chan->nstages);
@@ -203,7 +203,7 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
     }
     else if (!matching_stages)
     {
-      evalresp_log (log, ERROR, 0,
+      evalresp_log (log, EV_ERROR, 0,
                     "calc_resp: %s start_stage=%d, highest stage found=%d)",
                     "No Matching Stages Found (requested", start_stage,
                     chan->nstages - 1);
@@ -259,7 +259,7 @@ convert_to_units (int inp, char *out_units, evalresp_complex *data, double w, ev
       out = ACC;
     else
     {
-      evalresp_log (log, ERROR, 0, "convert_to_units: bad output units");
+      evalresp_log (log, EV_ERROR, 0, "convert_to_units: bad output units");
       return; /*TODO BAD_OUT_UNITS */
               /*XXX error_return(BAD_OUT_UNITS, "convert_to_units: bad output units"); */
     }
@@ -398,7 +398,7 @@ calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
 
   if (x_for_b62 <= 0)
   {
-    evalresp_log (log, ERROR, 0,
+    evalresp_log (log, EV_ERROR, 0,
                   "Cannot compute B62 response for negative or zero input: %f",
                   x_for_b62);
     exit (1);     /* TODO IGD 06/06/2017 To allow passing of the test: next, the function should become int */
@@ -696,7 +696,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
     }
     if (fil == (evalresp_blkt *)NULL && last_fil->type != POLYNOMIAL)
     {
-      evalresp_log (log, ERROR, 0,
+      evalresp_log (log, EV_ERROR, 0,
                     "norm_resp; no stage gain defined, zero sensitivity");
       return; /*TODO ILLEGAL_RESP_FORMAT */
               /*XXX error_return(ILLEGAL_RESP_FORMAT,
@@ -716,7 +716,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
     {
       if (chan->sensit == 0.0)
       {
-        evalresp_log (log, ERROR, 0,
+        evalresp_log (log, EV_ERROR, 0,
                       "norm_resp; no stage gain defined, zero sensitivity");
         exit (1);     /*TODO IGD 06/06/2017: Exit to satisfy test RESP.UW.STOR..ACE; need to return int */
         /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
@@ -766,7 +766,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
     {
       if (fil->type == GAIN && fil->blkt_info.gain.gain == 0.0)
       {
-        evalresp_log (log, ERROR, 0, "norm_resp; zero stage gain");
+        evalresp_log (log, EV_ERROR, 0, "norm_resp; zero stage gain");
         exit (1);     /* IGD 06/06/2017 TODO ILLEGAL_RESP_FORMAT */
         /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
                       /*XXX error_return(ILLEGAL_RESP_FORMAT, "norm_resp; zero stage gain"); */
@@ -862,7 +862,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
                             fil->blkt_info.gain.gain_freq, &df);
               if (df.real == 0.0 && df.imag == 0.0)
               {
-                evalresp_log (log, ERROR, 0,
+                evalresp_log (log, EV_ERROR, 0,
                               "norm_resp: Gain frequency of zero found in bandpass analog filter");
                 return; /*TODO ILLEGAL_FILT_S{EC */
                         /*XXX error_return(ILLEGAL_FILT_SPEC,
@@ -871,7 +871,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
               analog_trans (main_filt, f, &of);
               if (of.real == 0.0 && of.imag == 0.0)
               {
-                evalresp_log (log, ERROR, 0,
+                evalresp_log (log, EV_ERROR, 0,
                               "norm_resp: Chan. Sens. frequency found with bandpass analog filter");
                 return; /*TODO ILLEGAL_FILT_S{EC */
                         /*XXX error_return(ILLEGAL_FILT_SPEC,
@@ -960,11 +960,11 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
     if (percent_diff >= 0.05)
     {
 #ifndef LIB_MODE
-      evalresp_log (log, WARN, 0,
+      evalresp_log (log, EV_WARN, 0,
                     "%s (norm_resp): computed and reported sensitivities",
                     myLabel);
-      evalresp_log (log, WARN, 0, "%s differ by more than 5 percent. \n", myLabel);
-      evalresp_log (log, WARN, 0, "%s\t Execution continuing.\n", myLabel);
+      evalresp_log (log, EV_WARN, 0, "%s differ by more than 5 percent. \n", myLabel);
+      evalresp_log (log, EV_WARN, 0, "%s\t Execution continuing.\n", myLabel);
 /*XXX
             fprintf(stderr,
                     "%s WARNING (norm_resp): computed and reported sensitivities",
