@@ -162,7 +162,7 @@ main (int argc, char *argv[])
   if (fswidx < 5)
   {
     evalresp_log (log, EV_ERROR, 0, "Not all of the required inputs are \n\t"
-                                 "present (%d missing), type '%s' for usage",
+                                    "present (%d missing), type '%s' for usage",
                   8 - fswidx,
                   prog_name);
     exit (USAGE_ERROR);
@@ -210,8 +210,8 @@ main (int argc, char *argv[])
       {
       case 0: /* This is to handle ones that get set automatically */
         break;
-      case 'f': /*file*/
-        file = strdup (optarg);//, MAXFLDLEN);
+      case 'f':                 /*file*/
+        file = strdup (optarg); //, MAXFLDLEN);
         break;
       case 'u': /*units*/
         strncpy (units, optarg, MAXFLDLEN);
@@ -233,13 +233,13 @@ main (int argc, char *argv[])
           /*XXX error_exit(USAGE_ERROR, "%s: option '-s' illegal type '%s'",
                                 prog_name, type); */
         }
-        type = strdup (optarg);//, MAXFLDLEN);
+        type = strdup (optarg); //, MAXFLDLEN);
         break;
-      case 'n': /*network*/
-        net_code = strdup (optarg);//, MAXFLDLEN);
+      case 'n':                     /*network*/
+        net_code = strdup (optarg); //, MAXFLDLEN);
         break;
-      case 'l': /*location*/
-        locid = strdup (optarg);//, MAXFLDLEN);
+      case 'l':                  /*location*/
+        locid = strdup (optarg); //, MAXFLDLEN);
         break;
       case 'r': /*response*/
         strncpy (rtype, optarg, MAXFLDLEN);
@@ -340,7 +340,7 @@ main (int argc, char *argv[])
   if (!is_time (t_o_day, log))
   {
     evalresp_log (log, EV_ERROR, 0, "'Time of day' must have format "
-                                 "'hh[:mm[:ss[.#####]]]', found '%s'",
+                                    "'hh[:mm[:ss[.#####]]]', found '%s'",
                   t_o_day);
     exit (USAGE_ERROR);
     /*XXX error_exit(USAGE_ERROR,

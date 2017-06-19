@@ -52,14 +52,14 @@ typedef struct
 
 int evalresp_new_filter (evalresp_log_t *log, evalresp_filter **filter);
 
-int evalresp_set_year(evalresp_log_t *log, evalresp_filter *filter, const char *year);
+int evalresp_set_year (evalresp_log_t *log, evalresp_filter *filter, const char *year);
 
-int evalresp_set_julian_day(evalresp_log_t *log, evalresp_filter *filter, const char *julian_day);
+int evalresp_set_julian_day (evalresp_log_t *log, evalresp_filter *filter, const char *julian_day);
 
-int evalresp_set_time(evalresp_log_t *log, evalresp_filter *filter, const char *time);
+int evalresp_set_time (evalresp_log_t *log, evalresp_filter *filter, const char *time);
 
 int evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter,
-    const char *sta, const char *net, const char *chan, const char *locid);
+                       const char *sta, const char *net, const char *chan, const char *locid);
 
 void evalresp_free_filter (evalresp_filter **filter);
 

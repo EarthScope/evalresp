@@ -280,7 +280,7 @@ get_names (char *in_file, struct matched_files *files, evalresp_log_t *log)
  matching the expression in 'in_file'. */
 
 int
-get_names (char *in_file, struct matched_files *files, evalresp_log_t* log)
+get_names (char *in_file, struct matched_files *files, evalresp_log_t *log)
 {
   struct file_list *lst_ptr, *tmp_ptr;
   struct _finddata_t fblk; /* define block for 'findfirst()' fn */

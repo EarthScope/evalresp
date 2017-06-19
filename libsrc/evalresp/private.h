@@ -321,7 +321,7 @@ struct matched_files
  */
 typedef struct scn_list
 {
-  int nscn;             /**< Number of network-station-locid-channel objects. */
+  int nscn;                /**< Number of network-station-locid-channel objects. */
   evalresp_sncl **scn_vec; /**< Array of network-station-locid-channel objects. */
 } evalresp_sncls;
 
