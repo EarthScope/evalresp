@@ -7,10 +7,17 @@
 #include "evalresp/public_channels.h"
 #include "evalresp/public_responses.h"
 #include "evalresp_log/log.h"
-
+#if 0
 #define EVALRESP_OK 0
 #define EVALRESP_MEM 1
 #define EVALRESP_IO 2
+#endif
+enum evalresp_status_enum
+{
+    EVALRESP_OK = 0,
+    EVALRESP_MEM,
+    EVALRESP_IO
+};
 
 // TODO - see design doc for details that should go into comments
 
