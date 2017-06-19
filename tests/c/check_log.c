@@ -10,10 +10,10 @@
 void
 run_test (evalresp_log_func_t log_func, void *data, char is_syslog)
 {
-  ck_assert (EXIT_SUCCESS == evalresp_log_basic (log_func, data, INFO, 0, "This is a TEST"));
+  ck_assert (EXIT_SUCCESS == evalresp_log_basic(log_func, data, EV_INFO, 0, "This is a TEST"));
   if (is_syslog)
   {
-    return;
+      return;
   }
 }
 
@@ -48,12 +48,12 @@ START_TEST (test_log_4)
 {
   evalresp_log_t *log;
   evalresp_syslog_data_t *data;
-  ck_assert (NULL != (log = evalresp_log_t_alloc (NULL, NULL)));
-  ck_assert (NULL != (data = evalresp_log_syslog_data_alloc ("test stuff", LOG_PID, LOG_USER)));
-  ck_assert (EXIT_SUCCESS == evalresp_log_intialize_log_for_syslog (log, data));
-  ck_assert (EXIT_SUCCESS == evalresp_log (log, INFO, 0, "This is a bigger Test"));
-  evalresp_log_t_free (log);
-  evalresp_log_syslog_data_free (data);
+  ck_assert (NULL != (log = evalresp_log_t_alloc(NULL, NULL)));
+  ck_assert (NULL != (data = evalresp_log_syslog_data_alloc("test stuff", LOG_PID, LOG_USER)));
+  ck_assert (EXIT_SUCCESS ==  evalresp_log_intialize_log_for_syslog(log, data));
+  ck_assert (EXIT_SUCCESS == evalresp_log(log, EV_INFO, 0, "This is a bigger Test"));
+  evalresp_log_t_free(log);
+  evalresp_log_syslog_data_free(data);
 }
 END_TEST
 

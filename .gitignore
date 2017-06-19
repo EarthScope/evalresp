@@ -12,6 +12,8 @@ Makefile
 *.log
 *.sw[op]
 *.pdf
+*.obj
+*.lib
 
 configure
 config.*
@@ -19,6 +21,8 @@ libtool
 stamp*
 build-aux
 doc/latex
+
+.vs/
 
 env
 install

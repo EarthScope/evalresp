@@ -63,13 +63,13 @@ evalresp_log_to_syslog (evalresp_log_msg_t *msg, void *data)
   openlog (ident, option, facility);
   switch (msg->log_level)
   {
-  case ERROR:
+  case EV_ERROR:
     level = LOG_ERR;
     break;
-  case WARN:
+  case EV_WARN:
     level = LOG_WARNING;
     break;
-  case DEBUG:
+  case EV_DEBUG:
     level = LOG_DEBUG;
     break;
   default:
