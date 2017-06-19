@@ -2264,11 +2264,11 @@ evalresp_filename_to_channels (evalresp_log_t *log, const char *filename,
 int evalresp_new_filter (evalresp_log_t *log, evalresp_filter **filter) {
   int status = EVALRESP_OK;
   if (!(*filter = calloc(1, sizeof(**filter)))) {
-    evalresp_log(log, ERROR, ERROR, "Cannot allocate filter");
+    evalresp_log(log, EV_ERROR, EV_ERROR, "Cannot allocate filter");
     status = EVALRESP_MEM;
   } else {
     if (!((*filter)->datetime = calloc(1, sizeof(*((*filter)->datetime))))) {
-      evalresp_log(log, ERROR, ERROR, "Cannot allocate datetime");
+      evalresp_log(log, EV_ERROR, EV_ERROR, "Cannot allocate datetime");
       status = EVALRESP_MEM;
     }
   }
@@ -2281,7 +2281,7 @@ int parse_int(evalresp_log_t *log, const char *str, int *value) {
   *value = (int)strtol(str, &end, 10);
   while (isspace(*end)) ++end;
   if (*end) {
-    evalresp_log(log, ERROR, ERROR, "Cannot parse '%s' as an integer", str);
+    evalresp_log(log, EV_ERROR, EV_ERROR, "Cannot parse '%s' as an integer", str);
     status = EVALRESP_INP;
   }
   return status;
@@ -2321,7 +2321,7 @@ int evalresp_set_time(evalresp_log_t *log, evalresp_filter *filter, const char *
     }
   }
   if (status) {
-    evalresp_log(log, ERROR, ERROR, "Cannot parse '%s' as a time", time);
+    evalresp_log(log, EV_ERROR, EV_ERROR, "Cannot parse '%s' as a time", time);
   }
   return status;
 }
@@ -2331,11 +2331,11 @@ int evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter,
   int status = EVALRESP_OK;
   filter->nsncls++;
   if (!(filter->sncls = realloc(filter->sncls, filter->nsncls * sizeof(*filter->sncls)))) {
-    evalresp_log(log, ERROR, ERROR, "Cannot reallocate sncls");
+    evalresp_log(log, EV_ERROR, EV_ERROR, "Cannot reallocate sncls");
     status = EVALRESP_MEM;
   } else {
     if (!(filter->sncls[filter->nsncls-1] = calloc(1, sizeof(*(filter->sncls[filter->nsncls-1]))))) {
-      evalresp_log(log, ERROR, ERROR, "Cannot allocate sncl");
+      evalresp_log(log, EV_ERROR, EV_ERROR, "Cannot allocate sncl");
       status = EVALRESP_MEM;
     } else {
       evalresp_sncl *sncl = filter->sncls[filter->nsncls-1];
