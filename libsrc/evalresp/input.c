@@ -188,7 +188,7 @@ find_field (evalresp_log_t *log, const char **seed, char *sep,
 // this was "read_channel"
 static int
 read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
-    evalresp_channel *chan)
+                     evalresp_channel *chan)
 {
   int blkt_no, fld_no;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -1845,7 +1845,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
 // this was "parse_channel"
 static int
 read_channel_data (evalresp_log_t *log, const char **seed, char *first_line,
-    evalresp_channel *channel)
+                   evalresp_channel *channel)
 {
 
   // TODO - assignments for no_units and tmp_stage2 made blindly to fix compiler warning.  bug?

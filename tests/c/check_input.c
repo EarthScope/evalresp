@@ -97,7 +97,7 @@ START_TEST (test_filename_to_channels)
   evalresp_channels *channels = NULL;
   fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", NULL,
                                           &channels));
-  fail_if(channels->nchannels != 6, "Unexpected number of channels: %d", channels->nchannels);
+  fail_if (channels->nchannels != 6, "Unexpected number of channels: %d", channels->nchannels);
 }
 END_TEST
 
