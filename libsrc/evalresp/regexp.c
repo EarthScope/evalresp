@@ -176,7 +176,7 @@ static int regsize;   /* Code size. */
 #define STATIC static
 #endif
 STATIC char *reg (int, int*, evalresp_log_t *);
-STATIC char *regbranch (int *);
+STATIC char *regbranch (int *, evalresp_log_t *);
 STATIC char *regpiece (int *, evalresp_log_t *);
 STATIC char *regatom (int *, evalresp_log_t *);
 STATIC char *regnode (char);
@@ -223,7 +223,7 @@ evalresp_log_t *log;
   regsize = 0L;
   regcode = &regdummy;
   regc (MAGIC);
-  if (reg (0, &flags) == NULL)
+  if (reg (0, &flags, log) == NULL)
     return (NULL);
 
   /* Small enough for pointer-storage convention? */
@@ -240,7 +240,7 @@ evalresp_log_t *log;
   regnpar = 1;
   regcode = r->program;
   regc (MAGIC);
-  if (reg (0, &flags) == NULL)
+  if (reg (0, &flags, log) == NULL)
     return (NULL);
 
   /* Dig out information for optimizations. */
@@ -319,7 +319,7 @@ evalresp_log_t *log;
     ret = NULL;
 
   /* Pick up the branches, linking them together. */
-  br = regbranch (&flags);
+  br = regbranch (&flags, log);
   if (br == NULL)
     return (NULL);
   if (ret != NULL)
@@ -332,7 +332,7 @@ evalresp_log_t *log;
   while (*regparse == '|')
   {
     regparse++;
-    br = regbranch (&flags);
+    br = regbranch (&flags, log);
     if (br == NULL)
       return (NULL);
     regtail (ret, br); /* BRANCH -> BRANCH. */
@@ -373,7 +373,8 @@ evalresp_log_t *log;
  *
  * Implements the concatenation operator.
  */
-static char *regbranch (flagp) int *flagp;
+static char *regbranch (flagp, log) int *flagp;
+evalresp_log_t *log;
 {
   register char *ret;
   register char *chain;
@@ -386,7 +387,7 @@ static char *regbranch (flagp) int *flagp;
   chain = NULL;
   while (*regparse != '\0' && *regparse != '|' && *regparse != ')')
   {
-    latest = regpiece (&flags);
+    latest = regpiece (&flags, log);
     if (latest == NULL)
       return (NULL);
     *flagp |= flags & HASWIDTH;
@@ -419,7 +420,7 @@ evalresp_log_t *log;
   register char *next;
   int flags;
 
-  ret = regatom (&flags);
+  ret = regatom (&flags, log);
   if (ret == NULL)
     return (NULL);
 
@@ -543,7 +544,7 @@ evalresp_log_t *log;
   }
   break;
   case '(':
-    ret = reg (1, &flags);
+    ret = reg (1, &flags, log);
     if (ret == NULL)
       return (NULL);
     *flagp |= flags & (HASWIDTH | SPSTART);
