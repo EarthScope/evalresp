@@ -51,7 +51,7 @@ find_files (char *file, struct scn_list *scn_lst,
   char comp_name[MAXLINELEN], new_name[MAXLINELEN];
   int i, nscn, nfiles, loc_wild;
   struct matched_files *flst_head, *flst_ptr, *tmp_ptr;
-  struct scn *scn_ptr;
+  evalresp_sncl *scn_ptr;
   struct stat buf;
 
   /* first determine the number of station-channel-networks to look at */

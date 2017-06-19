@@ -244,9 +244,9 @@ typedef struct
 } evalresp_channels;
 
 int
-alloc_channels (evalresp_log_t *log, evalresp_channels **channels);
+evalresp_alloc_channels (evalresp_log_t *log, evalresp_channels **channels);
 
 void
-free_channels (evalresp_channels **channels);
+evalresp_free_channels (evalresp_channels **channels);
 
 #endif

@@ -2102,6 +2102,91 @@ add_channel (evalresp_log_t *log, evalresp_channel *channel, evalresp_channels *
   return status;
 }
 
+// was part of in_epoch
+static void
+parse_datetime(const char *str, evalresp_datetime *datetime)
+{
+  char *start_pos, temp_str[DATIMLEN];
+  int len;
+
+  // TODO - this could probably be rewritten better (like, error handling, what's that?)
+  datetime->hour = datetime->min = 0;
+  datetime->sec = 0.0;
+  strncpy (temp_str, str, DATIMLEN);
+  start_pos = temp_str;
+  len = strcspn (start_pos, ",");
+  *(start_pos + len) = '\0';
+  datetime->year = atoi (start_pos);
+  start_pos += (strlen (start_pos) + 1);
+  len = strcspn (start_pos, ",");
+  *(start_pos + len) = '\0';
+  datetime->jday = atoi (start_pos);
+  start_pos += (strlen (start_pos) + 1);
+  if (strlen (start_pos))
+  {
+    len = strcspn (start_pos, ":");
+    *(start_pos + len) = '\0';
+    datetime->hour = atoi (start_pos);
+    start_pos += (strlen (start_pos) + 1);
+    if (strlen (start_pos))
+    {
+      len = strcspn (start_pos, ":");
+      *(start_pos + len) = '\0';
+      datetime->min = atoi (start_pos);
+      start_pos += (strlen (start_pos) + 1);
+      if (strlen (start_pos))
+      {
+        datetime->sec = atof (start_pos);
+      }
+    }
+  }
+}
+
+static int
+in_epoch (evalresp_datetime *requirement, const char *beg_t, const char *end_t)
+{
+  evalresp_datetime start_time, end_time;
+
+  parse_datetime(beg_t, &start_time);
+  if (strncmp (end_t, "No Ending Time", 14))
+  {
+    parse_datetime(end_t, &end_time);
+    return ((timecmp (&start_time, requirement) <= 0 && timecmp (&end_time, requirement) > 0));
+  }
+  else
+  {
+    return ((timecmp (&start_time, requirement) <= 0));
+  }
+}
+
+static int
+channel_matches(evalresp_log_t *log, const evalresp_filter *filter, evalresp_channel *channel)
+{
+  int i;
+  if (filter->datetime && filter->datetime->year) {
+    if (!in_epoch (filter->datetime, channel->beg_t, channel->end_t)) {
+      return 0;
+    }
+  }
+  if (filter->nsncls) {
+    for (i = 0; i < filter->nsncls; ++i) {
+      evalresp_sncl *sncl = filter->sncls[i];
+      if (string_match (channel->staname, sncl->station, "-g", log)
+          && ((!strlen (sncl->network) && !strlen (channel->network))
+              || string_match (channel->network, sncl->network, "-g", log))
+              && string_match (channel->locid, sncl->locid, "-g", log)
+              && string_match (channel->chaname, sncl->channel, "-g", log))
+      {
+        sncl->found++;
+        return 1;
+      }
+    }
+    return 0;
+  } else {
+    return 1;
+  }
+}
+
 int
 evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
                            const evalresp_filter *filter, evalresp_channels **channels)
@@ -2110,11 +2195,11 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
   evalresp_channel *channel;
   int status = EVALRESP_OK;
   // TODO - first_line and first_field are lookaheads that can be eliminated since
-  // we are readig from char and can easily backstep (indeed, was possible even before...)
+  // we are reading from char and can easily backstep (indeed, was possible even before...)
   char first_line[MAXLINELEN] = "";
 
   *channels = NULL;
-  if (!(status = alloc_channels (log, channels)))
+  if (!(status = evalresp_alloc_channels (log, channels)))
   {
     while (!status && !end_of_string (&read_ptr))
     {
@@ -2128,14 +2213,18 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
         // TODO - add error handling
         read_channel_header (log, &read_ptr, first_line, channel);
         read_channel_data (log, &read_ptr, first_line, channel);
-        status = add_channel (log, channel, *channels);
+        if (!filter || channel_matches(log, filter, channel)) {
+          status = add_channel (log, channel, *channels);
+        } else {
+          free_channel(channel);
+        }
       }
     }
   }
 
   if (status)
   {
-    free_channels (channels);
+    evalresp_free_channels (channels);
   }
 
   return status;
@@ -2171,3 +2260,108 @@ evalresp_filename_to_channels (evalresp_log_t *log, const char *filename,
   }
   return status;
 }
+
+int evalresp_new_filter (evalresp_log_t *log, evalresp_filter **filter) {
+  int status = EVALRESP_OK;
+  if (!(*filter = calloc(1, sizeof(**filter)))) {
+    evalresp_log(log, ERROR, ERROR, "Cannot allocate filter");
+    status = EVALRESP_MEM;
+  } else {
+    if (!((*filter)->datetime = calloc(1, sizeof(*((*filter)->datetime))))) {
+      evalresp_log(log, ERROR, ERROR, "Cannot allocate datetime");
+      status = EVALRESP_MEM;
+    }
+  }
+  return status;
+}
+
+int parse_int(evalresp_log_t *log, const char *str, int *value) {
+  int status = EVALRESP_OK;
+  char *end;
+  *value = (int)strtol(str, &end, 10);
+  while (isspace(*end)) ++end;
+  if (*end) {
+    evalresp_log(log, ERROR, ERROR, "Cannot parse '%s' as an integer", str);
+    status = EVALRESP_INP;
+  }
+  return status;
+}
+
+int evalresp_set_year(evalresp_log_t *log, evalresp_filter *filter, const char *year) {
+  return parse_int(log, year, &filter->datetime->year);
+}
+
+int evalresp_set_julian_day(evalresp_log_t *log, evalresp_filter *filter, const char *julian_day) {
+  return parse_int(log, julian_day, &filter->datetime->jday);
+}
+
+// time format is hh[:mm[:ss[.sss]]]
+int evalresp_set_time(evalresp_log_t *log, evalresp_filter *filter, const char *time) {
+  int status = EVALRESP_OK;
+  const char *str = time;
+  char *end;
+  filter->datetime->hour = (int)strtol(str, &end, 10);
+  if (*end) {
+    if (*end != ':') {
+      status = EVALRESP_INP;
+    } else {
+      str = end+1;
+      filter->datetime->min = (int)strtol(str, &end, 10);
+      if (*end) {
+        if (*end != ':') {
+          status = EVALRESP_INP;
+        } else {
+          str = end+1;
+          filter->datetime->sec = (float)strtod(str, &end);
+          if (*end) {
+            status = EVALRESP_INP;
+          }
+        }
+      }
+    }
+  }
+  if (status) {
+    evalresp_log(log, ERROR, ERROR, "Cannot parse '%s' as a time", time);
+  }
+  return status;
+}
+
+int evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter,
+    const char *net, const char *sta, const char *locid, const char *chan) {
+  int status = EVALRESP_OK;
+  filter->nsncls++;
+  if (!(filter->sncls = realloc(filter->sncls, filter->nsncls * sizeof(*filter->sncls)))) {
+    evalresp_log(log, ERROR, ERROR, "Cannot reallocate sncls");
+    status = EVALRESP_MEM;
+  } else {
+    if (!(filter->sncls[filter->nsncls-1] = calloc(1, sizeof(*(filter->sncls[filter->nsncls-1]))))) {
+      evalresp_log(log, ERROR, ERROR, "Cannot allocate sncl");
+      status = EVALRESP_MEM;
+    } else {
+      evalresp_sncl *sncl = filter->sncls[filter->nsncls-1];
+      sncl->station = strdup(sta ? sta : "*");
+      sncl->network = strdup(net ? net : "*");
+      sncl->channel = strdup(chan ? chan : "*");
+      sncl->locid = strdup(locid ? locid : "*");
+    }
+  }
+  return status;
+}
+
+void evalresp_free_filter (evalresp_filter **filter) {
+  int i;
+  if (*filter) {
+    free((*filter)->datetime);
+    for (i = 0; i < (*filter)->nsncls; ++i) {
+      free((*filter)->sncls[i]->station);
+      free((*filter)->sncls[i]->network);
+      free((*filter)->sncls[i]->channel);
+      free((*filter)->sncls[i]->locid);
+      free((*filter)->sncls[i]);
+    }
+    free((*filter)->sncls);
+    free(*filter);
+    *filter = NULL;
+  }
+}
+

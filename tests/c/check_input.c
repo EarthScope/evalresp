@@ -2,6 +2,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "evalresp/input.h"
 #include "evalresp/public_api.h"
@@ -98,6 +99,50 @@ START_TEST (test_filename_to_channels)
   fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", NULL,
                                           &channels));
   fail_if (channels->nchannels != 6, "Unexpected number of channels: %d", channels->nchannels);
+  evalresp_free_channels(&channels);
+}
+END_TEST
+
+START_TEST (test_filter)
+{
+  evalresp_channels *channels = NULL;
+  evalresp_filter *filter = NULL;
+  fail_if(evalresp_new_filter(NULL, &filter));
+
+  fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", filter,
+                                          &channels));
+  fail_if (channels->nchannels != 6, "Unexpected number of channels: %d", channels->nchannels);
+  evalresp_free_channels(&channels);
+
+  fail_if(!evalresp_set_year(NULL, filter, "1990x"));
+  fail_if(evalresp_set_year(NULL, filter, "1990"));
+  fail_if(filter->datetime->year != 1990);
+  fail_if(evalresp_set_julian_day(NULL, filter, "100"));
+  fail_if(filter->datetime->jday != 100);
+  fail_if(evalresp_set_time(NULL, filter, "1:2:3.4"));
+  fail_if(filter->datetime->hour != 1);
+  fail_if(filter->datetime->min != 2);
+  fail_if(fabs(filter->datetime->sec - 3.4) > 0.0001);
+  fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", filter,
+                                          &channels));
+  fail_if (channels->nchannels != 1, "Unexpected number of channels: %d", channels->nchannels);
+  evalresp_free_channels(&channels);
+
+  fail_if(evalresp_add_sncl(NULL, filter, "IU", "ANMO", NULL, "BHZ"));
+  fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", filter,
+                                          &channels));
+  fail_if (channels->nchannels != 1, "Unexpected number of channels: %d", channels->nchannels);
+  evalresp_free_channels(&channels);
+  evalresp_free_filter(&filter);
+
+  fail_if(evalresp_new_filter(NULL, &filter));
+  fail_if(evalresp_add_sncl(NULL, filter, "IU", "ANMO", NULL, "BHN"));
+  fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", filter,
+                                          &channels));
+  fail_if (channels->nchannels != 0, "Unexpected number of channels: %d", channels->nchannels);
+  evalresp_free_channels(&channels);
+
+  evalresp_free_filter(&filter);
 }
 END_TEST
 
@@ -113,6 +158,7 @@ main (void)
   tcase_add_test (tc, test_find_field);
   tcase_add_test (tc, test_file_to_char);
   tcase_add_test (tc, test_filename_to_channels);
+  tcase_add_test (tc, test_filter);
   suite_add_tcase (s, tc);
   SRunner *sr = srunner_create (s);
   srunner_set_xml (sr, "check-log.xml");
