@@ -721,14 +721,14 @@ static char **regendp;   /* Ditto for endp. */
 /*
  * Forwards.
  */
-STATIC int regtry ();
-STATIC int regmatch ();
-STATIC int regrepeat ();
+STATIC int regtry (regexp *, char *, evalresp_log_t *);
+STATIC int regmatch (char *, evalresp_log_t *);
+STATIC int regrepeat (char *, evalresp_log_t *);
 
 #ifdef DEBUG
 int regnarrate = 0;
 void regdump ();
-STATIC char *regprop ();
+STATIC char *regprop (char *);
 #endif
 
 /*
@@ -775,7 +775,7 @@ evalresp_log_t *log;
 
   /* Simplest case:  anchored match need be tried only once. */
   if (prog->reganch)
-    return (regtry (prog, string));
+    return (regtry (prog, string, log));
 
   /* Messy cases:  unanchored match. */
   s = string;
@@ -783,7 +783,7 @@ evalresp_log_t *log;
     /* We know what char it must start with. */
     while ((s = strchr (s, prog->regstart)) != NULL)
     {
-      if (regtry (prog, s))
+      if (regtry (prog, s, log))
         return (1);
       s++;
     }
@@ -791,7 +791,7 @@ evalresp_log_t *log;
     /* We don't -- general case. */
     do
     {
-      if (regtry (prog, s))
+      if (regtry (prog, s, log))
         return (1);
     } while (*s++ != '\0');
 
@@ -803,9 +803,10 @@ evalresp_log_t *log;
  - regtry - try match at specific point
  */
 static int /* 0 failure, 1 success */
-    regtry (prog, string)
+    regtry (prog, string, log)
         regexp *prog;
 char *string;
+evalresp_log_t *log;
 {
   register int i;
   register char **sp;
@@ -822,7 +823,7 @@ char *string;
     *sp++ = NULL;
     *ep++ = NULL;
   }
-  if (regmatch (prog->program + 1))
+  if (regmatch (prog->program + 1, log))
   {
     prog->startp[0] = string;
     prog->endp[0] = reginput;
@@ -928,7 +929,7 @@ evalresp_log_t *log;
       no = OP (scan) - OPEN;
       save = reginput;
 
-      if (regmatch (next))
+      if (regmatch (next, log))
       {
         /*
                  * Don't set startp if some later
@@ -959,7 +960,7 @@ evalresp_log_t *log;
       no = OP (scan) - CLOSE;
       save = reginput;
 
-      if (regmatch (next))
+      if (regmatch (next, log))
       {
         /*
                  * Don't set endp if some later
@@ -985,7 +986,7 @@ evalresp_log_t *log;
         do
         {
           save = reginput;
-          if (regmatch (OPERAND (scan)))
+          if (regmatch (OPERAND (scan), log))
             return (1);
           reginput = save;
           scan = regnext (scan);
@@ -1012,12 +1013,12 @@ evalresp_log_t *log;
         nextch = *OPERAND (next);
       min = (OP (scan) == STAR) ? 0 : 1;
       save = reginput;
-      no = regrepeat (OPERAND (scan));
+      no = regrepeat (OPERAND (scan), log);
       while (no >= min)
       {
         /* If it could work, try it. */
         if (nextch == '\0' || *reginput == nextch)
-          if (regmatch (next))
+          if (regmatch (next, log))
             return (1);
         /* Couldn't or didn't -- back up. */
         no--;
