@@ -1524,7 +1524,7 @@ void check_sym (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log);
  * @param[in] log Logging structure.
  */
 void calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
-                evalresp_complex *output, char *out_units, int start_stage,
+                evalresp_complex *output, const char *out_units, int start_stage,
                 int stop_stage, int useTotalSensitivityFlag, double x_for_b62,
                 evalresp_log_t *log);
 
@@ -1538,7 +1538,7 @@ void calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
  * @param[in] w Frequency.
  * @param[in] log Logging structure.
  */
-void convert_to_units (int inp, char *out_units, evalresp_complex *data,
+void convert_to_units (int inp, const char *out_units, evalresp_complex *data,
                        double w, evalresp_log_t *log);
 
 /**
