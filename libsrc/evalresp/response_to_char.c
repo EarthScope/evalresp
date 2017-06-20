@@ -96,7 +96,7 @@ int evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *res
                 offset += snprintf(*output + offset, length - offset, "%.6E  %.6E  %.6E\n", freq_arr[i], amp_arr[i], pha_arr[i]);
                 break;
             case evalresp_amplitude_format:
-                offset += snprintf(*output + length, length - offset, "%.6E  %.6E\n", freq_arr[i], amp_arr[i]);
+                offset += snprintf(*output + offset, length - offset, "%.6E  %.6E\n", freq_arr[i], amp_arr[i]);
                 break;
             case evalresp_phase_format:
                 offset += snprintf(*output + offset, length - offset, "%.6E  %.6E\n", freq_arr[i], pha_arr[i]);
@@ -107,7 +107,7 @@ int evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *res
         }
     }
 
-    if (amp_arr)
+    /*if (amp_arr)
     {
         free(amp_arr);
     }
@@ -117,6 +117,6 @@ int evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *res
         free(pha_arr);
     }
     pha_arr = NULL;
-
+*/
     return EVALRESP_OK;
 }
