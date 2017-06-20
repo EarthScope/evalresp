@@ -107,8 +107,8 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
     }
   }
 
-  free(amp_arr);
-  free(pha_arr);
+  free (amp_arr);
+  free (pha_arr);
 
   return EVALRESP_OK;
 }

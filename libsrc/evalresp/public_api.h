@@ -10,11 +10,11 @@
 
 enum evalresp_status_enum
 {
-  EVALRESP_OK = 0,    /**< No error (intentionally false). */
-  EVALRESP_MEM,       /**< Memory error. */
-  EVALRESP_IO,        /**< IO Error. */
-  EVALRESP_INP,       /**< Bad user input. */
-  EVALRESP_ERR        /**< Internal (coding) error. */
+  EVALRESP_OK = 0, /**< No error (intentionally false). */
+  EVALRESP_MEM,    /**< Memory error. */
+  EVALRESP_IO,     /**< IO Error. */
+  EVALRESP_INP,    /**< Bad user input. */
+  EVALRESP_ERR     /**< Internal (coding) error. */
 };
 
 // TODO - see design doc for details that should go into comments
