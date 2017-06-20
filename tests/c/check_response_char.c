@@ -32,7 +32,7 @@ max_err (const char *check_dir, const char *check_file, const char *test_string)
   int ok1 = 1, ok2 = 1, oops = 0;
   int test_read_offset, test_read_len;
 
-  ck_assert (check_fd = open_path (check_dir, check_file));
+  ck_assert (NULL != (check_fd = open_path (check_dir, check_file)));
 
   for (oops = 0, test_read_offset = 0; ok1 != EOF && ok2 != EOF && oops < 100; oops++, test_read_offset += test_read_len)
   {
