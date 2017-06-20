@@ -222,8 +222,8 @@ use_estimated_delay (int flag)
 
  *=================================================================*/
 
-double Pi;
-double twoPi;
+double Pi;  // TODO - use M_PI from math.h
+double twoPi;  // TODO - use M_PI from math.h
 /* IGD 08/21/06 Added Tesla */
 char SEEDUNITS[][UNITS_STR_LEN] =
     {"Undef Units", "Displacement", "Velocity", "Acceleration", "Counts",
