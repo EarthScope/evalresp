@@ -53,7 +53,8 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
     /* this is in here to act as a catch for bad cases */
     break;
   default:
-    return EVALRESP_IO; /* TODO should this be EVALRESP_INVALID_OPT?) */
+    evalresp_log(log, EV_ERROR, EV_ERROR, "Invalid format sent to evalresp_response_to_char");
+    return EVALRESP_INV_FORMAT;
   }
   for (i = 0; i < num_of_points; i++)
   {

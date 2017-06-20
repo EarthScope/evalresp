@@ -19,7 +19,8 @@ enum evalresp_status_enum
     EVALRESP_OK = 0, /**< No error (intentionally false). */
     EVALRESP_MEM, /**< Memory error. */
     EVALRESP_IO, /**< IO Error. */
-    EVALRESP_INP /**< Bad user input. */
+    EVALRESP_INP, /**< Bad user input. */
+    EVALRESP_INV_FORMAT /**< Bad format for a function */
 };
 
 // TODO - see design doc for details that should go into comments
