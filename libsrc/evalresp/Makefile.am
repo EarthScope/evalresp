@@ -10,7 +10,8 @@ libevalresp_la_SOURCES = input.c evaluation.c\
 						 string_fctns.c error_fctns.c\
 						 spline.c\
 						 stationxml2resp/ws.c\
-						 stationxml2resp/xml.c
+						 stationxml2resp/xml.c\
+						 response_to_char.c
 libevalresp_la_CFLAGS = -I../
 
 evalresp_includedir=$(includedir)/evalresp
