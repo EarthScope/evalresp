@@ -26,8 +26,8 @@ enum evalresp_status_enum
 // TODO - see design doc for details that should go into comments
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief Network-station-locid-channel object.
  */
 typedef struct
@@ -40,8 +40,8 @@ typedef struct
 } evalresp_sncl;
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief Structure used for time comparisons.
  */
 typedef struct
@@ -53,6 +53,11 @@ typedef struct
   float sec; /**< Seconds. */
 } evalresp_datetime;
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @brief Structure used for filtering input data by response DNCL and date/time.
+ */
 typedef struct
 {
   int nsncls;

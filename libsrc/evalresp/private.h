@@ -18,6 +18,12 @@
  */
 
 /**
+ * @defgroup evalresp_public_compat evalresp Legacy Public Interface
+ * @ingroup evalresp
+ * @brief Legacy public evalresp interface (predating version 5.0) is included for comatibility purpose.
+ */
+
+/**
  * @defgroup evalresp_public evalresp Public Interface
  * @ingroup evalresp
  * @brief Public evalresp interface.
