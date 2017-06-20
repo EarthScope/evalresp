@@ -7,11 +7,12 @@
 #include "evalresp/public_api.h"
 
 static int
-calloc_doubles(evalresp_log_t *log, const char *name, int n, double **array)
+calloc_doubles (evalresp_log_t *log, const char *name, int n, double **array)
 {
   int status = EVALRESP_OK;
-  if (!(*array = calloc(n, sizeof(**array)))) {
-    evalresp_log(log, EV_ERROR, EV_ERROR, "Cannot allocate array for %s", name);
+  if (!(*array = calloc (n, sizeof (**array))))
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate array for %s", name);
     status = EVALRESP_MEM;
   }
   return status;
@@ -48,15 +49,16 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
   switch (format)
   {
   case evalresp_fap_format:
-    if (!(status = calloc_doubles(log, "amplitude", num_of_points, &amp_arr))) {
-      status = calloc_doubles(log, "phase", num_of_points, &pha_arr);
+    if (!(status = calloc_doubles (log, "amplitude", num_of_points, &amp_arr)))
+    {
+      status = calloc_doubles (log, "phase", num_of_points, &pha_arr);
     }
     break;
   case evalresp_amplitude_format:
-    status = calloc_doubles(log, "amplitude", num_of_points, &amp_arr);
+    status = calloc_doubles (log, "amplitude", num_of_points, &amp_arr);
     break;
   case evalresp_phase_format:
-    status = calloc_doubles(log, "phase", num_of_points, &pha_arr);
+    status = calloc_doubles (log, "phase", num_of_points, &pha_arr);
     break;
   case evalresp_complex_format:
     break;
@@ -65,7 +67,8 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
     status = EVALRESP_ERR;
   }
 
-  if (!status) {
+  if (!status)
+  {
     for (i = 0; i < num_of_points; i++)
     {
       if (amp_arr)
@@ -99,14 +102,17 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
     length++; /* Adding one for NULL termination */
   }
 
-  if (!status) {
-    if (!(*output = (char *)calloc (length, sizeof (char)))) {
-      evalresp_log(log, EV_ERROR, EV_ERROR, "Cannot allocate output");
+  if (!status)
+  {
+    if (!(*output = (char *)calloc (length, sizeof (char))))
+    {
+      evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate output");
       status = EVALRESP_MEM;
     }
   }
 
-  if (!status) {
+  if (!status)
+  {
     for (i = 0, offset = 0; i < num_of_points; i++)
     {
       switch (format)
