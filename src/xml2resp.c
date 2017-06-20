@@ -18,8 +18,6 @@
 
 /**
  * Handle command-line options.
- *
- * We don't use getopt because Windows.
  */
 static int
 parse_opts (int argc, char *argv[], evalresp_log_t **log, FILE **in, FILE **out)

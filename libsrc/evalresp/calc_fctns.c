@@ -52,7 +52,7 @@
 /* IGD 10/04/13 Reformatted */
 void
 calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
-           evalresp_complex *output, char *out_units, int start_stage,
+           evalresp_complex *output, const char *out_units, int start_stage,
            int stop_stage, int useTotalSensitivityFlag, double x_for_b62,
            evalresp_log_t *log)
 {
@@ -237,7 +237,7 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
  * Convert response to velocity first, then to specified units
  *=================================================================*/
 void
-convert_to_units (int inp, char *out_units, evalresp_complex *data, double w, evalresp_log_t *log)
+convert_to_units (int inp, const char *out_units, evalresp_complex *data, double w, evalresp_log_t *log)
 {
   // TODO - 0 assignment below made blindly to fix compiler warning.  bug?
   int out = 0, l;
