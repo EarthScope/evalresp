@@ -1826,4 +1826,10 @@ u *          want to change the number of arguments in evresp() function which
  */
 int use_estimated_delay (int flag);
 
+int
+parse_int (evalresp_log_t *log, const char *name, const char *str, int *value);
+
+int
+parse_double (evalresp_log_t *log, const char *name, const char *str, double *value);
+
 #endif

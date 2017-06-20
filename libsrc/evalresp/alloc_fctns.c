@@ -761,7 +761,6 @@ free_stages (evalresp_stage *stage_ptr)
 void
 free_channel (evalresp_channel *chan_ptr)
 {
-
   free_stages (chan_ptr->first_stage);
   strncpy (chan_ptr->staname, "", STALEN);
   strncpy (chan_ptr->network, "", NETLEN);

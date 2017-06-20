@@ -72,21 +72,64 @@ int evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
 int evalresp_filename_to_channels (evalresp_log_t *log, const char *filename,
                                    const evalresp_filter *filter, evalresp_channels **channels);
 
-// TODO - everything below here needs implementing
+// TODO - rename to _format ?
+typedef enum {
+  evalresp_ap_user_format,      /**< Two files, AMP and PHASE. */
+  evalresp_fap_user_format,     /**< One file, FAP. */
+  evalresp_complex_user_format  /**< One file, COMPLEX. */
+} evalresp_user_format;
+
+typedef enum {
+  evalresp_default_user_unit,
+  evalresp_displacement_user_unit,
+  evalresp_velocity_user_unit,
+  evalresp_acceleration_user_unit
+} evalresp_user_unit;
+
+#define EVALRESP_ALL_STAGES -1  /**< Default for start and stop stage. */
 
 typedef struct
 {
+  double min_freq;
+  double max_freq;
+  int nfreq;
+  int lin_freq;
+  evalresp_user_format format;
+  int start_stage;
+  int stop_stage;
+  int use_estimated_delay;
+  int unwrap_phase;
+  double b62_x;
+} evalresp_options;
 
-} evalresp_eval_options;
+int evalresp_new_options (evalresp_log_t *log, evalresp_options **options);
+
+void evalresp_free_options (evalresp_options **options);
+
+int evalresp_set_frequency (evalresp_log_t *log, evalresp_options *options,
+    const char *min_freq, const char *max_freq, const char *nfreq);
+
+int evalresp_set_format (evalresp_log_t *log, evalresp_options *options,
+    const char *format);
+
+// these are separate because it simplifies calling from main routine
+
+int evalresp_set_start_stage (evalresp_log_t *log, evalresp_options *options,
+    const char *stage);
+
+int evalresp_set_stop_stage (evalresp_log_t *log, evalresp_options *options,
+    const char *stage);
+
+int evalresp_set_b62_x (evalresp_log_t *log, evalresp_options *options,
+    const char *b62_x);
 
 int evalresp_channel_to_response (evalresp_log_t *log, const evalresp_channel *channel,
-                                  const evalresp_eval_options *eval_options,
-                                  evalresp_responses **responses);
+                                  evalresp_options *options, evalresp_response **response);
 
 int evalresp_channels_to_responses (evalresp_log_t *log, const evalresp_channels *channels,
-                                    const evalresp_eval_options *eval_options,
-                                    evalresp_responses **responses);
+                                    evalresp_options *options, evalresp_responses **responses);
 
+// TODO - rename to file_format or similar
 typedef enum {
   evalresp_fap_format,
   evalresp_amplitude_format,
@@ -105,10 +148,11 @@ typedef struct
 
 } evalresp_output_options;
 
+// TODO - do we need separate options here?  separate something out from earlier?
 int evalresp_responses_to_dir (evalresp_log_t *log, const evalresp_responses *responses,
                                evalresp_output_options *output_options, const char *dir);
 
 int evalresp_dir_to_dir (evalresp_log_t *log, const char *dir,
-                         evalresp_eval_options *eval_options, evalresp_output_options *output_options);
+                         evalresp_options *options, evalresp_output_options *output_options);
 
 #endif

@@ -907,3 +907,35 @@ is_IIR_coeffs (FILE *fp, int position)
   fseek (fp, position, SEEK_SET);
   return (result);
 }
+
+int
+parse_int (evalresp_log_t *log, const char *name, const char *str, int *value)
+{
+  int status = EVALRESP_OK;
+  char *end;
+  *value = (int)strtol (str, &end, 10);
+  while (isspace (*end))
+    ++end;
+  if (*end)
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot parse '%s' as an integer for %s", str, name);
+    status = EVALRESP_INP;
+  }
+  return status;
+}
+
+int
+parse_double (evalresp_log_t *log, const char *name, const char *str, double *value)
+{
+  int status = EVALRESP_OK;
+  char *end;
+  *value = strtod (str, &end);
+  while (isspace (*end))
+    ++end;
+  if (*end)
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot parse '%s' as a double for %s", str, name);
+    status = EVALRESP_INP;
+  }
+  return status;
+}
