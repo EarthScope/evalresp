@@ -6,8 +6,8 @@
 #include "./ugly.h"
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief Response object.
  */
 typedef struct evalresp_response_s
@@ -22,6 +22,11 @@ typedef struct evalresp_response_s
   struct evalresp_response_s *next;            /**< Pointer to next response object. */
 } evalresp_response;
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @brief A collection of response objects.
+ */
 typedef struct
 {
   int nresponses;
