@@ -24,17 +24,16 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
     /* don't want to get bad memory location to write too
          * or we don't want to zombify stuff */
     evalresp_log (log, EV_ERROR, EV_ERROR, "cannot out put to an already allocated output");
-    return EVALRESP_MEM;
+    return EVALRESP_ERR;
   }
 
   if (!response)
   {
     evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot Process Empty Response");
-    return EVALRESP_IO;
+    return EVALRESP_ERR;
   }
 
   num_of_points = response->nfreqs;
-  /*XXX make sure we are dealing with interpolated freq as well before deleting this comment */
   freq_arr = response->freqs;
 
   switch (format)
@@ -50,11 +49,10 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
     pha_arr = (double *)calloc (num_of_points, sizeof (double));
     break;
   case evalresp_complex_format:
-    /* this is in here to act as a catch for bad cases */
     break;
   default:
     evalresp_log (log, EV_ERROR, EV_ERROR, "Invalid format sent to evalresp_response_to_char");
-    return EVALRESP_INV_FORMAT;
+    return EVALRESP_ERR;
   }
   for (i = 0; i < num_of_points; i++)
   {
@@ -109,16 +107,8 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
     }
   }
 
-  /*if (amp_arr)
-    {
-        free(amp_arr);
-    }
-    amp_arr = NULL;
-    if (pha_arr)
-    {
-        free(pha_arr);
-    }
-    pha_arr = NULL;
-*/
+  free(amp_arr);
+  free(pha_arr);
+
   return EVALRESP_OK;
 }

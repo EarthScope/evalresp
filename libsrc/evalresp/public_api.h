@@ -8,19 +8,13 @@
 #include "evalresp/public_responses.h"
 #include "evalresp_log/log.h"
 
-#if 0
-#define EVALRESP_OK 0
-#define EVALRESP_MEM 1
-#define EVALRESP_IO 2
-#define EVALRESP_INP 3
-#endif
 enum evalresp_status_enum
 {
   EVALRESP_OK = 0,    /**< No error (intentionally false). */
   EVALRESP_MEM,       /**< Memory error. */
   EVALRESP_IO,        /**< IO Error. */
   EVALRESP_INP,       /**< Bad user input. */
-  EVALRESP_INV_FORMAT /**< Bad format for a function */
+  EVALRESP_ERR        /**< Internal (coding) error. */
 };
 
 // TODO - see design doc for details that should go into comments
