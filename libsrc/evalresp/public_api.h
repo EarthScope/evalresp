@@ -91,6 +91,7 @@ typedef enum {
 } evalresp_user_unit;
 
 #define EVALRESP_ALL_STAGES -1 /**< Default for start and stop stage. */
+#define EVALRESP_NO_FREQ -1    /**< Default for frequency limits. */
 
 typedef struct
 {

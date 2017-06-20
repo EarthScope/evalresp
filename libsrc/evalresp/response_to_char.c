@@ -5,18 +5,7 @@
 #include <string.h>
 
 #include "evalresp/public_api.h"
-
-static int
-calloc_doubles (evalresp_log_t *log, const char *name, int n, double **array)
-{
-  int status = EVALRESP_OK;
-  if (!(*array = calloc (n, sizeof (**array))))
-  {
-    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate array for %s", name);
-    status = EVALRESP_MEM;
-  }
-  return status;
-}
+#include "./private.h"
 
 int
 evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *response,

@@ -1775,13 +1775,12 @@ void print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
  * @param[in,out] p_number_points Reference to number of points value.
  * @param[in] req_freq_arr Array of requested frequency values.
  * @param[in] eq_num_freqs Number values in @p req_freq_arr array.
- * @param[in] tension Tension value for interpolation.
  * @param[in] log Logging structure.
  */
 void interpolate_list_blockette (double **frequency_ptr,
                                  double **amplitude_ptr, double **phase_ptr,
                                  int *p_number_points, double *req_freq_arr,
-                                 int req_num_freqs, double tension, evalresp_log_t *log);
+                                 int req_num_freqs, evalresp_log_t *log);
 
 /**
  * @private
@@ -1831,5 +1830,8 @@ parse_int (evalresp_log_t *log, const char *name, const char *str, int *value);
 
 int
 parse_double (evalresp_log_t *log, const char *name, const char *str, double *value);
+
+int
+calloc_doubles (evalresp_log_t *log, const char *name, int n, double **array);
 
 #endif
