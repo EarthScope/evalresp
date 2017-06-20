@@ -44,7 +44,6 @@ evalresp_response *evresp (char *stalst, char *chalst, char *net_code,
                            int stdio_flag, int useTotalSensitivityFlag,
                            double x_for_b62, int xml_flag, evalresp_log_t *log);
 
-
 /**
  * @public
  * @ingroup evalresp_public_compat

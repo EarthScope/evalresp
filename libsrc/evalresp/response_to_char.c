@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "evalresp/public_api.h"
 #include "./private.h"
+#include "evalresp/public_api.h"
 
 int
 evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *response,

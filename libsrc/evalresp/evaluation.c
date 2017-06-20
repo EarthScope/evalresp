@@ -194,12 +194,12 @@ validate_freqs (evalresp_log_t *log, evalresp_options *options)
   }
   if (!options->lin_freq && options->min_freq == 0)
   {
-    evalresp_log(log, EV_ERROR, EV_ERROR, "Cannot have zero frequency with logarithmic spacing");
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot have zero frequency with logarithmic spacing");
     status = EVALRESP_INP;
   }
   else if (options->nfreq < 1)
   {
-    evalresp_log(log, EV_ERROR, EV_ERROR, "Cannot have a negative number of frequency bins");
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot have a negative number of frequency bins");
     status = EVALRESP_INP;
   }
 
@@ -213,25 +213,29 @@ calculate_default_freqs (evalresp_log_t *log, evalresp_options *options,
   int status = EVALRESP_OK, i;
   double delta = 0, lo, hi;
 
-  if (!(status = validate_freqs(log, options))) {
+  if (!(status = validate_freqs (log, options)))
+  {
 
-    if (options->lin_freq) {
+    if (options->lin_freq)
+    {
       lo = options->min_freq;
       hi = options->max_freq;
     }
     else
     {
-      lo = log10(options->min_freq);
-      hi = log10(options->max_freq);
+      lo = log10 (options->min_freq);
+      hi = log10 (options->max_freq);
     }
     delta = options->nfreq == 1 ? 0 : (hi - lo) / (options->nfreq - 1);
-    if (!(status = calloc_doubles(log, "frequencies", options->nfreq, &response->freqs))) {
+    if (!(status = calloc_doubles (log, "frequencies", options->nfreq, &response->freqs)))
+    {
       response->nfreqs = options->nfreq;
       for (i = 0; i < response->nfreqs; ++i)
       {
         response->freqs[i] = lo + i * delta;
-        if (!options->lin_freq) {
-          response->freqs[i] = pow(10, response->freqs[i]);
+        if (!options->lin_freq)
+        {
+          response->freqs[i] = pow (10, response->freqs[i]);
         }
       }
     }
@@ -241,10 +245,11 @@ calculate_default_freqs (evalresp_log_t *log, evalresp_options *options,
 }
 
 static int
-save_doubles(evalresp_log_t *log, const char *name, int n, double **dest, double *src)
+save_doubles (evalresp_log_t *log, const char *name, int n, double **dest, double *src)
 {
   int status = EVALRESP_OK, i;
-  if (!(status = calloc_doubles(log, name, n, dest))) {
+  if (!(status = calloc_doubles (log, name, n, dest)))
+  {
     for (i = 0; i < n; ++i)
     {
       (*dest)[i] = src[i];
@@ -254,27 +259,31 @@ save_doubles(evalresp_log_t *log, const char *name, int n, double **dest, double
 }
 
 static int
-save_b55(evalresp_log_t *log, evalresp_channel *channel,
-    evalresp_blkt **b55_save)
+save_b55 (evalresp_log_t *log, evalresp_channel *channel,
+          evalresp_blkt **b55_save)
 {
   int status = EVALRESP_OK;
   evalresp_blkt *b55 = channel->first_stage->first_blkt;
   evalresp_list *list = &b55->blkt_info.list;
-  if (!(*b55_save = calloc(1, sizeof(**b55_save))))
+  if (!(*b55_save = calloc (1, sizeof (**b55_save))))
   {
-    evalresp_log(log, EV_ERROR, EV_ERROR, "Cannot allocate blockette 55");
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate blockette 55");
     status = EVALRESP_MEM;
-  } else {
-    memcpy(*b55_save, b55, sizeof(*b55));
+  }
+  else
+  {
+    memcpy (*b55_save, b55, sizeof (*b55));
     /** interpolation will free the freq, phase and amp arrays, so we must
      * allocate further copies
      */
-    if (!(status = save_doubles(log, "b55 frequencies", list->nresp,
-        &(*b55_save)->blkt_info.list.freq, list->freq))) {
-      if (!(status = save_doubles(log, "b55 amplitudes", list->nresp,
-          &(*b55_save)->blkt_info.list.amp, list->amp))) {
-        status = save_doubles(log, "b55 phases", list->nresp,
-            &(*b55_save)->blkt_info.list.phase, list->phase);
+    if (!(status = save_doubles (log, "b55 frequencies", list->nresp,
+                                 &(*b55_save)->blkt_info.list.freq, list->freq)))
+    {
+      if (!(status = save_doubles (log, "b55 amplitudes", list->nresp,
+                                   &(*b55_save)->blkt_info.list.amp, list->amp)))
+      {
+        status = save_doubles (log, "b55 phases", list->nresp,
+                               &(*b55_save)->blkt_info.list.phase, list->phase);
       }
     }
   }
@@ -288,9 +297,10 @@ interpolate_b55 (evalresp_log_t *log, evalresp_channel *channel,
   int status = EVALRESP_OK;
   evalresp_blkt *b55 = channel->first_stage->first_blkt;
   evalresp_list *list = &b55->blkt_info.list;
-  if (!(status = save_b55(log, channel, b55_save))) {
+  if (!(status = save_b55 (log, channel, b55_save)))
+  {
     interpolate_list_blockette (&list->freq, &list->amp, &list->phase, &list->nresp,
-        response->freqs, response->nfreqs, log);
+                                response->freqs, response->nfreqs, log);
   }
   return status;
 }
