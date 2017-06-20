@@ -143,10 +143,10 @@
 #define UCHARAT(p) ((int)*(p)&CHARBITS)
 #endif
 
-#define FAIL(m, log)                 \
-  {                                  \
+#define FAIL(m, log)                    \
+  {                                     \
     evalresp_log (log, EV_ERROR, 0, m); \
-    return (NULL);                   \
+    return (NULL);                      \
   }
 /*XXX #define    FAIL(m)    { evr_regerror(m); return(NULL); } */
 #define ISMULT(c) ((c) == '*' || (c) == '+' || (c) == '?')

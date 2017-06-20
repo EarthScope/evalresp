@@ -2066,7 +2066,7 @@ get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
 }
 
 int
-timecmp (struct dateTime *dt1, struct dateTime *dt2)
+timecmp (evalresp_datetime *dt1, evalresp_datetime *dt2)
 {
 
   /* check year */
@@ -2112,7 +2112,7 @@ in_epoch (const char *datime, const char *beg_t, const char *end_t)
   char *start_pos;
   char temp_str[DATIMLEN];
   int len;
-  struct dateTime start_time, end_time, this_time;
+  evalresp_datetime start_time, end_time, this_time;
 
   /* parse the "datime" argument */
 
@@ -2219,7 +2219,7 @@ find_resp (FILE *fptr, struct scn_list *scn_lst, char *datime,
            evalresp_channel *this_channel, evalresp_log_t *log)
 {
   int test, i;
-  struct scn *scn = NULL;
+  evalresp_sncl *scn = NULL;
 
   while ((test = get_channel (fptr, this_channel, log)) != 0)
   {
@@ -2241,7 +2241,7 @@ find_resp (FILE *fptr, struct scn_list *scn_lst, char *datime,
 }
 
 int
-get_resp (FILE *fptr, struct scn *scn, char *datime,
+get_resp (FILE *fptr, evalresp_sncl *scn, char *datime,
           evalresp_channel *this_channel, evalresp_log_t *log)
 {
   int test;

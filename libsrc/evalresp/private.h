@@ -145,6 +145,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include "evalresp/public_api.h"
 #include "evalresp/public_channels.h"
 #include "evalresp/public_responses.h"
 #include "evalresp/ugly.h"
@@ -293,20 +294,6 @@ struct string_array
 /**
  * @private
  * @ingroup evalresp_private
- * @brief Network-station-locid-channel object.
- */
-struct scn
-{
-  char *station; /**< Station name. */
-  char *network; /**< Network name. */
-  char *locid;   /**< Location ID. */
-  char *channel; /**< Channel name. */
-  int found;     /**< Flag (true/false) if found in the input RESP files. */
-};
-
-/**
- * @private
- * @ingroup evalresp_private
  * @brief File list object.
  */
 struct file_list
@@ -332,25 +319,11 @@ struct matched_files
  * @ingroup evalresp_private
  * @brief List of network-station-locid-channel objects.
  */
-struct scn_list
+typedef struct scn_list
 {
-  int nscn;             /**< Number of network-station-locid-channel objects. */
-  struct scn **scn_vec; /**< Array of network-station-locid-channel objects. */
-};
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief Structure used for time comparisons.
- */
-struct dateTime
-{
-  int year;  /**< Year. */
-  int jday;  /**< Day of year. */
-  int hour;  /**< Hour. */
-  int min;   /**< Minutes. */
-  float sec; /**< Seconds. */
-};
+  int nscn;                /**< Number of network-station-locid-channel objects. */
+  evalresp_sncl **scn_vec; /**< Array of network-station-locid-channel objects. */
+} evalresp_sncls;
 
 /* utility routines that are used to parse the input file line by line and
  convert the input to what the user wants */
@@ -703,7 +676,7 @@ int find_resp (FILE *fptr, struct scn_list *scn_lst, char *datime,
  *       file pointer does not need to be repositioned to allow for this
  *       information to be reread.
  */
-int get_resp (FILE *fptr, struct scn *scn, char *datime,
+int get_resp (FILE *fptr, evalresp_sncl *scn, char *datime,
               evalresp_channel *this_channel, evalresp_log_t *log);
 
 /**
@@ -847,7 +820,7 @@ struct string_array *alloc_string_array (int nstrings, evalresp_log_t *log);
  * @param[in] log Logging structure.
  * @warning Exits with error if allocation fails.
  */
-struct scn *alloc_scn (evalresp_log_t *log);
+evalresp_sncl *alloc_scn (evalresp_log_t *log);
 
 /**
  * @private
@@ -1059,7 +1032,7 @@ void free_string_array (struct string_array *lst);
  *        type structure.
  * @param[in,out] ptr Station-channel type structure.
  */
-void free_scn (struct scn *ptr);
+void free_scn (evalresp_sncl *ptr);
 
 /**
  * @private
@@ -1700,7 +1673,7 @@ int is_time (const char *test, evalresp_log_t *log);
  *          @p dt1 is greater than (1), equal to (0), or less than (-1) the
  *          time in the input argument @p dt2.
  */
-int timecmp (struct dateTime *dt1, struct dateTime *dt2);
+int timecmp (evalresp_datetime *dt1, evalresp_datetime *dt2);
 
 /**
  * @private

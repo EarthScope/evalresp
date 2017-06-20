@@ -68,12 +68,12 @@ alloc_string_array (int nstrings, evalresp_log_t *log)
   return (sl_ptr);
 }
 
-struct scn *
+evalresp_sncl *
 alloc_scn (evalresp_log_t *log)
 {
-  struct scn *scn_ptr;
+  evalresp_sncl *scn_ptr;
 
-  if (!(scn_ptr = (struct scn *)malloc (sizeof (struct scn))))
+  if (!(scn_ptr = (evalresp_sncl *)malloc (sizeof (evalresp_sncl))))
   {
     evalresp_log (log, EV_ERROR, 0, "alloc_scn; malloc() failed for (scn)");
     return NULL;
@@ -178,8 +178,8 @@ alloc_scn_list (int nscn, evalresp_log_t *log)
       /*XXX error_exit(OUT_OF_MEMORY,
                     "alloc_scn_list; malloc() failed for (scn_list)"); */
     }
-    if ((sc_ptr->scn_vec = (struct scn **)malloc (
-             nscn * sizeof (struct scn *))) == (struct scn **)NULL)
+    if ((sc_ptr->scn_vec = (evalresp_sncl **)malloc (
+             nscn * sizeof (evalresp_sncl *))) == (evalresp_sncl **)NULL)
     {
       evalresp_log (log, EV_ERROR, 0,
                     "alloc_scn_list; malloc() failed for (scn_vec)");
@@ -561,7 +561,7 @@ free_string_array (struct string_array *lst)
 }
 
 void
-free_scn (struct scn *ptr)
+free_scn (evalresp_sncl *ptr)
 {
 
   free (ptr->station);
@@ -790,7 +790,7 @@ free_response (evalresp_response *resp_ptr)
 }
 
 int
-alloc_channels (evalresp_log_t *log, evalresp_channels **channels)
+evalresp_alloc_channels (evalresp_log_t *log, evalresp_channels **channels)
 {
   int status = EVALRESP_OK;
   if (!(*channels = calloc (1, sizeof (**channels))))
@@ -802,7 +802,7 @@ alloc_channels (evalresp_log_t *log, evalresp_channels **channels)
 }
 
 void
-free_channels (evalresp_channels **channels)
+evalresp_free_channels (evalresp_channels **channels)
 {
   int i;
   for (i = 0; i < (*channels)->nchannels; ++i)

@@ -7,31 +7,70 @@
 #include "evalresp/public_channels.h"
 #include "evalresp/public_responses.h"
 #include "evalresp_log/log.h"
+
 #if 0
 #define EVALRESP_OK 0
 #define EVALRESP_MEM 1
 #define EVALRESP_IO 2
+#define EVALRESP_INP 3 
 #endif
 enum evalresp_status_enum
 {
-    EVALRESP_OK = 0,
-    EVALRESP_MEM,
-    EVALRESP_IO
+    EVALRESP_OK = 0, /**< No error (intentionally false). */
+    EVALRESP_MEM, /**< Memory error. */
+    EVALRESP_IO, /**< IO Error. */
+    EVALRESP_INP /**< Bad user input. */
 };
 
 // TODO - see design doc for details that should go into comments
 
+/**
+ * @private
+ * @ingroup evalresp_private
+ * @brief Network-station-locid-channel object.
+ */
 typedef struct
 {
+  char *station; /**< Station name. */
+  char *network; /**< Network name. */
+  char *locid;   /**< Location ID. */
+  char *channel; /**< Channel name. */
+  int found;     /**< Number of times found in the input RESP file. */
+} evalresp_sncl;
+
+/**
+ * @private
+ * @ingroup evalresp_private
+ * @brief Structure used for time comparisons.
+ */
+typedef struct
+{
+  int year;  /**< Year. */
+  int jday;  /**< Day of year. */
+  int hour;  /**< Hour. */
+  int min;   /**< Minutes. */
+  float sec; /**< Seconds. */
+} evalresp_datetime;
+
+typedef struct
+{
+  int nsncls;
+  evalresp_sncl **sncls;
+  evalresp_datetime *datetime;
 } evalresp_filter;
 
-// TODO - sncl may want expanding
-int evalresp_new_filter (evalresp_log_t *log, const char *sncl, int year, int julian_day,
-                         evalresp_filter **filter);
+int evalresp_new_filter (evalresp_log_t *log, evalresp_filter **filter);
 
-int evalresp_free_filter (evalresp_filter **filter);
+int evalresp_set_year (evalresp_log_t *log, evalresp_filter *filter, const char *year);
 
-int evalresp_add_constraint (evalresp_log_t *log, const char *snclq, evalresp_filter **filter);
+int evalresp_set_julian_day (evalresp_log_t *log, evalresp_filter *filter, const char *julian_day);
+
+int evalresp_set_time (evalresp_log_t *log, evalresp_filter *filter, const char *time);
+
+int evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter,
+                       const char *sta, const char *net, const char *chan, const char *locid);
+
+void evalresp_free_filter (evalresp_filter **filter);
 
 int evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
                                const evalresp_filter *filter, evalresp_channels **channels);

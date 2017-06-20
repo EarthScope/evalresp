@@ -248,7 +248,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
             double x_for_b62, int xml_flag, evalresp_log_t *log)
 {
   evalresp_channel this_channel;
-  struct scn *scn;
+  evalresp_sncl *scn;
   struct string_array *sta_list, *chan_list;
   struct string_array *locid_list;
   // TODO - new_file assigned 0 blindly to fix compiler warning.  bug?
