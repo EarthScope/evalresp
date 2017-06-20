@@ -2287,31 +2287,15 @@ evalresp_new_filter (evalresp_log_t *log, evalresp_filter **filter)
 }
 
 int
-parse_int (evalresp_log_t *log, const char *str, int *value)
-{
-  int status = EVALRESP_OK;
-  char *end;
-  *value = (int)strtol (str, &end, 10);
-  while (isspace (*end))
-    ++end;
-  if (*end)
-  {
-    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot parse '%s' as an integer", str);
-    status = EVALRESP_INP;
-  }
-  return status;
-}
-
-int
 evalresp_set_year (evalresp_log_t *log, evalresp_filter *filter, const char *year)
 {
-  return parse_int (log, year, &filter->datetime->year);
+  return parse_int (log, "year", year, &filter->datetime->year);
 }
 
 int
 evalresp_set_julian_day (evalresp_log_t *log, evalresp_filter *filter, const char *julian_day)
 {
-  return parse_int (log, julian_day, &filter->datetime->jday);
+  return parse_int (log, "Julian day", julian_day, &filter->datetime->jday);
 }
 
 // time format is hh[:mm[:ss[.sss]]]
