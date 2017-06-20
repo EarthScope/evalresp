@@ -74,9 +74,9 @@ int evalresp_filename_to_channels (evalresp_log_t *log, const char *filename,
 
 // TODO - rename to _format ?
 typedef enum {
-  evalresp_ap_user_format,      /**< Two files, AMP and PHASE. */
-  evalresp_fap_user_format,     /**< One file, FAP. */
-  evalresp_complex_user_format  /**< One file, COMPLEX. */
+  evalresp_ap_user_format,     /**< Two files, AMP and PHASE. */
+  evalresp_fap_user_format,    /**< One file, FAP. */
+  evalresp_complex_user_format /**< One file, COMPLEX. */
 } evalresp_user_format;
 
 typedef enum {
@@ -86,7 +86,7 @@ typedef enum {
   evalresp_acceleration_user_unit
 } evalresp_user_unit;
 
-#define EVALRESP_ALL_STAGES -1  /**< Default for start and stop stage. */
+#define EVALRESP_ALL_STAGES -1 /**< Default for start and stop stage. */
 
 typedef struct
 {
@@ -107,21 +107,21 @@ int evalresp_new_options (evalresp_log_t *log, evalresp_options **options);
 void evalresp_free_options (evalresp_options **options);
 
 int evalresp_set_frequency (evalresp_log_t *log, evalresp_options *options,
-    const char *min_freq, const char *max_freq, const char *nfreq);
+                            const char *min_freq, const char *max_freq, const char *nfreq);
 
 int evalresp_set_format (evalresp_log_t *log, evalresp_options *options,
-    const char *format);
+                         const char *format);
 
 // these are separate because it simplifies calling from main routine
 
 int evalresp_set_start_stage (evalresp_log_t *log, evalresp_options *options,
-    const char *stage);
+                              const char *stage);
 
 int evalresp_set_stop_stage (evalresp_log_t *log, evalresp_options *options,
-    const char *stage);
+                             const char *stage);
 
 int evalresp_set_b62_x (evalresp_log_t *log, evalresp_options *options,
-    const char *b62_x);
+                        const char *b62_x);
 
 int evalresp_channel_to_response (evalresp_log_t *log, const evalresp_channel *channel,
                                   evalresp_options *options, evalresp_response **response);

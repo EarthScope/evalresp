@@ -2287,4 +2287,3 @@ next_resp (FILE *fptr, evalresp_log_t *log)
   else
     return (0);
 }
-
