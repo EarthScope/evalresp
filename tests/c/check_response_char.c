@@ -67,13 +67,13 @@ evalresp_response *get_response(char *cwd, char *input, char *stalst,
   printf ("input from %s\n", data);
 
   delta = (log10 (hif) - log10 (lof)) / (n_freq - 1);
-  ck_assert (freqs = calloc (n_freq, sizeof (*freqs)));
+  ck_assert (NULL !=(freqs = calloc (n_freq, sizeof (*freqs))));
   for (i = 0; i < n_freq; ++i)
   {
     freqs[i] = pow (10.0, log10 (lof) + i * delta);
   }
 
-  ck_assert ((response = evresp (stalst, chalst, net_code, locidlst, date_time, "VEL", data, freqs, n_freq,
+  ck_assert (NULL != (response = evresp (stalst, chalst, net_code, locidlst, date_time, "VEL", data, freqs, n_freq,
                                 "AP", "-v", 0, 99, 0, 0, 0.1, 1, log)));
   return response;
 }
@@ -87,7 +87,7 @@ START_TEST (test_response_char_amp)
   evalresp_response *response = NULL;
   evalresp_log_t *log = NULL;
 
-  ck_assert (getcwd (cwd, 1000));
+  ck_assert (NULL != getcwd (cwd, 1000));
 
   response = get_response (cwd, "data/station-1.xml", "ANMO", "BH1", "IU", "00", "2015,1,00:00:00", log);
 
@@ -107,7 +107,7 @@ START_TEST (test_response_char_phase)
   evalresp_response *response = NULL;
   evalresp_log_t *log = NULL;
 
-  ck_assert (getcwd (cwd, 1000));
+  ck_assert (NULL != getcwd (cwd, 1000));
 
   response = get_response (cwd, "data/station-1.xml", "ANMO", "BH1", "IU", "00", "2015,1,00:00:00", log);
 
