@@ -60,5 +60,5 @@ int x2r_xml2resp_auto(FILE **in, evalresp_log_t *log);
  * @ingroup evalresp_private_x2r_ws
  * @brief parse a mxml root node to datastructure
  */
-int parse_fdsn_station_xml(evalresp_log_t *log, mxml_node_t *doc, x2r_fdsn_station_xml **root);
+int x2r_parse_fdsn_station_xml(evalresp_log_t *log, mxml_node_t *doc, x2r_fdsn_station_xml **root);
 #endif

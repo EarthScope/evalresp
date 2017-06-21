@@ -14,7 +14,6 @@ enum evalresp_status_enum
   EVALRESP_MEM, /**< Memory error. */
   EVALRESP_IO, /**< IO Error. */
   EVALRESP_INP, /**< Bad user input. */
-  EVALRESP_INV_FORMAT, /**< Bad format for a function */
   EVALRESP_ERR,     /**< Internal (coding) error. */
   EVALRESP_XML_ERR /**< Problem parsing XML */
 };
@@ -173,5 +172,15 @@ int evalresp_responses_to_dir (evalresp_log_t *log, const evalresp_responses *re
 int evalresp_dir_to_dir (evalresp_log_t *log, const char *dir,
                          evalresp_options *options, evalresp_output_options *output_options);
 
+/**
+ * @param[in] log logging structure where you want information to be sent
+ * @param[in] xml_flag if set to one then conversion happens otherwise nothing happens
+ * @param[in] xml_in char * containing xml to be translated
+ * @param[in,out] resp_out a pointer where to allocate and store the translated response file as char *
+ * @retval EVALRESP_OK on success
+ * @pre xml_in must not be NULL and *resp_out must be NULL if xml_flag is one
+ * @post *resp_out will be allocated using calloc that must be freed if xml_flag is one
+ * @brief do conversion of xml -> resp files but stored as char *
+ */
 int evalresp_xml_to_char (evalresp_log_t *log, int xml_flag, char *xml_in, char **resp_out);
 #endif
