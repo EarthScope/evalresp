@@ -1257,7 +1257,7 @@ static int free_network(x2r_network *network, int status) {
 
 
 /* Read an x2r_fdsn_station_xml value from the current node. */
-static int parse_fdsn_station_xml(evalresp_log_t *log, mxml_node_t *doc, x2r_fdsn_station_xml **root) {
+int parse_fdsn_station_xml(evalresp_log_t *log, mxml_node_t *doc, x2r_fdsn_station_xml **root) {
 
     int status = X2R_OK, i;
     mxml_node_t *fdsn = NULL;

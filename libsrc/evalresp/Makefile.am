@@ -11,6 +11,7 @@ libevalresp_la_SOURCES = input.c evaluation.c\
 						 spline.c\
 						 stationxml2resp/ws.c\
 						 stationxml2resp/xml.c\
+						 xml_to_char.c\
 						 response_to_char.c
 libevalresp_la_CFLAGS = -I../
 
