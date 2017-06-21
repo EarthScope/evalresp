@@ -394,7 +394,7 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
         freqarr_alloc_flag = 1; /* indicate freq array allocated */
         /* interpolate to given freqs */
         interpolate_list_blockette (&freq_arr, &amp_arr, &pha_arr,
-                                    &num_points, freqs, nfreqs, listinterp_tension, log);
+                                    &num_points, freqs, nfreqs, log);
       }
       else
       { /* not interpolating List blockette entries */

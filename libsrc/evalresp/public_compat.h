@@ -12,8 +12,8 @@
 #define EVRESP_XML
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public_compat
  * @brief Evaluate responses for user requested station/channel/network tuple
  *        at the frequencies requested by the user.
  * @param[in] stalst Station list.
@@ -45,46 +45,8 @@ evalresp_response *evresp (char *stalst, char *chalst, char *net_code,
                            double x_for_b62, int xml_flag, evalresp_log_t *log);
 
 /**
- * @private
- * @ingroup evalresp_private
- * @brief Evaluate responses for user requested station/channel/network tuple
- *        at the frequencies requested by the user.
- * @param[in] stalst Station list.
- * @param[in] chalst Channel list.
- * @param[in] net_code Network code.
- * @param[in] locidlst Localtion ID list.
- * @param[in] date_time Date + time.
- * @param[in] units Units.
- * @param[in] file File name.
- * @param[in] freqs Frequency vector.
- * @param[in] nfreqs Number of frequencies in the vector.
- * @param[in] rtype Use complex value or Amplited/phase in the output.
- * @param[in] verbose If used, then verbose.
- * @param[in] start_stage Start stage.
- * @param[in] stop_stage End stage.
- * @param[in] stdio_flag Print output to stdio if used.
- * @param[in] listinterp_out_flag Interpolate output of list (B55).
- * @param[in] listinterp_in_flag Interpolate input of list (B55).
- * @param[in] listinterp_tension This parameter is obsolote and should be removed.
- * @param[in] useTotalSensitivityFlag Use or not total sensitivity.
- * @param[in] x_for_b62  Frequency value for Polynomial.
- * @param[in] xml_flag Use XML or not.
- * @param[in] log Logging structure.
- * @returns Responses.
- */
-evalresp_response *evresp_itp (char *stalst, char *chalst, char *net_code,
-                               char *locidlst, char *date_time, char *units,
-                               char *file, double *freqs, int nfreqs,
-                               char *rtype, char *verbose, int start_stage,
-                               int stop_stage, int stdio_flag,
-                               int listinterp_out_flag, int listinterp_in_flag,
-                               double listinterp_tension,
-                               int useTotalSensitivityFlag, double x_for_b62,
-                               int xml_flag, evalresp_log_t *log);
-
-/**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public_compat
  * @brief Evaluate responses for user requested station/channel/network tuple
  *        at the frequencies requested by the user. FORTRAN callable interface to the evresp.
  *
@@ -133,5 +95,45 @@ int evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
               char *rtype, char *verbose, int start_stage, int stop_stage,
               int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
               int xml_flag);
+
+/**
+ * @public
+ * @ingroup evalresp_public_compat
+ * @brief Evaluate responses for user requested station/channel/network tuple
+ *        at the frequencies requested by the user. This function provides an interface
+ *        to both evresp() and evresp_1()
+
+ * @param[in] stalst Station list.
+ * @param[in] chalst Channel list.
+ * @param[in] net_code Network code.
+ * @param[in] locidlst Localtion ID list.
+ * @param[in] date_time Date + time.
+ * @param[in] units Units.
+ * @param[in] file File name.
+ * @param[in] freqs Frequency vector.
+ * @param[in] nfreqs Number of frequencies in the vector.
+ * @param[in] rtype Use complex value or Amplited/phase in the output.
+ * @param[in] verbose If used, then verbose.
+ * @param[in] start_stage Start stage.
+ * @param[in] stop_stage End stage.
+ * @param[in] stdio_flag Print output to stdio if used.
+ * @param[in] listinterp_out_flag Interpolate output of list (B55).
+ * @param[in] listinterp_in_flag Interpolate input of list (B55).
+ * @param[in] listinterp_tension This parameter is obsolote and should be removed.
+ * @param[in] useTotalSensitivityFlag Use or not total sensitivity.
+ * @param[in] x_for_b62  Frequency value for Polynomial.
+ * @param[in] xml_flag Use XML or not.
+ * @param[in] log Logging structure.
+ * @returns Responses.
+ */
+evalresp_response *evresp_itp (char *stalst, char *chalst, char *net_code,
+                               char *locidlst, char *date_time, char *units,
+                               char *file, double *freqs, int nfreqs,
+                               char *rtype, char *verbose, int start_stage,
+                               int stop_stage, int stdio_flag,
+                               int listinterp_out_flag, int listinterp_in_flag,
+                               double listinterp_tension,
+                               int useTotalSensitivityFlag, double x_for_b62,
+                               int xml_flag, evalresp_log_t *log);
 
 #endif

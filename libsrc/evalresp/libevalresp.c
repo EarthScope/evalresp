@@ -222,8 +222,8 @@ use_estimated_delay (int flag)
 
  *=================================================================*/
 
-double Pi;
-double twoPi;
+double Pi;    // TODO - use M_PI from math.h
+double twoPi; // TODO - use M_PI from math.h
 /* IGD 08/21/06 Added Tesla */
 char SEEDUNITS[][UNITS_STR_LEN] =
     {"Undef Units", "Displacement", "Velocity", "Acceleration", "Counts",
@@ -537,7 +537,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                   &(this_channel.first_stage->first_blkt->blkt_info.list.amp),
                   &(this_channel.first_stage->first_blkt->blkt_info.list.phase),
                   &(this_channel.first_stage->first_blkt->blkt_info.list.nresp),
-                  freqs, nfreqs, listinterp_tension, log);
+                  freqs, nfreqs, log);
             }
 
             /* check the filter sequence that was just read */
@@ -826,7 +826,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                       &(this_channel.first_stage->first_blkt->blkt_info.list.amp),
                       &(this_channel.first_stage->first_blkt->blkt_info.list.phase),
                       &(this_channel.first_stage->first_blkt->blkt_info.list.nresp),
-                      freqs, nfreqs, listinterp_tension, log);
+                      freqs, nfreqs, log);
                 }
 
                 /* check the filter sequence that was just read */

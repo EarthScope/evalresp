@@ -241,6 +241,7 @@ alloc_matched_files (evalresp_log_t *log)
   return (flst_ptr);
 }
 
+// TODO - replace with calloc_doubles below?
 double *
 alloc_double (int npts, evalresp_log_t *log)
 {
@@ -809,4 +810,16 @@ evalresp_free_channels (evalresp_channels **channels)
   }
   free (*channels);
   *channels = NULL;
+}
+
+int
+calloc_doubles (evalresp_log_t *log, const char *name, int n, double **array)
+{
+  int status = EVALRESP_OK;
+  if (!(*array = calloc (n, sizeof (**array))))
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate array for %s", name);
+    status = EVALRESP_MEM;
+  }
+  return status;
 }

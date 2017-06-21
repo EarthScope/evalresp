@@ -8,27 +8,22 @@
 #include "evalresp/public_responses.h"
 #include "evalresp_log/log.h"
 
-#if 0
-#define EVALRESP_OK 0
-#define EVALRESP_MEM 1
-#define EVALRESP_IO 2
-#define EVALRESP_INP 3 
-#endif
 enum evalresp_status_enum
 {
-    EVALRESP_OK = 0, /**< No error (intentionally false). */
-    EVALRESP_MEM, /**< Memory error. */
-    EVALRESP_IO, /**< IO Error. */
-    EVALRESP_INP, /**< Bad user input. */
-    EVALRESP_INV_FORMAT, /**< Bad format for a function */
-    EVALRESP_XML_ERR /**< Problem parsing XML */
+  EVALRESP_OK = 0, /**< No error (intentionally false). */
+  EVALRESP_MEM, /**< Memory error. */
+  EVALRESP_IO, /**< IO Error. */
+  EVALRESP_INP, /**< Bad user input. */
+  EVALRESP_INV_FORMAT, /**< Bad format for a function */
+  EVALRESP_ERR,     /**< Internal (coding) error. */
+  EVALRESP_XML_ERR /**< Problem parsing XML */
 };
 
 // TODO - see design doc for details that should go into comments
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief Network-station-locid-channel object.
  */
 typedef struct
@@ -41,8 +36,8 @@ typedef struct
 } evalresp_sncl;
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief Structure used for time comparisons.
  */
 typedef struct
@@ -54,6 +49,11 @@ typedef struct
   float sec; /**< Seconds. */
 } evalresp_datetime;
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @brief Structure used for filtering input data by response DNCL and date/time.
+ */
 typedef struct
 {
   int nsncls;
@@ -98,19 +98,23 @@ typedef enum {
 } evalresp_user_unit;
 
 #define EVALRESP_ALL_STAGES -1 /**< Default for start and stop stage. */
+#define EVALRESP_NO_FREQ -1    /**< Default for frequency limits. */
 
 typedef struct
 {
+  double b62_x;
   double min_freq;
   double max_freq;
   int nfreq;
   int lin_freq;
-  evalresp_user_format format;
   int start_stage;
   int stop_stage;
   int use_estimated_delay;
   int unwrap_phase;
-  double b62_x;
+  int b55_interpolate;
+  int use_total_sensitivity;
+  evalresp_user_format format;
+  evalresp_user_unit unit;
 } evalresp_options;
 
 int evalresp_new_options (evalresp_log_t *log, evalresp_options **options);
@@ -123,6 +127,9 @@ int evalresp_set_frequency (evalresp_log_t *log, evalresp_options *options,
 int evalresp_set_format (evalresp_log_t *log, evalresp_options *options,
                          const char *format);
 
+int evalresp_set_unit (evalresp_log_t *log, evalresp_options *options,
+                       const char *unit);
+
 // these are separate because it simplifies calling from main routine
 
 int evalresp_set_start_stage (evalresp_log_t *log, evalresp_options *options,
@@ -134,10 +141,10 @@ int evalresp_set_stop_stage (evalresp_log_t *log, evalresp_options *options,
 int evalresp_set_b62_x (evalresp_log_t *log, evalresp_options *options,
                         const char *b62_x);
 
-int evalresp_channel_to_response (evalresp_log_t *log, const evalresp_channel *channel,
+int evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
                                   evalresp_options *options, evalresp_response **response);
 
-int evalresp_channels_to_responses (evalresp_log_t *log, const evalresp_channels *channels,
+int evalresp_channels_to_responses (evalresp_log_t *log, evalresp_channels *channels,
                                     evalresp_options *options, evalresp_responses **responses);
 
 // TODO - rename to file_format or similar

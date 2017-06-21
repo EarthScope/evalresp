@@ -18,6 +18,12 @@
  */
 
 /**
+ * @defgroup evalresp_public_compat evalresp Legacy Public Interface
+ * @ingroup evalresp
+ * @brief Legacy public evalresp interface (predating version 5.0) is included for comatibility purpose.
+ */
+
+/**
  * @defgroup evalresp_public evalresp Public Interface
  * @ingroup evalresp
  * @brief Public evalresp interface.
@@ -1518,7 +1524,7 @@ void check_sym (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log);
  * @param[in] log Logging structure.
  */
 void calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
-                evalresp_complex *output, char *out_units, int start_stage,
+                evalresp_complex *output, const char *out_units, int start_stage,
                 int stop_stage, int useTotalSensitivityFlag, double x_for_b62,
                 evalresp_log_t *log);
 
@@ -1532,7 +1538,7 @@ void calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
  * @param[in] w Frequency.
  * @param[in] log Logging structure.
  */
-void convert_to_units (int inp, char *out_units, evalresp_complex *data,
+void convert_to_units (int inp, const char *out_units, evalresp_complex *data,
                        double w, evalresp_log_t *log);
 
 /**
@@ -1775,13 +1781,12 @@ void print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
  * @param[in,out] p_number_points Reference to number of points value.
  * @param[in] req_freq_arr Array of requested frequency values.
  * @param[in] eq_num_freqs Number values in @p req_freq_arr array.
- * @param[in] tension Tension value for interpolation.
  * @param[in] log Logging structure.
  */
 void interpolate_list_blockette (double **frequency_ptr,
                                  double **amplitude_ptr, double **phase_ptr,
                                  int *p_number_points, double *req_freq_arr,
-                                 int req_num_freqs, double tension, evalresp_log_t *log);
+                                 int req_num_freqs, evalresp_log_t *log);
 
 /**
  * @private
@@ -1831,5 +1836,8 @@ parse_int (evalresp_log_t *log, const char *name, const char *str, int *value);
 
 int
 parse_double (evalresp_log_t *log, const char *name, const char *str, double *value);
+
+int
+calloc_doubles (evalresp_log_t *log, const char *name, int n, double **array);
 
 #endif

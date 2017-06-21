@@ -607,7 +607,7 @@ void
 interpolate_list_blockette (double **frequency_ptr,
                             double **amplitude_ptr, double **phase_ptr,
                             int *p_number_points, double *req_freq_arr,
-                            int req_num_freqs, double tension, evalresp_log_t *log)
+                            int req_num_freqs, evalresp_log_t *log)
 {
   int i, num;
   double first_freq, last_freq, val, min_ampval;
@@ -702,7 +702,7 @@ interpolate_list_blockette (double **frequency_ptr,
 
   /* interpolate amplitude values */
   if ((retstr = evr_spline (*p_number_points, *frequency_ptr, *amplitude_ptr,
-                            tension, 1.0, req_freq_arr, req_num_freqs,
+                            req_freq_arr, req_num_freqs,
                             &retvals_arr, &num_retvals, log)) != NULL)
   {
     evalresp_log (log, EV_ERROR, 0, "Error interpolating amplitudes:  %s", retstr);
@@ -758,7 +758,7 @@ interpolate_list_blockette (double **frequency_ptr,
 
   /* interpolate phase values */
   retstr = evr_spline (*p_number_points, *frequency_ptr, local_pha_arr,
-                       tension, 1.0, req_freq_arr, req_num_freqs,
+                       req_freq_arr, req_num_freqs,
                        &retvals_arr, &num_retvals, log);
   free (local_pha_arr);
   if (retstr != NULL)

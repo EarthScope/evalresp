@@ -10,8 +10,8 @@
 /* define structures for the various types of filters defined in seed */
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief Complex data type.
  */
 typedef struct
@@ -21,8 +21,8 @@ typedef struct
 } evalresp_complex;
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief A Response (Poles & Zeros) blockette.
  */
 typedef struct
@@ -36,8 +36,8 @@ typedef struct
 } evalresp_pole_zero;
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief A Response (Coefficients) blockette.
  */
 typedef struct
@@ -50,8 +50,8 @@ typedef struct
 } evalresp_coeff;
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief A Response (Coefficients) blockette.
  */
 typedef struct
@@ -69,8 +69,8 @@ typedef struct
 } evalresp_polynomial;
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief A FIR Response blockette.
  */
 typedef struct
@@ -81,8 +81,8 @@ typedef struct
 } evalresp_fir;
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief A Response (List) blockette.
  */
 typedef struct
@@ -94,8 +94,8 @@ typedef struct
 } evalresp_list;
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief A Generic Response blockette.
  */
 typedef struct
@@ -106,8 +106,8 @@ typedef struct
 } evalresp_generic;
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief A Decimation blockette.
  */
 typedef struct
@@ -120,8 +120,8 @@ typedef struct
 } evalresp_decimation;
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief A Channel Sensitivity/Gain blockette.
  */
 typedef struct
@@ -131,8 +131,8 @@ typedef struct
 } evalresp_gain;
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief A Response Reference blockette.
  */
 typedef struct
@@ -143,8 +143,8 @@ typedef struct
 } evalresp_refer;
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief Define a blkt as a structure containing the blockette type, a union
  *        (blkt_info) containing the blockette info, and a pointer to the
  *        next blockette in the filter sequence.
@@ -171,8 +171,8 @@ typedef struct evalresp_blkt_s
 } evalresp_blkt;
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief Define a stage as a structure that contains the sequence number, the
  *        input and output units, a pointer to the first blockette of the
  *        filter, and a pointer to the next stage in the response.
@@ -189,8 +189,8 @@ typedef struct evalresp_stage_s
 } evalresp_stage;
 
 /**
- * @private
- * @ingroup evalresp_private
+ * @public
+ * @ingroup evalresp_public
  * @brief And define a channel as a structure containing a pointer to the head
  *        of a linked list of stages.
  * @details Will access the pieces one stages at a time in the same order that
@@ -237,15 +237,33 @@ typedef struct evalresp_channel_s
                                    stage. */
 } evalresp_channel;
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @brief A collection of channel structures.
+*/
 typedef struct
 {
   int nchannels;
   evalresp_channel **channels;
 } evalresp_channels;
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @brief A function allocating memory for evalresp_channels object
+TODO IGD: finish the description
+*/
+
 int
 evalresp_alloc_channels (evalresp_log_t *log, evalresp_channels **channels);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @brief A function freeing memory after evalresp_channels object
+TODO IGD: finish the description
+*/
 void
 evalresp_free_channels (evalresp_channels **channels);
 
