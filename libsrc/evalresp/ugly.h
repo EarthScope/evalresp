@@ -135,22 +135,6 @@ extern char FirstLine[];
  */
 extern int FirstField;
 
-/* values for use in calculating responses (defined in 'evresp_') */
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief Pi = 3.141592653589793238462643383279502884197169399375105820974944592307816... .
- */
-extern double Pi;
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief 2 * Pi.
- */
-extern double twoPi;
-
 /**
  * @private
  * @ingroup evalresp_private

@@ -21,7 +21,6 @@ evalresp_new_options (evalresp_log_t *log, evalresp_options **options)
   else
   {
     (*options)->start_stage = EVALRESP_ALL_STAGES;
-    (*options)->stop_stage = EVALRESP_ALL_STAGES;
     (*options)->min_freq = EVALRESP_NO_FREQ;
     (*options)->max_freq = EVALRESP_NO_FREQ;
     (*options)->nfreq = 1;
@@ -241,6 +240,15 @@ calculate_default_freqs (evalresp_log_t *log, evalresp_options *options,
     }
   }
 
+  if (!status)
+  {
+    if (!(response->rvec = calloc (response->nfreqs, sizeof (*response->rvec))))
+    {
+      evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate complex result");
+      status = EVALRESP_MEM;
+    }
+  }
+
   return status;
 }
 
@@ -309,27 +317,61 @@ static int
 use_b55_freqs (evalresp_log_t *log, evalresp_channel *channel,
                evalresp_response *response)
 {
-  return 0;
+  int status = EVALRESP_OK;
+  evalresp_blkt *b55 = channel->first_stage->first_blkt;
+  evalresp_list *list = &b55->blkt_info.list;
+  free (response->freqs);
+  if (!(status = calloc_doubles (log, "frequency array", list->nresp, &response->freqs)))
+  {
+    memcpy (response->freqs, list->freq, list->nresp * sizeof (*response->freqs));
+    response->nfreqs = list->nresp;
+  }
+  if (!status)
+  {
+    free (response->rvec);
+    if (!(response->rvec = calloc (response->nfreqs, sizeof (*response->rvec))))
+    {
+      evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate complex result");
+      status = EVALRESP_MEM;
+    }
+  }
+  return status;
 }
 
 static void
 restore_b55 (evalresp_channel *channel, evalresp_blkt *b55_save)
 {
+  evalresp_blkt *b55 = channel->first_stage->first_blkt;
+  evalresp_list *list = &b55->blkt_info.list;
+  evalresp_list *list_save = &b55_save->blkt_info.list;
+  list->nresp = list_save->nresp;
+  free (list->freq);
+  list->freq = list_save->freq;
+  free (list->amp);
+  list->amp = list_save->amp;
+  free (list->phase);
+  list->phase = list_save->phase;
 }
 
 int
 evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
                               evalresp_options *options, evalresp_response **response)
 {
-  int status = EVALRESP_OK;
+  int status = EVALRESP_OK, free_options = 0;
   evalresp_blkt *b55_save = NULL;
-  int is_55 = is_block_55 (channel);
+
+  /* allow NULL options */
+  if (!options)
+  {
+    status = evalresp_new_options (log, &options);
+    free_options = 1;
+  }
 
   if (!(status = local_alloc_response (log, response)))
   {
     if (!(status = calculate_default_freqs (log, options, *response)))
     {
-      if (is_55)
+      if (is_block_55 (channel))
       {
         /* if it's a b55 block then calc_resp is just going to copy its data
          * to the response.  so we need to make sure that frequencies agree
@@ -351,6 +393,7 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
 
   if (!status)
   {
+    norm_resp (channel, options->start_stage, options->stop_stage, log);
     calc_resp (channel, (*response)->freqs, (*response)->nfreqs, (*response)->rvec,
                get_unit (options->unit), options->start_stage, options->stop_stage,
                options->use_total_sensitivity, options->b62_x, log);
@@ -360,6 +403,11 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
   {
     restore_b55 (channel, b55_save);
   }
+  if (free_options)
+  {
+    evalresp_free_options (&options);
+  }
+  free (b55_save);
 
   return status;
 }

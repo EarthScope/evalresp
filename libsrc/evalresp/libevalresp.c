@@ -116,7 +116,7 @@ evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
   }
   else if (first->next != (evalresp_response *)NULL)
   {
-    free_response (first);
+    evalresp_free_response (first);
     return (-1);
   }
 
@@ -131,7 +131,7 @@ evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
 
   /* free up dynamically allocated space */
 
-  free_response (first);
+  evalresp_free_response (first);
 
   /* and return to FORTRAN program */
 
@@ -222,8 +222,6 @@ use_estimated_delay (int flag)
 
  *=================================================================*/
 
-double Pi;    // TODO - use M_PI from math.h
-double twoPi; // TODO - use M_PI from math.h
 /* IGD 08/21/06 Added Tesla */
 char SEEDUNITS[][UNITS_STR_LEN] =
     {"Undef Units", "Displacement", "Velocity", "Acceleration", "Counts",
@@ -292,12 +290,6 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
     /*XXX fprintf(stderr, "<< EVALRESP RESPONSE OUTPUT V%s >>\n", REVNUM);
         fflush(stderr); */
   }
-
-  /* first, determine the values of Pi and twoPi for use in evaluating
-     the instrument responses later */
-
-  Pi = acos (-1.0);
-  twoPi = 2.0 * Pi;
 
   /* set the values of first_units and last_units to null strings */
 
@@ -647,7 +639,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 
       /* allocated one too many responses */
 
-      free_response (resp);
+      evalresp_free_response (resp);
       if (prev_ptr != (evalresp_response *)NULL)
         prev_ptr->next = (evalresp_response *)NULL;
       break;
@@ -988,7 +980,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 
       /* allocated one too many responses */
 
-      free_response (resp);
+      evalresp_free_response (resp);
       if (prev_ptr != (evalresp_response *)NULL)
         prev_ptr->next = (evalresp_response *)NULL;
 
