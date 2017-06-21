@@ -530,7 +530,7 @@ main (int argc, char *argv[])
   print_resp_itp (freqs, nfreqs, first, rtype, stdio_flag, listinterp_out_flag,
                   listinterp_tension, unwrap_flag, log);
 
-  free_response (first);
+  evalresp_free_response (first);
   free (freqs); /* added 3/28/2006 -- [ET] */
 
   exit (0);

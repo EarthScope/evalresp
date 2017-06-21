@@ -42,6 +42,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "./private.h"
 
@@ -73,7 +74,7 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
 
   for (i = 0; i < nfreqs; i++)
   {
-    w = twoPi * freq[i];
+    w = 2 * M_PI * freq[i];
     val.real = 1.0;
     val.imag = 0.0;
 
@@ -420,7 +421,7 @@ calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
   }
   else
   {
-    phase = Pi;
+    phase = M_PI;
   }
 
   out->real = amp * cos (phase);
@@ -440,7 +441,7 @@ calc_list (evalresp_blkt *blkt_ptr, int i, evalresp_complex *out)
 
   amp = blkt_ptr->blkt_info.list.amp[i];
   phase = blkt_ptr->blkt_info.list.phase[i];
-  phase = phase / halfcirc * (double)Pi; /*convert the phase to radians from the default degrees */
+  phase = phase / halfcirc * (double)M_PI; /*convert the phase to radians from the default degrees */
   out->real = amp * cos (phase);
   out->imag = amp * sin (phase);
 }
@@ -456,7 +457,7 @@ analog_trans (evalresp_blkt *blkt_ptr, double freq, evalresp_complex *out)
   double h0, mod_squared;
 
   if (blkt_ptr->type == LAPLACE_PZ)
-    freq = twoPi * freq;
+    freq = 2 * M_PI * freq;
   omega.imag = freq;
   omega.real = 0.0;
   denom.real = denom.imag = num.real = num.imag = 1.0;
@@ -808,7 +809,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
 
   chan->calc_sensit = 1.0;
   f = chan->sensfreq;
-  w = twoPi * f;
+  w = 2 * M_PI * f;
 
   stage_ptr = chan->first_stage;
   for (i = 0; i < chan->nstages; i++)
@@ -882,28 +883,28 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
             {
               main_filt->blkt_info.pole_zero.a0 = 1.0;
               iir_pz_trans (main_filt,
-                            twoPi * fil->blkt_info.gain.gain_freq, &df);
+                            2 * M_PI * fil->blkt_info.gain.gain_freq, &df);
               iir_pz_trans (main_filt, w, &of);
             }
             else if ((main_type == FIR_SYM_1 || main_type == FIR_SYM_2) && main_filt->blkt_info.fir.ncoeffs)
             {
               main_filt->blkt_info.fir.h0 = 1.0;
               fir_sym_trans (main_filt,
-                             twoPi * fil->blkt_info.gain.gain_freq, &df);
+                             2 * M_PI * fil->blkt_info.gain.gain_freq, &df);
               fir_sym_trans (main_filt, w, &of);
             }
             else if (main_type == FIR_ASYM && main_filt->blkt_info.fir.ncoeffs)
             {
               main_filt->blkt_info.fir.h0 = 1.0;
               fir_asym_trans (main_filt,
-                              twoPi * fil->blkt_info.gain.gain_freq, &df);
+                              2 * M_PI * fil->blkt_info.gain.gain_freq, &df);
               fir_asym_trans (main_filt, w, &of);
             }
             else if (main_type == IIR_COEFFS)
             { /*IGD - new case for 3.2.17 */
               main_filt->blkt_info.coeff.h0 = 1.0;
               iir_trans (main_filt,
-                         twoPi * fil->blkt_info.gain.gain_freq, &df);
+                         2 * M_PI * fil->blkt_info.gain.gain_freq, &df);
               iir_trans (main_filt, w, &of);
             }
 

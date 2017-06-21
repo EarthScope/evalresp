@@ -1156,15 +1156,6 @@ f * @brief A routine that frees up the space associated with a channel's filter
  */
 void free_channel (evalresp_channel *chan_ptr);
 
-/**
- * @private
- * @ingroup evalresp_private_alloc
- * @brief A routine that frees up the space associated with a linked list of
- *        response information.
- * @param[in,out] resp_ptr Response structure.
- */
-void free_response (evalresp_response *resp_ptr);
-
 /* simple error handling routines to standardize the output error values and
  allow for control to return to 'evresp' if a recoverable error occurs */
 

@@ -382,7 +382,7 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
       {
         amp_arr[i] = sqrt (
             output[i].real * output[i].real + output[i].imag * output[i].imag);
-        pha_arr[i] = atan2 (output[i].imag, output[i].real + 1.e-200) * 180.0 / Pi;
+        pha_arr[i] = atan2 (output[i].imag, output[i].real + 1.e-200) * 180.0 / M_PI;
       }
       if (listinterp_out_flag && (nfreqs != resp->nfreqs || !arrays_equal (freqs, resp->freqs, nfreqs)))
       {

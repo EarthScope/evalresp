@@ -33,4 +33,13 @@ typedef struct
   evalresp_response **responses;
 } evalresp_responses;
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @brief A routine that frees up the space associated with a linked list of
+ *        response information.
+ * @param[in,out] resp_ptr Response structure.
+ */
+void evalresp_free_response (evalresp_response *resp_ptr);
+
 #endif
