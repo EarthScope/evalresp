@@ -29,20 +29,25 @@ save_mxml_service_to_char (evalresp_log_t *log, x2r_fdsn_station_xml *root, char
   {
     evalresp_log (log, EV_WARN, EV_WARN, "Output Response string is not NULL and will be lost");
   }
-  /* create temporary file */
+  /* create temporary file will be deleted on fclose*/
   if (NULL == (tmp_fd = tmpfile()))
   {
       evalresp_log(log, EV_ERROR, EV_ERROR, "Cannot create temporary file for xml to resp chars ");
       return EVALRESP_IO;
   }
+  /* write mxml structure as response file in the tmeporary ffile */
   status = x2r_resp_util_write(log, tmp_fd, root);
   if (EVALRESP_OK == status)
   {
+    /* guarentee everything was written */
     fflush(tmp_fd);
+    /* want to read from the begining of the file */
     rewind(tmp_fd);
+    /* pull file into string */
     status = file_to_char (log, tmp_fd, &buffer);
   }
 
+  /* regardless of success set the resp_out to the buffer */
   *resp_out = buffer;
   /* close and delete temporary file */
   if (tmp_fd)
@@ -70,12 +75,14 @@ load_mxml_service (evalresp_log_t *log, char *xml_in, x2r_fdsn_station_xml **roo
   int status;
   mxml_node_t *doc = NULL;
 
+  /* check that xml_in is set */
   if (!xml_in)
   {
     evalresp_log (log, EV_ERROR, EV_ERROR, "Input XML String is NULL");
     return EVALRESP_IO;
   }
 
+  /* load the string into mxml */
   if (!(doc = mxmlLoadString (NULL, xml_in, MXML_OPAQUE_CALLBACK)))
   {
     evalresp_log (log, EV_ERROR, EV_ERROR, "Could not parse XML input");
@@ -83,9 +90,11 @@ load_mxml_service (evalresp_log_t *log, char *xml_in, x2r_fdsn_station_xml **roo
   }
   else
   {
+    /* parse the mxml into data structure */
     status = x2r_parse_fdsn_station_xml (log, doc, root);
   }
 
+  /* clean up mxml */
   mxmlDelete (doc);
   return status;
 }
@@ -109,9 +118,10 @@ convert_xml_to_char (evalresp_log_t *log, char *xml_in, char **resp_out)
   /* load xml string and parse */
   if (EVALRESP_OK == (status = load_mxml_service (log, xml_in, &root)))
   {
-    
+    /* convert xml data structure to resp string */
     status = save_mxml_service_to_char (log, root, resp_out);
   }
+  /* clean up */
   status = x2r_free_fdsn_station_xml(root, status);
   return status;
 }
@@ -119,10 +129,12 @@ convert_xml_to_char (evalresp_log_t *log, char *xml_in, char **resp_out)
 int
 evalresp_xml_to_char (evalresp_log_t *log, int xml_flag, char *xml_in, char **resp_out)
 {
+  /* check to make sure we want this */
   if (!xml_flag)
   {
     return EVALRESP_OK;
   }
+  /* call underlying functions */
   return convert_xml_to_char(log, xml_in, resp_out);
 }
 
