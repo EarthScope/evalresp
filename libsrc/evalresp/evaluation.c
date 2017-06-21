@@ -88,9 +88,9 @@ parse_option (evalresp_log_t *log, const char *name, int noptions, option_pair *
 }
 
 static option_pair formats[] = {
-    {evalresp_ap_user_format, "AP"},
-    {evalresp_fap_user_format, "CS"},
-    {evalresp_complex_user_format, "FAP"}};
+    {evalresp_ap_output_format, "AP"},
+    {evalresp_fap_output_format, "CS"},
+    {evalresp_complex_output_format, "FAP"}};
 
 int
 evalresp_set_format (evalresp_log_t *log, evalresp_options *options,
@@ -106,10 +106,10 @@ evalresp_set_format (evalresp_log_t *log, evalresp_options *options,
 }
 
 static option_pair units[] = {
-    {evalresp_default_user_unit, "DEF"},
-    {evalresp_displacement_user_unit, "DIS"},
-    {evalresp_velocity_user_unit, "VEL"},
-    {evalresp_acceleration_user_unit, "ACC"}};
+    {evalresp_default_unit, "DEF"},
+    {evalresp_displacement_unit, "DIS"},
+    {evalresp_velocity_unit, "VEL"},
+    {evalresp_acceleration_unit, "ACC"}};
 
 int
 evalresp_set_unit (evalresp_log_t *log, evalresp_options *options,
@@ -125,7 +125,7 @@ evalresp_set_unit (evalresp_log_t *log, evalresp_options *options,
 }
 
 static const char *
-get_unit (evalresp_user_unit unit)
+get_unit (evalresp_unit unit)
 {
   int i, n = sizeof (units) / sizeof (units[0]);
   for (i = 0; i < n; ++i)
@@ -214,7 +214,6 @@ calculate_default_freqs (evalresp_log_t *log, evalresp_options *options,
 
   if (!(status = validate_freqs (log, options)))
   {
-
     if (options->lin_freq)
     {
       lo = options->min_freq;

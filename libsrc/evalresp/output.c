@@ -9,7 +9,7 @@
 
 int
 evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *response,
-                           evalresp_format format, char **output)
+                           evalresp_file_format format, char **output)
 {
   int status = EVALRESP_OK;
   int num_of_points = 0;
@@ -37,19 +37,19 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
 
   switch (format)
   {
-  case evalresp_fap_format:
+  case evalresp_fap_file_format:
     if (!(status = calloc_doubles (log, "amplitude", num_of_points, &amp_arr)))
     {
       status = calloc_doubles (log, "phase", num_of_points, &pha_arr);
     }
     break;
-  case evalresp_amplitude_format:
+  case evalresp_amplitude_file_format:
     status = calloc_doubles (log, "amplitude", num_of_points, &amp_arr);
     break;
-  case evalresp_phase_format:
+  case evalresp_phase_file_format:
     status = calloc_doubles (log, "phase", num_of_points, &pha_arr);
     break;
-  case evalresp_complex_format:
+  case evalresp_complex_file_format:
     break;
   default:
     evalresp_log (log, EV_ERROR, EV_ERROR, "Invalid format sent to evalresp_response_to_char");
@@ -74,16 +74,16 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
     {
       switch (format)
       {
-      case evalresp_fap_format:
+      case evalresp_fap_file_format:
         length += snprintf (NULL, 0, "%.6E  %.6E  %.6E\n", freq_arr[i], amp_arr[i], pha_arr[i]);
         break;
-      case evalresp_amplitude_format:
+      case evalresp_amplitude_file_format:
         length += snprintf (NULL, 0, "%.6E  %.6E\n", freq_arr[i], amp_arr[i]);
         break;
-      case evalresp_phase_format:
+      case evalresp_phase_file_format:
         length += snprintf (NULL, 0, "%.6E  %.6E\n", freq_arr[i], pha_arr[i]);
         break;
-      case evalresp_complex_format:
+      case evalresp_complex_file_format:
         length += snprintf (NULL, 0, "%.6E  %.6E  %.6E\n", freq_arr[i], response->rvec[i].real, response->rvec[i].imag);
         break;
       }
@@ -106,16 +106,16 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
     {
       switch (format)
       {
-      case evalresp_fap_format:
+      case evalresp_fap_file_format:
         offset += snprintf (*output + offset, length - offset, "%.6E  %.6E  %.6E\n", freq_arr[i], amp_arr[i], pha_arr[i]);
         break;
-      case evalresp_amplitude_format:
+      case evalresp_amplitude_file_format:
         offset += snprintf (*output + offset, length - offset, "%.6E  %.6E\n", freq_arr[i], amp_arr[i]);
         break;
-      case evalresp_phase_format:
+      case evalresp_phase_file_format:
         offset += snprintf (*output + offset, length - offset, "%.6E  %.6E\n", freq_arr[i], pha_arr[i]);
         break;
-      case evalresp_complex_format:
+      case evalresp_complex_file_format:
         offset += snprintf (*output + offset, length - offset, "%.6E  %.6E  %.6E\n", freq_arr[i], response->rvec[i].real, response->rvec[i].imag);
         break;
       }
@@ -126,4 +126,21 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
   free (pha_arr);
 
   return status;
+}
+
+
+int
+evalresp_response_to_stream (evalresp_log_t *log, const evalresp_response *response,
+                             evalresp_file_format format, const FILE *file)
+{
+  // TODO - call above and then write char to FILE
+  return 0;
+}
+
+int
+evalresp_response_to_file (evalresp_log_t *log, const evalresp_response *response,
+                           evalresp_file_format format, const char *filename)
+{
+  // TODO - open file then call above.
+  return 0;
 }

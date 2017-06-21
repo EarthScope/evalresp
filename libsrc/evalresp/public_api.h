@@ -81,19 +81,18 @@ int evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
 int evalresp_filename_to_channels (evalresp_log_t *log, const char *filename,
                                    const evalresp_filter *filter, evalresp_channels **channels);
 
-// TODO - rename to _format ?
 typedef enum {
-  evalresp_ap_user_format,     /**< Two files, AMP and PHASE. */
-  evalresp_fap_user_format,    /**< One file, FAP. */
-  evalresp_complex_user_format /**< One file, COMPLEX. */
-} evalresp_user_format;
+  evalresp_ap_output_format,     /**< Two files, AMP and PHASE. */
+  evalresp_fap_output_format,    /**< One file, FAP. */
+  evalresp_complex_output_format /**< One file, COMPLEX. */
+} evalresp_output_format;
 
 typedef enum {
-  evalresp_default_user_unit,
-  evalresp_displacement_user_unit,
-  evalresp_velocity_user_unit,
-  evalresp_acceleration_user_unit
-} evalresp_user_unit;
+  evalresp_default_unit,
+  evalresp_displacement_unit,
+  evalresp_velocity_unit,
+  evalresp_acceleration_unit
+} evalresp_unit;
 
 #define EVALRESP_ALL_STAGES -1 /**< Default for start and stop stage. */
 #define EVALRESP_NO_FREQ -1    /**< Default for frequency limits. */
@@ -111,8 +110,9 @@ typedef struct
   int unwrap_phase;
   int b55_interpolate;
   int use_total_sensitivity;
-  evalresp_user_format format;
-  evalresp_user_unit unit;
+  int use_stdio;
+  evalresp_output_format format;
+  evalresp_unit unit;
 } evalresp_options;
 
 int evalresp_new_options (evalresp_log_t *log, evalresp_options **options);
@@ -145,30 +145,26 @@ int evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel
 int evalresp_channels_to_responses (evalresp_log_t *log, evalresp_channels *channels,
                                     evalresp_options *options, evalresp_responses **responses);
 
-// TODO - rename to file_format or similar
 typedef enum {
-  evalresp_fap_format,
-  evalresp_amplitude_format,
-  evalresp_phase_format,
-  evalresp_complex_format
-} evalresp_format;
+  evalresp_fap_file_format,
+  evalresp_amplitude_file_format,
+  evalresp_phase_file_format,
+  evalresp_complex_file_format
+} evalresp_file_format;
 
 int evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *response,
-                               evalresp_format format, char **output);
+                               evalresp_file_format format, char **output);
+
+int evalresp_response_to_stream (evalresp_log_t *log, const evalresp_response *response,
+                               evalresp_file_format format, const FILE *file);
 
 int evalresp_response_to_file (evalresp_log_t *log, const evalresp_response *response,
-                               evalresp_format format, const char *filename);
+                               evalresp_file_format format, const char *filename);
 
-typedef struct
-{
 
-} evalresp_output_options;
+int evalresp_responses_to_cwd (evalresp_log_t *log, const evalresp_responses *responses,
+                               evalresp_output_format format, int use_stdio);
 
-// TODO - do we need separate options here?  separate something out from earlier?
-int evalresp_responses_to_dir (evalresp_log_t *log, const evalresp_responses *responses,
-                               evalresp_output_options *output_options, const char *dir);
-
-int evalresp_dir_to_dir (evalresp_log_t *log, const char *dir,
-                         evalresp_options *options, evalresp_output_options *output_options);
+int evalresp_cwd_to_cwd (evalresp_log_t *log, evalresp_options *options);
 
 #endif
