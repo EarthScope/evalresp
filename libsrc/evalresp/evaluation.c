@@ -242,9 +242,10 @@ calculate_default_freqs (evalresp_log_t *log, evalresp_options *options,
 
   if (!status)
   {
-    if (!(response->rvec = calloc(response->nfreqs, sizeof(*response->rvec)))) {
-     evalresp_log(log, EV_ERROR, EV_ERROR, "Cannot allocate complex result");
-     status = EVALRESP_MEM;
+    if (!(response->rvec = calloc (response->nfreqs, sizeof (*response->rvec))))
+    {
+      evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate complex result");
+      status = EVALRESP_MEM;
     }
   }
 
@@ -319,18 +320,19 @@ use_b55_freqs (evalresp_log_t *log, evalresp_channel *channel,
   int status = EVALRESP_OK;
   evalresp_blkt *b55 = channel->first_stage->first_blkt;
   evalresp_list *list = &b55->blkt_info.list;
-  free(response->freqs);
-  if (!(status = calloc_doubles(log, "frequency array", list->nresp, &response->freqs)))
+  free (response->freqs);
+  if (!(status = calloc_doubles (log, "frequency array", list->nresp, &response->freqs)))
   {
-    memcpy(response->freqs, list->freq, list->nresp * sizeof(*response->freqs));
+    memcpy (response->freqs, list->freq, list->nresp * sizeof (*response->freqs));
     response->nfreqs = list->nresp;
   }
   if (!status)
   {
-    free(response->rvec);
-    if (!(response->rvec = calloc(response->nfreqs, sizeof(*response->rvec)))) {
-     evalresp_log(log, EV_ERROR, EV_ERROR, "Cannot allocate complex result");
-     status = EVALRESP_MEM;
+    free (response->rvec);
+    if (!(response->rvec = calloc (response->nfreqs, sizeof (*response->rvec))))
+    {
+      evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate complex result");
+      status = EVALRESP_MEM;
     }
   }
   return status;
@@ -343,9 +345,12 @@ restore_b55 (evalresp_channel *channel, evalresp_blkt *b55_save)
   evalresp_list *list = &b55->blkt_info.list;
   evalresp_list *list_save = &b55_save->blkt_info.list;
   list->nresp = list_save->nresp;
-  free(list->freq); list->freq = list_save->freq;
-  free(list->amp); list->amp = list_save->amp;
-  free(list->phase); list->phase = list_save->phase;
+  free (list->freq);
+  list->freq = list_save->freq;
+  free (list->amp);
+  list->amp = list_save->amp;
+  free (list->phase);
+  list->phase = list_save->phase;
 }
 
 int
@@ -358,7 +363,7 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
   /* allow NULL options */
   if (!options)
   {
-    status = evalresp_new_options(log, &options);
+    status = evalresp_new_options (log, &options);
     free_options = 1;
   }
 
@@ -400,9 +405,9 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
   }
   if (free_options)
   {
-    evalresp_free_options(&options);
+    evalresp_free_options (&options);
   }
-  free(b55_save);
+  free (b55_save);
 
   return status;
 }
