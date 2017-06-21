@@ -30,6 +30,7 @@
 
 #include <evalresp/stationxml2resp/xml.h>
 #include <evalresp_log/log.h>
+#include <mxml/mxml.h>
 
 /**
  * @private
@@ -54,4 +55,10 @@ int x2r_xml2resp_on_flag(FILE **in, int xml_flag, evalresp_log_t *log);
  */
 int x2r_xml2resp_auto(FILE **in, evalresp_log_t *log);
 
+/**
+ * @private
+ * @ingroup evalresp_private_x2r_ws
+ * @brief parse a mxml root node to datastructure
+ */
+int parse_fdsn_station_xml(evalresp_log_t *log, mxml_node_t *doc, x2r_fdsn_station_xml **root);
 #endif

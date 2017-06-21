@@ -8,11 +8,8 @@
 #include "evalresp/stationxml2resp.h"
 #include "evalresp/stationxml2resp/ws.h"
 #include "evalresp/stationxml2resp/xml.h"
+#include "evalresp/xml_to_char.h"
 
-int evalresp_convert_xml_to_char (evalresp_log_t *log, char *xml_in, char **resp_out);
-int evalresp_load_mxml_service (evalresp_log_t *log, char *xml_in, x2r_fdsn_station_xml **root);
-int evalresp_save_mxml_service_to_char (evalresp_log_t *log, x2r_fdsn_station_xml *root, char **resp_out);
-extern int parse_fdsn_station_xml(evalresp_log_t *log, mxml_node_t *doc, x2r_fdsn_station_xml **root);
 
 int
 evalresp_xml_to_char (evalresp_log_t *log, int xml_flag, char *xml_in, char **resp_out)
@@ -34,6 +31,7 @@ evalresp_convert_xml_to_char (evalresp_log_t *log, char *xml_in, char **resp_out
   {
     status = evalresp_save_mxml_service_to_char (log, root, resp_out);
   }
+  status = x2r_free_fdsn_station_xml(root, status);
   return status;
 }
 
