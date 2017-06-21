@@ -273,7 +273,7 @@ save_b55 (evalresp_log_t *log, evalresp_channel *channel,
   else
   {
     memcpy (*b55_save, b55, sizeof (*b55));
-    /** interpolation will free the freq, phase and amp arrays, so we must
+    /* interpolation will free the freq, phase and amp arrays, so we must
      * allocate further copies
      */
     if (!(status = save_doubles (log, "b55 frequencies", list->nresp,
