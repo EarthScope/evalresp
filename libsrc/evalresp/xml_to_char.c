@@ -45,7 +45,7 @@ evalresp_load_mxml_service (evalresp_log_t *log, char *xml_in, x2r_fdsn_station_
 
   if (!xml_in)
   {
-    evalresp_log (log, EV_ERROR, EV_ERROR, "Input XML Sting is NULL");
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Input XML String is NULL");
     return EVALRESP_IO;
   }
 
