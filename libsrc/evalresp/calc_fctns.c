@@ -40,9 +40,9 @@
 /* I. Dricker, ISTI, 06/22/00 for version 2.3.17 of evalresp                          */
 /*------------------------------------------------------------------------------------*/
 
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 
 #include "./private.h"
 
