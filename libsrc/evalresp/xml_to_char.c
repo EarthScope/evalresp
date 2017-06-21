@@ -4,6 +4,7 @@
 #include <evalresp_log/log.h>
 
 #include "evalresp/public_api.h"
+#include "evalresp/input.h"
 #include "evalresp/stationxml2resp.h"
 #include "evalresp/stationxml2resp/ws.h"
 #include "evalresp/stationxml2resp/xml.h"
@@ -66,7 +67,8 @@ int
 evalresp_save_mxml_service_to_char (evalresp_log_t *log, x2r_fdsn_station_xml *root, char **resp_out)
 {
   FILE *tmp_fd = NULL;
-  int length = 0, status;
+  //int length = 0;
+  int status;
   char *buffer = NULL;
   if (*resp_out)
   {
@@ -82,6 +84,7 @@ evalresp_save_mxml_service_to_char (evalresp_log_t *log, x2r_fdsn_station_xml *r
   if (EVALRESP_OK == status)
   {
       fflush(tmp_fd);
+#if 0
       if (fseek(tmp_fd, 0, SEEK_END))
       {
           evalresp_log(log, EV_ERROR, EV_ERROR, "Problem with temporary file");
@@ -96,8 +99,11 @@ evalresp_save_mxml_service_to_char (evalresp_log_t *log, x2r_fdsn_station_xml *r
           }
           rewind(tmp_fd);
       }
-      
+#endif
+    rewind(tmp_fd);
+    status = file_to_char (log, tmp_fd, &buffer);
   }
+#if 0
   if (0 < length)
   {
       length++; /* account for null termination from this point on */
@@ -109,6 +115,8 @@ evalresp_save_mxml_service_to_char (evalresp_log_t *log, x2r_fdsn_station_xml *r
           status = EVALRESP_MEM;
       }
   }
+#endif
+
   *resp_out = buffer;
   /* close and delete temporary file */
   if (tmp_fd)
@@ -118,39 +126,3 @@ evalresp_save_mxml_service_to_char (evalresp_log_t *log, x2r_fdsn_station_xml *r
   
   return status;
 }
-#if 0
-/* Read an x2r_fdsn_station_xml value from the current node. */
-static int parse_fdsn_station_xml(evalresp_log_t *log, mxml_node_t *doc, x2r_fdsn_station_xml **root) {
-
-    int status = EVALRESP_OK, i;
-    mxml_node_t *fdsn = NULL;
-    nodelist *networks = NULL;
-
-    //evalresp_log(log, EV_DEBUG, 0, "Parsing root");
-    /*XXX x2r_debug(log, "Parsing root"); */
-
-    if (!(*root = calloc(1, sizeof(**root)))) {
-        evalresp_log(log, EV_ERROR, 0, "Cannot alloc fdsn_station_xml");
-        status = EVALRESP_MEM;
-        /*XXX status = x2r_error(log, X2R_ERR_MEMORY, "Cannot alloc fdsn_station_xml"); */
-    } else {
-        if (!(status = find_child(log, &fdsn, NULL, doc, "FDSNStationXML"))) {
-            if (!(status = find_children(log, &networks, fdsn, "Network"))) {
-                (*root)->n_networks = networks->n;
-                if (!((*root)->network = calloc((*root)->n_networks, sizeof(*(*root)->network)))) {
-                    evalresp_log(log, EV_ERROR, 0, "Cannot alloc networks");
-                    status = X2R_ERR_MEMORY;
-                    /*XXX status = x2r_error(log, X2R_ERR_MEMORY, "Cannot alloc networks"); */
-                } else {
-                    for (i = 0; !status && i < (*root)->n_networks; ++i) {
-                        status = parse_network(log, networks->node[i], &(*root)->network[i]);
-                    }
-                }
-            }
-        }
-    }
-
-    free_nodelist(&networks);
-    return status;
-}
-#endif

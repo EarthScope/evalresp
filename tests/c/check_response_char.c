@@ -130,7 +130,7 @@ main (void)
   tcase_add_test (tc, test_response_char_phase);
   suite_add_tcase (s, tc);
   SRunner *sr = srunner_create (s);
-  srunner_set_xml (sr, "check-response.xml");
+  srunner_set_xml (sr, "check-response-char.xml");
   srunner_run_all (sr, CK_NORMAL);
   number_failed = srunner_ntests_failed (sr);
   srunner_free (sr);
