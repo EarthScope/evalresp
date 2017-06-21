@@ -156,11 +156,10 @@ int evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *res
                                evalresp_file_format format, char **output);
 
 int evalresp_response_to_stream (evalresp_log_t *log, const evalresp_response *response,
-                               evalresp_file_format format, const FILE *file);
+                                 evalresp_file_format format, const FILE *file);
 
 int evalresp_response_to_file (evalresp_log_t *log, const evalresp_response *response,
                                evalresp_file_format format, const char *filename);
-
 
 int evalresp_responses_to_cwd (evalresp_log_t *log, const evalresp_responses *responses,
                                evalresp_output_format format, int use_stdio);

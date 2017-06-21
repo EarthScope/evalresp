@@ -128,7 +128,6 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
   return status;
 }
 
-
 int
 evalresp_response_to_stream (evalresp_log_t *log, const evalresp_response *response,
                              evalresp_file_format format, const FILE *file)
