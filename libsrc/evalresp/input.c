@@ -2284,7 +2284,8 @@ evalresp_new_filter (evalresp_log_t *log, evalresp_filter **filter)
     }
     else
     {
-      if (!((*filter)->sncls = calloc (1, sizeof(*(*filter)->sncls)))) {
+      if (!((*filter)->sncls = calloc (1, sizeof (*(*filter)->sncls))))
+      {
         evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate SNCLS");
         status = EVALRESP_MEM;
       }
@@ -2386,7 +2387,7 @@ evalresp_add_sncls (evalresp_log_t *log, evalresp_filter *filter, evalresp_sncls
   for (i = 0; !status && i < sncls->nscn; ++i)
   {
     status = evalresp_add_sncl (log, filter, sncls->scn_vec[i]->network, sncls->scn_vec[i]->locid,
-        sncls->scn_vec[i]->locid, sncls->scn_vec[i]->channel);
+                                sncls->scn_vec[i]->locid, sncls->scn_vec[i]->channel);
   }
   return status;
 }
@@ -2397,7 +2398,7 @@ evalresp_free_filter (evalresp_filter **filter)
   if (*filter)
   {
     free ((*filter)->datetime);
-    evalresp_free_sncls((*filter)->sncls);
+    evalresp_free_sncls ((*filter)->sncls);
     free (*filter);
     *filter = NULL;
   }

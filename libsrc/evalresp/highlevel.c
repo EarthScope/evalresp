@@ -80,13 +80,15 @@ process_stdio (evalresp_log_t *log, evalresp_options *options, evalresp_filter *
   evalresp_channels *channels;
   evalresp_responses *responses;
 
-  if (options->filename && strlen(options->filename))
+  if (options->filename && strlen (options->filename))
   {
-    evalresp_log(log, EV_WARN, EV_WARN, "Using stdio so ignoring file '%s'", options->filename);
+    evalresp_log (log, EV_WARN, EV_WARN, "Using stdio so ignoring file '%s'", options->filename);
   }
-  if (!(status = evalresp_file_to_channels(log, stdin, filter, &channels))) {
-    if (!(status = evalresp_channels_to_responses(log, channels, options, &responses))) {
-      status = evalresp_responses_to_cwd(log, responses, options->format, options->use_stdio);
+  if (!(status = evalresp_file_to_channels (log, stdin, filter, &channels)))
+  {
+    if (!(status = evalresp_channels_to_responses (log, channels, options, &responses)))
+    {
+      status = evalresp_responses_to_cwd (log, responses, options->format, options->use_stdio);
     }
   }
 
@@ -112,7 +114,5 @@ process_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_filter *fi
 int
 evalresp_cwd_to_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter)
 {
-  return (options->use_stdio) ?
-      process_stdio(log, options, filter) :
-      process_cwd(log, options, filter);
+  return (options->use_stdio) ? process_stdio (log, options, filter) : process_cwd (log, options, filter);
 }
