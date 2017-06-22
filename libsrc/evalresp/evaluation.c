@@ -33,9 +33,17 @@ evalresp_free_options (evalresp_options **options)
 {
   if (*options)
   {
+    free ((*options)->filename);
     free (*options);
     *options = NULL;
   }
+}
+
+int
+evalresp_set_filename (evalresp_log_t *log, evalresp_options *options, const char *filename)
+{
+  options->filename = strdup (filename);
+  return EVALRESP_OK;
 }
 
 int
@@ -408,5 +416,38 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
   }
   free (b55_save);
 
+  return status;
+}
+
+int
+evalresp_channels_to_responses (evalresp_log_t *log, evalresp_channels *channels,
+                                evalresp_options *options, evalresp_responses **responses)
+{
+  int status = EVALRESP_OK, i;
+  if (!(*responses = calloc (1, sizeof (**responses))))
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate responses");
+    status = EVALRESP_MEM;
+  }
+  else
+  {
+    for (i = 0; !status && i < channels->nchannels; ++i)
+    {
+      evalresp_response *response = NULL;
+      if (!(status = evalresp_channel_to_response (log, channels->channels[i], options, &response)))
+      {
+        (*responses)->nresponses++;
+        if (!((*responses)->responses = realloc ((*responses)->responses, (*responses)->nresponses * sizeof (*(*responses)->responses))))
+        {
+          evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate array for new response");
+          status = EVALRESP_MEM;
+        }
+        else
+        {
+          (*responses)->responses[(*responses)->nresponses - 1] = response;
+        }
+      }
+    }
+  }
   return status;
 }

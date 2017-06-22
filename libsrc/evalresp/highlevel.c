@@ -11,7 +11,7 @@
 
 static char *prefixes[] = {"FAP", "AMP", "PHASE", "SPECTRA"};
 
-#define LABEL_TEMPLATE "%s.%s.%s.%s.%s"
+#define FILENAME_TEMPLATE "%s.%s.%s.%s.%s"
 
 static int
 print_file (evalresp_log_t *log, evalresp_file_format format,
@@ -19,7 +19,7 @@ print_file (evalresp_log_t *log, evalresp_file_format format,
 {
   int status = EVALRESP_OK, length;
   char *filename = NULL, *prefix = prefixes[format];
-  length = snprintf (filename, 0, LABEL_TEMPLATE, prefix,
+  length = snprintf (filename, 0, FILENAME_TEMPLATE, prefix,
                      response->network, response->station, response->locid, response->channel);
   if (!(filename = calloc (length, sizeof (*filename))))
   {
@@ -28,7 +28,7 @@ print_file (evalresp_log_t *log, evalresp_file_format format,
   }
   else
   {
-    (void)snprintf (filename, length, LABEL_TEMPLATE, prefix,
+    (void)snprintf (filename, length, FILENAME_TEMPLATE, prefix,
                     response->network, response->station, response->locid, response->channel);
     if (use_stdio)
     {
@@ -71,4 +71,99 @@ evalresp_responses_to_cwd (evalresp_log_t *log, const evalresp_responses *respon
   }
 
   return status;
+}
+
+static int
+process_stdio (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter)
+{
+  int status = EVALRESP_OK;
+  evalresp_channels *channels;
+  evalresp_responses *responses;
+
+  if (options->filename && strlen (options->filename))
+  {
+    evalresp_log (log, EV_WARN, EV_WARN, "Using stdio so ignoring file '%s'", options->filename);
+  }
+  if (!(status = evalresp_file_to_channels (log, stdin, filter, &channels)))
+  {
+    if (!(status = evalresp_channels_to_responses (log, channels, options, &responses)))
+    {
+      status = evalresp_responses_to_cwd (log, responses, options->format, options->use_stdio);
+    }
+  }
+
+  return status;
+}
+
+static int
+get_filenames (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter,
+               struct matched_files **files)
+{
+  int status = EVALRESP_OK, mode;
+  *files = find_files (options->filename, filter->sncls, &mode, log);
+  if (!mode)
+  {
+    // TODO - add filename to list
+  }
+  return status;
+}
+
+static int
+process_files (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter, struct file_list *files)
+{
+  int status = EVALRESP_OK;
+  while (files)
+  {
+    evalresp_channels *channels = NULL;
+    if (!(status = evalresp_filename_to_channels (log, files->name, filter, &channels)))
+    {
+      evalresp_responses *responses = NULL;
+      if (!(status = evalresp_channels_to_responses (log, channels, options, &responses)))
+      {
+        status = evalresp_responses_to_cwd (log, responses, options->format, options->use_stdio);
+        evalresp_free_responses (responses);
+      }
+      evalresp_free_channels (&channels);
+    }
+  }
+  return status;
+}
+
+static int
+process_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter)
+{
+  int status = EVALRESP_OK, i;
+  struct matched_files *files = NULL, *files_for_sncls;
+  // this reads a set of filenames for each sncl
+  if (!(status = get_filenames (log, options, filter, &files)))
+  {
+    for (i = 0, files_for_sncls = files;
+         !status && i < filter->sncls->nscn;
+         ++i, files_for_sncls = files_for_sncls->ptr_next)
+    {
+      // if i understand correctly, then we need to use a separate
+      // filter for each sncl
+      evalresp_sncl *sncl = filter->sncls->scn_vec[i];
+      evalresp_filter *sncl_filter = NULL;
+      if (!(status = evalresp_new_filter (log, &sncl_filter)))
+      {
+        sncl_filter->datetime = filter->datetime; // shared
+        if (!(status = evalresp_add_sncl (log, sncl_filter, sncl)))
+        {
+          // we're processing files that matched a single sncl here'
+          status = process_files (log, options, sncl_filter, files->first_list);
+        }
+        sncl_filter->datetime = NULL; // don't free this as shared
+        evalresp_free_filter (&sncl_filter);
+      }
+    }
+  }
+  free_matched_files (files);
+  return status;
+}
+
+int
+evalresp_cwd_to_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter)
+{
+  return (options->use_stdio) ? process_stdio (log, options, filter) : process_cwd (log, options, filter);
 }

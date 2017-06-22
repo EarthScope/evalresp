@@ -44,7 +44,7 @@
 #endif
 
 struct matched_files *
-find_files (char *file, struct scn_list *scn_lst,
+find_files (char *file, evalresp_sncls *scn_lst,
             int *mode, evalresp_log_t *log)
 {
   char *basedir, testdir[MAXLINELEN];

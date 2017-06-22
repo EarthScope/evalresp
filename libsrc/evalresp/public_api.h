@@ -51,12 +51,22 @@ typedef struct
 /**
  * @public
  * @ingroup evalresp_public
+ * @brief List of network-station-locid-channel objects.
+ */
+typedef struct
+{
+  int nscn;                /**< Number of network-station-locid-channel objects. */
+  evalresp_sncl **scn_vec; /**< Array of network-station-locid-channel objects. */
+} evalresp_sncls;
+
+/**
+ * @public
+ * @ingroup evalresp_public
  * @brief Structure used for filtering input data by response DNCL and date/time.
  */
 typedef struct
 {
-  int nsncls;
-  evalresp_sncl **sncls;
+  evalresp_sncls *sncls;
   evalresp_datetime *datetime;
 } evalresp_filter;
 
@@ -68,10 +78,21 @@ int evalresp_set_julian_day (evalresp_log_t *log, evalresp_filter *filter, const
 
 int evalresp_set_time (evalresp_log_t *log, evalresp_filter *filter, const char *time);
 
-int evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter,
-                       const char *sta, const char *net, const char *chan, const char *locid);
+int evalresp_add_sncl_text (evalresp_log_t *log, evalresp_filter *filter,
+                            const char *sta, const char *net, const char *chan, const char *locid);
+
+int evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter, evalresp_sncl *sncl);
 
 void evalresp_free_filter (evalresp_filter **filter);
+
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @brief A routine that frees up the space associated with a station-channel
+ *        list type structure.
+ * @param[in,out] sncls SNCL data.
+ */
+void evalresp_free_sncls (evalresp_sncls *sncls);
 
 int evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
                                const evalresp_filter *filter, evalresp_channels **channels);
@@ -100,6 +121,7 @@ typedef enum {
 
 typedef struct
 {
+  char *filename;
   double b62_x;
   double min_freq;
   double max_freq;
@@ -119,6 +141,8 @@ typedef struct
 int evalresp_new_options (evalresp_log_t *log, evalresp_options **options);
 
 void evalresp_free_options (evalresp_options **options);
+
+int evalresp_set_filename (evalresp_log_t *log, evalresp_options *options, const char *filename);
 
 int evalresp_set_frequency (evalresp_log_t *log, evalresp_options *options,
                             const char *min_freq, const char *max_freq, const char *nfreq);
@@ -165,7 +189,8 @@ int evalresp_response_to_file (evalresp_log_t *log, const evalresp_response *res
 int evalresp_responses_to_cwd (evalresp_log_t *log, const evalresp_responses *responses,
                                evalresp_output_format format, int use_stdio);
 
-int evalresp_cwd_to_cwd (evalresp_log_t *log, evalresp_options *options);
+int evalresp_cwd_to_cwd (evalresp_log_t *log,
+                         evalresp_options *options, evalresp_filter *filter);
 
 /**
  * @param[in] log logging structure where you want information to be sent

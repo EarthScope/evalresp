@@ -2170,11 +2170,11 @@ channel_matches (evalresp_log_t *log, const evalresp_filter *filter, evalresp_ch
       return 0;
     }
   }
-  if (filter->nsncls)
+  if (filter->sncls->nscn)
   {
-    for (i = 0; i < filter->nsncls; ++i)
+    for (i = 0; i < filter->sncls->nscn; ++i)
     {
-      evalresp_sncl *sncl = filter->sncls[i];
+      evalresp_sncl *sncl = filter->sncls->scn_vec[i];
       if (string_match (channel->staname, sncl->station, "-g", log) && ((!strlen (sncl->network) && !strlen (channel->network)) || string_match (channel->network, sncl->network, "-g", log)) && string_match (channel->locid, sncl->locid, "-g", log) && string_match (channel->chaname, sncl->channel, "-g", log))
       {
         sncl->found++;
@@ -2282,6 +2282,14 @@ evalresp_new_filter (evalresp_log_t *log, evalresp_filter **filter)
       evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate datetime");
       status = EVALRESP_MEM;
     }
+    else
+    {
+      if (!((*filter)->sncls = calloc (1, sizeof (*(*filter)->sncls))))
+      {
+        evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate SNCLS");
+        status = EVALRESP_MEM;
+      }
+    }
   }
   return status;
 }
@@ -2342,26 +2350,27 @@ evalresp_set_time (evalresp_log_t *log, evalresp_filter *filter, const char *tim
 }
 
 int
-evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter,
-                   const char *net, const char *sta, const char *locid, const char *chan)
+evalresp_add_sncl_text (evalresp_log_t *log, evalresp_filter *filter,
+                        const char *net, const char *sta, const char *locid, const char *chan)
 {
   int status = EVALRESP_OK;
-  filter->nsncls++;
-  if (!(filter->sncls = realloc (filter->sncls, filter->nsncls * sizeof (*filter->sncls))))
+  evalresp_sncls *sncls = filter->sncls;
+  sncls->nscn++;
+  if (!(sncls->scn_vec = realloc (sncls->scn_vec, sncls->nscn * sizeof (*sncls->scn_vec))))
   {
     evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot reallocate sncls");
     status = EVALRESP_MEM;
   }
   else
   {
-    if (!(filter->sncls[filter->nsncls - 1] = calloc (1, sizeof (*(filter->sncls[filter->nsncls - 1])))))
+    if (!(sncls->scn_vec[sncls->nscn - 1] = calloc (1, sizeof (*(sncls->scn_vec[sncls->nscn - 1])))))
     {
       evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate sncl");
       status = EVALRESP_MEM;
     }
     else
     {
-      evalresp_sncl *sncl = filter->sncls[filter->nsncls - 1];
+      evalresp_sncl *sncl = sncls->scn_vec[sncls->nscn - 1];
       sncl->station = strdup (sta ? sta : "*");
       sncl->network = strdup (net ? net : "*");
       sncl->channel = strdup (chan ? chan : "*");
@@ -2371,22 +2380,19 @@ evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter,
   return status;
 }
 
+int
+evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter, evalresp_sncl *sncl)
+{
+  return evalresp_add_sncl_text (log, filter, sncl->network, sncl->station, sncl->locid, sncl->channel);
+}
+
 void
 evalresp_free_filter (evalresp_filter **filter)
 {
-  int i;
   if (*filter)
   {
     free ((*filter)->datetime);
-    for (i = 0; i < (*filter)->nsncls; ++i)
-    {
-      free ((*filter)->sncls[i]->station);
-      free ((*filter)->sncls[i]->network);
-      free ((*filter)->sncls[i]->channel);
-      free ((*filter)->sncls[i]->locid);
-      free ((*filter)->sncls[i]);
-    }
-    free ((*filter)->sncls);
+    evalresp_free_sncls ((*filter)->sncls);
     free (*filter);
     *filter = NULL;
   }

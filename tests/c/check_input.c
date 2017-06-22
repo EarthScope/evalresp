@@ -128,7 +128,7 @@ START_TEST (test_filter)
   fail_if (channels->nchannels != 1, "Unexpected number of channels: %d", channels->nchannels);
   evalresp_free_channels (&channels);
 
-  fail_if (evalresp_add_sncl (NULL, filter, "IU", "ANMO", NULL, "BHZ"));
+  fail_if (evalresp_add_sncl_text (NULL, filter, "IU", "ANMO", NULL, "BHZ"));
   fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", filter,
                                           &channels));
   fail_if (channels->nchannels != 1, "Unexpected number of channels: %d", channels->nchannels);
@@ -136,7 +136,7 @@ START_TEST (test_filter)
   evalresp_free_filter (&filter);
 
   fail_if (evalresp_new_filter (NULL, &filter));
-  fail_if (evalresp_add_sncl (NULL, filter, "IU", "ANMO", NULL, "BHN"));
+  fail_if (evalresp_add_sncl_text (NULL, filter, "IU", "ANMO", NULL, "BHN"));
   fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", filter,
                                           &channels));
   fail_if (channels->nchannels != 0, "Unexpected number of channels: %d", channels->nchannels);
