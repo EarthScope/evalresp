@@ -2350,7 +2350,7 @@ evalresp_set_time (evalresp_log_t *log, evalresp_filter *filter, const char *tim
 }
 
 int
-evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter,
+evalresp_add_sncl_text (evalresp_log_t *log, evalresp_filter *filter,
                    const char *net, const char *sta, const char *locid, const char *chan)
 {
   int status = EVALRESP_OK;
@@ -2381,15 +2381,9 @@ evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter,
 }
 
 int
-evalresp_add_sncls (evalresp_log_t *log, evalresp_filter *filter, evalresp_sncls *sncls)
+evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter, evalresp_sncl *sncl)
 {
-  int status = EVALRESP_OK, i;
-  for (i = 0; !status && i < sncls->nscn; ++i)
-  {
-    status = evalresp_add_sncl (log, filter, sncls->scn_vec[i]->network, sncls->scn_vec[i]->locid,
-                                sncls->scn_vec[i]->locid, sncls->scn_vec[i]->channel);
-  }
-  return status;
+  return evalresp_add_sncl_text(log, filter, sncl->network, sncl->station, sncl->locid, sncl->channel);
 }
 
 void

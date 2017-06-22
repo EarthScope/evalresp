@@ -779,13 +779,27 @@ evalresp_free_response (evalresp_response *resp_ptr)
   evalresp_response *this_resp, *next_resp;
 
   this_resp = resp_ptr;
-  while (this_resp != (evalresp_response *)NULL)
+  while (this_resp)
   {
     next_resp = this_resp->next;
     free (this_resp->rvec);
     free (this_resp->freqs); /*IGD for v 3.2.17 */
     free (this_resp);
     this_resp = next_resp;
+  }
+}
+
+void
+evalresp_free_responses (evalresp_responses *responses)
+{
+  int i;
+  if (responses)
+  {
+    for (i = 0; i < responses->nresponses; ++i)
+    {
+      evalresp_free_response (responses->responses[i]);
+    }
+  free(responses);
   }
 }
 

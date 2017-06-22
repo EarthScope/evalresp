@@ -12,14 +12,14 @@
  */
 typedef struct evalresp_response_s
 {
-  char station[STALEN];                        /**< Station name. */
-  char network[NETLEN];                        /**< Network name. */
-  char locid[LOCIDLEN];                        /**< Location ID. */
-  char channel[CHALEN];                        /**< Channel name. */
-  evalresp_complex *rvec;                      /**< Output vector. */
-  int nfreqs; /**< Number of frequencies. */   /* Add by I.Dricker IGD to support blockette 55 */
-  double *freqs; /**< Array of frequencies. */ /* Add by I.Dricker IGD to support blockette 55 */
-  struct evalresp_response_s *next;            /**< Pointer to next response object. */
+  char station[STALEN];               /**< Station name. */
+  char network[NETLEN];               /**< Network name. */
+  char locid[LOCIDLEN];               /**< Location ID. */
+  char channel[CHALEN];               /**< Channel name. */
+  evalresp_complex *rvec;             /**< Output vector. */
+  int nfreqs;                         /**< Number of frequencies. */
+  double *freqs;                      /**< Array of frequencies. */
+  struct evalresp_response_s *next;   /**< Pointer to next response object (unused in new API). */
 } evalresp_response;
 
 /**
@@ -40,6 +40,15 @@ typedef struct
  *        response information.
  * @param[in,out] resp_ptr Response structure.
  */
-void evalresp_free_response (evalresp_response *resp_ptr);
+void evalresp_free_response (evalresp_response *response);
+
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @brief A routine that frees up the space associated with a linked list of
+ *        response information.
+ * @param[in,out] resp_ptr Response structure.
+ */
+void evalresp_free_responses (evalresp_responses *responses);
 
 #endif

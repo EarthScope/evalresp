@@ -77,10 +77,10 @@ int evalresp_set_julian_day (evalresp_log_t *log, evalresp_filter *filter, const
 
 int evalresp_set_time (evalresp_log_t *log, evalresp_filter *filter, const char *time);
 
-int evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter,
-                       const char *sta, const char *net, const char *chan, const char *locid);
+int evalresp_add_sncl_text (evalresp_log_t *log, evalresp_filter *filter,
+                            const char *sta, const char *net, const char *chan, const char *locid);
 
-int evalresp_add_sncls (evalresp_log_t *log, evalresp_filter *filter, evalresp_sncls *sncls);
+int evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter, evalresp_sncl *sncl);
 
 void evalresp_free_filter (evalresp_filter **filter);
 
