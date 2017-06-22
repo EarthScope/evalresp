@@ -213,14 +213,16 @@ read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
   {
     if (0 > find_field (log, seed, ":", 50, 3, 0, field))
     {
-      return 0 /*TODO PARSE_ERROR should be returned */;
+      // TODO - log reason
+      return EVALRESP_PAR;
     }
   }
   else
   {
     if (0 > parse_field (first_line, 0, field, log))
     {
-      return 0 /*TODO PARSE_ERROR should be returned */;
+      // TODO - log reason
+      return EVALRESP_PAR;
     }
   }
 
@@ -230,7 +232,8 @@ read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
 
   if (0 > find_field (log, seed, ":", 50, 16, 0, field))
   {
-    return 0 /*TODO PARSE_ERROR should be returned */;
+    // TODO - log reason
+    return EVALRESP_PAR;
   }
   if (!strncmp (field, "??", 2))
   {
@@ -254,7 +257,8 @@ read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
   {
     if (0 > parse_field (line, 0, field, log)) /* parse location data */
     {
-      return 0 /*TODO PARSE_ERROR should be returned */;
+      // TODO - log reason
+      return EVALRESP_PAR;
     }
   }
   else
@@ -275,7 +279,8 @@ read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
     }
     if (0 > find_field (log, seed, ":", 52, 4, 0, field))
     {
-      return 0 /*TODO PARSE_ERROR should be returned */;
+      // TODO - log reason
+      return EVALRESP_PAR;
     }
     strncpy (chan->chaname, field, CHALEN);
   }
@@ -291,14 +296,16 @@ read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
                   " and fld numbers do not match expected values\n\tblkt_xpt=B",
                   52, ", blkt_found=B", blkt_no, "; fld_xpt=F", 3, 4,
                   ", fld_found=F", fld_no);
-    return 0; /*TODO error code maybe? */
+    // TODO - log reason
+    return EVALRESP_PAR;
   }
 
   /* get the Start Date */
 
   if (0 > find_line (log, seed, ":", 52, 22, line))
   {
-    return 0; /*TODO */
+    // TODO - log reason
+    return EVALRESP_PAR;
   }
   strncpy (chan->beg_t, line, DATIMLEN);
 
@@ -306,11 +313,12 @@ read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
 
   if (0 > find_line (log, seed, ":", 52, 23, line))
   {
-    return 0; /*TODO */
+    // TODO - log reason
+    return EVALRESP_PAR;
   }
   strncpy (chan->end_t, line, DATIMLEN);
 
-  return (1);
+  return EVALRESP_OK;
 }
 
 // this was parse_pz
@@ -2009,7 +2017,7 @@ read_channel_data (evalresp_log_t *log, const char **seed, char *first_line,
     }
   }
   free_stages (tmp_stage);
-  return (first_field);
+  return first_field ?  EVALRESP_OK : EVALRESP_PAR;
 }
 
 // non-static only for testing
@@ -2212,17 +2220,19 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
       }
       else
       {
-        // TODO - add error handling
-        read_channel_header (log, &read_ptr, first_line, channel);
-        read_channel_data (log, &read_ptr, first_line, channel);
-        if (!filter || channel_matches (log, filter, channel))
+        if (!(status = read_channel_header (log, &read_ptr, first_line, channel)))
         {
-          status = add_channel (log, channel, *channels);
+          if (!(status = read_channel_data (log, &read_ptr, first_line, channel)))
+          {
+            if (!filter || channel_matches (log, filter, channel))
+            {
+              if (!(status = add_channel (log, channel, *channels))) {
+                channel = NULL;  // don't free below because added above
+              }
+            }
+          }
         }
-        else
-        {
-          free_channel (channel);
-        }
+        free_channel (channel);
       }
     }
   }
@@ -2374,7 +2384,14 @@ evalresp_add_sncl_text (evalresp_log_t *log, evalresp_filter *filter,
       sncl->station = strdup (sta ? sta : "*");
       sncl->network = strdup (net ? net : "*");
       sncl->channel = strdup (chan ? chan : "*");
-      sncl->locid = strdup (locid ? locid : "*");
+      // various special cases for location
+      if (locid && strlen(locid) == strspn (locid, "?")) {
+        sncl->locid = strdup ("*");
+      } else if (locid && strlen(locid) == strspn (locid, " ")) {
+        sncl->locid = strdup ("");
+      } else {
+        sncl->locid = strdup (locid ? locid : "*");
+      }
     }
   }
   return status;
@@ -2384,6 +2401,87 @@ int
 evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter, evalresp_sncl *sncl)
 {
   return evalresp_add_sncl_text(log, filter, sncl->network, sncl->station, sncl->locid, sncl->channel);
+}
+
+static void
+replace_comma_with_space(char *str)
+{
+  while (*str++)
+  {
+    if (*str == ',')
+    {
+      *str = ' ';
+    }
+  }
+}
+
+static int
+split_on_space (evalresp_log_t *log, const char *name, const char *str, struct string_array **array)
+{
+  int status = EVALRESP_OK;
+  char *local_str = strdup(str);
+  replace_comma_with_space(local_str);
+  if (!(*array = ev_parse_line (local_str, log)))
+  {
+    evalresp_log(log, EV_ERROR, EV_ERROR, "No %s in '%s'", name, str);
+    status = EVALRESP_INP;
+  }
+  free(local_str);
+  return status;
+}
+
+static int
+split_on_comma (evalresp_log_t *log, const char *name, const char *str, struct string_array **array)
+{
+  int status = EVALRESP_OK;
+  char *local_str = strdup(str), *start, *end;
+  start = local_str;
+  while (*start == ' ')
+  {
+    start++;
+  }
+  end = start + strlen(start);
+  while (*end == ' ')
+  {
+    *end-- = '\0';
+  }
+  if (!(*array = parse_delim_line (start, ",", log)))
+  {
+    evalresp_log(log, EV_ERROR, EV_ERROR, "No %s in '%s'", name, str);
+    status = EVALRESP_INP;
+  }
+  free(local_str);
+  return status;
+}
+
+int
+evalresp_add_sncl_all (evalresp_log_t *log, evalresp_filter *filter,
+                   const char *net, const char *sta, const char *locid, const char *chan)
+{
+  int status = EVALRESP_OK, i, j, k;
+  struct string_array *stations = NULL, *channels = NULL, *locations = NULL;
+
+  if (!(status = split_on_space(log, "stations", sta, &stations))) {
+    if (!(status = split_on_space(log, "channels", chan, &channels))) {
+      if (!(status = split_on_comma(log, "locations", locid, &locations))) {
+        for (i = 0; !status && i < stations->nstrings; i++)
+        {
+          for (j = 0; !status && j < locations->nstrings; j++)
+          {
+            for (k = 0; !status && k < channels->nstrings; k++)
+            {
+              status = evalresp_add_sncl_text(log, filter,
+                  net, stations->strings[i], locations->strings[j], channels->strings[k]);
+            }
+          }
+        }
+      }
+    }
+  }
+  free_string_array(stations);
+  free_string_array(channels);
+  free_string_array(locations);
+  return status;
 }
 
 void

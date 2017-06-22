@@ -150,7 +150,7 @@ process_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_filter *fi
         sncl_filter->datetime = filter->datetime;  // shared
         if (!(status = evalresp_add_sncl(log, sncl_filter, sncl)))
         {
-          // we're processing files that matched a single sncl here'
+          // we're processing files that matched a single sncl here
           status = process_files (log, options, sncl_filter, files->first_list);
         }
         sncl_filter->datetime = NULL;  // don't free this as shared
