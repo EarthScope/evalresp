@@ -162,15 +162,15 @@ alloc_response (int npts, evalresp_log_t *log)
   return (rptr);
 }
 
-struct scn_list *
+evalresp_sncls *
 alloc_scn_list (int nscn, evalresp_log_t *log)
 {
-  struct scn_list *sc_ptr;
+  evalresp_sncls *sc_ptr;
   int i;
 
   if (nscn)
   {
-    if (!(sc_ptr = (struct scn_list *)malloc (sizeof (struct scn_list))))
+    if (!(sc_ptr = (evalresp_sncls *)malloc (sizeof (evalresp_sncls))))
     {
       evalresp_log (log, EV_ERROR, 0,
                     "alloc_scn_list; malloc() failed for (scn_list)");
@@ -196,7 +196,7 @@ alloc_scn_list (int nscn, evalresp_log_t *log)
   }
   else
   {
-    sc_ptr = (struct scn_list *)NULL;
+    sc_ptr = (evalresp_sncls *)NULL;
   }
 
   return (sc_ptr);
@@ -572,7 +572,7 @@ free_scn (evalresp_sncl *ptr)
 }
 
 void
-free_scn_list (struct scn_list *lst)
+evalresp_free_sncls (evalresp_sncls *lst)
 {
   int i;
 

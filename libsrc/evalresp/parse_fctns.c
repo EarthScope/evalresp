@@ -2215,7 +2215,7 @@ in_epoch (const char *datime, const char *beg_t, const char *end_t)
 }
 
 int
-find_resp (FILE *fptr, struct scn_list *scn_lst, char *datime,
+find_resp (FILE *fptr, evalresp_sncls *scn_lst, char *datime,
            evalresp_channel *this_channel, evalresp_log_t *log)
 {
   int test, i;

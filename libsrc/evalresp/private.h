@@ -320,17 +320,6 @@ struct matched_files
   struct matched_files *ptr_next; /**< Pointer to next matches files object. */
 };
 
-/**
- * @private
- * @ingroup evalresp_private
- * @brief List of network-station-locid-channel objects.
- */
-typedef struct scn_list
-{
-  int nscn;                /**< Number of network-station-locid-channel objects. */
-  evalresp_sncl **scn_vec; /**< Array of network-station-locid-channel objects. */
-} evalresp_sncls;
-
 /* utility routines that are used to parse the input file line by line and
  convert the input to what the user wants */
 
@@ -656,7 +645,7 @@ int is_IIR_coeffs (FILE *fp, int position);
  *       file pointer does not need to be repositioned to allow for this
  *       information to be reread.
  */
-int find_resp (FILE *fptr, struct scn_list *scn_lst, char *datime,
+int find_resp (FILE *fptr, evalresp_sncls *scn_lst, char *datime,
                evalresp_channel *this_channel, evalresp_log_t *log);
 
 /**
@@ -761,7 +750,7 @@ int next_resp (FILE *fptr, evalresp_log_t *log);
  * @returns Pointer to the head of the linked list of matches files.
  * @returns @c NULL if no files were found that match request.
  */
-struct matched_files *find_files (char *file, struct scn_list *scn_lst,
+struct matched_files *find_files (char *file, evalresp_sncls *scn_lst,
                                   int *mode, evalresp_log_t *log);
 
 /**
@@ -838,7 +827,7 @@ evalresp_sncl *alloc_scn (evalresp_log_t *log);
  * @returns @c NULL if @p nscn is zero.
  * @warning Exits with error if allocation fails.
  */
-struct scn_list *alloc_scn_list (int nscn, evalresp_log_t *log);
+evalresp_sncls *alloc_scn_list (int nscn, evalresp_log_t *log);
 
 /**
  * @private
@@ -1039,15 +1028,6 @@ void free_string_array (struct string_array *lst);
  * @param[in,out] ptr Station-channel type structure.
  */
 void free_scn (evalresp_sncl *ptr);
-
-/**
- * @private
- * @ingroup evalresp_private_alloc
- * @brief A routine that frees up the space associated with a station-channel
- *        list type structure.
- * @param[in,out] lst Station-channel list type structure.
- */
-void free_scn_list (struct scn_list *lst);
 
 /**
  * @private

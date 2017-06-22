@@ -11,7 +11,7 @@
 
 static char *prefixes[] = {"FAP", "AMP", "PHASE", "SPECTRA"};
 
-#define LABEL_TEMPLATE "%s.%s.%s.%s.%s"
+#define FILENAME_TEMPLATE "%s.%s.%s.%s.%s"
 
 static int
 print_file (evalresp_log_t *log, evalresp_file_format format,
@@ -19,7 +19,7 @@ print_file (evalresp_log_t *log, evalresp_file_format format,
 {
   int status = EVALRESP_OK, length;
   char *filename = NULL, *prefix = prefixes[format];
-  length = snprintf (filename, 0, LABEL_TEMPLATE, prefix,
+  length = snprintf (filename, 0, FILENAME_TEMPLATE, prefix,
                      response->network, response->station, response->locid, response->channel);
   if (!(filename = calloc (length, sizeof (*filename))))
   {
@@ -28,7 +28,7 @@ print_file (evalresp_log_t *log, evalresp_file_format format,
   }
   else
   {
-    (void)snprintf (filename, length, LABEL_TEMPLATE, prefix,
+    (void)snprintf (filename, length, FILENAME_TEMPLATE, prefix,
                     response->network, response->station, response->locid, response->channel);
     if (use_stdio)
     {
@@ -71,4 +71,48 @@ evalresp_responses_to_cwd (evalresp_log_t *log, const evalresp_responses *respon
   }
 
   return status;
+}
+
+static int
+process_stdio (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter)
+{
+  int status = EVALRESP_OK;
+  evalresp_channels *channels;
+  evalresp_responses *responses;
+
+  if (options->filename && strlen(options->filename))
+  {
+    evalresp_log(log, EV_WARN, EV_WARN, "Using stdio so ignoring file '%s'", options->filename);
+  }
+  if (!(status = evalresp_file_to_channels(log, stdin, filter, &channels))) {
+    if (!(status = evalresp_channels_to_responses(log, channels, options, &responses))) {
+      status = evalresp_responses_to_cwd(log, responses, options->format, options->use_stdio);
+    }
+  }
+
+  return status;
+}
+
+//static int
+//cwd_to_files (evalresp_log_t *log)
+//{
+//  return 0;
+//}
+
+static int
+process_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter)
+{
+  int status = EVALRESP_OK;
+  // get files
+  // for each file, read channels
+  // write output
+  return status;
+}
+
+int
+evalresp_cwd_to_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter)
+{
+  return (options->use_stdio) ?
+      process_stdio(log, options, filter) :
+      process_cwd(log, options, filter);
 }

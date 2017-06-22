@@ -262,7 +262,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   evalresp_response *prev_ptr = (evalresp_response *)NULL;
   evalresp_response *first_resp = (evalresp_response *)NULL;
   evalresp_complex *output = NULL;
-  struct scn_list *scns = NULL;
+  evalresp_sncls *scns = NULL;
   FILE *fptr = NULL;
   double *freqs_orig = NULL; /* for saving the original frequencies */
   int nfreqs_orig;
@@ -1011,7 +1011,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
             fflush(stderr); */
     }
   }
-  free_scn_list (scns);
+  evalresp_free_sncls (scns);
   if (flst_head != (struct matched_files *)NULL)
     free_matched_files (flst_head);
   free_string_array (chan_list);
