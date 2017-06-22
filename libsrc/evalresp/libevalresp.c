@@ -443,12 +443,16 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 
       /* convert from xml format if necessary, logging error messages to stderr. */
       evalresp_xml_stream_to_resp_file(log, xml_flag, in_fptr, NULL, &fptr);
-      if (in_fptr && in_fptr != stdin)
+      if (in_fptr && in_fptr != stdin && xml_flag)
       {
         fclose(in_fptr);
         in_fptr=NULL;
       }
-      if (!fptr)
+      else
+      {
+          fptr = in_fptr;
+      }
+      if (!fptr && !xml_flag)
       {
           return NULL;
       }
@@ -671,10 +675,14 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 
           /* convert from xml format if necessary, logging error messages to stderr. */
           evalresp_xml_stream_to_resp_file(log, xml_flag, in_fptr, NULL, &fptr);
-          if (in_fptr && in_fptr != stdin)
+          if (in_fptr && in_fptr != stdin && xml_flag)
           {
             fclose(in_fptr);
             in_fptr=NULL;
+          }
+          else
+          {
+            fptr = in_fptr;
           }
           if (!fptr)
           {
