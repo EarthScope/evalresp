@@ -799,7 +799,7 @@ evalresp_free_responses (evalresp_responses *responses)
     {
       evalresp_free_response (responses->responses[i]);
     }
-  free(responses);
+    free (responses);
   }
 }
 
