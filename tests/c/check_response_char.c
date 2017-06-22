@@ -92,7 +92,7 @@ START_TEST (test_response_char_amp)
 
   response = get_response (cwd, "data/station-1.xml", "ANMO", "BH1", "IU", "00", "2015,1,00:00:00", log);
 
-  ck_assert_msg (evalresp_response_to_char (log, response, evalresp_amplitude_format, &test_string) == EVALRESP_OK,
+  ck_assert_msg (evalresp_response_to_char (log, response, evalresp_amplitude_file_format, &test_string) == EVALRESP_OK,
                  "Failed to create char");
 
   err = max_err (cwd, "data/AMP.IU.ANMO.00.BH1", test_string);
@@ -112,7 +112,7 @@ START_TEST (test_response_char_phase)
 
   response = get_response (cwd, "data/station-1.xml", "ANMO", "BH1", "IU", "00", "2015,1,00:00:00", log);
 
-  ck_assert_msg (evalresp_response_to_char (log, response, evalresp_phase_format, &test_string) == EVALRESP_OK,
+  ck_assert_msg (evalresp_response_to_char (log, response, evalresp_phase_file_format, &test_string) == EVALRESP_OK,
                  "Failed to create char");
 
   err = max_err (cwd, "data/PHASE.IU.ANMO.00.BH1", test_string);

@@ -138,3 +138,75 @@ evalresp_xml_to_char (evalresp_log_t *log, int xml_flag, char *xml_in, char **re
   return convert_xml_to_char(log, xml_in, resp_out);
 }
 
+int
+evalresp_xml_stream_to_resp_file(evalresp_log_t *log, int xml_flag, FILE *xml_fd, const char * resp_filename, FILE **resp_fd)
+{
+    int status;
+    x2r_fdsn_station_xml *root = NULL;
+
+    /* Flag set by auto functions if 0 is xml flag don't convert */
+    if (!xml_flag)
+    {
+        return EVALRESP_OK;
+    }
+    /* check that the xml file is open */
+    if (!xml_fd)
+    {
+        evalresp_log(log, EV_ERROR, EV_ERROR, "No XML file");
+        return EVALRESP_ERR;
+    }
+    /* check if we are using a temporary file or a named file */
+    if (resp_filename)
+    {
+        /* using named file so open */
+        *resp_fd = fopen(resp_filename, "wb+");
+    }
+    else
+    {
+        /* using temporary file so us c99 function to create file */
+        *resp_fd = tmpfile();
+    }
+    /* error checking on file opening */
+    if (!*resp_fd)
+    {
+        evalresp_log(log, EV_ERROR, EV_ERROR, "Could not open output Resp File %s", resp_filename == NULL ? "" : resp_filename);
+        return EVALRESP_IO;
+    }
+        
+    /* load file into mxml generated structure */
+    if (!(status = x2r_station_service_load(log, xml_fd, &root)))
+    {
+        /* write mxml generated structure to resp file */
+        if (!(status = x2r_resp_util_write(log, *resp_fd, root)))
+        {
+            rewind(*resp_fd);
+        }
+    }
+    /* if erro we want output *resp_fd to be empty */
+    if (EVALRESP_OK != status && *resp_fd)
+    {
+        fclose(*resp_fd);
+        *resp_fd = NULL;
+    }
+    return status;
+}
+
+int
+evalresp_xml_stream_to_resp_stream_auto(evalresp_log_t *log, FILE *xml_fd, const char * resp_filename, FILE **resp_fd)
+{
+  int xml_flag = 0;
+  int status;
+
+  /* Check the given file, to see if the first character as <, */
+  if ((status = x2r_detect_xml(xml_fd, &xml_flag)))
+  {
+    return status;
+  }
+  status = evalresp_xml_stream_to_resp_file(log, xml_flag, xml_fd, resp_filename, resp_fd);
+  if (!xml_flag && status == EVALRESP_OK)
+  {
+      *resp_fd = xml_fd;
+  }
+  return status;
+}
+

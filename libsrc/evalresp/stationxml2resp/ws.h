@@ -39,6 +39,7 @@
  */
 int x2r_resp_util_write(evalresp_log_t *log, FILE *out, const x2r_fdsn_station_xml *root);
 
+#if 0
 /**
  * @private
  * @ingroup evalresp_private_x2r_ws
@@ -54,6 +55,7 @@ int x2r_xml2resp_on_flag(FILE **in, int xml_flag, evalresp_log_t *log);
  *        convert and replace *in.
  */
 int x2r_xml2resp_auto(FILE **in, evalresp_log_t *log);
+#endif
 
 /**
  * @private
@@ -61,4 +63,11 @@ int x2r_xml2resp_auto(FILE **in, evalresp_log_t *log);
  * @brief parse a mxml root node to datastructure
  */
 int x2r_parse_fdsn_station_xml(evalresp_log_t *log, mxml_node_t *doc, x2r_fdsn_station_xml **root);
+
+/**
+ * @private
+ * @ingroup evalresp_private_x2r_ws
+ * @brief detect if file is xml
+ */
+int x2r_detect_xml(FILE *in, int *xml_flag);
 #endif

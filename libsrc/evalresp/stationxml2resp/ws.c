@@ -696,7 +696,7 @@ int x2r_resp_util_write(evalresp_log_t *log, FILE *out, const x2r_fdsn_station_x
     return status;
 }
 
-
+#if 0
 static int convert_and_replace(FILE **in, evalresp_log_t *log) {
 
     int status = X2R_OK;
@@ -733,15 +733,15 @@ int x2r_xml2resp_on_flag(FILE **in, int xml_flag, evalresp_log_t *log) {
         return X2R_OK;
     }
 }
+#endif
 
-
-static int detect_xml(FILE **in, int *xml_flag) {
+int x2r_detect_xml(FILE *in, int *xml_flag) {
 
     int status = X2R_OK;
     int character = 0;
 
     while (character > -1) {
-        character = fgetc(*in);
+        character = fgetc(in);
         if (character > -1) {
             switch ((char)character) {
             // on space or newline, keep reading
@@ -765,11 +765,11 @@ static int detect_xml(FILE **in, int *xml_flag) {
 
 // doesn't work well on OSX?
 //  rewind(*in);
-    fseek(*in, 0, SEEK_SET);
+    fseek(in, 0, SEEK_SET);
     return status;
 }
 
-
+#if 0
 /*
  * Check the given file, to see if the first character as <,
  * and if so, convert and replace *in.
@@ -782,6 +782,7 @@ int x2r_xml2resp_auto(FILE **in, evalresp_log_t *log) {
     int status = X2R_OK;
     int xml_flag = 0;
 
-    if ((status = detect_xml(in, &xml_flag))) return status;
+    if ((status = x2r_detect_xml(*in, &xml_flag))) return status;
     return x2r_xml2resp_on_flag(in, xml_flag, log);
 }
+#endif

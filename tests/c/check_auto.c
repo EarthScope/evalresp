@@ -6,14 +6,22 @@
 #include "evalresp/stationxml2resp.h"
 #include "evalresp/stationxml2resp/ws.h"
 #include "evalresp_log/log.h"
+#include "evalresp/public_api.h"
 
 void
 run_test (char *input, char *response)
 {
-  FILE *in;
+  FILE *in=NULL, *out = NULL;
   evalresp_log_t *log = NULL;
-  fail_if (!(in = fopen (input, "r")));
-  fail_if (x2r_xml2resp_auto (&in, log));
+  ck_assert (NULL != (in = fopen (input, "r")));
+  //fail_if (x2r_xml2resp_auto (&in, log));
+  ck_assert (EVALRESP_OK == evalresp_xml_stream_to_resp_stream_auto(log, in, NULL, &out));
+  ck_assert_msg (out != NULL, "Should not get here, auto detection returned okay but no output fd");
+  if (in != out)
+  {
+      fclose(in);
+      in = NULL;
+  }
   FILE *expect;
   fail_if (!(expect = fopen (response, "r")));
   char a[1000], b[1000];
@@ -21,7 +29,7 @@ run_test (char *input, char *response)
   while (aok && bok)
   {
     aok = (fgets (a, 1000, expect) != NULL);
-    bok = (fgets (b, 1000, in) != NULL);
+    bok = (fgets (b, 1000, out) != NULL);
     line++;
     fail_if (aok != bok, "Different file lengths after line %d", line);
     if (aok)
