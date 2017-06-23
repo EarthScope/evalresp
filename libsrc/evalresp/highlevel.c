@@ -140,7 +140,7 @@ process_cwd_files (evalresp_log_t *log, evalresp_options *options, evalresp_filt
         file = files->first_list;
         while (!status && files)
         {
-          status = process_file(log, options, filter, file->name);
+          status = process_file (log, options, filter, file->name);
           file = file->next_file;
         }
       }
