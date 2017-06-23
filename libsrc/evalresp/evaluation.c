@@ -125,12 +125,31 @@ evalresp_set_unit (evalresp_log_t *log, evalresp_options *options,
 {
   int status = EVALRESP_OK, value;
   if (!(status = parse_option (log, "output unit", sizeof (units) / sizeof (units[0]),
-                               formats, unit, &value)))
+                               units, unit, &value)))
   {
     options->unit = value;
   }
   return status;
 }
+
+static option_pair spacings[] = {
+    {0, "LOG"},
+    {1, "LIN"}};
+
+int
+evalresp_set_spacing (evalresp_log_t *log, evalresp_options *options,
+                      const char *spacing)
+{
+  int status = EVALRESP_OK, value;
+  if (!(status = parse_option (log, "frequency spacing", sizeof (spacings) / sizeof (spacings[0]),
+                               spacings, spacing, &value)))
+  {
+    options->lin_freq = value;
+  }
+  return status;
+
+}
+
 
 static const char *
 get_unit (evalresp_unit unit)

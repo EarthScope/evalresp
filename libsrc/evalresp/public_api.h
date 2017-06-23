@@ -16,6 +16,7 @@ enum evalresp_status_enum
   EVALRESP_INP,    /**< Bad user input. */
   EVALRESP_ERR,    /**< Internal (coding) error. */
   EVALRESP_PAR,    /**< Parsing error in file. */
+  EVALRESP_HLP     /**< Help was requested at command line. */
 };
 
 // TODO - see design doc for details that should go into comments
@@ -140,6 +141,7 @@ typedef struct
   int b55_interpolate;
   int use_total_sensitivity;
   int use_stdio;
+  int station_xml;
   evalresp_output_format format;
   evalresp_unit unit;
 } evalresp_options;
@@ -158,6 +160,9 @@ int evalresp_set_format (evalresp_log_t *log, evalresp_options *options,
 
 int evalresp_set_unit (evalresp_log_t *log, evalresp_options *options,
                        const char *unit);
+
+int evalresp_set_spacing (evalresp_log_t *log, evalresp_options *options,
+                          const char *spacing);
 
 // these are separate because it simplifies calling from main routine
 
