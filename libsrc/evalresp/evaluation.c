@@ -421,10 +421,10 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
     calc_resp (channel, (*response)->freqs, (*response)->nfreqs, (*response)->rvec,
                get_unit (options->unit), options->start_stage, options->stop_stage,
                options->use_total_sensitivity, options->b62_x, log);
-    strncpy((*response)->network, channel->network, NETLEN);
-    strncpy((*response)->station, channel->staname, STALEN);
-    strncpy((*response)->locid, channel->locid, LOCIDLEN);
-    strncpy((*response)->channel, channel->chaname, CHALEN);
+    strncpy ((*response)->network, channel->network, NETLEN);
+    strncpy ((*response)->station, channel->staname, STALEN);
+    strncpy ((*response)->locid, channel->locid, LOCIDLEN);
+    strncpy ((*response)->channel, channel->chaname, CHALEN);
   }
 
   if (b55_save)
