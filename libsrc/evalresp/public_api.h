@@ -183,12 +183,43 @@ typedef enum {
   evalresp_complex_file_format
 } evalresp_file_format;
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ * @param[in] response the response object created by evalresp
+ * @param[in] format enum value of what char format to put the string into
+ * @param[out] output pointer to the char * that the response will be printed into
+ * @brief take an evalresp response and put it in an evalresp formated string
+ * @retval EVALRESP_OK on success
+ * @post output will be allocated on success and must be free'd by other functions
+ */
 int evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *response,
                                evalresp_file_format format, char **output);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ * @param[in] response the response object created by evalresp
+ * @param[in] format enum value of what char format to put the string into
+ * @param[out] file stream to print the formated response into
+ * @brief take an evalresp response and put it in an evalresp formated stream
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_response_to_stream (evalresp_log_t *log, const evalresp_response *response,
                                  evalresp_file_format format, const FILE *file);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ * @param[in] response the response object created by evalresp
+ * @param[in] format enum value of what char format to put the string into
+ * @param[out] filename filename to print the formated response into
+ * @brief take an evalresp response and put it in an evalresp formated file
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_response_to_file (evalresp_log_t *log, const evalresp_response *response,
                                evalresp_file_format format, const char *filename);
 
