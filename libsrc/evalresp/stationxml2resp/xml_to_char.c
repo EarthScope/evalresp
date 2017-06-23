@@ -86,7 +86,7 @@ load_mxml_service (evalresp_log_t *log, char *xml_in, x2r_fdsn_station_xml **roo
   if (!(doc = mxmlLoadString (NULL, xml_in, MXML_OPAQUE_CALLBACK)))
   {
     evalresp_log (log, EV_ERROR, EV_ERROR, "Could not parse XML input");
-    status = EVALRESP_XML_ERR;
+    status = EVALRESP_PAR;
   }
   else
   {
