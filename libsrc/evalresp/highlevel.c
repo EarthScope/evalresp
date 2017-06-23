@@ -175,13 +175,14 @@ process_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_filter *fi
   struct matched_files *files = NULL;
 
   files = find_files (options->filename, filter->sncls, &mode, log);
-  switch (mode) {
+  switch (mode)
+  {
   case 0:
-    status = process_named_file(log, options, filter);
+    status = process_named_file (log, options, filter);
     break;
   default:
     // TODO - do we need to handle other modes?
-    status = process_cwd_files(log, options, filter, files);
+    status = process_cwd_files (log, options, filter, files);
     break;
   }
   free_matched_files (files);
