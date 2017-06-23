@@ -132,6 +132,16 @@ int
 evalresp_response_to_stream (evalresp_log_t *log, const evalresp_response *response,
                              evalresp_file_format format, const FILE *file)
 {
+  if (!response)
+  {
+      evalresp_log (log, EV_ERROR, EV_ERROR, "response is empty");
+      return EVALRESP_ERR;
+  }
+  if (!file)
+  {
+      evalresp_log (log, EV_ERROR, EV_ERROR, "the stream is not open");
+      return EVALRESP_ERR;
+  }
   // TODO - call above and then write char to FILE
   return 0;
 }
