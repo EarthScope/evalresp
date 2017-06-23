@@ -762,15 +762,18 @@ free_stages (evalresp_stage *stage_ptr)
 void
 free_channel (evalresp_channel *chan_ptr)
 {
-  free_stages (chan_ptr->first_stage);
-  strncpy (chan_ptr->staname, "", STALEN);
-  strncpy (chan_ptr->network, "", NETLEN);
-  strncpy (chan_ptr->locid, "", LOCIDLEN);
-  strncpy (chan_ptr->chaname, "", CHALEN);
-  strncpy (chan_ptr->beg_t, "", DATIMLEN);
-  strncpy (chan_ptr->end_t, "", DATIMLEN);
-  strncpy (chan_ptr->first_units, "", MAXLINELEN);
-  strncpy (chan_ptr->last_units, "", MAXLINELEN);
+  if (chan_ptr)
+  {
+    free_stages (chan_ptr->first_stage);
+    strncpy (chan_ptr->staname, "", STALEN);
+    strncpy (chan_ptr->network, "", NETLEN);
+    strncpy (chan_ptr->locid, "", LOCIDLEN);
+    strncpy (chan_ptr->chaname, "", CHALEN);
+    strncpy (chan_ptr->beg_t, "", DATIMLEN);
+    strncpy (chan_ptr->end_t, "", DATIMLEN);
+    strncpy (chan_ptr->first_units, "", MAXLINELEN);
+    strncpy (chan_ptr->last_units, "", MAXLINELEN);
+  }
 }
 
 void

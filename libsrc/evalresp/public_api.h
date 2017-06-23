@@ -11,11 +11,11 @@
 enum evalresp_status_enum
 {
   EVALRESP_OK = 0, /**< No error (intentionally false). */
-  EVALRESP_MEM, /**< Memory error. */
-  EVALRESP_IO, /**< IO Error. */
-  EVALRESP_INP, /**< Bad user input. */
-  EVALRESP_ERR,     /**< Internal (coding) error. */
-  EVALRESP_XML_ERR /**< Problem parsing XML */
+  EVALRESP_MEM,    /**< Memory error. */
+  EVALRESP_IO,     /**< IO Error. */
+  EVALRESP_INP,    /**< Bad user input. */
+  EVALRESP_ERR,    /**< Internal (coding) error. */
+  EVALRESP_PAR,    /**< Parsing error in file. */
 };
 
 // TODO - see design doc for details that should go into comments
@@ -82,6 +82,12 @@ int evalresp_add_sncl_text (evalresp_log_t *log, evalresp_filter *filter,
                             const char *sta, const char *net, const char *chan, const char *locid);
 
 int evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter, evalresp_sncl *sncl);
+
+/**
+ * Splits comma-separated values in input and adds all combinations.
+ */
+int evalresp_add_sncl_all (evalresp_log_t *log, evalresp_filter *filter,
+                           const char *sta, const char *net, const char *chan, const char *locid);
 
 void evalresp_free_filter (evalresp_filter **filter);
 
