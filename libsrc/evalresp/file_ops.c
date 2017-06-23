@@ -43,6 +43,7 @@
 #define S_ISDIR(m) ((m)&S_IFDIR)
 #endif
 
+// TODO - change mode to enum
 struct matched_files *
 find_files (char *file, evalresp_sncls *scn_lst,
             int *mode, evalresp_log_t *log)
