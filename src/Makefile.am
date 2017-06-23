@@ -8,7 +8,7 @@ commonLDADD = -L../libsrc/evalresp -levalresp\
 
 bin_PROGRAMS = evalresp xml2resp
 
-evalresp_SOURCE = evalresp2.c
+evalresp_SOURCE = evalresp.c
 evalresp_LDADD =  $(commonLDADD) -lm
 
 xml2resp_SOURCE = xml2resp.c

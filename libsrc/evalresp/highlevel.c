@@ -21,14 +21,14 @@ print_file (evalresp_log_t *log, evalresp_file_format format,
   char *filename = NULL, *prefix = prefixes[format];
   length = snprintf (filename, 0, FILENAME_TEMPLATE, prefix,
                      response->network, response->station, response->locid, response->channel);
-  if (!(filename = calloc (length, sizeof (*filename))))
+  if (!(filename = calloc (length+1, sizeof (*filename))))
   {
     evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate filename");
     status = EVALRESP_MEM;
   }
   else
   {
-    (void)snprintf (filename, length, FILENAME_TEMPLATE, prefix,
+    (void)snprintf (filename, length+1, FILENAME_TEMPLATE, prefix,
                     response->network, response->station, response->locid, response->channel);
     if (use_stdio)
     {
