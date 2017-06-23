@@ -89,22 +89,24 @@ process_stdio (evalresp_log_t *log, evalresp_options *options, evalresp_filter *
     if (!(status = evalresp_channels_to_responses (log, channels, options, &responses)))
     {
       status = evalresp_responses_to_cwd (log, responses, options->format, options->use_stdio);
+      evalresp_free_responses (responses);
     }
+    evalresp_free_channels (&channels);
   }
 
   return status;
 }
 
 // process a single named file
-// this uses all filters on a single file
 static int
 process_file (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter, const char *filename)
 {
   int status = EVALRESP_OK;
   evalresp_channels *channels = NULL;
+  evalresp_responses *responses = NULL;
+
   if (!(status = evalresp_filename_to_channels (log, filename, filter, &channels)))
   {
-    evalresp_responses *responses = NULL;
     if (!(status = evalresp_channels_to_responses (log, channels, options, &responses)))
     {
       status = evalresp_responses_to_cwd (log, responses, options->format, options->use_stdio);
@@ -115,8 +117,6 @@ process_file (evalresp_log_t *log, evalresp_options *options, evalresp_filter *f
   return status;
 }
 
-// process all files in a directory
-// each sncl has its own list of matching files and needs a corresponding filter
 static int
 process_cwd_files (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter, struct matched_files *files)
 {
