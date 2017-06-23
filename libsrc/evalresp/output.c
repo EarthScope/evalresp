@@ -140,25 +140,26 @@ evalresp_response_to_stream (evalresp_log_t *log, const evalresp_response *respo
   {
     evalresp_log (log, EV_ERROR, EV_ERROR, "the stream is not open");
     status = EVALRESP_ERR;
-  } else {
+  }
+  else
+  {
     /* get the output string */
     if (!(status = evalresp_response_to_char (log, response, format, &resp_string)))
     {
       /* print to the FILE * */
-      len = fprintf(file, "%s", resp_string);
-      if (len != strlen(resp_string))
+      len = fprintf (file, "%s", resp_string);
+      if (len != strlen (resp_string))
       {
-        evalresp_log(log, EV_ERROR, EV_ERROR, "Failed to write to file");
+        evalresp_log (log, EV_ERROR, EV_ERROR, "Failed to write to file");
         status = EVALRESP_IO;
       }
     }
   }
-  
+
   /* clean up the string */
   free (resp_string);
   return status;
 }
-
 
 int
 evalresp_response_to_file (evalresp_log_t *log, const evalresp_response *response,
@@ -170,22 +171,22 @@ evalresp_response_to_file (evalresp_log_t *log, const evalresp_response *respons
   /* check that a valid filename is sent values are checked in called functions */
   if (!filename)
   {
-      evalresp_log (log, EV_ERROR, EV_ERROR, "Empty file name");
-      status = EVALRESP_ERR;
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Empty file name");
+    status = EVALRESP_ERR;
   }
   else
   {
     /* open file and check that it did open */
-    if (!(file = fopen(filename, "w")))
+    if (!(file = fopen (filename, "w")))
     {
-        evalresp_log(log, EV_ERROR, EV_ERROR, "could not open output file %s", filename);
-        status = EVALRESP_IO;
+      evalresp_log (log, EV_ERROR, EV_ERROR, "could not open output file %s", filename);
+      status = EVALRESP_IO;
     }
     else
     {
-      status = evalresp_response_to_stream(log, response, format, file);
+      status = evalresp_response_to_stream (log, response, format, file);
       /* clean up NOTE: file should not be NULL at this point */
-      fclose(file);
+      fclose (file);
     }
   }
 
