@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include "evalresp/stationxml2resp.h"
-#include "evalresp/stationxml2resp/xml.h"
+#include "evalresp/stationxml2resp/xml_to_dom.h"
 #include "evalresp_log/log.h"
 
 START_TEST (test_read_xml)

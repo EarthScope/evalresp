@@ -8,6 +8,7 @@
 #include "evalresp/public_api.h"
 #include "evalresp/input.h"
 #include "evalresp_log/log.h"
+#include "evalresp/stationxml2resp/wrappers.h"
 
 FILE *
 open_path (const char *dir, const char *file)

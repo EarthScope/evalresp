@@ -6,8 +6,9 @@
 #include "evalresp/public_api.h"
 #include "evalresp/input.h"
 #include "evalresp/stationxml2resp.h"
-#include "evalresp/stationxml2resp/ws.h"
-#include "evalresp/stationxml2resp/xml.h"
+#include "evalresp/stationxml2resp/wrappers.h"
+#include "evalresp/stationxml2resp/dom_to_seed.h"
+#include "evalresp/stationxml2resp/xml_to_dom.h"
 
 /**
  * @private

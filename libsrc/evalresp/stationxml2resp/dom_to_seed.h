@@ -28,7 +28,7 @@
 
 #include <stdio.h>
 
-#include <evalresp/stationxml2resp/xml.h>
+#include <evalresp/stationxml2resp/xml_to_dom.h>
 #include <evalresp_log/log.h>
 #include <mxml/mxml.h>
 
@@ -38,24 +38,6 @@
  * @brief Print the entire response document, given the in-memory model.
  */
 int x2r_resp_util_write(evalresp_log_t *log, FILE *out, const x2r_fdsn_station_xml *root);
-
-#if 0
-/**
- * @private
- * @ingroup evalresp_private_x2r_ws
- * @brief If xml_flag is set, convert the file and replace *in. Otherwise, do
- *        nothing.
- */
-int x2r_xml2resp_on_flag(FILE **in, int xml_flag, evalresp_log_t *log);
-
-/**
- * @private
- * @ingroup evalresp_private_x2r_ws
- * @brief Check the given file, to see if the first character as <, and if so,
- *        convert and replace *in.
- */
-int x2r_xml2resp_auto(FILE **in, evalresp_log_t *log);
-#endif
 
 /**
  * @private

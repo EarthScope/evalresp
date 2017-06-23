@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include "evalresp/stationxml2resp.h"
-#include "evalresp/stationxml2resp/ws.h"
+#include "evalresp/stationxml2resp/wrappers.h"
 #include "evalresp_log/log.h"
 #include "evalresp/public_api.h"
 

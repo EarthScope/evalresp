@@ -9,7 +9,7 @@
 #include "evalresp/private.h"
 #include "evalresp/public_compat.h"
 #include "evalresp/stationxml2resp.h"
-#include "evalresp/stationxml2resp/ws.h"
+#include "evalresp/stationxml2resp/dom_to_seed.h"
 
 FILE *
 open_path (const char *dir, const char *file)

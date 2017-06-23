@@ -4,7 +4,7 @@
 #include <evalresp_log/log.h>
 
 #include <evalresp/stationxml2resp.h>
-#include <evalresp/stationxml2resp/xml.h>
+#include <evalresp/stationxml2resp/xml_to_dom.h>
 
 #define BUFFER_SIZE 5000
 

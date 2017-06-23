@@ -4,8 +4,8 @@
 #include <string.h>
 
 #include <evalresp/stationxml2resp.h>
-#include <evalresp/stationxml2resp/xml.h>
-#include <evalresp/stationxml2resp/ws.h>
+#include <evalresp/stationxml2resp/xml_to_dom.h>
+#include <evalresp/stationxml2resp/dom_to_seed.h>
 #include <evalresp_log/log.h>
 
 
@@ -696,45 +696,6 @@ int x2r_resp_util_write(evalresp_log_t *log, FILE *out, const x2r_fdsn_station_x
     return status;
 }
 
-#if 0
-static int convert_and_replace(FILE **in, evalresp_log_t *log) {
-
-    int status = X2R_OK;
-    x2r_fdsn_station_xml *root = NULL;
-    FILE *tmp;
-
-    if (!(tmp = tmpfile())) {
-        evalresp_log(log, EV_ERROR, 0, "Could not open temporary file");
-        status = X2R_ERR_IO;
-        /*XXX status = x2r_error(log, X2R_ERR_IO, "Could not open temporary file"); */
-    } else {
-        if (!(status = x2r_station_service_load(log, *in, &root))) {
-            if (!(status = x2r_resp_util_write(log, tmp, root))) {
-                rewind(tmp);
-                if (*in != stdin) fclose(*in);
-                *in = tmp;
-            }
-        }
-    }
-
-    status = x2r_free_fdsn_station_xml(root, status);
-    return status;
-}
-
-
-/*
- * If xml_flag is set, convert the file and replace *in.
- * Otherwise, do nothing.
- */
-int x2r_xml2resp_on_flag(FILE **in, int xml_flag, evalresp_log_t *log) {
-    if (xml_flag) {
-        return convert_and_replace(in, log);
-    } else {
-        return X2R_OK;
-    }
-}
-#endif
-
 int x2r_detect_xml(FILE *in, int *xml_flag) {
 
     int status = X2R_OK;
@@ -768,21 +729,3 @@ int x2r_detect_xml(FILE *in, int *xml_flag) {
     fseek(in, 0, SEEK_SET);
     return status;
 }
-
-#if 0
-/*
- * Check the given file, to see if the first character as <,
- * and if so, convert and replace *in.
- *
- * DO NOT USE - rewind / fseek does not appear to work on OSX and
- * anyway should not work on stdin (although it seems to on linux!)
- */
-int x2r_xml2resp_auto(FILE **in, evalresp_log_t *log) {
-
-    int status = X2R_OK;
-    int xml_flag = 0;
-
-    if ((status = x2r_detect_xml(*in, &xml_flag))) return status;
-    return x2r_xml2resp_on_flag(in, xml_flag, log);
-}
-#endif
