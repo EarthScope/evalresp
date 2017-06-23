@@ -98,11 +98,11 @@ process_stdio (evalresp_log_t *log, evalresp_options *options, evalresp_filter *
 // process a single named file
 // this uses all filters on a single file
 static int
-process_named_file (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter)
+process_file (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter, const char *filename)
 {
   int status = EVALRESP_OK;
   evalresp_channels *channels = NULL;
-  if (!(status = evalresp_filename_to_channels (log, options->filename, filter, &channels)))
+  if (!(status = evalresp_filename_to_channels (log, filename, filter, &channels)))
   {
     evalresp_responses *responses = NULL;
     if (!(status = evalresp_channels_to_responses (log, channels, options, &responses)))
@@ -115,28 +115,6 @@ process_named_file (evalresp_log_t *log, evalresp_options *options, evalresp_fil
   return status;
 }
 
-// process the files that matched a single sncl
-static int
-process_sncl_files (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter, struct file_list *files)
-{
-  int status = EVALRESP_OK;
-  while (files)
-  {
-    evalresp_channels *channels = NULL;
-    if (!(status = evalresp_filename_to_channels (log, files->name, filter, &channels)))
-    {
-      evalresp_responses *responses = NULL;
-      if (!(status = evalresp_channels_to_responses (log, channels, options, &responses)))
-      {
-        status = evalresp_responses_to_cwd (log, responses, options->format, options->use_stdio);
-        evalresp_free_responses (responses);
-      }
-      evalresp_free_channels (&channels);
-    }
-  }
-  return status;
-}
-
 // process all files in a directory
 // each sncl has its own list of matching files and needs a corresponding filter
 static int
@@ -144,6 +122,7 @@ process_cwd_files (evalresp_log_t *log, evalresp_options *options, evalresp_filt
 {
   int status = EVALRESP_OK, i;
   struct matched_files *files_for_sncls;
+  struct file_list *file;
 
   for (i = 0, files_for_sncls = files;
        !status && i < filter->sncls->nscn;
@@ -158,8 +137,12 @@ process_cwd_files (evalresp_log_t *log, evalresp_options *options, evalresp_filt
       sncl_filter->datetime = filter->datetime; // shared
       if (!(status = evalresp_add_sncl (log, sncl_filter, sncl)))
       {
-        // we're processing files that matched a single sncl here
-        status = process_sncl_files (log, options, sncl_filter, files->first_list);
+        file = files->first_list;
+        while (!status && files)
+        {
+          status = process_file(log, options, filter, file->name);
+          file = file->next_file;
+        }
       }
       sncl_filter->datetime = NULL; // don't free this as shared
       evalresp_free_filter (&sncl_filter);
@@ -178,7 +161,7 @@ process_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_filter *fi
   switch (mode)
   {
   case 0:
-    status = process_named_file (log, options, filter);
+    status = process_file (log, options, filter, options->filename);
     break;
   default:
     // TODO - do we need to handle other modes?
