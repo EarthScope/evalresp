@@ -147,9 +147,7 @@ evalresp_set_spacing (evalresp_log_t *log, evalresp_options *options,
     options->lin_freq = value;
   }
   return status;
-
 }
-
 
 static const char *
 get_unit (evalresp_unit unit)

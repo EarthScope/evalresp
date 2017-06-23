@@ -9,8 +9,8 @@
 #include "vcs_getopt.h"
 #endif
 
-#include "evalresp/public_api.h"
 #include "evalresp/public.h"
+#include "evalresp/public_api.h"
 #include "evalresp_log/log.h"
 
 void
@@ -75,7 +75,7 @@ usage (char *program)
 }
 
 int
-parse_args(int argc, char *argv[], evalresp_options *options, evalresp_filter *filter, evalresp_log_t **log)
+parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *filter, evalresp_log_t **log)
 {
   int status = EVALRESP_OK, listinterp_out_flag, i, verbose = 0;
   int first_switch = 0, flags_argc, option, index;
@@ -103,25 +103,28 @@ parse_args(int argc, char *argv[], evalresp_options *options, evalresp_filter *f
       {"xml", no_argument, &options->station_xml, 1},
       {0, 0, 0, 0}};
 
-  if (argc < 5) {
-    elavresp_log(log, EV_ERROR, EV_ERROR, "Too free arguments");
+  if (argc < 5)
+  {
+    elavresp_log (log, EV_ERROR, EV_ERROR, "Too free arguments");
     status = EVALRESP_INP;
   }
 
-  if (!status) {
-    while (++first_switch < argc && (strncmp (argv[first_switch], "-", 1) != 0 || is_real (argv[first_switch], log)));
+  if (!status)
+  {
+    while (++first_switch < argc && (strncmp (argv[first_switch], "-", 1) != 0 || is_real (argv[first_switch], log)))
+      ;
     if (first_switch < 5)
     {
       evalresp_log (log, EV_ERROR, EV_ERROR,
-          "Not all of the required inputs are present (%d missing), type '%s' for usage",
-          8 - first_switch, program);
+                    "Not all of the required inputs are present (%d missing), type '%s' for usage",
+                    8 - first_switch, program);
       status = EVALRESP_INP;
     }
     else
     {
       minfreq = first_switch > 5 ? argv[5] : "1.0";
-      status = evalresp_set_frequency(log, options,
-          minfreq, first_switch > 6 ? argv[6] : minfreq, first_switch > 7 ? argv[7] : "1");
+      status = evalresp_set_frequency (log, options,
+                                       minfreq, first_switch > 6 ? argv[6] : minfreq, first_switch > 7 ? argv[7] : "1");
     }
   }
 
@@ -141,9 +144,7 @@ parse_args(int argc, char *argv[], evalresp_options *options, evalresp_filter *f
     flags_argc = argc - first_switch + 1;
     flags_argv = argv + first_switch - 1;
 
-    while (!status && -1 != (option =
-        getopt_long_only (flags_argc, flags_argv,
-            ":f:u:t:s:n:l:r:S:Ub:vx", cmdline_flags, &index)))
+    while (!status && -1 != (option = getopt_long_only (flags_argc, flags_argv, ":f:u:t:s:n:l:r:S:Ub:vx", cmdline_flags, &index)))
     {
       switch (option)
       {
@@ -152,19 +153,19 @@ parse_args(int argc, char *argv[], evalresp_options *options, evalresp_filter *f
         break;
 
       case 'f':
-        status = evalresp_set_filename(log, options, optarg);
+        status = evalresp_set_filename (log, options, optarg);
         break;
 
       case 'u':
-        status = evalresp_set_unit(log, options, optarg);
+        status = evalresp_set_unit (log, options, optarg);
         break;
 
       case 't':
-        status = evalresp_set_time(log, filter, optarg);
+        status = evalresp_set_time (log, filter, optarg);
         break;
 
       case 's':
-        status = evalresp_set_spacing(log, options, optarg);
+        status = evalresp_set_spacing (log, options, optarg);
         break;
 
       case 'n':
@@ -176,14 +177,14 @@ parse_args(int argc, char *argv[], evalresp_options *options, evalresp_filter *f
         break;
 
       case 'r':
-        status = evalresp_set_format(log, options, optarg);
+        status = evalresp_set_format (log, options, optarg);
         break;
 
       case 'S':
-        status = evalresp_set_start_stage(log, options, optarg);
-        if (!status && optind < flags_argc  && is_int (flags_argv[optind], log))
+        status = evalresp_set_start_stage (log, options, optarg);
+        if (!status && optind < flags_argc && is_int (flags_argv[optind], log))
         {
-          status = evalresp_set_stop_stage(log, options, flags_argv[optind++]);
+          status = evalresp_set_stop_stage (log, options, flags_argv[optind++]);
         }
         break;
 
@@ -192,7 +193,7 @@ parse_args(int argc, char *argv[], evalresp_options *options, evalresp_filter *f
         break;
 
       case 'b':
-        status = evalresp_set_b62_x(log, options, optarg);
+        status = evalresp_set_b62_x (log, options, optarg);
         break;
 
       case 'v':
@@ -206,11 +207,11 @@ parse_args(int argc, char *argv[], evalresp_options *options, evalresp_filter *f
       case ':': /* invalid argument for flag */
         if (cmdline_flags[index].name)
         {
-          evalresp_log(log, EV_ERROR, EV_ERROR, "Missing argument for option '%s'", cmdline_flags[index].name);
+          evalresp_log (log, EV_ERROR, EV_ERROR, "Missing argument for option '%s'", cmdline_flags[index].name);
         }
         else
         {
-          evalresp_log(log, EV_ERROR, EV_ERROR, "Missing argument for option '%c'", optopt);
+          evalresp_log (log, EV_ERROR, EV_ERROR, "Missing argument for option '%c'", optopt);
         }
         status = EVALRESP_INP;
         break;
@@ -224,11 +225,11 @@ parse_args(int argc, char *argv[], evalresp_options *options, evalresp_filter *f
 
   if (!status)
   {
-    if (!(status = evalresp_add_sncl_text(log, filter, network, argv[1], location, argv[2])))
+    if (!(status = evalresp_add_sncl_text (log, filter, network, argv[1], location, argv[2])))
     {
-      if (!(status = evalresp_set_year(log, filter, argv[3])))
+      if (!(status = evalresp_set_year (log, filter, argv[3])))
       {
-        status = evalresp_set_julian_day(log, filter, argv[4]);
+        status = evalresp_set_julian_day (log, filter, argv[4]);
       }
     }
   }
@@ -237,11 +238,11 @@ parse_args(int argc, char *argv[], evalresp_options *options, evalresp_filter *f
 
   if (status)
   {
-    usage(program);
+    usage (program);
   }
 
-  free(network);
-  free(location);
+  free (network);
+  free (location);
   return status;
 }
 
@@ -253,16 +254,19 @@ main (int argc, char *argv[])
   evalresp_options *options = NULL;
   evalresp_filter *filter = NULL;
 
-  if (!(status = evalresp_new_options(log, options))) {
-    if (!(status = evalresp_new_filter(log, &filter))) {
-      if (!(status = parse_args(argc, argv, options, filter, &log))) {
-        status = evalresp_cwd_to_cwd(log, options, filter);
+  if (!(status = evalresp_new_options (log, options)))
+  {
+    if (!(status = evalresp_new_filter (log, &filter)))
+    {
+      if (!(status = parse_args (argc, argv, options, filter, &log)))
+      {
+        status = evalresp_cwd_to_cwd (log, options, filter);
       }
     }
   }
 
   // TODO - free the log allocated in parse_args
-  evalresp_free_options(&options);
-  evalresp_free_filter(&filter);
+  evalresp_free_options (&options);
+  evalresp_free_filter (&filter);
   return status;
 }
