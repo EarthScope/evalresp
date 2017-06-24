@@ -130,7 +130,7 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
 
 int
 evalresp_response_to_stream (evalresp_log_t *log, const evalresp_response *response,
-                             evalresp_file_format format, FILE *file)
+                             evalresp_file_format format, FILE * const file)
 {
   char *resp_string = NULL;
   int status = EVALRESP_OK, len;
