@@ -110,7 +110,7 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
 
   if (argc < 5)
   {
-    evalresp_log (*log, EV_ERROR, EV_ERROR, "Too free arguments");
+    evalresp_log (*log, EV_ERROR, EV_ERROR, "Too few arguments");
     status = EVALRESP_INP;
   }
 
