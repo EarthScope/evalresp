@@ -15,7 +15,7 @@ enum evalresp_status_enum
   EVALRESP_IO,     /**< IO Error. */
   EVALRESP_INP,    /**< Bad user input. */
   EVALRESP_ERR,    /**< Internal (coding) error. */
-  EVALRESP_PAR    /**< Parsing error in file. */
+  EVALRESP_PAR     /**< Parsing error in file. */
 };
 
 // TODO - see design doc for details that should go into comments

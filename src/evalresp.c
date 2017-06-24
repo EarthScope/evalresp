@@ -224,6 +224,10 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
       case '?': /* unrecognized flag */
         evalresp_log (*log, EV_WARN, EV_WARN, "Unrecognized option: %s\n", flags_argv[optind - 1]);
         break;
+
+      default:
+        evalresp_log (*log, EV_ERROR, EV_ERROR, "Unexpected option '%c'", option);
+        status = EVALRESP_ERR;
       }
     }
   }
