@@ -175,18 +175,18 @@ static int regsize;   /* Code size. */
 #ifndef STATIC
 #define STATIC static
 #endif
-STATIC char *reg ();
-STATIC char *regbranch ();
-STATIC char *regpiece ();
-STATIC char *regatom ();
-STATIC char *regnode ();
-STATIC char *regnext ();
-STATIC void regc ();
-STATIC void reginsert ();
-STATIC void regtail ();
-STATIC void regoptail ();
+STATIC char *reg (int, int*, evalresp_log_t *);
+STATIC char *regbranch (int *, evalresp_log_t *);
+STATIC char *regpiece (int *, evalresp_log_t *);
+STATIC char *regatom (int *, evalresp_log_t *);
+STATIC char *regnode (char);
+STATIC char *regnext (register char *);
+STATIC void regc (char);
+STATIC void reginsert (char, char *);
+STATIC void regtail (char *, char *);
+STATIC void regoptail (char *, char *, evalresp_log_t *);
 #ifdef STRCSPN
-STATIC int strcspn ();
+STATIC int strcspn (char *, char *);
 #endif
 
 /*
@@ -223,7 +223,7 @@ evalresp_log_t *log;
   regsize = 0L;
   regcode = &regdummy;
   regc (MAGIC);
-  if (reg (0, &flags) == NULL)
+  if (reg (0, &flags, log) == NULL)
     return (NULL);
 
   /* Small enough for pointer-storage convention? */
@@ -240,7 +240,7 @@ evalresp_log_t *log;
   regnpar = 1;
   regcode = r->program;
   regc (MAGIC);
-  if (reg (0, &flags) == NULL)
+  if (reg (0, &flags, log) == NULL)
     return (NULL);
 
   /* Dig out information for optimizations. */
@@ -319,7 +319,7 @@ evalresp_log_t *log;
     ret = NULL;
 
   /* Pick up the branches, linking them together. */
-  br = regbranch (&flags);
+  br = regbranch (&flags, log);
   if (br == NULL)
     return (NULL);
   if (ret != NULL)
@@ -332,7 +332,7 @@ evalresp_log_t *log;
   while (*regparse == '|')
   {
     regparse++;
-    br = regbranch (&flags);
+    br = regbranch (&flags, log);
     if (br == NULL)
       return (NULL);
     regtail (ret, br); /* BRANCH -> BRANCH. */
@@ -373,7 +373,8 @@ evalresp_log_t *log;
  *
  * Implements the concatenation operator.
  */
-static char *regbranch (flagp) int *flagp;
+static char *regbranch (flagp, log) int *flagp;
+evalresp_log_t *log;
 {
   register char *ret;
   register char *chain;
@@ -386,7 +387,7 @@ static char *regbranch (flagp) int *flagp;
   chain = NULL;
   while (*regparse != '\0' && *regparse != '|' && *regparse != ')')
   {
-    latest = regpiece (&flags);
+    latest = regpiece (&flags, log);
     if (latest == NULL)
       return (NULL);
     *flagp |= flags & HASWIDTH;
@@ -419,7 +420,7 @@ evalresp_log_t *log;
   register char *next;
   int flags;
 
-  ret = regatom (&flags);
+  ret = regatom (&flags, log);
   if (ret == NULL)
     return (NULL);
 
@@ -543,7 +544,7 @@ evalresp_log_t *log;
   }
   break;
   case '(':
-    ret = reg (1, &flags);
+    ret = reg (1, &flags, log);
     if (ret == NULL)
       return (NULL);
     *flagp |= flags & (HASWIDTH | SPSTART);
@@ -720,14 +721,14 @@ static char **regendp;   /* Ditto for endp. */
 /*
  * Forwards.
  */
-STATIC int regtry ();
-STATIC int regmatch ();
-STATIC int regrepeat ();
+STATIC int regtry (regexp *, char *, evalresp_log_t *);
+STATIC int regmatch (char *, evalresp_log_t *);
+STATIC int regrepeat (char *, evalresp_log_t *);
 
 #ifdef DEBUG
 int regnarrate = 0;
 void regdump ();
-STATIC char *regprop ();
+STATIC char *regprop (char *);
 #endif
 
 /*
@@ -774,7 +775,7 @@ evalresp_log_t *log;
 
   /* Simplest case:  anchored match need be tried only once. */
   if (prog->reganch)
-    return (regtry (prog, string));
+    return (regtry (prog, string, log));
 
   /* Messy cases:  unanchored match. */
   s = string;
@@ -782,7 +783,7 @@ evalresp_log_t *log;
     /* We know what char it must start with. */
     while ((s = strchr (s, prog->regstart)) != NULL)
     {
-      if (regtry (prog, s))
+      if (regtry (prog, s, log))
         return (1);
       s++;
     }
@@ -790,7 +791,7 @@ evalresp_log_t *log;
     /* We don't -- general case. */
     do
     {
-      if (regtry (prog, s))
+      if (regtry (prog, s, log))
         return (1);
     } while (*s++ != '\0');
 
@@ -802,9 +803,10 @@ evalresp_log_t *log;
  - regtry - try match at specific point
  */
 static int /* 0 failure, 1 success */
-    regtry (prog, string)
+    regtry (prog, string, log)
         regexp *prog;
 char *string;
+evalresp_log_t *log;
 {
   register int i;
   register char **sp;
@@ -821,7 +823,7 @@ char *string;
     *sp++ = NULL;
     *ep++ = NULL;
   }
-  if (regmatch (prog->program + 1))
+  if (regmatch (prog->program + 1, log))
   {
     prog->startp[0] = string;
     prog->endp[0] = reginput;
@@ -927,7 +929,7 @@ evalresp_log_t *log;
       no = OP (scan) - OPEN;
       save = reginput;
 
-      if (regmatch (next))
+      if (regmatch (next, log))
       {
         /*
                  * Don't set startp if some later
@@ -958,7 +960,7 @@ evalresp_log_t *log;
       no = OP (scan) - CLOSE;
       save = reginput;
 
-      if (regmatch (next))
+      if (regmatch (next, log))
       {
         /*
                  * Don't set endp if some later
@@ -984,7 +986,7 @@ evalresp_log_t *log;
         do
         {
           save = reginput;
-          if (regmatch (OPERAND (scan)))
+          if (regmatch (OPERAND (scan), log))
             return (1);
           reginput = save;
           scan = regnext (scan);
@@ -1011,12 +1013,12 @@ evalresp_log_t *log;
         nextch = *OPERAND (next);
       min = (OP (scan) == STAR) ? 0 : 1;
       save = reginput;
-      no = regrepeat (OPERAND (scan));
+      no = regrepeat (OPERAND (scan), log);
       while (no >= min)
       {
         /* If it could work, try it. */
         if (nextch == '\0' || *reginput == nextch)
-          if (regmatch (next))
+          if (regmatch (next, log))
             return (1);
         /* Couldn't or didn't -- back up. */
         no--;
