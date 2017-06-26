@@ -14,6 +14,9 @@
 #include <config.h>
 #endif
 
+/* NEEDED for M_PI on windows */
+#define _USE_MATH_DEFINES
+
 #include <stdlib.h>
 #include <string.h>
 

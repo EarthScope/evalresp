@@ -40,6 +40,7 @@
 /* I. Dricker, ISTI, 06/22/00 for version 2.3.17 of evalresp                          */
 /*------------------------------------------------------------------------------------*/
 
+/* NEEDED for M_PI on windows */
 #define _USE_MATH_DEFINES
 
 #include <math.h>
