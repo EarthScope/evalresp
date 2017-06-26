@@ -68,7 +68,7 @@ Notes:
 #include "evalresp/public.h"
 #include "evalresp/stationxml2resp/wrappers.h"
 #include "evalresp_log/log.h"
-#include <private.h>
+#include <evalresp/private.h>
 
 /* define a global flag to use if using "default" units */
 int def_units_flag;
