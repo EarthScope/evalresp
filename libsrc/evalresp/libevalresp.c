@@ -66,7 +66,7 @@ Notes:
 #include <string.h>
 
 #include "evalresp/public.h"
-#include "evalresp/stationxml2resp/ws.h"
+#include "evalresp/stationxml2resp/wrappers.h"
 #include "evalresp_log/log.h"
 #include <private.h>
 
@@ -264,6 +264,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   evalresp_complex *output = NULL;
   evalresp_sncls *scns = NULL;
   FILE *fptr = NULL;
+  FILE *in_fptr = NULL;
   double *freqs_orig = NULL; /* for saving the original frequencies */
   int nfreqs_orig;
 
@@ -391,7 +392,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   /* if input is from stdin, set fptr to stdin, else find whatever matching files there are */
   if (stdio_flag)
   {
-    fptr = stdin;
+    in_fptr = stdin;
     mode = 0;
   }
   else
@@ -405,7 +406,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   if (!mode && !stdio_flag)
   {
     curr_file = file;
-    if (!(fptr = fopen (file, "r")))
+    if (!(in_fptr = fopen (file, "r")))
     {
       evalresp_log (log, EV_ERROR, 0, "%s failed to open file %s\n", myLabel, file);
       return NULL;
@@ -441,8 +442,22 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
     {
 
       /* convert from xml format if necessary, logging error messages to stderr. */
-      if (x2r_xml2resp_on_flag (&fptr, xml_flag, log))
-        return NULL;
+      evalresp_xml_stream_to_resp_file(log, xml_flag, in_fptr, NULL, &fptr);
+      if (in_fptr && in_fptr != stdin && xml_flag)
+      {
+        fclose(in_fptr);
+        in_fptr=NULL;
+      }
+      else
+      {
+          fptr = in_fptr;
+      }
+      if (!fptr && !xml_flag)
+      {
+          return NULL;
+      }
+      //if (x2r_xml2resp_on_flag (&fptr, xml_flag, log))
+      //  return NULL;
       //if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
 
       which_matched = 0;
@@ -653,14 +668,28 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
       {
         if (!stdio_flag)
         {
-          fptr = fopen (lst_ptr->name, "r");
+          in_fptr = fopen (lst_ptr->name, "r");
         }
-        if (fptr)
+        if (in_fptr)
         {
 
           /* convert from xml format if necessary, logging error messages to stderr. */
-          if (x2r_xml2resp_on_flag (&fptr, xml_flag, log))
+          evalresp_xml_stream_to_resp_file(log, xml_flag, in_fptr, NULL, &fptr);
+          if (in_fptr && in_fptr != stdin && xml_flag)
+          {
+            fclose(in_fptr);
+            in_fptr=NULL;
+          }
+          else
+          {
+            fptr = in_fptr;
+          }
+          if (!fptr)
+          {
             return NULL;
+          }
+          //if (x2r_xml2resp_on_flag (&fptr, xml_flag, log))
+          //  return NULL;
           //if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
 
           curr_file = lst_ptr->name;

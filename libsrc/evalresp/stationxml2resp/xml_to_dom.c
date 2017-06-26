@@ -4,7 +4,7 @@
 #include <evalresp_log/log.h>
 
 #include <evalresp/stationxml2resp.h>
-#include <evalresp/stationxml2resp/xml.h>
+#include <evalresp/stationxml2resp/xml_to_dom.h>
 
 #define BUFFER_SIZE 5000
 
@@ -1257,7 +1257,7 @@ static int free_network(x2r_network *network, int status) {
 
 
 /* Read an x2r_fdsn_station_xml value from the current node. */
-static int parse_fdsn_station_xml(evalresp_log_t *log, mxml_node_t *doc, x2r_fdsn_station_xml **root) {
+int x2r_parse_fdsn_station_xml(evalresp_log_t *log, mxml_node_t *doc, x2r_fdsn_station_xml **root) {
 
     int status = X2R_OK, i;
     mxml_node_t *fdsn = NULL;
@@ -1316,7 +1316,7 @@ int x2r_station_service_load(evalresp_log_t *log, FILE *in, x2r_fdsn_station_xml
     mxml_node_t *doc = NULL;
 
     if (!(status = stream2doc(log, in, &doc))) {
-        status = parse_fdsn_station_xml(log, doc, root);
+        status = x2r_parse_fdsn_station_xml(log, doc, root);
     }
 
     mxmlDelete(doc);

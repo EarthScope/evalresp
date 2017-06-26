@@ -9,8 +9,10 @@ libevalresp_la_SOURCES = input.c evaluation.c output.c highlevel.c\
 						 parse_fctns.c print_fctns.c\
 						 string_fctns.c error_fctns.c\
 						 spline.c\
-						 stationxml2resp/ws.c\
-						 stationxml2resp/xml.c
+						 stationxml2resp/dom_to_seed.c\
+						 stationxml2resp/xml_to_dom.c\
+						 stationxml2resp/wrappers.c
+
 libevalresp_la_CFLAGS = -I../
 
 evalresp_includedir=$(includedir)/evalresp
