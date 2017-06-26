@@ -7,7 +7,7 @@
     11/2/2005 -- [ET]  Implemented 'interpolate_list_blockette()' function.
 */
 
-#include <private.h>
+#include <evalresp/private.h>
 #include <stdlib.h>
 #include <string.h>
 
