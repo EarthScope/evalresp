@@ -4,7 +4,7 @@ EVALRESP_SRC= alloc_fctns.c calc_fctns.c file_ops.c libevalresp.c parse_fctns.c\
 			  regexp.c regsub.c resp_fctns.c spline.c string_fctns.c input.c\
 			  print_fctns.c error_fctns.c output.c stationxml2resp/wrappers.c\
 			  highlevel.c evaluation.c\
-			  stationxml2resp/log.c stationxml2resp/dom_to_seed.c stationxml2resp/xml_to_dom.c
+			  stationxml2resp/dom_to_seed.c stationxml2resp/xml_to_dom.c
 EVALRESP_HEADERS= evalresp.h stationxml2resp.h
 
 #OBJ=$(patsubst %,$(BUILD_DIR)/%,$(patsubst %.c,%.o,$(EVALRESP_LOG_SRC)))
