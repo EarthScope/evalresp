@@ -28,8 +28,9 @@
 
 #include <stdio.h>
 
-#include <evalresp/stationxml2resp/xml.h>
+#include <evalresp/stationxml2resp/xml_to_dom.h>
 #include <evalresp_log/log.h>
+#include <mxml/mxml.h>
 
 /**
  * @private
@@ -41,17 +42,14 @@ int x2r_resp_util_write(evalresp_log_t *log, FILE *out, const x2r_fdsn_station_x
 /**
  * @private
  * @ingroup evalresp_private_x2r_ws
- * @brief If xml_flag is set, convert the file and replace *in. Otherwise, do
- *        nothing.
+ * @brief parse a mxml root node to datastructure
  */
-int x2r_xml2resp_on_flag(FILE **in, int xml_flag, evalresp_log_t *log);
+int x2r_parse_fdsn_station_xml(evalresp_log_t *log, mxml_node_t *doc, x2r_fdsn_station_xml **root);
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_ws
- * @brief Check the given file, to see if the first character as <, and if so,
- *        convert and replace *in.
+ * @brief detect if file is xml
  */
-int x2r_xml2resp_auto(FILE **in, evalresp_log_t *log);
-
+int x2r_detect_xml(FILE *in, int *xml_flag);
 #endif

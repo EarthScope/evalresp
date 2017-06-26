@@ -5,8 +5,8 @@
 #include <string.h>
 
 #include <evalresp/stationxml2resp.h>
-#include <evalresp/stationxml2resp/ws.h>
-#include <evalresp/stationxml2resp/xml.h>
+#include <evalresp/stationxml2resp/dom_to_seed.h>
+#include <evalresp/stationxml2resp/xml_to_dom.h>
 
 #include <config.h>
 #ifdef HAVE_GETOPT_H

@@ -10,7 +10,7 @@
 #include "evalresp/public_api.h"
 #include "evalresp/public_compat.h"
 #include "evalresp/stationxml2resp.h"
-#include "evalresp/stationxml2resp/ws.h"
+#include "evalresp/stationxml2resp/dom_to_seed.h"
 
 FILE *
 open_path (const char *dir, const char *file)
@@ -130,7 +130,7 @@ main (void)
   tcase_add_test (tc, test_response_char_phase);
   suite_add_tcase (s, tc);
   SRunner *sr = srunner_create (s);
-  srunner_set_xml (sr, "check-response.xml");
+  srunner_set_xml (sr, "check-response-char.xml");
   srunner_run_all (sr, CK_NORMAL);
   number_failed = srunner_ntests_failed (sr);
   srunner_free (sr);
