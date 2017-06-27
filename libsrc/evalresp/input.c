@@ -7,6 +7,8 @@
 #include "./ugly.h"
 #include "evalresp/public_api.h"
 #include "evalresp_log/log.h"
+#include "evalresp/stationxml2resp/wrappers.h"
+#include "evalresp/stationxml2resp/dom_to_seed.h"
 
 // code from parse_fctns.c heavily refactored to (1) parse all lines and (2)
 // read from strings rather than files.
@@ -2268,7 +2270,21 @@ evalresp_filename_to_channels (evalresp_log_t *log, const char *filename,
   int status = EVALRESP_OK;
   if (!(status = open_file (log, filename, &file)))
   {
-    status = evalresp_file_to_channels (log, file, filter, channels);
+    int xml_auto;
+    FILE *temp_file=NULL;
+    if (EVALRESP_OK == (status = x2r_detect_xml(file, &xml_auto)))
+    {
+      if (EVALRESP_OK == (status = evalresp_xml_stream_to_resp_file(log, xml_auto, file, NULL, &temp_file)))
+      {
+        if (temp_file != NULL)
+        {
+          fclose(file);
+          file = temp_file;
+          temp_file = NULL;
+        }
+        status = evalresp_file_to_channels (log, file, filter, channels);
+      }
+    }
   }
   if (file)
   {
