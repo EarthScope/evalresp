@@ -10,7 +10,7 @@ Library  Support
 A simple call to evalresp
     Prepare  base/simple/direct  base  RESP.Z.CGV..HYZ
     Run process  evalresp  CGV  HYZ  2010  1  0.001  10  100  -f  RESP.Z.CGV..HYZ
-    Compare target files two float cols
+    Compare target files two float cols  tol=.00001
     Check number of files  3
 
 Bad date gives no data
@@ -31,12 +31,12 @@ Bad channel gives no data
 Wildcards match all data
     Prepare  base/simple/wildcards  base  RESP.Z.CGV..HYZ
     Run process  evalresp  *  *  2010  1  0.001  10  100  -f  RESP.Z.CGV..HYZ
-    Compare target files two float cols  base/simple/direct
+    Compare target files two float cols  base/simple/direct  tol=.00001
     Check number of files  3
 
 A simple call to evalresp (alternative data file)
     Prepare  base/simple/direct_2  base  RESP.IM.ATTU..BHE
     Run process  evalresp  ATTU  BHE  1998  57  0.001  10  100  -f  RESP.IM.ATTU..BHE
-    Compare target files two float cols
+    Compare target files two float cols  tol=.00001
     Check number of files  3
 

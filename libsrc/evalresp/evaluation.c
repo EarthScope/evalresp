@@ -81,7 +81,7 @@ parse_option (evalresp_log_t *log, const char *name, int noptions, option_pair *
   }
   for (i = 0; i < noptions; ++i)
   {
-    if (!strcmp (options[i].str, str))
+    if (!strcmp (options[i].str, copy))
     {
       *value = options[i].index;
       found = 1;
@@ -92,6 +92,7 @@ parse_option (evalresp_log_t *log, const char *name, int noptions, option_pair *
     evalresp_log (log, EV_ERROR, EV_ERROR, "Could not match '%s' for %s", str, name);
     status = EVALRESP_INP;
   }
+  free(copy);
   return status;
 }
 
