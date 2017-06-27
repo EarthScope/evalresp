@@ -37,6 +37,6 @@ Wildcards match all data
 A simple call to evalresp (alternative data file)
     Prepare  base/simple/direct_2  base  RESP.IM.ATTU..BHE
     Run process  evalresp  ATTU  BHE  1998  57  0.001  10  100  -f  RESP.IM.ATTU..BHE
-    Compare target files two float cols  tol=.00001
+    Compare target files two float cols
     Check number of files  3
 

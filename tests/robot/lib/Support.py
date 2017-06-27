@@ -57,7 +57,7 @@ class Support:
             data = map(float, line.split())
         except ValueError:
             raise Exception('Bad data in %s at line %d' % (path, index))
-        if len(data) != n:
+        if len(data) != int(n):
             raise Exception('Missing data in %s at line %d' % (path, index))
         return data
 

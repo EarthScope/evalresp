@@ -98,8 +98,8 @@ parse_option (evalresp_log_t *log, const char *name, int noptions, option_pair *
 
 static option_pair formats[] = {
     {evalresp_ap_output_format, "AP"},
-    {evalresp_fap_output_format, "CS"},
-    {evalresp_complex_output_format, "FAP"}};
+    {evalresp_fap_output_format, "FAP"},
+    {evalresp_complex_output_format,  "CS"}};
 
 int
 evalresp_set_format (evalresp_log_t *log, evalresp_options *options,

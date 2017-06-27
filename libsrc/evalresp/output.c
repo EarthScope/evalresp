@@ -68,7 +68,7 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
       }
       if (pha_arr)
       {
-        pha_arr[i] = atan2 (response->rvec[i].imag, response->rvec[i].real) * 180.0 / M_PI;
+        pha_arr[i] = atan2 (response->rvec[i].imag, response->rvec[i].real +1.e-200) * 180.0 / M_PI;
       }
     }
     /* Get Size of output string */

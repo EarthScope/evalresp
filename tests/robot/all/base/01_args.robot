@@ -55,7 +55,7 @@ Freq/Amp/Phase
 Complex
     Prepare  base/args/complex  base  RESP.Z.CGV..HYZ
     Run process  evalresp  CGV  HYZ  2010  1  0.001  10  100  -f  RESP.Z.CGV..HYZ  -r  cs
-    Count and compare target files n float cols  3  tol=.00001
+    Count and compare target files n float cols  ncols=3  tol=.00001
 
 Net ID
     Prepare  base/args/net_id  base  RESP.Z.CGV..HYZ
