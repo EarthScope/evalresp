@@ -77,13 +77,13 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
       switch (format)
       {
       case evalresp_fap_file_format:
-        length += snprintf (NULL, 0, "%.6E  %.6E  %.6E\n", freq_arr[i], amp_arr[i], pha_arr[i]);
+        length += snprintf (NULL, 0, "%.6E %.6E %.6E\n", freq_arr[i], amp_arr[i], pha_arr[i]);
         break;
       case evalresp_amplitude_file_format:
-        length += snprintf (NULL, 0, "%.6E  %.6E\n", freq_arr[i], amp_arr[i]);
+        length += snprintf (NULL, 0, "%.6E %.6E\n", freq_arr[i], amp_arr[i]);
         break;
       case evalresp_phase_file_format:
-        length += snprintf (NULL, 0, "%.6E  %.6E\n", freq_arr[i], pha_arr[i]);
+        length += snprintf (NULL, 0, "%.6E %.6E\n", freq_arr[i], pha_arr[i]);
         break;
       case evalresp_complex_file_format:
         length += snprintf (NULL, 0, "%.6E  %.6E  %.6E\n", freq_arr[i], response->rvec[i].real, response->rvec[i].imag);
@@ -109,13 +109,13 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
       switch (format)
       {
       case evalresp_fap_file_format:
-        offset += snprintf (*output + offset, length - offset, "%.6E  %.6E  %.6E\n", freq_arr[i], amp_arr[i], pha_arr[i]);
+        offset += snprintf (*output + offset, length - offset, "%.6E %.6E %.6E\n", freq_arr[i], amp_arr[i], pha_arr[i]);
         break;
       case evalresp_amplitude_file_format:
-        offset += snprintf (*output + offset, length - offset, "%.6E  %.6E\n", freq_arr[i], amp_arr[i]);
+        offset += snprintf (*output + offset, length - offset, "%.6E %.6E\n", freq_arr[i], amp_arr[i]);
         break;
       case evalresp_phase_file_format:
-        offset += snprintf (*output + offset, length - offset, "%.6E  %.6E\n", freq_arr[i], pha_arr[i]);
+        offset += snprintf (*output + offset, length - offset, "%.6E %.6E\n", freq_arr[i], pha_arr[i]);
         break;
       case evalresp_complex_file_format:
         offset += snprintf (*output + offset, length - offset, "%.6E  %.6E  %.6E\n", freq_arr[i], response->rvec[i].real, response->rvec[i].imag);

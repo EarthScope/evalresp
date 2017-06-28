@@ -143,6 +143,7 @@ typedef struct
   int station_xml;
   evalresp_output_format format;
   evalresp_unit unit;
+  char format_set;
 } evalresp_options;
 
 int evalresp_new_options (evalresp_log_t *log, evalresp_options **options);

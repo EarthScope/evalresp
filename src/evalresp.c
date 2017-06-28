@@ -144,7 +144,7 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
     }
   }
 
-  if (argc - 1 > first_switch)
+  if (argc - 1 >= first_switch)
   {
     flags_argc = argc - first_switch + 1;
     flags_argv = argv + first_switch - 1;
@@ -183,6 +183,7 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
 
       case 'r':
         status = evalresp_set_format (*log, options, optarg);
+        options->format_set = 1;
         break;
 
       case 'S':
@@ -230,6 +231,10 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
         status = EVALRESP_ERR;
       }
     }
+  }
+  if (!options->format_set && options->use_stdio)
+  {
+    options->format = evalresp_fap_output_format;
   }
 
   if (!status)

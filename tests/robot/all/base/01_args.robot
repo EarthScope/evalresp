@@ -100,7 +100,7 @@ Stage 3 - 5
 Stdio
     Prepare  base/args/stdio  base  RESP.Z.CGV..HYZ
     Run process  evalresp CGV HYZ 2010 1 0.001 10 100 -stdio < RESP.Z.CGV..HYZ  shell=True  stdout=stdout  stderr=stderr
-    Count and compare target files two float cols
+    Count and compare target files n float cols  3
 
 Estimated delay
     Prepare  base/args/delay  base  RESP.Z.CGV..HYZ

@@ -9,7 +9,7 @@
 
 // new code giving a high level interface.
 
-static char *prefixes[] = {"FAP", "AMP", "PHASE", "SPECTRA"};
+static char *prefixes[] = {"FAP", "AMP", "PHASE", "SPECTRA", "AMP/PHS"};
 
 #define FILENAME_TEMPLATE "%s.%s.%s.%s.%s"
 
@@ -18,7 +18,7 @@ print_file (evalresp_log_t *log, evalresp_file_format format,
             int use_stdio, const evalresp_response *response)
 {
   int status = EVALRESP_OK, length;
-  char *filename = NULL, *prefix = prefixes[format];
+  char *filename = NULL, *prefix = prefixes[use_stdio && evalresp_fap_output_format ? 4 : format];
   length = snprintf (filename, 0, FILENAME_TEMPLATE, prefix,
                      response->network, response->station, response->locid, response->channel);
   if (!(filename = calloc (length + 1, sizeof (*filename))))
@@ -32,10 +32,11 @@ print_file (evalresp_log_t *log, evalresp_file_format format,
                     response->network, response->station, response->locid, response->channel);
     if (use_stdio)
     {
-      fprintf (stdout, "--------------------------------------------------\n");
-      fprintf (stdout, "%s\n", filename);
-      fprintf (stdout, "--------------------------------------------------\n");
+      fprintf (stdout, " --------------------------------------------------\n");
+      fprintf (stdout, " %s\n", filename);
+      fprintf (stdout, " --------------------------------------------------\n");
       status = evalresp_response_to_stream (log, response, format, stdout);
+      fprintf (stdout, " --------------------------------------------------\n");
     }
     else
     {
