@@ -24,6 +24,7 @@ evalresp_new_options (evalresp_log_t *log, evalresp_options **options)
     (*options)->min_freq = EVALRESP_NO_FREQ;
     (*options)->max_freq = EVALRESP_NO_FREQ;
     (*options)->nfreq = 1;
+    (*options)->unit = evalresp_velocity_unit;
   }
   return status;
 }
@@ -384,6 +385,9 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
 {
   int status = EVALRESP_OK, free_options = 0;
   evalresp_blkt *b55_save = NULL;
+
+  /* check the filter sequence that was just read */
+    check_channel (channel, log);
 
   /* allow NULL options */
   if (!options)
