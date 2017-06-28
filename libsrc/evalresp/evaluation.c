@@ -431,9 +431,6 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
     if (options->verbose)
     {
       evalresp_channel_to_log(log, options, channel);
-/*      print_chan(channel, options->start_stage, options->stop_stage,
-                 options->use_stdio, options->b55_interpolate,
-                 options->b55_interpolate, options->use_total_sensitivity, log);*/
     }
   }
 
