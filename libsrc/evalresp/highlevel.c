@@ -106,7 +106,7 @@ process_file (evalresp_log_t *log, evalresp_options *options, evalresp_filter *f
   evalresp_channels *channels = NULL;
   evalresp_responses *responses = NULL;
 
-  if (!(status = evalresp_filename_to_channels (log, filename, filter, &channels)))
+  if (!(status = evalresp_filename_to_channels (log, filename, options, filter, &channels)))
   {
     if (!(status = evalresp_channels_to_responses (log, channels, options, &responses)))
     {

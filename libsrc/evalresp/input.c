@@ -2266,18 +2266,18 @@ evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
 }
 
 int
-evalresp_filename_to_channels (evalresp_log_t *log, const char *filename,
+evalresp_filename_to_channels (evalresp_log_t *log, const char *filename, evalresp_options const * const options,
                                const evalresp_filter *filter, evalresp_channels **channels)
 {
   FILE *file = NULL;
   int status = EVALRESP_OK;
   if (!(status = open_file (log, filename, &file)))
   {
-    int xml_auto;
     FILE *temp_file=NULL;
-    if (EVALRESP_OK == (status = x2r_detect_xml(file, &xml_auto)))
+
+    if (options->station_xml)
     {
-      if (EVALRESP_OK == (status = evalresp_xml_stream_to_resp_file(log, xml_auto, file, NULL, &temp_file)))
+      if (EVALRESP_OK == (status = evalresp_xml_stream_to_resp_file(log, 1, file, NULL, &temp_file)))
       {
         if (temp_file != NULL)
         {
@@ -2285,8 +2285,11 @@ evalresp_filename_to_channels (evalresp_log_t *log, const char *filename,
           file = temp_file;
           temp_file = NULL;
         }
-        status = evalresp_file_to_channels (log, file, filter, channels);
       }
+    }
+    if (EVALRESP_OK == status)
+    {
+      status = evalresp_file_to_channels (log, file, filter, channels);
     }
   }
   if (file)
