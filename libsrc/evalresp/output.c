@@ -255,7 +255,7 @@ evalresp_channel_to_log(evalresp_log_t *log, evalresp_options const * const opti
   evalresp_log (log, EV_INFO, 0, "  %s %s %s %s ",
                 (strlen (channel->network) ? channel->network : "??"), channel->staname,
                 (strlen (channel->locid) ? channel->locid : "??"), channel->chaname);
-  if (!def_units_flag)
+  if (!options->unit_set)
   {
     evalresp_log (log, EV_INFO, 0, " %s %s", channel->beg_t, channel->end_t);
     evalresp_log (log, EV_INFO, 0, "   Seed units: %s(in)->%s(out)", SEEDUNITS[in_units],

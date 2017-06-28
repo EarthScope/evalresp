@@ -163,6 +163,7 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
 
       case 'u':
         status = evalresp_set_unit (*log, options, optarg);
+        options->unit_set=1;
         break;
 
       case 't':

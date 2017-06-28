@@ -145,6 +145,7 @@ typedef struct
   evalresp_unit unit;
   char format_set;
   int verbose;
+  char unit_set;
 } evalresp_options;
 
 int evalresp_new_options (evalresp_log_t *log, evalresp_options **options);
