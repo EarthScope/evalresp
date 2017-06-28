@@ -5,6 +5,7 @@
 #include "./private.h"
 #include "./ugly.h"
 #include "evalresp/public_api.h"
+#include "evalresp/public.h"
 #include "evalresp_log/log.h"
 
 // new code as a clean wrapper for calc_resp etc.
@@ -427,6 +428,13 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
     strncpy ((*response)->station, channel->staname, STALEN);
     strncpy ((*response)->locid, channel->locid, LOCIDLEN);
     strncpy ((*response)->channel, channel->chaname, CHALEN);
+    if (options->verbose)
+    {
+      evalresp_channel_to_log(log, options, channel);
+/*      print_chan(channel, options->start_stage, options->stop_stage,
+                 options->use_stdio, options->b55_interpolate,
+                 options->b55_interpolate, options->use_total_sensitivity, log);*/
+    }
   }
 
   if (b55_save)
@@ -454,6 +462,10 @@ evalresp_channels_to_responses (evalresp_log_t *log, evalresp_channels *channels
   }
   else
   {
+    if (options->verbose)
+    {
+      evalresp_log (log, EV_INFO, 0, "<< EVALRESP RESPONSE OUTPUT V%s >>", REVNUM);
+    }
     for (i = 0; !status && i < channels->nchannels; ++i)
     {
       evalresp_response *response = NULL;

@@ -82,7 +82,7 @@ usage (char *program)
 int
 parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *filter, evalresp_log_t **log)
 {
-  int status = EVALRESP_OK, i, verbose = 0;
+  int status = EVALRESP_OK, i;
   int first_switch = 0, flags_argc, option, index;
   char *program = argv[0], **flags_argv;
   char *minfreq, *location = NULL, *network = NULL;
@@ -203,7 +203,7 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
         break;
 
       case 'v':
-        verbose++;
+        options->verbose++;
         break;
 
       case 'x':

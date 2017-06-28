@@ -144,6 +144,7 @@ typedef struct
   evalresp_output_format format;
   evalresp_unit unit;
   char format_set;
+  int verbose;
 } evalresp_options;
 
 int evalresp_new_options (evalresp_log_t *log, evalresp_options **options);
@@ -233,5 +234,7 @@ int evalresp_responses_to_cwd (evalresp_log_t *log, const evalresp_responses *re
 
 int evalresp_cwd_to_cwd (evalresp_log_t *log,
                          evalresp_options *options, evalresp_filter *filter);
+
+int evalresp_channel_to_log(evalresp_log_t *log, evalresp_options const * const options, evalresp_channel * const channel);
 
 #endif
