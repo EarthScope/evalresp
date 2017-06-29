@@ -9,7 +9,7 @@
 
 // new code giving a high level interface.
 
-static char *prefixes[] = {"FAP", "AMP", "PHASE", "SPECTRA"};
+static char *prefixes[] = {"FAP", "AMP", "PHASE", "SPECTRA", "AMP/PHS"};
 
 #define FILENAME_TEMPLATE "%s.%s.%s.%s.%s"
 
@@ -18,7 +18,7 @@ print_file (evalresp_log_t *log, evalresp_file_format format,
             int use_stdio, const evalresp_response *response)
 {
   int status = EVALRESP_OK, length;
-  char *filename = NULL, *prefix = prefixes[format];
+  char *filename = NULL, *prefix = prefixes[use_stdio && evalresp_fap_output_format ? 4 : format];
   length = snprintf (filename, 0, FILENAME_TEMPLATE, prefix,
                      response->network, response->station, response->locid, response->channel);
   if (!(filename = calloc (length + 1, sizeof (*filename))))
@@ -32,10 +32,11 @@ print_file (evalresp_log_t *log, evalresp_file_format format,
                     response->network, response->station, response->locid, response->channel);
     if (use_stdio)
     {
-      fprintf (stdout, "--------------------------------------------------\n");
-      fprintf (stdout, "%s\n", filename);
-      fprintf (stdout, "--------------------------------------------------\n");
+      fprintf (stdout, " --------------------------------------------------\n");
+      fprintf (stdout, " %s\n", filename);
+      fprintf (stdout, " --------------------------------------------------\n");
       status = evalresp_response_to_stream (log, response, format, stdout);
+      fprintf (stdout, " --------------------------------------------------\n");
     }
     else
     {
@@ -105,7 +106,7 @@ process_file (evalresp_log_t *log, evalresp_options *options, evalresp_filter *f
   evalresp_channels *channels = NULL;
   evalresp_responses *responses = NULL;
 
-  if (!(status = evalresp_filename_to_channels (log, filename, filter, &channels)))
+  if (!(status = evalresp_filename_to_channels (log, filename, options, filter, &channels)))
   {
     if (!(status = evalresp_channels_to_responses (log, channels, options, &responses)))
     {

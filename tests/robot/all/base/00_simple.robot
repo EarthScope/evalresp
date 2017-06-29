@@ -10,7 +10,7 @@ Library  Support
 A simple call to evalresp
     Prepare  base/simple/direct  base  RESP.Z.CGV..HYZ
     Run process  evalresp  CGV  HYZ  2010  1  0.001  10  100  -f  RESP.Z.CGV..HYZ
-    Compare target files two float cols  tol=.00001
+    Compare target files two float cols
     Check number of files  3
 
 Bad date gives no data

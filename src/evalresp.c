@@ -82,7 +82,7 @@ usage (char *program)
 int
 parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *filter, evalresp_log_t **log)
 {
-  int status = EVALRESP_OK, i, verbose = 0;
+  int status = EVALRESP_OK, i;
   int first_switch = 0, flags_argc, option, index;
   char *program = argv[0], **flags_argv;
   char *minfreq, *location = NULL, *network = NULL;
@@ -144,7 +144,8 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
     }
   }
 
-  if (argc - 1 > first_switch)
+  use_estimated_delay(FALSE);
+  if (argc - 1 >= first_switch)
   {
     flags_argc = argc - first_switch + 1;
     flags_argv = argv + first_switch - 1;
@@ -163,6 +164,7 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
 
       case 'u':
         status = evalresp_set_unit (*log, options, optarg);
+        options->unit_set=1;
         break;
 
       case 't':
@@ -183,6 +185,7 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
 
       case 'r':
         status = evalresp_set_format (*log, options, optarg);
+        options->format_set = 1;
         break;
 
       case 'S':
@@ -195,6 +198,7 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
 
       case 'U':
         options->use_estimated_delay = 1;
+        use_estimated_delay(TRUE);
         break;
 
       case 'b':
@@ -202,7 +206,7 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
         break;
 
       case 'v':
-        verbose++;
+        options->verbose++;
         break;
 
       case 'x':
@@ -230,6 +234,10 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
         status = EVALRESP_ERR;
       }
     }
+  }
+  if (!options->format_set && options->use_stdio)
+  {
+    options->format = evalresp_fap_output_format;
   }
 
   if (!status)

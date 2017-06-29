@@ -106,9 +106,6 @@ int evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
 int evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
                                const evalresp_filter *filter, evalresp_channels **channels);
 
-int evalresp_filename_to_channels (evalresp_log_t *log, const char *filename,
-                                   const evalresp_filter *filter, evalresp_channels **channels);
-
 typedef enum {
   evalresp_ap_output_format,     /**< Two files, AMP and PHASE. */
   evalresp_fap_output_format,    /**< One file, FAP. */
@@ -143,7 +140,13 @@ typedef struct
   int station_xml;
   evalresp_output_format format;
   evalresp_unit unit;
+  char format_set;
+  int verbose;
+  char unit_set;
 } evalresp_options;
+
+int evalresp_filename_to_channels (evalresp_log_t *log, const char *filename, evalresp_options const * const options,
+                                   const evalresp_filter *filter, evalresp_channels **channels);
 
 int evalresp_new_options (evalresp_log_t *log, evalresp_options **options);
 
@@ -232,5 +235,7 @@ int evalresp_responses_to_cwd (evalresp_log_t *log, const evalresp_responses *re
 
 int evalresp_cwd_to_cwd (evalresp_log_t *log,
                          evalresp_options *options, evalresp_filter *filter);
+
+int evalresp_channel_to_log(evalresp_log_t *log, evalresp_options const * const options, evalresp_channel * const channel);
 
 #endif
