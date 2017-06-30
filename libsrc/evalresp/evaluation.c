@@ -408,6 +408,7 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
          */
         if (options->b55_interpolate)
         {
+          status = use_b55_freqs (log, channel, *response);
           status = interpolate_b55 (log, channel, *response, &b55_save);
         }
         else
