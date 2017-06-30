@@ -2275,7 +2275,7 @@ evalresp_filename_to_channels (evalresp_log_t *log, const char *filename, evalre
   {
     FILE *temp_file=NULL;
 
-    if (options->station_xml)
+    if (options != NULL && options->station_xml)
     {
       if (EVALRESP_OK == (status = evalresp_xml_stream_to_resp_file(log, 1, file, NULL, &temp_file)))
       {

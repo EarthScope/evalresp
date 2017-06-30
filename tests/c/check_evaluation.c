@@ -11,7 +11,7 @@ START_TEST (test_no_options)
 {
   evalresp_channels *channels = NULL;
   evalresp_response *response = NULL;
-  fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", NULL,
+  fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", NULL, NULL,
                                           &channels));
   fail_if (channels->nchannels != 6, "Unexpected number of channels: %d", channels->nchannels);
   fail_if (evalresp_channel_to_response (NULL, channels->channels[0], NULL, &response));
@@ -31,7 +31,7 @@ START_TEST (test_start)
   evalresp_options *options = NULL;
   fail_if (evalresp_new_options (NULL, &options));
   fail_if (evalresp_set_start_stage (NULL, options, "2"));
-  fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", NULL,
+  fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", options, NULL,
                                           &channels));
   fail_if (channels->nchannels != 6, "Unexpected number of channels: %d", channels->nchannels);
   fail_if (evalresp_channel_to_response (NULL, channels->channels[0], options, &response));
@@ -54,7 +54,7 @@ START_TEST (test_freqs)
   fail_if (evalresp_new_options (NULL, &options));
   fail_if (evalresp_set_frequency (NULL, options, "2", "4", "3"));
 
-  fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", NULL,
+  fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", options, NULL,
                                           &channels));
   fail_if (channels->nchannels != 6, "Unexpected number of channels: %d", channels->nchannels);
   fail_if (evalresp_channel_to_response (NULL, channels->channels[0], options, &response));
@@ -88,7 +88,7 @@ main (void)
   tcase_add_test (tc, test_freqs);
   suite_add_tcase (s, tc);
   SRunner *sr = srunner_create (s);
-  srunner_set_xml (sr, "check-log.xml");
+  srunner_set_xml (sr, "check-evaluation.xml");
   srunner_run_all (sr, CK_NORMAL);
   number_failed = srunner_ntests_failed (sr);
   srunner_free (sr);
