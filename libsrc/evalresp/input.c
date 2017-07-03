@@ -519,8 +519,6 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
     {
       evalresp_log (log, EV_ERROR, 0, "parse_pz: %s%s%s",
                     "poles must be real numbers (found '", field, "')");
-      /*XXX error_return(PARSE_ERROR, "parse_pz: %s%s%s",
-                    "poles must be real numbers (found '", field, "')"); */
       return /*TODO PARSE_ERROR should be returned */;
     }
     blkt_ptr->blkt_info.pole_zero.poles[i].real = atof (field);
@@ -1936,13 +1934,8 @@ read_channel_data (evalresp_log_t *log, const char **seed, char *first_line,
       curr_seq_no = tmp_stage->sequence_no;
       break;
     default:
-      /*
-             2004.079 - SBH changed to allow code to skip unrecognized lines in RESP file. Just continue
-             to the next line.
-             error_return(UNRECOG_FILTYPE, "parse_chan; unrecognized filter type (blockette [%c])",
-             blkt_no);
-             break;
-             */
+      /* 2004.079 - SBH changed to allow code to skip unrecognized lines in RESP file. Just continue
+       * to the next line. */
       continue;
     }
     if (blkt_no != 60)

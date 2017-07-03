@@ -53,8 +53,6 @@ parse_pref (int *blkt_no, int *fld_no, char *line, evalresp_log_t *log)
     evalresp_log (log, EV_ERROR, 0, "parse_pref; prefix '%s' cannot be %s",
                   blktstr, "converted to a blockette number");
     return 0; /*TODO UNDEF_PREFIX */
-              /*XXX error_return(UNDEF_PREFIX, "parse_pref; prefix '%s' cannot be %s",
-                blktstr, "converted to a blockette number"); */
   }
   *blkt_no = atoi (blktstr);
   if (!is_int (fldstr, log))
@@ -62,8 +60,6 @@ parse_pref (int *blkt_no, int *fld_no, char *line, evalresp_log_t *log)
     evalresp_log (log, EV_ERROR, 0, "parse_pref; prefix '%s' cannot be %s",
                   fldstr, "converted to a blockette number");
     return 0; /*TODO UNDEF_PREFIX */
-              /*XXX error_return(UNDEF_PREFIX, "parse_pref; prefix '%s' cannot be %s",
-                fldstr, "converted to a blockette number"); */
   }
   *fld_no = atoi (fldstr);
   return (1);
@@ -88,10 +84,6 @@ parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalre
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", FirstField);
     return /*TODO PARSE_ERROR should be returned */;
-    /*XXX error_return(PARSE_ERROR, "parse_pz; %s%s%s%2.2d",
-                "(return_field) fld ",
-                "number does not match expected value\n\tfld_xpt=F03 or F05",
-                ", fld_found=F", FirstField); */
   }
 
   if (FirstField == 3)
@@ -108,9 +100,6 @@ parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalre
     evalresp_log (log, EV_ERROR, 0,
                   "parse_pz; parsing (Poles & Zeros), illegal filter type ('%s')",
                   field);
-    /*XXX error_return(PARSE_ERROR,
-                "parse_pz; parsing (Poles & Zeros), illegal filter type ('%s')",
-                field); */
     return /*TODO PARSE_ERROR should be returned */;
   }
   blkt_typ = *field;
@@ -129,9 +118,6 @@ parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalre
     evalresp_log (log, EV_ERROR, 0,
                   "parse_pz; parsing (Poles & Zeros), unexpected filter type ('%c')",
                   *field);
-    /*XXX error_return(PARSE_ERROR,
-                "parse_pz; parsing (Poles & Zeros), unexpected filter type ('%c')",
-                *field); */
     return /*TODO PARSE_ERROR should be returned */;
   }
 
@@ -241,8 +227,6 @@ parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalre
     {
       evalresp_log (log, EV_ERROR, 0, "parse_pz: %s%s%s",
                     "zeros must be real numbers (found '", field, "')");
-      /*XXX error_return(PARSE_ERROR, "parse_pz: %s%s%s",
-                    "zeros must be real numbers (found '", field, "')"); */
       return /*TODO PARSE_ERROR should be returned */;
     }
     blkt_ptr->blkt_info.pole_zero.zeros[i].real = atof (field);
@@ -254,8 +238,6 @@ parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalre
     {
       evalresp_log (log, EV_ERROR, 0, "parse_pz: %s%s%s",
                     "zeros must be real numbers (found '", field, "')");
-      /*XXX error_return(PARSE_ERROR, "parse_pz: %s%s%s",
-                    "zeros must be real numbers (found '", field, "')"); */
       return /*TODO PARSE_ERROR should be returned */;
     }
     blkt_ptr->blkt_info.pole_zero.zeros[i].imag = atof (field);
@@ -282,8 +264,6 @@ parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalre
     {
       evalresp_log (log, EV_ERROR, 0, "parse_pz: %s%s%s",
                     "poles must be real numbers (found '", field, "')");
-      /*XXX error_return(PARSE_ERROR, "parse_pz: %s%s%s",
-                    "poles must be real numbers (found '", field, "')"); */
       return /*TODO PARSE_ERROR should be returned */;
     }
     blkt_ptr->blkt_info.pole_zero.poles[i].real = atof (field);
@@ -295,8 +275,6 @@ parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalre
     {
       evalresp_log (log, EV_ERROR, 0, "parse_pz: %s%s%s",
                     "poles must be real numbers (found '", field, "')");
-      /*XXX error_return(PARSE_ERROR, "parse_pz: %s%s%s",
-                    "poles must be real numbers (found '", field, "')"); */
       return /*TODO PARSE_ERROR should be returned */;
     }
     blkt_ptr->blkt_info.pole_zero.poles[i].imag = atof (field);
@@ -323,10 +301,6 @@ parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr,
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", FirstField);
     return /*TODO PARSE_ERROR should be returned */;
-    /*XXX error_return(PARSE_ERROR, "parse_coeff; %s%s%s%2.2d",
-                "(return_field) fld ",
-                "number does not match expected value\n\tfld_xpt=F03 or F05",
-                ", fld_found=F", FirstField); */
   }
 
   if (FirstField == 3)
@@ -343,9 +317,6 @@ parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr,
     evalresp_log (log, EV_ERROR, 0,
                   "parse_coeff; parsing (IIR_COEFFS), illegal filter type ('%s')",
                   field);
-    /*XXX error_return(PARSE_ERROR,
-                "parse_coeff; parsing (IIR_COEFFS), illegal filter type ('%s')",
-                field); */
     return /*TODO PARSE_ERROR should be returned */;
   }
   blkt_typ = *field;
@@ -358,9 +329,6 @@ parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr,
     evalresp_log (log, EV_ERROR, 0,
                   "parse_coeff; parsing (IIR_COEFFS), unexpected filter type ('%c')",
                   *field);
-    /*XXX error_return(PARSE_ERROR,
-                "parse_coeff; parsing (IIR_COEFFS), unexpected filter type ('%c')",
-                *field); */
     return /*TODO PARSE_ERROR should be returned */;
   }
 
@@ -435,9 +403,6 @@ parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr,
     evalresp_log (log, EV_ERROR, 0, "%s%s",
                   "parse_coeff; This is not IIR filter , because number of denominators is zero!\n",
                   "\tshould be represented as blockette [53] filters");
-    /*XXX error_return(UNRECOG_FILTYPE, "%s%s",
-                "parse_coeff; This is not IIR filter , because number of denominators is zero!\n",
-                "\tshould be represented as blockette [53] filters"); */
     return /*TODO UNRECOG_FILTYPE should be returned */;
   }
   blkt_ptr->blkt_info.coeff.ndenom = ndenom;
@@ -463,8 +428,6 @@ parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr,
     {
       evalresp_log (log, EV_ERROR, 0, "parse_coeff: %s%s%s",
                     "numerators must be real numbers (found '", field, "')");
-      /*XXX error_return(PARSE_ERROR, "parse_coeff: %s%s%s",
-                    "numerators must be real numbers (found '", field, "')"); */
       return /*TODO PARSE_ERROR should be returned */;
     }
     blkt_ptr->blkt_info.coeff.numer[i] = atof (field);
@@ -482,8 +445,6 @@ parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr,
     {
       evalresp_log (log, EV_ERROR, 0, "parse_coeff: %s%s%s",
                     "denominators must be real numbers (found '", field, "')");
-      /*XXX error_return(PARSE_ERROR, "parse_coeff: %s%s%s",
-                    "denominators must be real numbers (found '", field, "')"); */
       return /*TODO PARSE_ERROR should be returned */;
     }
     blkt_ptr->blkt_info.coeff.denom[i] = atof (field);
@@ -509,10 +470,6 @@ parse_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eva
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", FirstField);
-    /*XXX error_return(PARSE_ERROR, "parse_coeff; %s%s%s%2.2d",
-                "(return_field) fld ",
-                "number does not match expected value\n\tfld_xpt=F03 or F05",
-                ", fld_found=F", FirstField); */
     return /*TODO PARSE_ERROR should be returned */;
   }
 
@@ -530,9 +487,6 @@ parse_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eva
     evalresp_log (log, EV_ERROR, 0,
                   "parse_coeff; parsing (FIR_ASYM), illegal filter type ('%s')",
                   field);
-    /*XXX error_return(PARSE_ERROR,
-                "parse_coeff; parsing (FIR_ASYM), illegal filter type ('%s')",
-                field); */
     return /*TODO PARSE_ERROR should be returned */;
   }
   blkt_typ = *field;
@@ -545,9 +499,6 @@ parse_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eva
     evalresp_log (log, EV_ERROR, 0,
                   "parse_coeff; parsing (FIR_ASYM), unexpected filter type ('%c')",
                   *field);
-    /*XXX error_return(PARSE_ERROR,
-                "parse_coeff; parsing (FIR_ASYM), unexpected filter type ('%c')",
-                *field); */
     return /*TODO PARSE_ERROR should be returned */;
   }
 
@@ -627,9 +578,6 @@ parse_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eva
     evalresp_log (log, EV_ERROR, 0, "%s%s",
                   "parse_coeff; Unsupported filter type, IIR and Analog filters\n",
                   "\tshould be represented as blockette [53] filters");
-    /*XXX error_return(UNRECOG_FILTYPE, "%s%s",
-                "parse_coeff; Unsupported filter type, IIR and Analog filters\n",
-                "\tshould be represented as blockette [53] filters"); */
     return /*TODO UNRECOG_FILTYPE should be returned */;
   }
 
@@ -650,8 +598,6 @@ parse_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eva
     {
       evalresp_log (log, EV_ERROR, 0, "parse_coeff: %s%s%s",
                     "coeffs must be real numbers (found '", field, "')");
-      /*XXX error_return(PARSE_ERROR, "parse_coeff: %s%s%s",
-                    "coeffs must be real numbers (found '", field, "')"); */
       return /*TODO PARSE_ERROR should be returned */;
     }
     blkt_ptr->blkt_info.fir.coeffs[i] = atof (field);
@@ -678,10 +624,6 @@ parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eval
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", FirstField);
-    /*XXX error_return(PARSE_ERROR, "parse_list; %s%s%s%2.2d",
-                "(return_field) fld ",
-                "number does not match expected value\n\tfld_xpt=F03 or F05",
-                ", fld_found=F", FirstField); */
     return /*TODO PARSE_ERROR should be returned */;
   }
 
@@ -769,8 +711,6 @@ parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eval
     {
       evalresp_log (log, EV_ERROR, 0, "parse_list: %s",
                     "Unknown format for B055F07-11");
-      /*XXX error_return(PARSE_ERROR, "parse_list: %s",
-                    "Unknown format for B055F07-11"); */
       return /*TODO PARSE_ERROR should be returned */;
     }
 
@@ -788,8 +728,6 @@ parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eval
       {
         evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "freq vals must be real numbers (found '", field, "')");
-        /*XXX error_return(PARSE_ERROR, "parse_list: %s%s%s",
-                        "freq vals must be real numbers (found '", field, "')");*/
         return /*TODO PARSE_ERROR should be returned */;
       }
       blkt_ptr->blkt_info.list.freq[i] = atof (field);
@@ -801,8 +739,6 @@ parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eval
       {
         evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "amp vals must be real numbers (found '", field, "')");
-        /*XXX error_return(PARSE_ERROR, "parse_list: %s%s%s",
-                        "amp vals must be real numbers (found '", field, "')"); */
         return /*TODO PARSE_ERROR should be returned */;
       }
       blkt_ptr->blkt_info.list.amp[i] = atof (field);
@@ -815,9 +751,6 @@ parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eval
         evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "phase vals must be real numbers (found '", field,
                       "')");
-        /*XXX error_return(PARSE_ERROR, "parse_list: %s%s%s",
-                        "phase vals must be real numbers (found '", field,
-                        "')"); */
         return /*TODO PARSE_ERROR should be returned */;
       }
       blkt_ptr->blkt_info.list.phase[i] = atof (field);
@@ -839,8 +772,6 @@ parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eval
       {
         evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "freq vals must be real numbers (found '", field, "')");
-        /*XXX error_return(PARSE_ERROR, "parse_list: %s%s%s",
-                        "freq vals must be real numbers (found '", field, "')"); */
         return /*TODO PARSE_ERROR should be returned */;
       }
       blkt_ptr->blkt_info.list.freq[i] = atof (field);
@@ -852,8 +783,6 @@ parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eval
       {
         evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "amp vals must be real numbers (found '", field, "')");
-        /*XXX error_return(PARSE_ERROR, "parse_list: %s%s%s",
-                        "amp vals must be real numbers (found '", field, "')"); */
         return /*TODO PARSE_ERROR should be returned */;
       }
       blkt_ptr->blkt_info.list.amp[i] = atof (field);
@@ -866,9 +795,6 @@ parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eval
         evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "phase vals must be real numbers (found '", field,
                       "')");
-        /*XXX error_return(PARSE_ERROR, "parse_list: %s%s%s",
-                        "phase vals must be real numbers (found '", field,
-                        "')"); */
         return /*TODO PARSE_ERROR should be returned */;
       }
       blkt_ptr->blkt_info.list.phase[i] = atof (field);
@@ -896,10 +822,6 @@ parse_generic (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, e
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", FirstField);
-    /*XXX error_return(PARSE_ERROR, "parse_generic; %s%s%s%2.2d",
-                "(return_field) fld ",
-                "number does not match expected value\n\tfld_xpt=F03 or F05",
-                ", fld_found=F", FirstField); */
     return /*TODO PARSE_ERROR should be returned */;
   }
   if (FirstField == 3)
@@ -983,8 +905,6 @@ parse_generic (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, e
     {
       evalresp_log (log, EV_ERROR, 0, "parse_generic: %s%s%s",
                     "corner_freqs must be real numbers (found '", field, "')");
-      /*XXX error_return(PARSE_ERROR, "parse_generic: %s%s%s",
-                    "corner_freqs must be real numbers (found '", field, "')"); */
       return /*TODO PARSE_ERROR should be returned */;
     }
     blkt_ptr->blkt_info.generic.corner_freq[i] = atof (field);
@@ -996,8 +916,6 @@ parse_generic (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, e
     {
       evalresp_log (log, EV_ERROR, 0, "parse_generic: %s%s%s",
                     "corner_slopes must be real numbers (found '", field, "')");
-      /*XXX error_return(PARSE_ERROR, "parse_generic: %s%s%s",
-                    "corner_slopes must be real numbers (found '", field, "')"); */
       return /*TODO PARSE_ERROR should be returned */;
     }
     blkt_ptr->blkt_info.generic.corner_slope[i] = atof (field);
@@ -1026,10 +944,6 @@ parse_deci (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_log_t *log)
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", FirstField);
     return PARSE_ERROR;
-    /*XXX error_return(PARSE_ERROR, "parse_deci; %s%s%s%2.2d",
-                "(return_field) fld ",
-                "number does not match expected value\n\tfld_xpt=F03 or F05",
-                ", fld_found=F", FirstField); */
   }
   if (FirstField == 3)
   {
@@ -1134,10 +1048,6 @@ parse_gain (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_log_t *log)
                   "number does not match expected value\n\tfld_xpt=F03 of F05",
                   ", fld_found=F", FirstField);
     return PARSE_ERROR;
-    /*XXX error_return(PARSE_ERROR, "parse_gain; %s%s%s%2.2d",
-                "(return_field) fld ",
-                "number does not match expected value\n\tfld_xpt=F03 of F05",
-                ", fld_found=F", FirstField); */
   }
 
   if (FirstField == 3)
@@ -1229,10 +1139,6 @@ parse_polynomial (FILE *fptr, evalresp_blkt *blkt_ptr,
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", FirstField);
     return /*TODO PARSE_ERROR should be returned */;
-    /*XXX error_return(PARSE_ERROR, "parse_polynomial; %s%s%s%2.2d",
-                "(return_field) fld ",
-                "number does not match expected value\n\tfld_xpt=F03 or F05",
-                ", fld_found=F", FirstField); */
   }
 
   if (FirstField == 3)
@@ -1254,9 +1160,6 @@ parse_polynomial (FILE *fptr, evalresp_blkt *blkt_ptr,
                   "parse_polynomial; parsing (Polynomial), illegal filter type ('%s')",
                   field);
     return /*TODO PARSE_ERROR should be returned */;
-    /*XXX error_return(PARSE_ERROR,
-                "parse_polynomial; parsing (Polynomial), illegal filter type ('%s')",
-                field); */
   }
   blkt_typ = *field;
   switch (blkt_typ)
@@ -1269,9 +1172,6 @@ parse_polynomial (FILE *fptr, evalresp_blkt *blkt_ptr,
                   "parse_polynomial; parsing (Polynomial), unexpected filter type ('%c')",
                   *field);
     return /*TODO PARSE_ERROR should be returned */;
-    /*XXX error_return(PARSE_ERROR,
-                "parse_polynomial; parsing (Polynomial), unexpected filter type ('%c')",
-                *field); */
   }
 
   check_fld = FirstField + 1;
@@ -1390,8 +1290,6 @@ parse_polynomial (FILE *fptr, evalresp_blkt *blkt_ptr,
       evalresp_log (log, EV_ERROR, 0, "polynomial: %s%s%s",
                     "coeffs must be real numbers (found '", field, "')");
       return /*TODO PARSE_ERROR should be returned */;
-      /*XXX error_return(PARSE_ERROR, "polynomial: %s%s%s",
-                    "coeffs must be real numbers (found '", field, "')"); */
     }
     blkt_ptr->blkt_info.polynomial.coeffs[i] = atof (field);
     if (0 > parse_field (line, 2, field, log))
@@ -1403,8 +1301,6 @@ parse_polynomial (FILE *fptr, evalresp_blkt *blkt_ptr,
       evalresp_log (log, EV_ERROR, 0, "polynomial: %s%s%s",
                     "coeffs errors must be real numbers (found '", field, "')");
       return /*TODO PARSE_ERROR should be returned */;
-      /*XXX error_return(PARSE_ERROR, "polynomial: %s%s%s",
-                    "coeffs errors must be real numbers (found '", field, "')"); */
     }
     blkt_ptr->blkt_info.polynomial.coeffs_err[i] = atof (field);
   }
@@ -1427,10 +1323,6 @@ parse_fir (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalr
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", FirstField);
     return /*TODO PARSE_ERROR should be returned */;
-    /*XXX error_return(PARSE_ERROR, "parse_fir; %s%s%s%2.2d",
-                "(return_field) fld ",
-                "number does not match expected value\n\tfld_xpt=F03 or F05",
-                ", fld_found=F", FirstField); */
   }
 
   if (FirstField == 3)
@@ -1480,9 +1372,6 @@ parse_fir (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalr
                   "parse_fir; parsing (FIR), illegal symmetry type ('%s')",
                   field);
     return /*TODO PARSE_ERROR should be returned */;
-    /*XXX error_return(PARSE_ERROR,
-                "parse_fir; parsing (FIR), illegal symmetry type ('%s')",
-                field); */
   }
   blkt_typ = *field;
   switch (blkt_typ)
@@ -1501,9 +1390,6 @@ parse_fir (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalr
                   "parse_fir; parsing (FIR), unexpected symmetry type ('%c')",
                   *field);
     return /*TODO PARSE_ERROR should be returned */;
-    /*XXX error_return(PARSE_ERROR,
-                "parse_fir; parsing (FIR), unexpected symmetry type ('%c')",
-                *field);*/
   }
   /* next should be the units (in first, then out) */
 
@@ -1553,8 +1439,6 @@ parse_fir (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalr
       evalresp_log (log, EV_ERROR, 0, "parse_fir: %s%s%s",
                     "coeffs must be real numbers (found '", field, "')");
       return /*TODO PARSE_ERROR should be returned */;
-      /*XXX error_return(PARSE_ERROR, "parse_fir: %s%s%s",
-                    "coeffs must be real numbers (found '", field, "')"); */
     }
     blkt_ptr->blkt_info.fir.coeffs[i] = atof (field);
   }
@@ -1586,10 +1470,6 @@ parse_ref (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalr
                   "number does not match expected value\n\tfld_xpt=F03",
                   ", fld_found=F", FirstField);
     return /*TODO PARSE_ERROR should be returned */;
-    /*XXX error_return(PARSE_ERROR, "parse_ref; %s%s%s%2.2d",
-                "(return_field) fld ",
-                "number does not match expected value\n\tfld_xpt=F03",
-                ", fld_found=F", FirstField); */
   }
   if (0 > parse_field (FirstLine, 0, field, log))
   {
@@ -1600,8 +1480,6 @@ parse_ref (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalr
     evalresp_log (log, EV_ERROR, 0, "parse_ref; value '%s' %s", field,
                   " cannot be converted to the number of stages");
     return /*TODO PARSE_ERROR should be returned */;
-    /*XXX error_return(PARSE_ERROR, "parse_ref; value '%s' %s", field,
-                " cannot be converted to the number of stages"); */
   }
   nstages = atoi (field);
   blkt_ptr->blkt_info.reference.num_stages = nstages;
@@ -1622,8 +1500,6 @@ parse_ref (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalr
       evalresp_log (log, EV_ERROR, 0, "parse_ref; value '%s' %s", field,
                     " cannot be converted to the stage sequence number");
       return /*TODO PARSE_ERROR should be returned */;
-      /*XXX error_return(PARSE_ERROR, "parse_ref; value '%s' %s", field,
-                    " cannot be converted to the stage sequence number"); */
     }
     stage_num = atoi (field);
     blkt_ptr->blkt_info.reference.stage_num = stage_num;
@@ -1644,8 +1520,6 @@ parse_ref (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalr
       evalresp_log (log, EV_ERROR, 0, "parse_ref; value '%s' %s", field,
                     " cannot be converted to the number of responses");
       return /*TODO PARSE_ERROR should be returned */;
-      /*XXX error_return(PARSE_ERROR, "parse_ref; value '%s' %s", field,
-                    " cannot be converted to the number of responses"); */
     }
     nresps = atoi (field);
     blkt_ptr->blkt_info.reference.num_responses = nresps;
@@ -1692,9 +1566,6 @@ parse_ref (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalr
                       "parse_ref; unexpected end of stage (at blockette [%3.3d])",
                       prev_blkt_no);
         return /*TODO PARSE_ERROR should be returned */;
-        /*XXX error_return(PARSE_ERROR,
-                        "parse_ref; unexpected end of stage (at blockette [%3.3d])",
-                        prev_blkt_no); */
         break;
       default:
         /* code to ignore unexected blockette/field lines might be useful here, but need
@@ -1705,9 +1576,6 @@ parse_ref (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalr
                       "parse_ref; unexpected filter type (blockette [%3.3d])",
                       blkt_no);
         return /*TODO UNRECOG_FILTYPE should be returned */;
-        /*XXX error_return(UNRECOG_FILTYPE,
-                        "parse_ref; unexpected filter type (blockette [%3.3d])",
-                        blkt_no); */
         break;
       }
       last_blkt->next_blkt = blkt_ptr;
@@ -1740,8 +1608,6 @@ parse_ref (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalr
         evalresp_log (log, EV_ERROR, 0, "parse_ref; value '%s' %s", field,
                       " cannot be converted to the new stage sequence number");
         return /*TODO PARSE_ERROR should be returned */;
-        /*XXX error_return(PARSE_ERROR, "parse_ref; value '%s' %s", field,
-                        " cannot be converted to the new stage sequence number"); */
       }
 
       lcl_nstages = atoi (field);
@@ -1752,10 +1618,6 @@ parse_ref (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalr
                       "\n\tstage expected = ", nstages, ", stage found = ",
                       lcl_nstages);
         return /*TODO PARSE_ERROR should be returned */;
-        /*XXX error_return(PARSE_ERROR,
-                        "parse_ref; internal RESP format error, %s%d%s%d",
-                        "\n\tstage expected = ", nstages, ", stage found = ",
-                        lcl_nstages); */
       }
       blkt_ptr->blkt_info.reference.num_stages = nstages;
     }
@@ -2038,11 +1900,6 @@ get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
                   52, ", blkt_found=B", blkt_no, "; fld_xpt=F", 3, 4,
                   ", fld_found=F", fld_no);
     return 0; /*TODO error code maybe? */
-/*XXX error_return(PARSE_ERROR,
-                "get_line; %s%s%3.3d%s%3.3d%s[%2.2d|%2.2d]%s%2.2d", "blkt",
-                " and fld numbers do not match expected values\n\tblkt_xpt=B",
-                52, ", blkt_found=B", blkt_no, "; fld_xpt=F", 3, 4,
-                ", fld_found=F", fld_no);*/
 #endif
   }
 

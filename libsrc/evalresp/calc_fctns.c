@@ -200,10 +200,6 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
                     "No Matching Stages Found (requested", start_stage,
                     chan->nstages);
       return; /*TODO NO_STAGE_MATCHED */
-              /*XXX error_return(NO_STAGE_MATCHED,
-                    "calc_resp: %s start_stage=%d, highest stage found=%d)",
-                    "No Matching Stages Found (requested", start_stage,
-                    chan->nstages); */
     }
     else if (!matching_stages)
     {
@@ -212,10 +208,6 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
                     "No Matching Stages Found (requested", start_stage,
                     chan->nstages - 1);
       return; /*TODO NO_STAGE_MATCHED */
-              /*XXX error_return(NO_STAGE_MATCHED,
-                    "calc_resp: %s start_stage=%d, highest stage found=%d)",
-                    "No Matching Stages Found (requested", start_stage,
-                    chan->nstages - 1); */
     }
 
     /*  Write output for freq[i] in output[i] (note: unitScaleFact is a global variable
@@ -265,7 +257,6 @@ convert_to_units (int inp, const char *out_units, evalresp_complex *data, double
     {
       evalresp_log (log, EV_ERROR, 0, "convert_to_units: bad output units");
       return; /*TODO BAD_OUT_UNITS */
-              /*XXX error_return(BAD_OUT_UNITS, "convert_to_units: bad output units"); */
     }
   }
   else
@@ -407,9 +398,6 @@ calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
                   x_for_b62);
     exit (1);     /* TODO IGD 06/06/2017 To allow passing of the test: next, the function should become int */
     /* return; */ /*TODO IMPROP_DATA_TYPE */
-                  /*XXX error_return(IMPROP_DATA_TYPE,
-                "Cannot compute B62 response for negative or zero input: %f",
-                x_for_b62); */
   }
 
   // Compute a first derivate of MacLaurin polynomial
@@ -703,8 +691,6 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
       evalresp_log (log, EV_ERROR, 0,
                     "norm_resp; no stage gain defined, zero sensitivity");
       return; /*TODO ILLEGAL_RESP_FORMAT */
-              /*XXX error_return(ILLEGAL_RESP_FORMAT,
-                    "norm_resp; no stage gain defined, zero sensitivity"); */
     }
   }
   else if (chan->nstages == 2)
@@ -724,8 +710,6 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
                       "norm_resp; no stage gain defined, zero sensitivity");
         exit (1);     /*TODO IGD 06/06/2017: Exit to satisfy test RESP.UW.STOR..ACE; need to return int */
         /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
-                      /*XXX error_return(ILLEGAL_RESP_FORMAT,
-                        "norm_resp; no stage gain defined, zero sensitivity"); */
       }
       else
       {
@@ -773,7 +757,6 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
         evalresp_log (log, EV_ERROR, 0, "norm_resp; zero stage gain");
         exit (1);     /* IGD 06/06/2017 TODO ILLEGAL_RESP_FORMAT */
         /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
-                      /*XXX error_return(ILLEGAL_RESP_FORMAT, "norm_resp; zero stage gain"); */
       }
       fil = fil->next_blkt;
     }
@@ -869,8 +852,6 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
                 evalresp_log (log, EV_ERROR, 0,
                               "norm_resp: Gain frequency of zero found in bandpass analog filter");
                 return; /*TODO ILLEGAL_FILT_S{EC */
-                        /*XXX error_return(ILLEGAL_FILT_SPEC,
-                                        "norm_resp: Gain frequency of zero found in bandpass analog filter"); */
               }
               analog_trans (main_filt, f, &of);
               if (of.real == 0.0 && of.imag == 0.0)
@@ -878,8 +859,6 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
                 evalresp_log (log, EV_ERROR, 0,
                               "norm_resp: Chan. Sens. frequency found with bandpass analog filter");
                 return; /*TODO ILLEGAL_FILT_S{EC */
-                        /*XXX error_return(ILLEGAL_FILT_SPEC,
-                                        "norm_resp: Chan. Sens. frequency found with bandpass analog filter"); */
               }
             }
             else if (main_type == IIR_PZ)

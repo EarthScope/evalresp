@@ -29,7 +29,6 @@ merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_lo
   default:
     evalresp_log (log, EV_ERROR, 0, "merge_lists; filter types must be LIST");
     return; /*TODO MERGE_ERROR */
-            /*XXX error_return(MERGE_ERROR, "merge_lists; filter types must be LIST"); */
   }
 
   if (first_blkt->type != tmp_blkt->type)
@@ -37,8 +36,6 @@ merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_lo
     evalresp_log (log, EV_ERROR, 0,
                   "merge_lists; both filters must have the same type");
     return; /*TODO MERGE_ERROR */
-            /*XXX error_return(MERGE_ERROR,
-                "merge_lists; both filters must have the same type"); */
   }
 
   /* set up some local pointers and values */
@@ -63,8 +60,6 @@ merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_lo
     evalresp_log (log, EV_ERROR, 0,
                   "merge_lists; insufficient memory for combined amplitudes");
     return; /*TODO OUT_OF_MEMORY */
-            /*XXX error_exit(OUT_OF_MEMORY,
-                "merge_lists; insufficient memory for combined amplitudes"); */
   }
 
   if ((phase1 = (double *)realloc (phase1, new_ncoeffs * sizeof (double))) == (double *)NULL)
@@ -72,8 +67,6 @@ merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_lo
     evalresp_log (log, EV_ERROR, 0,
                   "merge_lists; insufficient memory for combined phases");
     return; /*TODO OUT_OF_MEMORY */
-            /*XXX error_exit(OUT_OF_MEMORY,
-                "merge_lists; insufficient memory for combined phases"); */
   }
 
   if ((freq1 = (double *)realloc (freq1, new_ncoeffs * sizeof (double))) == (double *)NULL)
@@ -81,8 +74,6 @@ merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_lo
     evalresp_log (log, EV_ERROR, 0,
                   "merge_lists; insufficient memory for combined frequencies");
     return; /*TODO OUT_OF_MEMORY */
-            /*XXX error_exit(OUT_OF_MEMORY,
-                "merge_lists; insufficient memory for combined frequencies"); */
   };
 
   /* copy the coeff values to the new space */
@@ -123,7 +114,6 @@ merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_l
   default:
     evalresp_log (log, EV_ERROR, 0, "merge_coeffs; filter types must be FIR");
     return; /*TODO MERGE_ERROR */
-            /*XXX error_return(MERGE_ERROR, "merge_coeffs; filter types must be FIR");*/
   }
 
   if (first_blkt->type != tmp_blkt->type)
@@ -131,8 +121,6 @@ merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_l
     evalresp_log (log, EV_ERROR, 0,
                   "merge_coeffs; both filters must have the same type");
     return; /*TODO MERGE_ERROR */
-            /*XXX error_return(MERGE_ERROR,
-                "merge_coeffs; both filters must have the same type"); */
   }
 
   /* set up some local pointers and values */
@@ -152,8 +140,6 @@ merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_l
     evalresp_log (log, EV_ERROR, 0,
                   "merge_coeffs; insufficient memory for combined coeffs");
     return; /*TODO OUT_OF_MEMORY */
-            /*XXX error_exit(OUT_OF_MEMORY,
-                "merge_coeffs; insufficient memory for combined coeffs"); */
   }
 
   /* copy the coeff values to the new space */
@@ -239,8 +225,6 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
           evalresp_log (log, EV_ERROR, 0, "check_channel; %s in stage %d",
                         "more than one filter type", i);
           return; /*TODO ILLEGAL_RESP_FORMAT */
-          /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
-                       "more than one filter type",i); */
         }
         stage_type = PZ_TYPE;
         filt_blkt = blkt_ptr;
@@ -251,8 +235,6 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
           evalresp_log (log, EV_ERROR, 0, "check_channel; %s in stage %d",
                         "more than one filter type", i);
           return; /*TODO ILLEGAL_RESP_FORMAT */
-          /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
-                       "more than one filter type",i); */
         }
         stage_type = IIR_TYPE;
         filt_blkt = blkt_ptr;
@@ -260,7 +242,6 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
       case FIR_COEFFS:
         evalresp_log (log, EV_ERROR, 0, "check_channel; unsupported filter type");
         return; /*TODO UNSUPPORT_FILTYPE */
-        /*XXX error_return(UNSUPPORT_FILTYPE, "check_channel; unsupported filter type"); */
         break;
       case LIST:
         /* IGD         error_return(UNSUPPORT_FILTYPE, "check_channel; unsupported filter type"); */
@@ -285,8 +266,6 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
             evalresp_log (log, EV_ERROR, 0,
                           "blockette 55 cannot be mixed with other filter blockettes\n");
             return; /*TODO UNSUPPORT_FILTYPE */
-                    /*XXX error_return(UNSUPPORT_FILTYPE,
-                    "blockette 55 cannot be mixed with other filter blockettes\n"); */
           }
         }
         else
@@ -306,8 +285,6 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
                 evalresp_log (log, EV_ERROR, 0,
                               "blockette 55 cannot be mixed with other filter blockettes\n");
                 return; /*TODO UNSUPPORT_FILTYPE */
-                        /*XXX error_return(UNSUPPORT_FILTYPE,
-                       "blockette 55 cannot be mixed with other filter blockettes\n"); */
               }
             }
           }
@@ -323,8 +300,6 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
           evalresp_log (log, EV_ERROR, 0, "check_channel; %s in stage %d",
                         "more than one filter type", i + 1);
           return; /*TODO ILLEGAL_RESP_FORMAT */
-                  /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
-                              "more than one filter type",i+1); */
         }
         /* check to see if next blockette(s) is(are) a continuation of this one.
         If so, merge them into one blockette */
@@ -333,14 +308,10 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
           evalresp_log (log, EV_ERROR, 0,
                         "check_channel; multiple 55 blockettes in GENERIC stages are not supported yet");
           return; /*TODO ILLEGAL_RESP_FORMAT */
-                  /*XXX error_return(ILLEGAL_RESP_FORMAT,
-                        "check_channel; multiple 55 blockettes in GENERIC stages are not supported yet"); */
         }
         stage_type = GENERIC_TYPE;
         /*    nc = 1; */ /*for calc_delay to be 0 in decimation blockette */
         evalresp_log (log, EV_WARN, 0, "%s WARNING: Generic blockette is detected in stage %d; content is ignored\n", myLabel, i + 1);
-        /*XXX fprintf(stdout, "%s WARNING: Generic blockette is detected in stage %d; content is ignored\n", myLabel, i+1);
-    fflush(stdout); */
         filt_blkt = blkt_ptr;
         break;
 
@@ -352,8 +323,6 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
           evalresp_log (log, EV_ERROR, 0, "check_channel; %s in stage %d",
                         "more than one filter type", i);
           return; /*TODO ILLEGAL_RESP_FORMAT */
-          /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
-                       "more than one filter type",i); */
         }
 
         /* check to see if next blockette(s) is(are) a continuation of this one.
@@ -384,8 +353,6 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
           evalresp_log (log, EV_ERROR, 0, "check_channel; %s in stage %d",
                         "more than one filter type", i);
           return; /*TODO ILLEGAL_RESP_FORMAT */
-                  /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
-                              "more than one filter type",i); */
         }
         /* check to see if next blockette(s) is(are) a continuation of this one.
         If so, merge them into one blockette */
@@ -394,8 +361,6 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
           evalresp_log (log, EV_ERROR, 0,
                         "check_channel; multiple 55 blockettes in IIR stages are not supported yet");
           return; /*TODO ILLEGAL_RESP_FORMAT */
-                  /*XXX error_return(ILLEGAL_RESP_FORMAT,
-                        "check_channel; multiple 55 blockettes in IIR stages are not supported yet"); */
         }
         /* merge_coeffs(blkt_ptr,&next_blkt);  */ /* Leave it alone for now ! */
         /* set the stage type to be FIR_TYPE */
@@ -431,8 +396,6 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
           evalresp_log (log, EV_ERROR, 0,
                         "check_channel; decimation blockette with no associated filter");
           return; /*TODO ILLEGAL_RESP_FORMAT */
-          /*XXX error_return(ILLEGAL_RESP_FORMAT,
-                     "check_channel; decimation blockette with no associated filter"); */
         }
         deci_blkt = blkt_ptr;
         deci_flag = j;
@@ -506,7 +469,6 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
         evalresp_log (log, EV_ERROR, 0, "check_channel; units mismatch between stages");
         exit (1); /*IGD 06/06/2017  TODO ILLEGAL_RESP_FORMAT */
         return;   /*TODO ILLEGAL_RESP_FORMAT */
-        /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; units mismatch between stages"); */
       }
     }
 
@@ -521,7 +483,6 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
       evalresp_log (log, EV_ERROR, 0, "check_channel; required decimation blockette for IIR or FIR filter missing");
       exit (1);     /* IGD 06/06/2017 To satisfy failure of RESP.BK.BDM..UCD; need return error and process it */
       /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
-                    /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; required decimation blockette for IIR or FIR filter missing"); */
     }
 
     /* if this wasn't a gain-only stage, save it for comparison of units between
@@ -552,9 +513,6 @@ check_sym (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log)
   {
     evalresp_log (log, EV_WARN, 0, "%s WARNING: FIR normalized: sum[coef]=%E; ", myLabel, sum);
     evalresp_log (log, EV_WARN, 0, "%s %s %s %s %s\n", myLabel, chan->network, chan->staname, chan->locid, chan->chaname);
-    /*XXX fprintf(stderr,"%s WARNING: FIR normalized: sum[coef]=%E; ", myLabel, sum);
-    fprintf(stderr,"%s %s %s %s %s\n", myLabel, chan->network, chan->staname, chan->locid, chan->chaname);
-    fflush(stderr); */
     for (k = 0; k < nc; k++)
       f->blkt_info.fir.coeffs[k] /= sum;
   }
@@ -651,16 +609,11 @@ interpolate_list_blockette (double **frequency_ptr,
     { /* all requested frequency values were clipped */
       evalresp_log (log, EV_ERROR, 0, "Error interpolating amp/phase values:  %s",
                     "All requested freqencies out of range\n");
-      /*XXX error_exit(IMPROP_DATA_TYPE,"Error interpolating amp/phase values:  %s",
-                                  "All requested freqencies out of range\n"); */
       return; /*TODO return error */
     }
     evalresp_log (log, EV_INFO, 0,
                   "%s Note:  %d frequenc%s clipped from beginning of requested range\n",
                   myLabel, i, ((i == 1) ? "y" : "ies"));
-    /*XXX fprintf(stderr,
-         "%s Note:  %d frequenc%s clipped from beginning of requested range\n",
-                                               myLabel, i, ((i == 1) ? "y" : "ies"));*/
   }
   used_req_num_freqs = req_num_freqs;
   while (used_req_num_freqs > 0 &&
@@ -684,7 +637,6 @@ interpolate_list_blockette (double **frequency_ptr,
   { /* some requested frequency values were clipped; show message */
     req_num_freqs = used_req_num_freqs;
     evalresp_log (log, EV_INFO, 0,
-                  /*XXX fprintf(stderr, */
                   "%s Note:  %d frequenc%s clipped from end of requested range\n",
                   myLabel, num, ((num == 1) ? "y" : "ies"));
   }
@@ -706,15 +658,12 @@ interpolate_list_blockette (double **frequency_ptr,
                             &retvals_arr, &num_retvals, log)) != NULL)
   {
     evalresp_log (log, EV_ERROR, 0, "Error interpolating amplitudes:  %s", retstr);
-    /*XXX error_exit(IMPROP_DATA_TYPE,"Error interpolating amplitudes:  %s",retstr); */
     return; /*TODO This should return somethin */
   }
   if (num_retvals != req_num_freqs)
   { /* # of generated values != # requested (shouldn't happen) */
     evalresp_log (log, EV_ERROR, 0, "Error interpolating amplitudes:  %s",
                   "Bad # of values");
-    /*XXX error_exit(IMPROP_DATA_TYPE,"Error interpolating amplitudes:  %s",
-                                "Bad # of values"); */
     return; /*TODO This should return somethin */
   }
   retamps_arr = retvals_arr; /* save ptr to interpolated amplitudes */
@@ -764,15 +713,12 @@ interpolate_list_blockette (double **frequency_ptr,
   if (retstr != NULL)
   {
     evalresp_log (log, EV_ERROR, 0, "Error interpolating phases:  %s", retstr);
-    /*XXX error_exit(IMPROP_DATA_TYPE,"Error interpolating phases:  %s",retstr); */
     return; /*TODO this should return something */
   }
   if (num_retvals != req_num_freqs)
   { /* # of generated values != # requested (shouldn't happen) */
     evalresp_log (log, EV_ERROR, 0, "Error interpolating phases:  %s",
                   "Bad # of values");
-    /*XXX error_exit(IMPROP_DATA_TYPE,"Error interpolating phases:  %s",
-                                "Bad # of values"); */
     return; /*TODO this should return something */
   }
 
