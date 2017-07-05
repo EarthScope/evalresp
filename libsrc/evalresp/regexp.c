@@ -148,7 +148,6 @@
     evalresp_log (log, EV_ERROR, 0, m); \
     return (NULL);                      \
   }
-/*XXX #define    FAIL(m)    { evr_regerror(m); return(NULL); } */
 #define ISMULT(c) ((c) == '*' || (c) == '+' || (c) == '?')
 #define META "^$.[()|?+*\\"
 
@@ -744,7 +743,6 @@ evalresp_log_t *log;
   if (prog == NULL || string == NULL)
   {
     evalresp_log (log, EV_ERROR, 0, "NULL parameter");
-    /*XXX evr_regerror("NULL parameter"); */
     return (0);
   }
 
@@ -752,7 +750,6 @@ evalresp_log_t *log;
   if (UCHARAT (prog->program) != MAGIC)
   {
     evalresp_log (log, EV_ERROR, 0, "NULL parameter");
-    /*XXX evr_regerror("corrupted program"); */
     return (0);
   }
 
@@ -856,7 +853,6 @@ evalresp_log_t *log;
   {
     evalresp_log (log, EV_DEBUG, 0, "%s(", regprop (scan));
   }
-/*XXX fprintf(stderr, "%s(\n", regprop(scan)); */
 #endif
   while (scan != NULL)
   {
@@ -864,7 +860,6 @@ evalresp_log_t *log;
     if (regnarrate)
     {
       evalresp_log (log, EV_DEBUG, 0, "%s...", regprop (scan));
-      /*XXX fprintf(stderr, "%s...\n", regprop(scan)); */ /
     }
 #endif
     next = regnext (scan);
@@ -1032,7 +1027,6 @@ evalresp_log_t *log;
       break;
     default:
       evalresp_log (log, EV_ERROR, 0, "memory corruption");
-      /*XXX evr_regerror("memory corruption"); */
       return (0);
       break;
     }
@@ -1045,7 +1039,6 @@ evalresp_log_t *log;
      * the terminating point.
      */
   evalresp_log (log, EV_ERROR, 0, "corrupted pointers");
-  /*XXX evr_regerror("corrupted pointers"); */
   return (0);
 }
 
@@ -1090,7 +1083,6 @@ evalresp_log_t *log;
     break;
   default: /* Oh dear.  Called inappropriately. */
     evalresp_log (log, EV_ERROR, 0, "internal foulup");
-    /*XXX evr_regerror("internal foulup"); */
     count = 0; /* Best compromise. */
     break;
   }
@@ -1243,7 +1235,6 @@ static char *
     break;
   default:
     evalresp_log (log, EV_ERROR, 0, "corrupted opcode");
-    /*XXX evr_regerror("corrupted opcode"); */
     break;
   }
   if (p != NULL)

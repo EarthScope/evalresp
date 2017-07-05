@@ -70,12 +70,9 @@ print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
 
   evalresp_log (log, EV_INFO, 0, "%s --------------------------------------------------",
                 myLabel);
-  /*XXX fprintf(stderr, "%s --------------------------------------------------\n",
-            myLabel);*/
   if (!stdio_flag)
   {
     evalresp_log (log, EV_INFO, 0, "%s  %s", myLabel, curr_file);
-    /*XXX fprintf(stderr, "%s  %s\n", myLabel, curr_file); */
   }
   else
   {
@@ -83,15 +80,11 @@ print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
     {
       evalresp_log (log, EV_INFO, 0, "%s  RESP.%s.%s.%s.%s (from stdin)", myLabel,
                     chan->network, chan->staname, chan->locid, chan->chaname);
-      /*XXX fprintf(stderr, "%s  RESP.%s.%s.%s.%s (from stdin)\n", myLabel,
-                    chan->network, chan->staname, chan->locid, chan->chaname); */
     }
     else
     {
       evalresp_log (log, EV_INFO, 0, "%s  RESP..%s.%s.%s (from stdin)", myLabel,
                     chan->staname, chan->locid, chan->chaname);
-      /*XXX fprintf(stderr, "%s  RESP..%s.%s.%s (from stdin)\n", myLabel,
-                    chan->staname, chan->locid, chan->chaname); */
     }
   }
   evalresp_log (log, EV_INFO, 0, "%s --------------------------------------------------",
@@ -99,29 +92,18 @@ print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
   evalresp_log (log, EV_INFO, 0, "%s  %s %s %s %s ", myLabel,
                 (strlen (chan->network) ? chan->network : "??"), chan->staname,
                 (strlen (chan->locid) ? chan->locid : "??"), chan->chaname);
-  /*XXX fprintf(stderr, "%s --------------------------------------------------\n",
-            myLabel);
-    fprintf(stderr, "%s  %s %s %s %s ", myLabel,
-            (strlen(chan->network) ? chan->network : "??"), chan->staname,
-            (strlen(chan->locid) ? chan->locid : "??"), chan->chaname); */
   if (!def_units_flag)
   {
     evalresp_log (log, EV_INFO, 0, "%s %s %s", myLabel,
                   chan->beg_t, chan->end_t);
     evalresp_log (log, EV_INFO, 0, "%s   Seed units: %s(in)->%s(out)", myLabel, SEEDUNITS[in_units],
                   SEEDUNITS[out_units]);
-    /*XXX fprintf(stderr, "%s %s %s\n%s   Seed units: %s(in)->%s(out)\n", myLabel,
-                chan->beg_t, chan->end_t, myLabel, SEEDUNITS[in_units],
-                SEEDUNITS[out_units]); */
   }
   else
   {
     evalresp_log (log, EV_INFO, 0, "%s %s %s\n%s   Seed units: %s(in)->%s(out)", myLabel,
                   chan->beg_t, chan->end_t, myLabel, chan->first_units,
                   chan->last_units);
-    /*XXX fprintf(stderr, "%s %s %s\n%s   Seed units: %s(in)->%s(out)\n", myLabel,
-                chan->beg_t, chan->end_t, myLabel, chan->first_units,
-                chan->last_units); */
   }
 
   evalresp_log (log, EV_INFO, 0, "%s   computed sens=%.5E (reported=%.5E) @ %.5E Hz",
@@ -130,20 +112,11 @@ print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
                 "%s   calc_del=%.5E  corr_app=%.5E  est_delay=%.5E  final_sint=%.3g(sec/sample)",
                 myLabel, chan->calc_delay, chan->applied_corr, chan->estim_delay,
                 chan->sint);
-  /*XXX fprintf(stderr, "%s   computed sens=%.5E (reported=%.5E) @ %.5E Hz\n",
-            myLabel, chan->calc_sensit, chan->sensit, chan->sensfreq);
-    fprintf(stderr,
-            "%s   calc_del=%.5E  corr_app=%.5E  est_delay=%.5E  final_sint=%.3g(sec/sample)\n",
-            myLabel, chan->calc_delay, chan->applied_corr, chan->estim_delay,
-            chan->sint); */
   if (1 == useTotalSensitivityFlag)
   {
     evalresp_log (log, EV_INFO, 0,
                   "%s   (reported sensitivity was used to compute response (-ts option enabled))",
                   myLabel);
-    /*XXX fprintf(stderr,
-                "%s   (reported sensitivity was used to compute response (-ts option enabled))\n",
-                myLabel); */
   }
 
   /* then print the parameters for each stage (stage number, type of stage, number
@@ -237,10 +210,6 @@ print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
                         "%s WARNING Stage %d: Negative correction_applied=%.5E is likely to be incorrect\n",
                         myLabel, this_stage->sequence_no,
                         this_blkt->blkt_info.decimation.applied_corr);
-          /*XXX fprintf(stderr,
-                            "%s WARNING Stage %d: Negative correction_applied=%.5E is likely to be incorrect\n",
-                            myLabel, this_stage->sequence_no,
-                            this_blkt->blkt_info.decimation.applied_corr); */
         }
         if (this_blkt->blkt_info.decimation.estim_delay < 0)
         {
@@ -248,10 +217,6 @@ print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
                         "%s WARNING Stage %d: Negative estimated_delay=%.5E is likely to be incorrect",
                         myLabel, this_stage->sequence_no,
                         this_blkt->blkt_info.decimation.estim_delay);
-          /*XXX fprintf(stderr,
-                            "%s WARNING Stage %d: Negative estimated_delay=%.5E is likely to be incorrect\n",
-                            myLabel, this_stage->sequence_no,
-                            this_blkt->blkt_info.decimation.estim_delay); */
         }
         break;
       case GENERIC:
@@ -264,7 +229,6 @@ print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
         break;
       default:
         evalresp_log (log, EV_INFO, 0, "%s .........", myLabel);
-        /*XXX fprintf(stderr, "%s .........", myLabel); */
       }
       strcat (out_str, tmp_str);
       if (first_blkt)
@@ -276,14 +240,11 @@ print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
     if (this_stage->sequence_no)
     {
       evalresp_log (log, EV_INFO, 0, "%s %s", myLabel, out_str);
-      /*XXX fprintf(stderr, "%s %s\n", myLabel, out_str); */
     }
     this_stage = this_stage->next_stage;
   }
   evalresp_log (log, EV_INFO, 0, "%s--------------------------------------------------",
                 myLabel);
-  /*XXX fprintf(stderr, "%s--------------------------------------------------\n",
-            myLabel); */
   /* IGD : here we print a notice about blockette 55: evalresp v. 2.3.17+*/
   /* ET:  Notice modified, with different notice if freqs interpolated */
   if (chan->first_stage->first_blkt->type == LIST)
@@ -297,13 +258,6 @@ print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
                     "%s (blockette 55) to generate output for the %d frequencies requested",
                     myLabel,
                     chan->first_stage->first_blkt->blkt_info.list.nresp);
-      /*XXX fprintf(stderr,
-                    "%s Note:  The input has been interpolated from the response List stage\n",
-                    myLabel);
-            fprintf(stderr,
-                    "%s (blockette 55) to generate output for the %d frequencies requested\n",
-                    myLabel,
-                    chan->first_stage->first_blkt->blkt_info.list.nresp); */
     }
     else if (listinterp_out_flag)
     {
@@ -314,13 +268,6 @@ print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
       evalresp_log (log, EV_INFO, 0,
                     "%s defined in the response List stage (blockette 55)",
                     myLabel);
-      /*XXX fprintf(stderr,
-                    "%s Note:  The output has been interpolated from the %d frequencies\n",
-                    myLabel,
-                    chan->first_stage->first_blkt->blkt_info.list.nresp);
-            fprintf(stderr,
-                    "%s defined in the response List stage (blockette 55)\n",
-                    myLabel); */
     }
     else
     {
@@ -331,22 +278,8 @@ print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
                     "%s been generated for those %d frequencies defined in the blockette",
                     myLabel,
                     chan->first_stage->first_blkt->blkt_info.list.nresp);
-      /*XXX fprintf(stderr,
-                    "%s ++++++++ WARNING ++++++++++++++++++++++++++++\n",
-                    myLabel);
-            fprintf(stderr,
-                    "%s Response contains a List stage (blockette 55)--the output has\n",
-                    myLabel);
-            fprintf(stderr,
-                    "%s been generated for those %d frequencies defined in the blockette\n",
-                    myLabel,
-                    chan->first_stage->first_blkt->blkt_info.list.nresp);
-            fprintf(stderr,
-                    "%s +++++++++++++++++++++++++++++++++++++++++++++\n",
-                    myLabel); */
     }
   }
-  /*XXX fflush(stderr);*/
 }
 
 void
@@ -416,8 +349,6 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
             evalresp_log (log, EV_ERROR, 0,
                           "print_resp; failed to open file %s", filename);
             return; /*TODO error? */
-                    /*XXX error_exit(OPEN_FILE_ERROR,
-                                "print_resp; failed to open file %s", filename); */
           }
           sprintf (filename, "PHASE.%s.%s.%s.%s", resp->network,
                    resp->station, resp->locid, resp->channel);
@@ -426,8 +357,6 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
             evalresp_log (log, EV_ERROR, 0,
                           "print_resp; failed to open file %s", filename);
             return; /*TODO error? */
-                    /*XXX error_exit(OPEN_FILE_ERROR,
-                                "print_resp; failed to open file %s", filename); */
           }
           if (1 == unwrap_flag)
           {
@@ -489,8 +418,6 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
             evalresp_log (log, EV_ERROR, 0,
                           "print_resp; failed to open file %s", filename);
             return; /*TODO error? */
-                    /*XXX error_exit(OPEN_FILE_ERROR,
-                                "print_resp; failed to open file %s", filename); */
           }
 
           /* 04/27/2010 unwraped phases should only start causal! - Johannes Schweitzer*/
@@ -559,8 +486,6 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
           evalresp_log (log, EV_ERROR, 0,
                         "print_resp; failed to open file %s", filename);
           return; /*TODO some error thinging */
-                  /*XXX error_exit(OPEN_FILE_ERROR,
-                            "print_resp; failed to open file %s", filename); */
         }
       }
       else

@@ -94,9 +94,6 @@ find_files (char *file, evalresp_sncls *scn_lst,
         {
           evalresp_log (log, EV_WARN, 0, "evresp_; no files match '%s'",
                         comp_name);
-          /*XXX fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
-                            comp_name);
-                    fflush(stderr); */
         }
         else if (!nfiles && loc_wild)
         {
@@ -110,10 +107,6 @@ find_files (char *file, evalresp_sncls *scn_lst,
             evalresp_log (log, EV_WARN, 0,
                           "evresp_; no files match '%s' (or globbed location)",
                           comp_name);
-            /*XXX fprintf(stderr,
-                                "WARNING: evresp_; no files match '%s' (or globbed location)\n",
-                                comp_name);
-                        fflush(stderr); */
           }
         }
         tmp_ptr = alloc_matched_files (log);
@@ -154,9 +147,6 @@ find_files (char *file, evalresp_sncls *scn_lst,
       {
         evalresp_log (log, EV_WARN, 0, "evresp_; no files match '%s'",
                       comp_name);
-        /*XXX fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
-                        comp_name);
-                fflush(stderr); */
       }
       else if (!nfiles && !strcmp (scn_ptr->locid, "*"))
       {
@@ -181,9 +171,6 @@ find_files (char *file, evalresp_sncls *scn_lst,
         {
           evalresp_log (log, EV_WARN, 0, "evresp_; no files match '%s'",
                         comp_name);
-          /*fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
-                            comp_name);
-                    fflush(stderr); */
         }
       }
       tmp_ptr = alloc_matched_files (log);

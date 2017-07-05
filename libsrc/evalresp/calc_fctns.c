@@ -948,13 +948,6 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
                     myLabel);
       evalresp_log (log, EV_WARN, 0, "%s differ by more than 5 percent. \n", myLabel);
       evalresp_log (log, EV_WARN, 0, "%s\t Execution continuing.\n", myLabel);
-/*XXX
-            fprintf(stderr,
-                    "%s WARNING (norm_resp): computed and reported sensitivities",
-                    myLabel);
-            fprintf(stderr, "%s differ by more than 5 percent. \n", myLabel);
-            fprintf(stderr, "%s\t Execution continuing.\n", myLabel);
-            fflush(stderr); */
 #endif
     }
   }
