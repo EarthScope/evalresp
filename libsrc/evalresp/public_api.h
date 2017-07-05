@@ -183,6 +183,12 @@ int evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel
 int evalresp_channels_to_responses (evalresp_log_t *log, evalresp_channels *channels,
                                     evalresp_options *options, evalresp_responses **responses);
 
+int evalresp_process_cwd_to_responses (evalresp_log_t *log, evalresp_options *options,
+                                       evalresp_filter *filter, evalresp_responses **responses);
+
+int evalresp_process_stdio_to_responses (evalresp_log_t *log, evalresp_options *options,
+                                         evalresp_filter *filter, evalresp_responses **responses);
+
 typedef enum {
   evalresp_fap_file_format,
   evalresp_amplitude_file_format,

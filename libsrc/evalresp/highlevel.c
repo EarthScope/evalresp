@@ -5,6 +5,7 @@
 #include "./private.h"
 #include "./ugly.h"
 #include "evalresp/public_api.h"
+#include "evalresp/public.h"
 #include "evalresp_log/log.h"
 
 // new code giving a high level interface.
@@ -74,12 +75,11 @@ evalresp_responses_to_cwd (evalresp_log_t *log, const evalresp_responses *respon
   return status;
 }
 
-static int
-process_stdio (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter)
+int
+evalresp_process_stdio_to_responses (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter, evalresp_responses **responses)
 {
   int status = EVALRESP_OK;
   evalresp_channels *channels;
-  evalresp_responses *responses;
 
   if (options->filename && strlen (options->filename))
   {
@@ -87,11 +87,7 @@ process_stdio (evalresp_log_t *log, evalresp_options *options, evalresp_filter *
   }
   if (!(status = evalresp_file_to_channels (log, stdin, filter, &channels)))
   {
-    if (!(status = evalresp_channels_to_responses (log, channels, options, &responses)))
-    {
-      status = evalresp_responses_to_cwd (log, responses, options->format, options->use_stdio);
-      evalresp_free_responses (responses);
-    }
+    status = evalresp_channels_to_responses (log, channels, options, responses);
     evalresp_free_channels (&channels);
   }
 
@@ -100,26 +96,21 @@ process_stdio (evalresp_log_t *log, evalresp_options *options, evalresp_filter *
 
 // process a single named file
 static int
-process_file (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter, const char *filename)
+process_file (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter, const char *filename, evalresp_responses **responses)
 {
   int status = EVALRESP_OK;
   evalresp_channels *channels = NULL;
-  evalresp_responses *responses = NULL;
 
   if (!(status = evalresp_filename_to_channels (log, filename, options, filter, &channels)))
   {
-    if (!(status = evalresp_channels_to_responses (log, channels, options, &responses)))
-    {
-      status = evalresp_responses_to_cwd (log, responses, options->format, options->use_stdio);
-      evalresp_free_responses (responses);
-    }
+    status = evalresp_channels_to_responses (log, channels, options, responses);
     evalresp_free_channels (&channels);
   }
   return status;
 }
 
 static int
-process_cwd_files (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter, struct matched_files *files)
+process_cwd_files (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter, struct matched_files *files, evalresp_responses **responses)
 {
   int status = EVALRESP_OK, i;
   struct matched_files *files_for_sncls;
@@ -141,7 +132,7 @@ process_cwd_files (evalresp_log_t *log, evalresp_options *options, evalresp_filt
         file = files->first_list;
         while (!status && files)
         {
-          status = process_file (log, options, filter, file->name);
+          status = process_file (log, options, filter, file->name, responses);
           file = file->next_file;
         }
       }
@@ -152,8 +143,9 @@ process_cwd_files (evalresp_log_t *log, evalresp_options *options, evalresp_filt
   return status;
 }
 
-static int
-process_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter)
+int
+evalresp_process_cwd_to_responses (evalresp_log_t *log, evalresp_options *options,
+                                   evalresp_filter *filter, evalresp_responses **responses)
 {
   int status = EVALRESP_OK, mode;
   struct matched_files *files = NULL;
@@ -162,11 +154,11 @@ process_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_filter *fi
   switch (mode)
   {
   case 0:
-    status = process_file (log, options, filter, options->filename);
+    status = process_file (log, options, filter, options->filename, responses);
     break;
   default:
     // TODO - do we need to handle other modes?
-    status = process_cwd_files (log, options, filter, files);
+    status = process_cwd_files (log, options, filter, files, responses);
     break;
   }
   free_matched_files (files);
@@ -176,5 +168,21 @@ process_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_filter *fi
 int
 evalresp_cwd_to_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter)
 {
-  return (options->use_stdio) ? process_stdio (log, options, filter) : process_cwd (log, options, filter);
+  int status;
+  evalresp_responses *responses = NULL;
+
+  if (options->verbose)
+  {
+    evalresp_log (log, EV_INFO, 0, "<< EVALRESP RESPONSE OUTPUT V%s >>", REVNUM);
+  }
+  status = (options && options->use_stdio) ?
+                evalresp_process_stdio_to_responses (log, options, filter, &responses) :
+                evalresp_process_cwd_to_responses (log, options, filter, &responses);
+
+  if (EVALRESP_OK == status)
+  {
+    status = evalresp_responses_to_cwd (log, responses, options->format, options->use_stdio);
+    evalresp_free_responses (responses);
+  }
+  return status;
 }
