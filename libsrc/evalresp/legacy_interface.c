@@ -1,4 +1,20 @@
+#include <evalresp_log/log.h>
+#include "evalresp/public_api.h"
 /* Fortran  interface */
+static int convert_responses_to_response_chain(evalresp_log *log, evalresp_responses *responses, evalresp_response **first_resp)
+{
+  int i;
+  int nresp;
+
+  nresp = responses->nresponses;
+  
+  for (i = 1; i < nresp; i++)
+  {
+      responses->responses[i-1]->next = responses->responses[i];
+  }
+  responses->responses[i-1] = NULL;
+  return EVALRESP_OK;
+}
 
 static int determine_log_or_lin(int num_freq, double *freqs)
 {
@@ -23,6 +39,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 {
   evalresp_options *options = NULL;
   evalresp_filter *filter = NULL;
+  evalresp_responses *all_resp = NULL;
   evalresp_response *first_resp = NULL;
 
   if (EVALRESP_OK != evalresp_new_options (log, &options))
@@ -89,14 +106,14 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 
   filter->datetime->year = year;
   filter->datetime->jday = jday;
-  if (EVALRESP_OK != evalresp_set_time (*log, filter, time))
+  if (EVALRESP_OK != evalresp_set_time (log, filter, time))
   {
     evalresp_free_options (&options);
     evalresp_free_filter (&filter);
     return NULL;
   }
 
-  if (EVALRESP_OK != evalresp_add_sncl_text (*log, filter, net_code, stalst, locidlst, chalst))
+  if (EVALRESP_OK != evalresp_add_sncl_text (log, filter, net_code, stalst, locidlst, chalst))
   {
     evalresp_free_options (&options);
     evalresp_free_filter (&filter);
@@ -106,35 +123,20 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   /*Call to new evresp */
   if (options->use_stdio)
   {
-    if (EVALRESP_OK != evalresp_file_to_channels (log, stdin, filter, &channels))
-    {
-      evalresp_free_options (&options);
-      evalresp_free_filter (&filter);
-      return NULL;
-    }
-    if (EVALRESP_OK !=  evalresp_channels_to_responses (log, channels, options, &responses))
-    {
-      evalresp_free_options (&options);
-      evalresp_free_filter (&filter);
-      return NULL;
-    }
+    status = evalresp_process_stdio_to_responses(log, options, filter, &responses);
   }
   else
   {
-    files = find_files (options->filename, filter->sncls, &mode, log);
-    if (0 == mode)
-    { /*TODO Process one file */
-    }
-    else
-    {
-        /*TODO need to process multiple files */
-    }
+    status = evalresp_process_cwd_to_responses(log, options, filter, &responses);
   }
 
   /*TODO covert responses to response linked list */
+  status = convert_responses_to_response_chain(log, responses, &first_resp);
 
   evalresp_free_options (&options);
   evalresp_free_filter (&filter);
+  free (responses); /* we want to keep the allocated responses but not the wrapper struct */
+  return first_resp;
 }
 
 /* wrapped main call */
