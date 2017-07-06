@@ -107,13 +107,6 @@
 /**
  * @private
  * @ingroup evalresp_private
- * @brief An array of strings presenting full SEED units names, like Counts, Volts, etc... .
- */
-extern char SEEDUNITS[][UNITS_STR_LEN];
-
-/**
- * @private
- * @ingroup evalresp_private
  * @brief Define the "first line" and "first field" arguments that are used by
  *        the parsing routines (they are used to compensate for the fact that
  *        in parsing the RESP files, one extra line is always read because the

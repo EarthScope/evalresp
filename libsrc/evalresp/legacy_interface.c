@@ -1,7 +1,21 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <string.h>
+#include <stdlib.h>
 #include <evalresp_log/log.h>
 #include "evalresp/public_api.h"
+#include "evalresp/public.h"
+#include "evalresp/private.h"
+
+/*TODO these need to be removed eventually used by parse_fcnts */
+char FirstLine[MAXLINELEN];
+int FirstField;
+
 /* Fortran  interface */
-static int convert_responses_to_response_chain(evalresp_log *log, evalresp_responses *responses, evalresp_response **first_resp)
+
+static int convert_responses_to_response_chain( evalresp_responses *responses, evalresp_response **first_resp)
 {
   int i;
   int nresp;
@@ -12,7 +26,8 @@ static int convert_responses_to_response_chain(evalresp_log *log, evalresp_respo
   {
       responses->responses[i-1]->next = responses->responses[i];
   }
-  responses->responses[i-1] = NULL;
+  responses->responses[i-1]->next = NULL;
+  *first_resp = responses->responses[0];
   return EVALRESP_OK;
 }
 
@@ -22,7 +37,7 @@ static int determine_log_or_lin(int num_freq, double *freqs)
     double dt2 = freqs[2] - freqs[1];
     double diff = dt1-dt2;
 
-    if (diff < 1e-8 and diff > -1e-8)
+    if (diff < 1e-8 && diff > -1e-8)
     {
         return 1; /*linear */
     }
@@ -39,22 +54,24 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 {
   evalresp_options *options = NULL;
   evalresp_filter *filter = NULL;
-  evalresp_responses *all_resp = NULL;
+  evalresp_responses *responses = NULL;
   evalresp_response *first_resp = NULL;
+  int i, year, jday;
+  char time[100];
 
   if (EVALRESP_OK != evalresp_new_options (log, &options))
   {
       return NULL;
   }
-  options->filename = file;
+  options->filename = strdup(file);
   options->b62_x = x_for_b62;
   options->nfreq = nfreqs;
   options->min_freq = freqs[0];
   options->max_freq = freqs[nfreqs - 1];
-  options->lin_freq = determine_log_or_lin(freqs, nfreqs);
+  options->lin_freq = determine_log_or_lin(nfreqs, freqs);
   options->start_stage = start_stage;
   options->stop_stage = stop_stage;
-  options->use_estimated_delay = use_estimated_delay(QUERY) == TRUE ? 1 : 0;
+  options->use_estimated_delay = use_estimated_delay(QUERY_DELAY) == TRUE ? 1 : 0;
   options->unwrap_phase = 0;/*TODO: Should this be a getter function? */
   options->b55_interpolate = listinterp_out_flag | listinterp_in_flag;
   options->use_total_sensitivity = useTotalSensitivityFlag;
@@ -63,7 +80,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 
   if (rtype)
   {
-    if (EVRESP_OK != evalresp_set_format (*log, options, optarg))
+    if (EVALRESP_OK != evalresp_set_format (log, options, rtype))
     {
       evalresp_free_options (&options);
       return NULL;
@@ -73,7 +90,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   }
   if (units)
   {
-    if (EVALRESP_OK != evalresp_set_unit (*log, options, units))
+    if (EVALRESP_OK != evalresp_set_unit (log, options, units))
     {
       evalresp_free_options (&options);
       return NULL;
@@ -81,12 +98,15 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
     options->unit_set=1;
   }
 
-  for (i = 0; i < strlen(verbose); i++)
+  if(verbose)
   {
+    for (i = 0; i < strlen(verbose); i++)
+    {
       if (toupper(verbose[i]) == 'V')
       {
-          options->verbose++;
+        options->verbose++;
       }
+    }
   }
 
   /*SETUP Filter */
@@ -96,7 +116,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
     return NULL;
   }
 
-  if ( 3 > sscanf(date_time, "%d %d %s", &year, &jday, &time))
+  if ( 3 > sscanf(date_time, "%d,%d,%s", &year, &jday, time))
   {
     evalresp_log(log, EV_ERROR, EV_ERROR, "Improper date time passed");
     evalresp_free_options (&options);
@@ -123,15 +143,15 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   /*Call to new evresp */
   if (options->use_stdio)
   {
-    status = evalresp_process_stdio_to_responses(log, options, filter, &responses);
+    evalresp_process_stdio_to_responses(log, options, filter, &responses);
   }
   else
   {
-    status = evalresp_process_cwd_to_responses(log, options, filter, &responses);
+    evalresp_process_cwd_to_responses(log, options, filter, &responses);
   }
 
   /*TODO covert responses to response linked list */
-  status = convert_responses_to_response_chain(log, responses, &first_resp);
+  convert_responses_to_response_chain(responses, &first_resp);
 
   evalresp_free_options (&options);
   evalresp_free_filter (&filter);

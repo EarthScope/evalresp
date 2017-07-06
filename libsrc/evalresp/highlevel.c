@@ -130,7 +130,7 @@ process_cwd_files (evalresp_log_t *log, evalresp_options *options, evalresp_filt
       if (!(status = evalresp_add_sncl (log, sncl_filter, sncl)))
       {
         file = files->first_list;
-        while (!status && files)
+        while (!status && file)
         {
           status = process_file (log, options, filter, file->name, responses);
           file = file->next_file;
