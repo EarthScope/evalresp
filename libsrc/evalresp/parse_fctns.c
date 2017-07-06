@@ -21,6 +21,10 @@
 #include "evalresp/public_channels.h"
 #include <evalresp/private.h>
 
+/*TODO these need to be removed eventually used by parse_fcnts */
+char FirstLine[MAXLINELEN];
+int FirstField;
+
 double atof (); // TODO - why are we declaring this?!
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

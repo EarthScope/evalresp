@@ -9,10 +9,6 @@
 #include "evalresp/public.h"
 #include "evalresp/private.h"
 
-/*TODO these need to be removed eventually used by parse_fcnts */
-char FirstLine[MAXLINELEN];
-int FirstField;
-
 /* Fortran  interface */
 
 static int convert_responses_to_response_chain( evalresp_responses *responses, evalresp_response **first_resp)
@@ -170,4 +166,77 @@ evresp (char *stalst, char *chalst, char *net_code,
   return evresp_itp (stalst, chalst, net_code, locidlst, date_time, units,
                      file, freqs, nfreqs, rtype, verbose, start_stage, stop_stage,
                      stdio_flag, 0, 0, 0.0, 0, x_for_b62, xml_flag, log);
+}
+
+void
+print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
+            int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
+            int useTotalSensitivityFlag, evalresp_log_t *log)
+{
+  evalresp_options *options = NULL;
+  if (EVALRESP_OK != evalresp_new_options (log, &options))
+  {
+      return;
+  }
+  options->filename = strdup(curr_file);/*TODO this needs to be no longer global */
+  options->start_stage = start_stage;
+  options->stop_stage = stop_stage;
+  options->use_estimated_delay = use_estimated_delay(QUERY_DELAY) == TRUE ? 1 : 0;
+  options->b55_interpolate = listinterp_out_flag | listinterp_in_flag;
+  options->use_total_sensitivity = useTotalSensitivityFlag;
+  options->use_stdio=stdio_flag;
+
+  evalresp_channel_to_log(log, options, chan);
+  evalresp_free_options (&options);
+  return;
+}
+
+void
+print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
+                char *rtype, int stdio_flag, int listinterp_out_flag,
+                double listinterp_tension, int unwrap_flag, evalresp_log_t *log)
+{
+  evalresp_responses responses[1];
+  evalresp_response *ptr;
+  evalresp_options *options = NULL;
+  int i;
+
+  if (EVALRESP_OK != evalresp_new_options (log, &options))
+  {
+      return;
+  }
+  options->nfreq = nfreqs;
+  options->min_freq = freqs[0];
+  options->max_freq = freqs[nfreqs - 1];
+  options->unwrap_phase = unwrap_flag;
+  options->b55_interpolate = listinterp_out_flag | (listinterp_tension != 0);
+
+  if (rtype)
+  {
+    if (EVALRESP_OK != evalresp_set_format (log, options, rtype))
+    {
+      evalresp_free_options (&options);
+      return;
+    }
+    options->format_set = 1;
+
+  }
+
+  for(responses->nresponses = 0, ptr = first; ptr != NULL; responses->nresponses++, ptr = ptr->next);
+
+  responses->responses = (evalresp_response **)calloc(responses->nresponses, sizeof(evalresp_response *));
+  for(i = 0, ptr = first; ptr != NULL; i++, ptr = ptr->next)
+  {
+    responses->responses[i] =ptr;
+  }
+
+  evalresp_responses_to_cwd (log, responses, options->format, stdio_flag);
+  free(responses->responses);
+}
+
+void
+print_resp (double *freqs, int nfreqs, evalresp_response *first, char *rtype,
+            int stdio_flag, evalresp_log_t *log)
+{
+  print_resp_itp (freqs, nfreqs, first, rtype, stdio_flag, 0, 0.0, 0, log);
 }

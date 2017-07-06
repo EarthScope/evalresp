@@ -23,6 +23,8 @@
 #include "./private.h"
 #include "evalresp/public_channels.h"
 
+#if 0
+this file should be deleted
 extern const char * get_SEEDUNITS(int idx);
 
 /* function declarations for forward references */
@@ -30,7 +32,8 @@ int arrays_equal (double *arr1, double *arr2, int arr_size);
 void evresp_adjust_phase (double *pha, int len, double min, double max);
 int evresp_vector_minmax (double *pha, int len, double *min, double *max);
 
-void
+/*XXX this needs to be checked */
+    void
 print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
             int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
             int useTotalSensitivityFlag, evalresp_log_t *log)
@@ -591,3 +594,5 @@ evresp_vector_minmax (double *pha, int len, double *min, double *max)
   }
   return 1;
 }
+
+#endif

@@ -107,30 +107,6 @@
 /**
  * @private
  * @ingroup evalresp_private
- * @brief Define the "first line" and "first field" arguments that are used by
- *        the parsing routines (they are used to compensate for the fact that
- *        in parsing the RESP files, one extra line is always read because the
- *        "end" of a filter sequence cannot be determined until the first line
- *        of the "next" filter sequence or station-channel pair is read from
- *        the file.
- */
-extern char FirstLine[];
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief Define the "first line" and "first field" arguments that are used by
- *        the parsing routines (they are used to compensate for the fact that
- *        in parsing the RESP files, one extra line is always read because the
- *        "end" of a filter sequence cannot be determined until the first line
- *        of the "next" filter sequence or station-channel pair is read from
- *        the file.
- */
-extern int FirstField;
-
-/**
- * @private
- * @ingroup evalresp_private
  * @brief Define a global flag to use if using "default" units.
  */
 extern int def_units_flag;
