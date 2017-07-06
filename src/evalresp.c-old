@@ -166,9 +166,6 @@ main (int argc, char *argv[])
                   8 - fswidx,
                   prog_name);
     exit (USAGE_ERROR);
-    /*XXX error_exit(USAGE_ERROR, "Not all of the required inputs are \n\t"
-                "present (%d missing), type '%s' for usage", 8 - fswidx,
-                prog_name); */
   }
 
   /* setup min,max,num freq values; use defaults if missing */
@@ -182,7 +179,6 @@ main (int argc, char *argv[])
     if (argv[i] != NULL && argv[i][0] != '\0')
     {
       evalresp_log (log, EV_WARN, 0, "Unrecognized parameter:  %s\n", argv[i]);
-      /*XXX fprintf(stderr, "WARNING:  Unrecognized parameter:  %s\n", argv[i]); */
     }
   }
 
@@ -230,8 +226,6 @@ main (int argc, char *argv[])
           evalresp_log (log, EV_ERROR, 0, "%s: option '-s' illegal type '%s'",
                         prog_name, type);
           exit (USAGE_ERROR);
-          /*XXX error_exit(USAGE_ERROR, "%s: option '-s' illegal type '%s'",
-                                prog_name, type); */
         }
         type = strdup (optarg); //, MAXFLDLEN);
         break;
@@ -253,7 +247,6 @@ main (int argc, char *argv[])
         {
           evalresp_log (log, EV_ERROR, 0, param_err_msgstr, prog_name, optarg);
           exit (USAGE_ERROR);
-          /*XXX error_exit(USAGE_ERROR, param_err_msgstr, prog_name, optarg); */
         }
         if (optind < flagc && is_int (flagv[optind], log))
         {
@@ -284,9 +277,6 @@ main (int argc, char *argv[])
                         "%s:  illegal value for 'it' parameter:  %s",
                         prog_name, optarg);
           exit (USAGE_ERROR);
-          /*XXX error_exit(USAGE_ERROR,
-                                "%s:  illegal value for 'it' parameter:  %s",
-                                prog_name, optarg); */
         }
         break;
       case 'b': /*b62_x*/
@@ -310,11 +300,9 @@ main (int argc, char *argv[])
         }
         evalresp_log (log, EV_ERROR, 0, param_err_msgstr, prog_name, err);
         exit (USAGE_ERROR);
-        /*XXX error_exit(USAGE_ERROR, param_err_msgstr, prog_name, err); */
         break;
       case '?': /* unrecognized flag */
         evalresp_log (log, EV_WARN, 0, "Unrecognized parameter:  %s\n", flagv[optind - 1]);
-        /*XXX fprintf(stderr, "WARNING:  Unrecognized parameter:  %s\n", flagv[optind-1]); */
         break;
       }
     }
@@ -343,9 +331,6 @@ main (int argc, char *argv[])
                                     "'hh[:mm[:ss[.#####]]]', found '%s'",
                   t_o_day);
     exit (USAGE_ERROR);
-    /*XXX error_exit(USAGE_ERROR,
-                "'time of day' must have format 'hh[:mm[:ss[.#####]]]', found '%s'",
-                t_o_day); */
   }
 
   fldlen = strlen (argv[3]) + strlen (argv[4]) + strlen (t_o_day) + 3;
@@ -359,8 +344,6 @@ main (int argc, char *argv[])
     evalresp_log (log, EV_ERROR, 0, "freq_lims must be real numbers, found (%s,%s)",
                   minfstr, maxfstr);
     exit (USAGE_ERROR);
-    /*XXX error_exit(USAGE_ERROR, "freq_lims must be real numbers, found (%s,%s)",
-                minfstr, maxfstr); */
   }
   freq_lims[0] = atof (minfstr);
   freq_lims[1] = atof (maxfstr);
@@ -369,16 +352,12 @@ main (int argc, char *argv[])
     evalresp_log (log, EV_ERROR, 0,
                   " freq lims can't equal 0 if log spacing is used");
     exit (USAGE_ERROR);
-    /*XXX error_exit(USAGE_ERROR,
-                " freq lims can't equal 0 if log spacing is used");*/
   }
   if (!is_int (numfstr, log))
   {
     evalresp_log (log, EV_ERROR, 0, "nfreqs must be an integer, found '%s'",
                   numfstr);
     exit (USAGE_ERROR);
-    /*XXX error_exit(USAGE_ERROR, "nfreqs must be an integer, found '%s'",
-                numfstr); */
   }
   nfreqs = atoi (numfstr);
 
@@ -395,8 +374,6 @@ main (int argc, char *argv[])
     evalresp_log (log, EV_ERROR, 0,
                   "nfreqs value entered must be positive, entered %d", nfreqs);
     exit (USAGE_ERROR);
-    /*XXX error_exit(USAGE_ERROR,
-                "nfreqs value entered must be positive, entered %d", nfreqs); */
   }
 
   /* depending on the type of spacing, set either a step size or a multiplication
@@ -458,9 +435,6 @@ main (int argc, char *argv[])
                       "evalresp; rtype entered ('%s') not a recognized string (see usage)",
                       rtype);
         exit (USAGE_ERROR);
-        /*XXX error_exit(USAGE_ERROR,
-                        "evalresp; rtype entered ('%s') not a recognized string (see usage)",
-                        rtype);*/
       }
     }
   }
@@ -481,9 +455,6 @@ main (int argc, char *argv[])
                     "evalresp; units entered ('%s') not a recognized string (see usage)",
                     units);
       exit (USAGE_ERROR);
-      /*XXX error_exit(USAGE_ERROR,
-                    "evalresp; units entered ('%s') not a recognized string (see usage)",
-                    units); */
     }
     else if (!strcmp (units, "DEF"))
     {
@@ -521,7 +492,6 @@ main (int argc, char *argv[])
   if (!first)
   {
     evalresp_log (log, EV_WARN, 0, "EVRESP FAILED\n");
-    /*XXX fprintf(stderr, "EVRESP FAILED\n"); */
     exit (EXIT_FAILURE);
   }
 

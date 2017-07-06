@@ -25,13 +25,11 @@ static int line(evalresp_log_t *log, FILE *out, const char *template, ...) {
     if (!(with_lf = calloc(strlen(template) + 2, sizeof(*with_lf)))) {
         evalresp_log(log, EV_ERROR, 0, "Cannot allocate buffer");
         status = X2R_ERR_MEMORY;
-        /*XXX status = x2r_error(log, X2R_ERR_MEMORY, "Cannot allocate buffer"); */
     } else {
         sprintf(with_lf, "%s\n", template);
         if (vfprintf(out, with_lf, argp) < 0) {
             evalresp_log(log, EV_ERROR, 0, "Error printing %s", template);
             status = X2R_ERR_IO;
-            /*XXX status = x2r_error(log, X2R_ERR_IO, "Error printing %s", template); */
         }
     }
 
@@ -68,17 +66,14 @@ static int format_date(evalresp_log_t *log, const time_t epoch, int n, char *tem
     if (!(tm = gmtime(&epoch))) {
         evalresp_log(log, EV_ERROR, 0, "Cannot convert epoch to time");
         status = X2R_ERR_DATE;
-        /*XXX status = x2r_error(log, X2R_ERR_DATE, "Cannot convert epoch to time"); */
     } else {
         if (!(*date = calloc(n, sizeof(**date)))) {
             evalresp_log(log, EV_ERROR, 0, "Cannot alloc date");
             status = X2R_ERR_MEMORY;
-            /*XXX status = x2r_error(log, X2R_ERR_MEMORY, "Cannot alloc date"); */
         } else {
             if (!(strftime(*date, n, template, tm))) {
                 evalresp_log(log, EV_ERROR, 0, "Cannot format date in %d char", n);
                 status = X2R_ERR_BUFFER;
-                /*XXX status = x2r_error(log, X2R_ERR_BUFFER, "Cannot format date in %d char", n); */
             }
         }
     }
@@ -120,7 +115,6 @@ static int centre(evalresp_log_t *log, const char *text, int width, char **resul
     if (!(*result = calloc(width + 1, sizeof(**result)))) {
         evalresp_log(log, EV_ERROR, 0, "Cannot alloc centre");
         status = X2R_ERR_MEMORY;
-        /*XXX status = x2r_error(log, X2R_ERR_MEMORY, "Cannot alloc centre"); */
     } else {
 
         len = strlen(text);
@@ -147,7 +141,6 @@ static int centre_sncl(evalresp_log_t *log, const char *net, const char *stn, co
     if (!(sncl = calloc(len + 1, sizeof(*sncl)))) {
         evalresp_log(log, EV_ERROR, 0, "Cannot alloc sncl");
         status = X2R_ERR_MEMORY;
-        /*XXX status = x2r_error(log, X2R_ERR_MEMORY, "Cannot alloc sncl"); */
     } else {
 
         memset(sncl, ' ', len);
@@ -587,7 +580,6 @@ static int print_stage(evalresp_log_t *log, FILE *out, const char *net, const ch
         break;
     default:
         evalresp_log(log, EV_WARN, 0, "No content in stage (during print)");
-        /*XXX x2r_warn(log, "No content in stage (during print)"); */
         break;
     }
 

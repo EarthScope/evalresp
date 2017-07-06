@@ -288,8 +288,6 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   if (verbose && !strcmp (verbose, "-v"))
   {
     evalresp_log (log, EV_INFO, 0, "<< EVALRESP RESPONSE OUTPUT V%s >>", REVNUM);
-    /*XXX fprintf(stderr, "<< EVALRESP RESPONSE OUTPUT V%s >>\n", REVNUM);
-        fflush(stderr); */
   }
 
   /* set the values of first_units and last_units to null strings */
@@ -410,14 +408,6 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
     {
       evalresp_log (log, EV_ERROR, 0, "%s failed to open file %s\n", myLabel, file);
       return NULL;
-      /*XXX
-#ifdef LIB_MODE
-            fprintf(stderr, "%s failed to open file %s\n", myLabel, file);
-            return NULL;
-#else
-            error_exit(OPEN_FILE_ERROR, "failed to open file %s", file);
-#endif
-*/
     }
   }
 
@@ -776,16 +766,10 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                       evalresp_log (log, EV_WARN, 0,
                                     "%s: OUTPUT %s does not make sense if INPUT is PRESSURE\n",
                                     myLabel, units);
-                      /*XXX fprintf(stderr,
-                                                    "%s WARNING: OUTPUT %s does not make sense if INPUT is PRESSURE\n",
-                                                    myLabel, units); */
                       strcpy (units, "VEL");
                       evalresp_log (log, EV_WARN, 0,
                                     "%s      OUTPUT units are reset and interpreted as PRESSURE\n",
                                     myLabel);
-                      /*XXX fprintf(stderr,
-                                                    "%s      OUTPUT units are reset and interpreted as PRESSURE\n",
-                                                    myLabel); */
                     }
                   }
                 }
@@ -800,16 +784,10 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                       evalresp_log (log, EV_WARN, 0,
                                     "%s: OUTPUT %s does not make sense if INPUT is MAGNETIC FLUX\n",
                                     myLabel, units);
-                      /*XXX fprintf(stderr,
-                                                    "%s WARNING: OUTPUT %s does not make sense if INPUT is MAGNETIC FLUX\n",
-                                                    myLabel, units); */
                       strcpy (units, "VEL");
                       evalresp_log (log, EV_WARN, 0,
                                     "%s      OUTPUT units are reset and interpreted as TESLA\n",
                                     myLabel);
-                      /*XXX fprintf(stderr,
-                                                    "%s      OUTPUT units are reset and interpreted as TESLA\n",
-                                                    myLabel); */
                     }
                   }
                 }
@@ -825,16 +803,10 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                       evalresp_log (log, EV_WARN, 0,
                                     "%s: OUTPUT %s does not make sense if INPUT is TEMPERATURE\n",
                                     myLabel, units);
-                      /*XXX fprintf(stderr,
-                                                    "%s WARNING: OUTPUT %s does not make sense if INPUT is TEMPERATURE\n",
-                                                    myLabel, units); */
                       strcpy (units, "VEL");
                       evalresp_log (log, EV_WARN, 0,
                                     "%s      OUTPUT units are reset and interpreted as  DEGREES CENTIGRADE\n",
                                     myLabel);
-                      /*XXX fprintf(stderr,
-                                                    "%s      OUTPUT units are reset and interpreted as  DEGREES CENTIGRADE\n",
-                                                    myLabel); */
                     }
                   }
                 }
@@ -1033,11 +1005,6 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                     "%s: no response found for NET=%s,STA=%s,LOCID=%s,CHAN=%s,DATE=%s\n",
                     myLabel, scn->network, scn->station, scn->locid,
                     scn->channel, date_time);
-      /*XXX fprintf(stderr,
-                    "%s WARNING: no response found for NET=%s,STA=%s,LOCID=%s,CHAN=%s,DATE=%s\n",
-                    myLabel, scn->network, scn->station, scn->locid,
-                    scn->channel, date_time);
-            fflush(stderr); */
     }
   }
   evalresp_free_sncls (scns);

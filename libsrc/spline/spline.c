@@ -1158,10 +1158,7 @@ double bez_val ( int n, double x, double a, double b, double y[], evalresp_log_t
   {
     evalresp_log(log, EV_ERROR, 0, "BEZ_VAL - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  Null interval, A = B = %f", a );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "BEZ_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  Null interval, A = B = %f\n", a ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 /*
   X01 lies in [0,1], in the same relative position as X in [A,B].
@@ -1463,10 +1460,7 @@ double *bpab ( int n, double a, double b, double x, evalresp_log_t *log )
   {
     evalresp_log(log, EV_ERROR, 0, "BPAB - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  A = B = %f", a );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "BPAB - Fatal error!\n" );
-    fprintf ( stderr, "  A = B = %f\n", a ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 
   bern = ( double * ) malloc ( ( n + 1 ) * sizeof ( double ) );
@@ -1589,10 +1583,6 @@ int chfev ( double x1, double x2, double f1, double f2, double d1, double d2,
     evalresp_log(log, EV_ERROR, 0, "CHFEV - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  Number of evaluation points is less than 1." );
     evalresp_log(log, EV_ERROR, 0, "  NE = %d", ne );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "CHFEV - Fatal error!\n" );
-    fprintf ( stderr, "  Number of evaluation points is less than 1.\n" );
-    fprintf ( stderr, "  NE = %d\n", ne ); */
     return ierr;
   }
 
@@ -1603,9 +1593,6 @@ int chfev ( double x1, double x2, double f1, double f2, double d1, double d2,
     ierr = -2;
     evalresp_log(log, EV_ERROR, 0, "CHFEV - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  The interval [X1,X2] is of zero length." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "CHFEV - Fatal error!\n" );
-    fprintf ( stderr, "  The interval [X1,X2] is of zero length.\n" ); */
     return ierr;
   }
 /*
@@ -2131,12 +2118,7 @@ void data_to_dif ( int ntab, double xtab[], double ytab[], double diftab[], eval
         evalresp_log(log, EV_ERROR, 0, "  Two entries of XTAB are equal!" );
         evalresp_log(log, EV_ERROR, 0, "  XTAB[%d] = %f", i, xtab[i] );
         evalresp_log(log, EV_ERROR, 0, "  XTAB[%d] = %f", j, xtab[j] );
-        /*XXX fprintf ( stderr, "\n" );
-        fprintf ( stderr, "DATA_TO_DIF - Fatal error!\n" );
-        fprintf ( stderr, "  Two entries of XTAB are equal!\n" );
-        fprintf ( stderr, "  XTAB[%d] = %f\n", i, xtab[i] );
-        fprintf ( stderr, "  XTAB[%d] = %f\n", j, xtab[j] ); */
-        exit ( 1 );
+        exit ( 1 ); /* TODO imho this should not exit */
       }
     }
   }
@@ -2375,12 +2357,6 @@ void least_set ( int point_num, double x[], double f[], double w[],
     evalresp_log(log, EV_ERROR, 0, "  at least NTERMS = %d", nterms );
     evalresp_log(log, EV_ERROR, 0, "  but the input data has only %d", unique_num );
     evalresp_log(log, EV_ERROR, 0, "  distinct entries." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "LEAST_SET - Fatal error!\n" );
-    fprintf ( stderr, "  The number of distinct X values must be\n" );
-    fprintf ( stderr, "  at least NTERMS = %d\n", nterms );
-    fprintf ( stderr, "  but the input data has only %d\n", unique_num );
-    fprintf ( stderr, "  distinct entries.\n" ); */
     return;
   }
 /*
@@ -2394,11 +2370,6 @@ void least_set ( int point_num, double x[], double f[], double w[],
       evalresp_log(log, EV_ERROR, 0, "  All weights W must be positive," );
       evalresp_log(log, EV_ERROR, 0, "  but weight %d", i );
       evalresp_log(log, EV_ERROR, 0, "  is %g", w[i] );
-      /*XXX fprintf ( stderr, "\n" );
-      fprintf ( stderr, "LEAST_SET - Fatal error!\n" );
-      fprintf ( stderr, "  All weights W must be positive,\n" );
-      fprintf ( stderr, "  but weight %d\n", i );
-      fprintf ( stderr, "  is %g\n", w[i] ); */
       return;
     }
   }
@@ -2797,10 +2768,7 @@ void least_set_old ( int ntab, double xtab[], double ytab[], int ndeg,
     *ierror = 1;
     evalresp_log(log, EV_ERROR, 0, "LEAST_SET_OLD - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  NDEG < 1." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "LEAST_SET_OLD - Fatal error!\n" );
-    fprintf ( stderr, "  NDEG < 1.\n" ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 
   if ( ntab <= ndeg )
@@ -2808,10 +2776,7 @@ void least_set_old ( int ntab, double xtab[], double ytab[], int ndeg,
     *ierror = 1;
     evalresp_log(log, EV_ERROR, 0, "LEAST_SET_OLD - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  NTAB <= NDEG." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "LEAST_SET_OLD - Fatal error!\n" );
-    fprintf ( stderr, "  NTAB <= NDEG.\n" ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 /*
   Check that the abscissas are strictly increasing.
@@ -2825,12 +2790,7 @@ void least_set_old ( int ntab, double xtab[], double ytab[], int ndeg,
       evalresp_log(log, EV_ERROR, 0, "  XTAB must be strictly increasing, but" );
       evalresp_log(log, EV_ERROR, 0, "  XTAB(%d) = %g", i - 1, xtab[i-1] );
       evalresp_log(log, EV_ERROR, 0, "  XTAB(%d) = %g", i, xtab[i] );
-      /*XXX fprintf ( stderr, "\n" );
-      fprintf ( stderr, "LEAST_SET_OLD - Fatal error!\n" );
-      fprintf ( stderr, "  XTAB must be strictly increasing, but\n" );
-      fprintf ( stderr, "  XTAB(%d) = %g\n", i - 1, xtab[i-1] );
-      fprintf ( stderr, "  XTAB(%d) = %g\n", i, xtab[i] ); */
-      exit ( 1 );
+      exit ( 1 ); /* TODO imho this should not exit */
     }
   }
 
@@ -3118,30 +3078,21 @@ void parabola_val2 ( int ndim, int ndata, double tdata[], double ydata[],
   {
     evalresp_log(log, EV_ERROR, 0, "PARABOLA_VAL2 - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  LEFT < 0." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "PARABOLA_VAL2 - Fatal error!\n" );
-    fprintf ( stderr, "  LEFT < 0.\n" ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 
   if ( ndata-2 < left )
   {
     evalresp_log(log, EV_ERROR, 0, "PARABOLA_VAL2 - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, " NDATA-2 < LEFT." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "PARABOLA_VAL2 - Fatal error!\n" );
-    fprintf ( stderr, " NDATA-2 < LEFT.\n" ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 
   if ( ndim < 1 )
   {
     evalresp_log(log, EV_ERROR, 0, "PARABOLA_VAL2 - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, " NDIM < 1." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "PARABOLA_VAL2 - Fatal error!\n" );
-    fprintf ( stderr, " NDIM < 1.\n" ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 /*
   Copy out the three abscissas.
@@ -3157,13 +3108,7 @@ void parabola_val2 ( int ndim, int ndata, double tdata[], double ydata[],
     evalresp_log(log, EV_ERROR, 0, "  T1 = %g", t1 );
     evalresp_log(log, EV_ERROR, 0, "  T2 = %g", t2 );
     evalresp_log(log, EV_ERROR, 0, "  T3 = %g", t3 );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "PARABOLA_VAL2 - Fatal error!\n" );
-    fprintf ( stderr, "  T2 <= T1 or T3 <= T2.\n" );
-    fprintf ( stderr, "  T1 = %g\n", t1 );
-    fprintf ( stderr, "  T2 = %g\n", t2 );
-    fprintf ( stderr, "  T3 = %g\n", t3 ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 /*
   Construct and evaluate a parabolic interpolant for the data.
@@ -3569,10 +3514,7 @@ double *r8ge_fs_new ( int n, double a[], double b[], evalresp_log_t *log )
     {
       evalresp_log(log, EV_ERROR, 0, "R8GE_FS_NEW - Fatal error!" );
       evalresp_log(log, EV_ERROR, 0, "  Zero pivot on step %d", jcol );
-      /*XXX fprintf ( stderr, "\n" );
-      fprintf ( stderr, "R8GE_FS_NEW - Fatal error!\n" );
-      fprintf ( stderr, "  Zero pivot on step %d\n", jcol ); */
-      exit ( 1 );
+      exit ( 1 ); /* TODO imho this should not exit */
     }
 /*
   Switch rows JCOL and IPIV, and X.
@@ -3771,10 +3713,7 @@ void r8vec_bracket3 ( int n, double t[], double tval, int *left, evalresp_log_t 
   {
     evalresp_log(log, EV_ERROR, 0, "R8VEC_BRACKET3 - Fatal error" );
     evalresp_log(log, EV_ERROR, 0, "  N must be at least 2." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "R8VEC_BRACKET3 - Fatal error\n" );
-    fprintf ( stderr, "  N must be at least 2.\n" ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 /*
   If *LEFT is not between 0 and N-2, set it to the middle value.
@@ -4312,10 +4251,7 @@ double *r8vec_uniform_new ( int n, double b, double c, int *seed, evalresp_log_t
   {
     evalresp_log(log, EV_ERROR, 0, "R8VEC_UNIFORM_NEW - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  Input value of SEED = 0." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "R8VEC_UNIFORM_NEW - Fatal error!\n" );
-    fprintf ( stderr, "  Input value of SEED = 0.\n" ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 
   r = ( double * ) malloc ( n * sizeof ( double ) );
@@ -4904,11 +4840,7 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
     evalresp_log(log, EV_ERROR, 0, "SPLINE_CUBIC_SET - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  The number of data points N must be at least 2." );
     evalresp_log(log, EV_ERROR, 0, "  The input value is %d.\n", n );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "SPLINE_CUBIC_SET - Fatal error!\n" );
-    fprintf ( stderr, "  The number of data points N must be at least 2.\n" );
-    fprintf ( stderr, "  The input value is %d.\n", n ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 
   for ( i = 0; i < n - 1; i++ )
@@ -4919,12 +4851,7 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
       evalresp_log(log, EV_ERROR, 0, "  The knots must be strictly increasing, but" );
       evalresp_log(log, EV_ERROR, 0, "  T(%d) = %g", i, t[i] );
       evalresp_log(log, EV_ERROR, 0, "  T(%d) = %g", i+1, t[i+1] );
-      /*XXX fprintf ( stderr, "\n" );
-      fprintf ( stderr, "SPLINE_CUBIC_SET - Fatal error!\n" );
-      fprintf ( stderr, "  The knots must be strictly increasing, but\n" );
-      fprintf ( stderr, "  T(%d) = %g\n", i, t[i] );
-      fprintf ( stderr, "  T(%d) = %g\n", i+1, t[i+1] ); */
-      exit ( 1 );
+      exit ( 1 ); /* TODO imho this should not exit */
     }
   }
   a1 = ( double * ) malloc ( n * sizeof ( double ) );
@@ -4975,11 +4902,7 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
     evalresp_log(log, EV_ERROR, 0, "SPLINE_CUBIC_SET - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  IBCBEG must be 0, 1 or 2." );
     evalresp_log(log, EV_ERROR, 0, "  The input value is %d.", ibcbeg );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "SPLINE_CUBIC_SET - Fatal error!\n" );
-    fprintf ( stderr, "  IBCBEG must be 0, 1 or 2.\n" );
-    fprintf ( stderr, "  The input value is %d.\n", ibcbeg ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 /*
   Set up the intermediate equations.
@@ -5025,11 +4948,7 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
     evalresp_log(log, EV_ERROR, 0, "SPLINE_CUBIC_SET - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  IBCEND must be 0, 1 or 2." );
     evalresp_log(log, EV_ERROR, 0, "  The input value is %d.", ibcend );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "SPLINE_CUBIC_SET - Fatal error!\n" );
-    fprintf ( stderr, "  IBCEND must be 0, 1 or 2.\n" );
-    fprintf ( stderr, "  The input value is %d.\n", ibcend ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 /*
   Solve the linear system.
@@ -5916,10 +5835,7 @@ double spline_overhauser_nonuni_val ( int ndata, double tdata[],
   {
     evalresp_log(log, EV_ERROR, 0, "SPLINE_OVERHAUSER_NONUNI_VAL - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  NDATA < 3." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "SPLINE_OVERHAUSER_NONUNI_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  NDATA < 3.\n" ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 /*
   Find the nearest interval [ TDATA(LEFT), TDATA(RIGHT) ] to TVAL.
@@ -5980,12 +5896,7 @@ double spline_overhauser_nonuni_val ( int ndata, double tdata[],
     evalresp_log(log, EV_ERROR, 0, "  Nonsensical value of LEFT = %d", left );
     evalresp_log(log, EV_ERROR, 0, "  but 0 < LEFT < NDATA = %d", ndata );
     evalresp_log(log, EV_ERROR, 0, "  is required." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "SPLINE_OVERHAUSER_NONUNI_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  Nonsensical value of LEFT = %d\n", left );
-    fprintf ( stderr, "  but 0 < LEFT < NDATA = %d\n", ndata );
-    fprintf ( stderr, "  is required.\n" ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 
   free ( mbasis );
@@ -6044,10 +5955,7 @@ double spline_overhauser_uni_val ( int ndata, double tdata[], double ydata[],
   {
     evalresp_log(log, EV_ERROR, 0, "SPLINE_OVERHAUSER_UNI_VAL - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  NDATA < 3." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "SPLINE_OVERHAUSER_UNI_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  NDATA < 3.\n" ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 /*
   Find the nearest interval [ TDATA(LEFT), TDATA(RIGHT) ] to TVAL.
@@ -6169,20 +6077,14 @@ void spline_overhauser_val ( int ndim, int ndata, double tdata[],
   {
     evalresp_log(log, EV_ERROR, 0, "SPLINE_OVERHAUSER_VAL - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  The data abscissas are not strictly ascending." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "SPLINE_OVERHAUSER_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  The data abscissas are not strictly ascending.\n" ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 
   if ( ndata < 3 )
   {
     evalresp_log(log, EV_ERROR, 0, "SPLINE_OVERHAUSER_VAL - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  NDATA < 3." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "SPLINE_OVERHAUSER_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  NDATA < 3.\n" ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 /*
   Locate the abscissa interval T[LEFT], T[LEFT+1] nearest to or
@@ -6337,10 +6239,7 @@ void spline_pchip_set ( int n, double x[], double f[], double d[], evalresp_log_
     ierr = -1;
     evalresp_log(log, EV_ERROR, 0, "SPLINE_PCHIP_SET - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  Number of data points less than 2." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "SPLINE_PCHIP_SET - Fatal error!\n" );
-    fprintf ( stderr, "  Number of data points less than 2.\n" ); */
-    exit ( ierr );
+    exit ( ierr ); /* TODO imho this should not exit */
   }
 
   for ( i = 1; i < n; i++ )
@@ -6350,10 +6249,7 @@ void spline_pchip_set ( int n, double x[], double f[], double d[], evalresp_log_
       ierr = -3;
       evalresp_log(log, EV_ERROR, 0, "SPLINE_PCHIP_SET - Fatal error!" );
       evalresp_log(log, EV_ERROR, 0, "  X array not strictly increasing.\n" );
-      /*XXX fprintf ( stderr, "\n" );
-      fprintf ( stderr, "SPLINE_PCHIP_SET - Fatal error!\n" );
-      fprintf ( stderr, "  X array not strictly increasing.\n" ); */
-      exit ( ierr );
+      exit ( ierr ); /* TODO imho this should not exit */
     }
   }
 
@@ -6586,10 +6482,7 @@ void spline_pchip_val ( int n, double x[], double f[], double d[],
     ierr = -1;
     evalresp_log(log, EV_ERROR, 0, "SPLINE_PCHIP_VAL - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  Number of data points less than 2." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "SPLINE_PCHIP_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  Number of data points less than 2.\n" ); */
-    exit ( ierr );
+    exit ( ierr ); /* TODO imho this should not exit */
   }
 
   for ( i = 1; i < n; i++ )
@@ -6599,10 +6492,7 @@ void spline_pchip_val ( int n, double x[], double f[], double d[],
       ierr = -3;
       evalresp_log(log, EV_ERROR, 0, "SPLINE_PCHIP_VAL - Fatal error!" );
       evalresp_log(log, EV_ERROR, 0, "  X array not strictly increasing." );
-      /*XXX fprintf ( stderr, "\n" );
-      fprintf ( stderr, "SPLINE_PCHIP_VAL - Fatal error!\n" );
-      fprintf ( stderr, "  X array not strictly increasing.\n" ); */
-      exit ( ierr );
+      exit ( ierr ); /* TODO imho this should not exit */
     }
   }
 
@@ -6611,9 +6501,6 @@ void spline_pchip_val ( int n, double x[], double f[], double d[],
     ierr = -4;
     evalresp_log(log, EV_ERROR, 0, "SPLINE_PCHIP_VAL - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  Number of evaluation points less than 1." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "SPLINE_PCHIP_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  Number of evaluation points less than 1.\n" ); */
     return;
   }
 
@@ -6674,10 +6561,7 @@ void spline_pchip_val ( int n, double x[], double f[], double d[],
         ierr = -5;
         evalresp_log(log, EV_ERROR, 0, "SPLINE_PCHIP_VAL - Fatal error!" );
         evalresp_log(log, EV_ERROR, 0, "  Error return from CHFEV." );
-        /*XXX fprintf ( stderr, "\n" );
-        fprintf ( stderr, "SPLINE_PCHIP_VAL - Fatal error!\n" );
-        fprintf ( stderr, "  Error return from CHFEV.\n" ); */
-        exit ( ierr );
+        exit ( ierr ); /* TODO imho this should not exit */
       }
 /*
   In the current set of XE points, there are NEXT(2) to the right of X(IR).
@@ -6689,10 +6573,7 @@ void spline_pchip_val ( int n, double x[], double f[], double d[],
           ierr = -5;
           evalresp_log(log, EV_ERROR, 0, "SPLINE_PCHIP_VAL - Fatal error!" );
           evalresp_log(log, EV_ERROR, 0, "  IR < N." );
-          /*XXX fprintf ( stderr, "\n" );
-          fprintf ( stderr, "SPLINE_PCHIP_VAL - Fatal error!\n" );
-          fprintf ( stderr, "  IR < N.\n" ); */
-          exit ( ierr );
+          exit ( ierr ); /* TODO imho this should not exit */
         }
 /*
   These are actually extrapolation points.
@@ -6730,10 +6611,7 @@ void spline_pchip_val ( int n, double x[], double f[], double d[],
             ierr = -5;
             evalresp_log(log, EV_ERROR, 0, "SPLINE_PCHIP_VAL - Fatal error!" );
             evalresp_log(log, EV_ERROR, 0, "  Could not bracket the data point." );
-            /*XXX fprintf ( stderr, "\n" );
-            fprintf ( stderr, "SPLINE_PCHIP_VAL - Fatal error!\n" );
-            fprintf ( stderr, "  Could not bracket the data point.\n" ); */
-            exit ( ierr );
+            exit ( ierr ); /* TODO imho this should not exit */
           }
 /*
   Reset J.  This will be the new J_FIRST.
@@ -6833,20 +6711,14 @@ void spline_quadratic_val ( int ndata, double tdata[], double ydata[],
   {
     evalresp_log(log, EV_ERROR, 0, "SPLINE_QUADRATIC_VAL - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  NDATA < 3." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "SPLINE_QUADRATIC_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  NDATA < 3.\n" ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 
   if ( ndata % 2 == 0 )
   {
     evalresp_log(log, EV_ERROR, 0, "SPLINE_QUADRATIC_VAL - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  NDATA must be odd." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "SPLINE_QUADRATIC_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  NDATA must be odd.\n" ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 /*
   Find the interval [ TDATA(LEFT), TDATA(RIGHT) ] that contains, or is
@@ -6871,10 +6743,7 @@ void spline_quadratic_val ( int ndata, double tdata[], double ydata[],
   {
     evalresp_log(log, EV_ERROR, 0, "SPLINE_QUADRATIC_VAL - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  T2 <= T1 or T3 <= T2." );
-    /*XXX fprintf ( stderr, "\n" );
-    fprintf ( stderr, "SPLINE_QUADRATIC_VAL - Fatal error!\n" );
-    fprintf ( stderr, "  T2 <= T1 or T3 <= T2.\n" ); */
-    exit ( 1 );
+    exit ( 1 ); /* TODO imho this should not exit */
   }
 /*
   Construct and evaluate a parabolic interpolant for the data
