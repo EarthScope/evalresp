@@ -143,16 +143,6 @@ extern char *curr_file;
  */
 extern int curr_seq_no;
 
-/* and set a global variable to contain the environment for the setjmp/longjmp
- combination for error handling */
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief Jump buffer for long jump function: obsolete and will be removed.
- */
-extern jmp_buf jump_buffer;
-
 /**
  * @private
  * @ingroup evalresp_private

@@ -1139,30 +1139,6 @@ void free_channel (evalresp_channel *chan_ptr);
 /* simple error handling routines to standardize the output error values and
  allow for control to return to 'evresp' if a recoverable error occurs */
 
-/**
- * @private
- * @ingroup evalresp_private_error
- * @brief Prints a user supplied error message to stderr and exits with the
- *        user supplied error condition.
- * @param[in] cond Exit status for exit().
- * @param[in] msg Message format string.
- * @param[in] ... Arguments to format string.
- * @warning Do not use in library calls.
- */
-void error_exit (int cond, char *msg, ...);
-
-/**
- * @private
- * @ingroup evalresp_private_error
- * @brief Prints a user supplied error message to stderr and returns control
- *        to the calling routine at the point that that routine calls
- *        'setjmp(jump_buffer)'.
- * @param[in] cond Return value from setjmp()
- * @param[in] msg Message format string.
- * @param[in] ... Arguments to format string.
- */
-void error_return (int cond, char *msg, ...);
-
 /* a simple routine that parses the station information from the input file */
 
 /**

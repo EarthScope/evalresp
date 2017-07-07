@@ -16,6 +16,8 @@ char SEEDUNITS[][UNITS_STR_LEN] =
 
 char FirstLine[MAXLINELEN];
 int FirstField;
+jmp_buf jump_buffer;
+
 
 evalresp_response *
 old_evresp_itp (char *stalst, char *chalst, char *net_code,

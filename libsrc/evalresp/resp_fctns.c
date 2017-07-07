@@ -405,8 +405,11 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
         ref_blkt = blkt_ptr;
         break;
       default:
-        error_return (UNSUPPORT_FILTYPE, "check_channel; unrecognized blkt type (type=%d)",
+        evalresp_log (log, EV_ERROR, 0, "check_channel; unrecognized blkt type (type=%d)",
                       blkt_ptr->type);
+        return; /*TODO UNSUPPORT_FILTYPE */
+        /*XXX error_return (UNSUPPORT_FILTYPE, "check_channel; unrecognized blkt type (type=%d)",
+                      blkt_ptr->type);*/
       }
       blkt_ptr = next_blkt;
     }
