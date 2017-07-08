@@ -325,7 +325,7 @@ read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
 
 // this was parse_pz
 // TODO - add error returns
-static void
+static int
 read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
          evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
@@ -342,21 +342,21 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", first_field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
 
   blkt_read = first_field == 3 ? 53 : 43;
 
   if (0 > parse_field (first_line, 0, field, log))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   if (strlen (field) != 1)
   {
     evalresp_log (log, EV_ERROR, 0,
                   "parse_pz; parsing (Poles & Zeros), illegal filter type ('%s')",
                   field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
 
   switch (*field)
@@ -374,7 +374,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
     evalresp_log (log, EV_ERROR, 0,
                   "parse_pz; parsing (Poles & Zeros), unexpected filter type ('%c')",
                   *field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
 
   /* set the check-field counter to the next expected field */
@@ -386,7 +386,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
   {
     if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     stage_ptr->sequence_no = get_int (field, log);
     curr_seq_no = stage_ptr->sequence_no;
@@ -396,29 +396,29 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
 
   if (0 > find_line (log, seed, ":", blkt_read, check_fld++, line))
   {
-    return; /*TODO */
+    return EVALRESP_PAR;
   }
   stage_ptr->input_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
-    return; /* TODO */
+    return EVALRESP_PAR;
   }
 
   if (0 > find_line (log, seed, ":", blkt_read, check_fld++, line))
   {
-    return; /*TODO */
+    return EVALRESP_PAR;
   }
   stage_ptr->output_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
-    return; /* TODO */
+    return EVALRESP_PAR;
   }
 
   /* then the A0 normalization factor */
 
   if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   blkt_ptr->blkt_info.pole_zero.a0 = get_double (field, log);
 
@@ -426,7 +426,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
 
   if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   blkt_ptr->blkt_info.pole_zero.a0_freq = get_double (field, log);
 
@@ -434,7 +434,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
 
   if (0 > find_field (log, seed, ":", blkt_read, check_fld, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   nzeros = get_int (field, log);
   blkt_ptr->blkt_info.pole_zero.nzeros = nzeros;
@@ -452,7 +452,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
 
   if (0 > find_field (log, seed, ":", blkt_read, check_fld, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   npoles = get_int (field, log);
   blkt_ptr->blkt_info.pole_zero.npoles = npoles;
@@ -472,28 +472,28 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
   {
     if (0 > find_line (log, seed, " ", blkt_read, check_fld, line))
     {
-      return; /*TODO */
+      return EVALRESP_PAR;
     }
     if (0 > parse_field (line, 1, field, log))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     if (!is_real (field, log))
     {
       evalresp_log (log, EV_ERROR, 0, "parse_pz: %s%s%s",
                     "zeros must be real numbers (found '", field, "')");
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     blkt_ptr->blkt_info.pole_zero.zeros[i].real = atof (field);
     if (0 > parse_field (line, 2, field, log))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     if (!is_real (field, log))
     {
       evalresp_log (log, EV_ERROR, 0, "parse_pz: %s%s%s",
                     "zeros must be real numbers (found '", field, "')");
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     blkt_ptr->blkt_info.pole_zero.zeros[i].imag = atof (field);
   }
@@ -509,31 +509,32 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
   {
     if (0 > find_line (log, seed, " ", blkt_read, check_fld, line))
     {
-      return; /*TODO */
+      return EVALRESP_PAR;
     }
     if (0 > parse_field (line, 1, field, log))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     if (!is_real (field, log))
     {
       evalresp_log (log, EV_ERROR, 0, "parse_pz: %s%s%s",
                     "poles must be real numbers (found '", field, "')");
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     blkt_ptr->blkt_info.pole_zero.poles[i].real = atof (field);
     if (0 > parse_field (line, 2, field, log))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     if (!is_real (field, log))
     {
       evalresp_log (log, EV_ERROR, 0, "parse_pz: %s%s%s",
                     "poles must be real numbers (found '", field, "')");
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     blkt_ptr->blkt_info.pole_zero.poles[i].imag = atof (field);
   }
+  return EVALRESP_OK;
 }
 
 // was is_IIR_coeffs
@@ -580,7 +581,7 @@ is_iir_coeffs (const char **seed)
 
 // this was parse_iir_coeff
 /*TODO this should be int to error out the rest of the  processing */
-static void
+static int
 read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
                 evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
@@ -597,14 +598,14 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", first_field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
 
   blkt_read = first_field == 3 ? 54 : 44;
 
   if (0 > parse_field (first_line, 0, field, log))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   // TODO - collesce below to compare string
   if (strlen (field) != 1)
@@ -612,7 +613,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
     evalresp_log (log, EV_ERROR, 0,
                   "parse_coeff; parsing (IIR_COEFFS), illegal filter type ('%s')",
                   field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   if (*field == 'D')
   {
@@ -623,7 +624,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
     evalresp_log (log, EV_ERROR, 0,
                   "parse_coeff; parsing (IIR_COEFFS), unexpected filter type ('%c')",
                   *field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
 
   /* set the check-field counter to the next expected field */
@@ -634,7 +635,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
   {
     if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     stage_ptr->sequence_no = get_int (field, log);
     curr_seq_no = stage_ptr->sequence_no;
@@ -643,29 +644,29 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
   /* next should be the units (in first, then out) */
   if (0 > find_line (log, seed, ":", blkt_read, check_fld++, line))
   {
-    return; /*TODO */
+    return EVALRESP_PAR;
   }
   stage_ptr->input_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
-    return; /* TODO */
+    return EVALRESP_PAR;
   }
 
   if (0 > find_line (log, seed, ":", blkt_read, check_fld++, line))
   {
-    return; /*TODO */
+    return EVALRESP_PAR;
   }
   stage_ptr->output_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
-    return; /* TODO */
+    return EVALRESP_PAR;
   }
 
   /* the number of coefficients */
 
   if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   ncoeffs = get_int (field, log);
   blkt_ptr->blkt_info.coeff.nnumer = ncoeffs;
@@ -680,7 +681,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
   /* the number of denominators */
   if (0 > find_field (log, seed, ":", blkt_read, check_fld, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   ndenom = get_int (field, log);
 
@@ -692,7 +693,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
     evalresp_log (log, EV_ERROR, 0, "%s%s",
                   "parse_coeff; This is not IIR filter , because number of denominators is zero!\n",
                   "\tshould be represented as blockette [53] filters");
-    return /*TODO UNRECOG_FILTYPE should be returned */;
+    return EVALRESP_IO;
   }
   blkt_ptr->blkt_info.coeff.ndenom = ndenom;
 
@@ -711,13 +712,13 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
   {
     if (0 > find_field (log, seed, ":", blkt_read, check_fld, 1, field))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     if (!is_real (field, log))
     {
       evalresp_log (log, EV_ERROR, 0, "parse_coeff: %s%s%s",
                     "numerators must be real numbers (found '", field, "')");
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     blkt_ptr->blkt_info.coeff.numer[i] = atof (field);
   }
@@ -728,21 +729,22 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
   {
     if (0 > find_field (log, seed, ":", blkt_read, check_fld, 1, field))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     if (!is_real (field, log))
     {
       evalresp_log (log, EV_ERROR, 0, "parse_coeff: %s%s%s",
                     "denominators must be real numbers (found '", field, "')");
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     blkt_ptr->blkt_info.coeff.denom[i] = atof (field);
   }
+  return EVALRESP_OK;
 }
 
 // this was "parse_coeff"
 /*TODO this should be int to error out the rest of the  processing */
-static void
+static int
 read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
             evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
@@ -759,21 +761,21 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", first_field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
 
   blkt_read = first_field == 3 ? 54 : 44;
 
   if (0 > parse_field (first_line, 0, field, log))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   if (strlen (field) != 1)
   {
     evalresp_log (log, EV_ERROR, 0,
                   "parse_coeff; parsing (FIR_ASYM), illegal filter type ('%s')",
                   field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
 
   if (*field == 'D')
@@ -785,7 +787,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
     evalresp_log (log, EV_ERROR, 0,
                   "parse_coeff; parsing (FIR_ASYM), unexpected filter type ('%c')",
                   *field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
 
   /* set the check-field counter to the next expected field */
@@ -796,7 +798,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
   {
     if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     stage_ptr->sequence_no = get_int (field, log);
     curr_seq_no = stage_ptr->sequence_no;
@@ -806,29 +808,29 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
 
   if (0 > find_line (log, seed, ":", blkt_read, check_fld++, line))
   {
-    return; /*TODO */
+    return EVALRESP_PAR;
   }
   stage_ptr->input_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
-    return; /* TODO */
+    return EVALRESP_PAR;
   }
 
   if (0 > find_line (log, seed, ":", blkt_read, check_fld++, line))
   {
-    return; /*TODO */
+    return EVALRESP_PAR;
   }
   stage_ptr->output_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->output_units)
   {
-    return; /* TODO */
+    return EVALRESP_PAR;
   }
 
   /* the number of coefficients */
 
   if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   ncoeffs = get_int (field, log);
   blkt_ptr->blkt_info.fir.ncoeffs = ncoeffs;
@@ -846,7 +848,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
 
   if (0 > find_field (log, seed, ":", blkt_read, check_fld, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   ndenom = get_int (field, log);
 
@@ -862,7 +864,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
     evalresp_log (log, EV_ERROR, 0, "%s%s",
                   "parse_coeff; Unsupported filter type, IIR and Analog filters\n",
                   "\tshould be represented as blockette [53] filters");
-    return /*TODO UNRECOG_FILTYPE should be returned */;
+    return EVALRESP_IO;
   }
 
   /* set the expected field to the current value (10 or 11 for [54] or [44])
@@ -876,21 +878,22 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
   {
     if (0 > find_field (log, seed, " ", blkt_read, check_fld, 1, field))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     if (!is_real (field, log))
     {
       evalresp_log (log, EV_ERROR, 0, "parse_coeff: %s%s%s",
                     "coeffs must be real numbers (found '", field, "')");
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     blkt_ptr->blkt_info.fir.coeffs[i] = atof (field);
   }
+  return EVALRESP_OK;
 }
 
 // this was "parse_list"
 /*TODO this should be int to error out the rest of the  processing */
-static void
+static int
 read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
            evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
@@ -906,7 +909,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", first_field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
 
   blkt_read = first_field == 3 ? 55 : 45;
@@ -921,14 +924,14 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
   {
     if (0 > parse_field (first_line, 0, field, log))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     stage_ptr->sequence_no = get_int (field, log);
     curr_seq_no = stage_ptr->sequence_no;
     check_fld++;
     if (0 > find_line (log, seed, ":", blkt_read, check_fld++, line))
     {
-      return; /*TODO */
+      return EVALRESP_PAR;
     }
   }
   else
@@ -942,24 +945,24 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
   stage_ptr->input_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
-    return; /* TODO */
+    return EVALRESP_PAR;
   }
 
   if (0 > find_line (log, seed, ":", blkt_read, check_fld++, line))
   {
-    return; /*TODO */
+    return EVALRESP_PAR;
   }
   stage_ptr->output_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
-    return; /* TODO */
+    return EVALRESP_PAR;
   }
 
   /* the number of responses */
 
   if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   nresp = get_int (field, log);
   blkt_ptr->blkt_info.list.nresp = nresp;
@@ -979,7 +982,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
     lookahead = *seed;
     if (0 > find_line (log, &lookahead, " ", blkt_read, check_fld, line))
     {
-      return; /*TODO */
+      return EVALRESP_PAR;
     }
     format = count_fields (line) - 5;
 
@@ -990,47 +993,47 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
     {
       evalresp_log (log, EV_ERROR, 0, "parse_list: %s",
                     "Unknown format for B055F07-11");
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
 
     for (i = 0; i < nresp; i++)
     {
       if (0 > find_line (log, seed, " ", blkt_read, check_fld, line))
       {
-        return; /*TODO */
+        return EVALRESP_PAR;
       }
       if (0 > parse_field (line, format, field, log)) /* Frequency */
       {
-        return /*TODO PARSE_ERROR should be returned */;
+        return EVALRESP_PAR;
       }
       if (!is_real (field, log))
       {
         evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "freq vals must be real numbers (found '", field, "')");
-        return /*TODO PARSE_ERROR should be returned */;
+        return EVALRESP_PAR;
       }
       blkt_ptr->blkt_info.list.freq[i] = atof (field);
       if (0 > parse_field (line, 1 + format, field, log)) /* the amplitude of the Fourier transform */
       {
-        return /*TODO PARSE_ERROR should be returned */;
+        return EVALRESP_PAR;
       }
       if (!is_real (field, log))
       {
         evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "amp vals must be real numbers (found '", field, "')");
-        return /*TODO PARSE_ERROR should be returned */;
+        return EVALRESP_PAR;
       }
       blkt_ptr->blkt_info.list.amp[i] = atof (field);
       if (0 > parse_field (line, 3 + format, field, log)) /* Phase of the transform */
       {
-        return /*TODO PARSE_ERROR should be returned */;
+        return EVALRESP_PAR;
       }
       if (!is_real (field, log))
       {
         evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "phase vals must be real numbers (found '", field,
                       "')");
-        return /*TODO PARSE_ERROR should be returned */;
+        return EVALRESP_PAR;
       }
       blkt_ptr->blkt_info.list.phase[i] = atof (field);
     }
@@ -1041,48 +1044,49 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
     {
       if (0 > find_line (log, seed, " ", blkt_read, check_fld, line))
       {
-        return; /*TODO */
+        return EVALRESP_PAR;
       }
       if (0 > parse_field (line, 0, field, log))
       {
-        return /*TODO PARSE_ERROR should be returned */;
+        return EVALRESP_PAR;
       }
       if (!is_real (field, log))
       {
         evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "freq vals must be real numbers (found '", field, "')");
-        return /*TODO PARSE_ERROR should be returned */;
+        return EVALRESP_PAR;
       }
       blkt_ptr->blkt_info.list.freq[i] = atof (field);
       if (0 > parse_field (line, 1, field, log))
       {
-        return /*TODO PARSE_ERROR should be returned */;
+        return EVALRESP_PAR;
       }
       if (!is_real (field, log))
       {
         evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "amp vals must be real numbers (found '", field, "')");
-        return /*TODO PARSE_ERROR should be returned */;
+        return EVALRESP_PAR;
       }
       blkt_ptr->blkt_info.list.amp[i] = atof (field);
       if (0 > parse_field (line, 3, field, log))
       {
-        return /*TODO PARSE_ERROR should be returned */;
+        return EVALRESP_PAR;
       }
       if (!is_real (field, log))
       {
         evalresp_log (log, EV_ERROR, 0, "parse_list: %s%s%s",
                       "phase vals must be real numbers (found '", field,
                       "')");
-        return /*TODO PARSE_ERROR should be returned */;
+        return EVALRESP_PAR;
       }
       blkt_ptr->blkt_info.list.phase[i] = atof (field);
     }
   }
+  return EVALRESP_OK;
 }
 
 // this was "parse_generic"
-static void
+static int
 read_generic (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
               evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
@@ -1099,7 +1103,7 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", first_field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
 
   blkt_read = first_field == 3 ? 56 : 46;
@@ -1115,14 +1119,14 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
   {
     if (0 > parse_field (first_line, 0, field, log))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     stage_ptr->sequence_no = get_int (field, log);
     curr_seq_no = stage_ptr->sequence_no;
     check_fld++;
     if (0 > find_line (log, seed, ":", blkt_read, check_fld++, line))
     {
-      return; /*TODO */
+      return EVALRESP_PAR;
     }
   }
   else
@@ -1136,24 +1140,24 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
   stage_ptr->input_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
-    return; /* TODO */
+    return EVALRESP_PAR;
   }
 
   if (0 > find_line (log, seed, ":", blkt_read, check_fld++, line))
   {
-    return; /*TODO */
+    return EVALRESP_PAR;
   }
   stage_ptr->output_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
-    return; /* TODO */
+    return EVALRESP_PAR;
   }
 
   /* the number of responses */
 
   if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   ncorners = get_int (field, log);
   blkt_ptr->blkt_info.generic.ncorners = ncorners;
@@ -1170,31 +1174,32 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
   {
     if (0 > find_line (log, seed, " ", blkt_read, check_fld, line))
     {
-      return; /*TODO */
+      return EVALRESP_PAR;
     }
     if (0 > parse_field (line, 1, field, log))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     if (!is_real (field, log))
     {
       evalresp_log (log, EV_ERROR, 0, "parse_generic: %s%s%s",
                     "corner_freqs must be real numbers (found '", field, "')");
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     blkt_ptr->blkt_info.generic.corner_freq[i] = atof (field);
     if (0 > parse_field (line, 2, field, log))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     if (!is_real (field, log))
     {
       evalresp_log (log, EV_ERROR, 0, "parse_generic: %s%s%s",
                     "corner_slopes must be real numbers (found '", field, "')");
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     blkt_ptr->blkt_info.generic.corner_slope[i] = atof (field);
   }
+  return EVALRESP_OK;
 }
 
 // this was "parse_deci"
@@ -1361,7 +1366,7 @@ read_gain (evalresp_log_t *log, const char **seed, int first_field, char *first_
   {
     if (0 > find_line (log, seed, " ", blkt_read, check_fld, line))
     {
-      return PARSE_ERROR; /*TODO */
+      return PARSE_ERROR;
     }
   }
 
@@ -1371,7 +1376,7 @@ read_gain (evalresp_log_t *log, const char **seed, int first_field, char *first_
 }
 
 // this was "parse_fir"
-static void
+static int
 read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
           evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
@@ -1386,7 +1391,7 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", first_field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
 
   blkt_read = first_field == 3 ? 61 : 41;
@@ -1399,21 +1404,21 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
   {
     if (0 > parse_field (first_line, 0, field, log))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     stage_ptr->sequence_no = get_int (field, log);
     curr_seq_no = stage_ptr->sequence_no;
     check_fld += 2;
     if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
   }
   else
   {
     if (0 > parse_field (first_line, 0, field, log))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     check_fld++;
   }
@@ -1425,7 +1430,7 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
     evalresp_log (log, EV_ERROR, 0,
                   "parse_fir; parsing (FIR), illegal symmetry type ('%s')",
                   field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
 
   switch (*field)
@@ -1443,35 +1448,35 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
     evalresp_log (log, EV_ERROR, 0,
                   "parse_fir; parsing (FIR), unexpected symmetry type ('%c')",
                   *field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
 
   /* next should be the units (in first, then out) */
   if (0 > find_line (log, seed, ":", blkt_read, check_fld++, line))
   {
-    return; /*TODO */
+    return EVALRESP_PAR;
   }
   stage_ptr->input_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
-    return; /* TODO */
+    return EVALRESP_PAR;
   }
 
   if (0 > find_line (log, seed, ":", blkt_read, check_fld++, line))
   {
-    return; /*TODO */
+    return EVALRESP_PAR;
   }
   stage_ptr->output_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
-    return; /* TODO */
+    return EVALRESP_PAR;
   }
 
   /* the number of coefficients */
 
   if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   ncoeffs = get_int (field, log);
   blkt_ptr->blkt_info.fir.ncoeffs = ncoeffs;
@@ -1486,20 +1491,21 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
   {
     if (0 > find_field (log, seed, " ", blkt_read, check_fld, 1, field))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     if (!is_real (field, log))
     {
       evalresp_log (log, EV_ERROR, 0, "parse_fir: %s%s%s",
                     "coeffs must be real numbers (found '", field, "')");
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     blkt_ptr->blkt_info.fir.coeffs[i] = atof (field);
   }
+  return EVALRESP_OK;
 }
 
 // this was "parse_ref"
-static void
+static int
 read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
           evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
@@ -1520,17 +1526,17 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03",
                   ", fld_found=F", first_field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   if (0 > parse_field (first_line, 0, field, log))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   if (!is_int (field, log))
   {
     evalresp_log (log, EV_ERROR, 0, "parse_ref; value '%s' %s", field,
                   " cannot be converted to the number of stages");
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   nstages = atoi (field);
   blkt_ptr->blkt_info.reference.num_stages = nstages;
@@ -1543,13 +1549,13 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
     /* determine the stage number in the sequence of stages */
     if (0 > find_field (log, seed, ":", this_blkt_no, 4, 0, field))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     if (!is_int (field, log))
     {
       evalresp_log (log, EV_ERROR, 0, "parse_ref; value '%s' %s", field,
                     " cannot be converted to the stage sequence number");
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     stage_num = atoi (field);
     blkt_ptr->blkt_info.reference.stage_num = stage_num;
@@ -1563,13 +1569,13 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
 
     if (0 > find_field (log, seed, ":", this_blkt_no, 5, 0, field))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     if (!is_int (field, log))
     {
       evalresp_log (log, EV_ERROR, 0, "parse_ref; value '%s' %s", field,
                     " cannot be converted to the number of responses");
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     nresps = atoi (field);
     blkt_ptr->blkt_info.reference.num_responses = nresps;
@@ -1615,7 +1621,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
         evalresp_log (log, EV_ERROR, 0,
                       "parse_ref; unexpected end of stage (at blockette [%3.3d])",
                       prev_blkt_no);
-        return /*TODO PARSE_ERROR should be returned */;
+        return EVALRESP_PAR;
       default:
         /* code to ignore unexected blockette/field lines might be useful here, but need
                  example code to test it - SBH. 2004.079
@@ -1624,7 +1630,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
         evalresp_log (log, EV_ERROR, 0,
                       "parse_ref; unexpected filter type (blockette [%3.3d])",
                       blkt_no);
-        return /*TODO UNRECOG_FILTYPE should be returned */;
+        return EVALRESP_IO;
       }
       last_blkt->next_blkt = blkt_ptr;
       prev_blkt_no = blkt_no;
@@ -1650,13 +1656,13 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
 
       if (0 > find_field (log, seed, ":", this_blkt_no, 3, 0, field))
       {
-        return /*TODO PARSE_ERROR should be returned */;
+        return EVALRESP_PAR;
       }
       if (!is_int (field, log))
       {
         evalresp_log (log, EV_ERROR, 0, "parse_ref; value '%s' %s", field,
                       " cannot be converted to the new stage sequence number");
-        return /*TODO PARSE_ERROR should be returned */;
+        return EVALRESP_PAR;
       }
 
       lcl_nstages = atoi (field);
@@ -1666,15 +1672,16 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
                       "parse_ref; internal RESP format error, %s%d%s%d",
                       "\n\tstage expected = ", nstages, ", stage found = ",
                       lcl_nstages);
-        return /*TODO PARSE_ERROR should be returned */;
+        return EVALRESP_PAR;
       }
       blkt_ptr->blkt_info.reference.num_stages = nstages;
     }
   }
+  return EVALRESP_OK;
 }
 
 // this was "parse_polynomial"
-static void
+static int
 read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
                  evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
@@ -1689,14 +1696,14 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
                   "(return_field) fld ",
                   "number does not match expected value\n\tfld_xpt=F03 or F05",
                   ", fld_found=F", first_field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
 
   blkt_read = first_field == 3 ? 62 : 42;
 
   if (0 > parse_field (first_line, 0, field, log))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   // TODO - coallesce into strcmp
   if (strlen (field) != 1)
@@ -1704,7 +1711,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
     evalresp_log (log, EV_ERROR, 0,
                   "parse_polynomial; parsing (Polynomial), illegal filter type ('%s')",
                   field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   if (*field == 'P')
   {
@@ -1715,7 +1722,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
     evalresp_log (log, EV_ERROR, 0,
                   "parse_polynomial; parsing (Polynomial), unexpected filter type ('%c')",
                   *field);
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
 
   check_fld = first_field + 1;
@@ -1724,7 +1731,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
   {
     if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     stage_ptr->sequence_no = get_int (field, log);
     curr_seq_no = stage_ptr->sequence_no;
@@ -1734,70 +1741,70 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
 
   if (0 > find_line (log, seed, ":", blkt_read, check_fld++, line))
   {
-    return; /*TODO */
+    return EVALRESP_PAR;
   }
   stage_ptr->input_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
-    return; /* TODO */
+    return EVALRESP_PAR;
   }
 
   if (0 > find_line (log, seed, ":", blkt_read, check_fld++, line))
   {
-    return; /*TODO */
+    return EVALRESP_PAR;
   }
   stage_ptr->output_units = check_units (channel, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
-    return; /* TODO */
+    return EVALRESP_PAR;
   }
 
   /* Polynomial Approximation Type */
   if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   blkt_ptr->blkt_info.polynomial.approximation_type = field[0];
 
   /* Valid Frequency Units */
   if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   blkt_ptr->blkt_info.polynomial.frequency_units = field[0];
 
   /* Lower Valid Frequency Bound */
   if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   blkt_ptr->blkt_info.polynomial.lower_freq_bound = get_double (field, log);
 
   /* Upper Valid Frequency Bound */
   if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   blkt_ptr->blkt_info.polynomial.upper_freq_bound = get_double (field, log);
 
   /* Lower Bound of Approximation */
   if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   blkt_ptr->blkt_info.polynomial.lower_approx_bound = get_double (field, log);
 
   /* Upper Bound of Approximation */
   if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   blkt_ptr->blkt_info.polynomial.upper_approx_bound = get_double (field, log);
 
   /* Maximum Absolute Error */
   if (0 > find_field (log, seed, ":", blkt_read, check_fld++, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   blkt_ptr->blkt_info.polynomial.max_abs_error = get_double (field, log);
 
@@ -1805,7 +1812,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
 
   if (0 > find_field (log, seed, ":", blkt_read, check_fld, 0, field))
   {
-    return /*TODO PARSE_ERROR should be returned */;
+    return EVALRESP_PAR;
   }
   ncoeffs = get_int (field, log);
   blkt_ptr->blkt_info.polynomial.ncoeffs = ncoeffs;
@@ -1823,31 +1830,32 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
   {
     if (0 > find_line (log, seed, " ", blkt_read, check_fld, line))
     {
-      return; /*TODO */
+      return EVALRESP_PAR;
     }
     if (0 > parse_field (line, 1, field, log))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     if (!is_real (field, log))
     {
       evalresp_log (log, EV_ERROR, 0, "polynomial: %s%s%s",
                     "coeffs must be real numbers (found '", field, "')");
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     blkt_ptr->blkt_info.polynomial.coeffs[i] = atof (field);
     if (0 > parse_field (line, 2, field, log))
     {
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     if (!is_real (field, log))
     {
       evalresp_log (log, EV_ERROR, 0, "polynomial: %s%s%s",
                     "coeffs errors must be real numbers (found '", field, "')");
-      return /*TODO PARSE_ERROR should be returned */;
+      return EVALRESP_PAR;
     }
     blkt_ptr->blkt_info.polynomial.coeffs_err[i] = atof (field);
   }
+  return EVALRESP_OK;
 }
 
 // this was "parse_channel"

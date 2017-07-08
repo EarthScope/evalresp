@@ -645,8 +645,8 @@ int is_IIR_coeffs (FILE *fp, int position);
  *       file pointer does not need to be repositioned to allow for this
  *       information to be reread.
  */
-int find_resp (FILE *fptr, evalresp_sncls *scn_lst, char *datime,
-               evalresp_channel *this_channel, evalresp_log_t *log);
+//XXX int find_resp (FILE *fptr, evalresp_sncls *scn_lst, char *datime,
+//               evalresp_channel *this_channel, evalresp_log_t *log);
 
 /**
  * @private
@@ -671,8 +671,8 @@ int find_resp (FILE *fptr, evalresp_sncls *scn_lst, char *datime,
  *       file pointer does not need to be repositioned to allow for this
  *       information to be reread.
  */
-int get_resp (FILE *fptr, evalresp_sncl *scn, char *datime,
-              evalresp_channel *this_channel, evalresp_log_t *log);
+//XXX int get_resp (FILE *fptr, evalresp_sncl *scn, char *datime,
+//              evalresp_channel *this_channel, evalresp_log_t *log);
 
 /**
  * @private
@@ -689,7 +689,7 @@ int get_resp (FILE *fptr, evalresp_sncl *scn, char *datime,
  * @returns 1 on success.
  * @returns 0 on failure.
  */
-int get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log);
+//XXX int get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log);
 
 /**
  * @private
@@ -706,7 +706,7 @@ int get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log);
  * @returns 1 on success.
  * @returns 0 on failure.
  */
-int next_resp (FILE *fptr, evalresp_log_t *log);
+//XXX int next_resp (FILE *fptr, evalresp_log_t *log);
 
 /* routines used to create a list of files matching the users request */
 
