@@ -17,8 +17,11 @@ START_TEST (test_no_options)
   fail_if (evalresp_channel_to_response (NULL, channels->channels[0], NULL, &response));
   fail_if (response->nfreqs != 1);
   fail_if (fabs (response->freqs[0] - 1) > 1e-6, "Freq: %f", response->freqs[0]);
-  fail_if (fabs (response->rvec[0].real - -998127849.638739) > 1e-3, "Real: %f", response->rvec[0].real);
-  fail_if (fabs (response->rvec[0].imag - 63588947.373697) > 1e-3, "Imag: %f", response->rvec[0].imag);
+  /* changing value because of chek_channel being introduced */
+  fail_if (fabs (response->rvec[0].real - 918243620.549808) > 1e-3, "Real: %f", response->rvec[0].real);
+  fail_if (fabs (response->rvec[0].imag - -392298381.164822) > 1e-3, "Imag: %f", response->rvec[0].imag);
+  //fail_if (fabs (response->rvec[0].real - -998127849.638739) > 1e-3, "Real: %f", response->rvec[0].real);
+  //fail_if (fabs (response->rvec[0].imag - 63588947.373697) > 1e-3, "Imag: %f", response->rvec[0].imag);
   evalresp_free_channels (&channels);
   evalresp_free_response (response);
 }
