@@ -70,25 +70,100 @@ typedef struct
   evalresp_datetime *datetime;
 } evalresp_filter;
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ * @param[out] filter pointer to be allocated and initialized
+ * @brief allocate and intialize a evalresp_filter
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_new_filter (evalresp_log_t *log, evalresp_filter **filter);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ * @param[in] filter evalresp_filter pointer to set the year
+ * @param[in] year 
+ * @brief set the year in an evalresp_filter object
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_set_year (evalresp_log_t *log, evalresp_filter *filter, const char *year);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ * @param[in] filter evalresp_filter pointer to set the day of theyear
+ * @param[in] julian_day the day of the year
+ * @brief set the jday in an evalresp_filter object
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_set_julian_day (evalresp_log_t *log, evalresp_filter *filter, const char *julian_day);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ * @param[in] filter evalresp_filter pointer to set the time
+ * @param[in] time
+ * @brief set the time in an evalresp_filter object
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_set_time (evalresp_log_t *log, evalresp_filter *filter, const char *time);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ * @param[in] filter evalresp_filter pointer to set 
+ * @param[in] sta the station code
+ * @param[in] net the network code
+ * @param[in] chan the channel code
+ * @param[in] locid the location id
+ * @brief set the sncl in an evalresp_filter object from the text string, expects single station
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_add_sncl_text (evalresp_log_t *log, evalresp_filter *filter,
                             const char *sta, const char *net, const char *chan, const char *locid);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ * @param[in] filter evalresp_filter pointer to set 
+ * @param[in] sncl an evalresp_sncl object to add to the filter
+ * @brief set the sncl in an evalresp_filter object from sncl object, expects single station
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter, evalresp_sncl *sncl);
 
 /**
  * Splits comma-separated values in input and adds all combinations.
  */
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ * @param[in] filter evalresp_filter pointer to set 
+ * @param[in] sta the station code list
+ * @param[in] net the network code list
+ * @param[in] chan the channel code list
+ * @param[in] locid the location id list
+ * @brief Splits comma-separated values in input and adds all combinations to evalresp_filter object.
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_add_sncl_all (evalresp_log_t *log, evalresp_filter *filter,
                            const char *sta, const char *net, const char *chan, const char *locid);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] filter
+ * @brief properly free filter object
+ * @retval EVALRESP_OK on success
+ */
 void evalresp_free_filter (evalresp_filter **filter);
 
 /**
@@ -100,9 +175,23 @@ void evalresp_free_filter (evalresp_filter **filter);
  */
 void evalresp_free_sncls (evalresp_sncls *sncls);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
                                const evalresp_filter *filter, evalresp_channels **channels);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
                                const evalresp_filter *filter, evalresp_channels **channels);
 
@@ -145,41 +234,132 @@ typedef struct
   char unit_set;
 } evalresp_options;
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_filename_to_channels (evalresp_log_t *log, const char *filename, evalresp_options const * const options,
                                    const evalresp_filter *filter, evalresp_channels **channels);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_new_options (evalresp_log_t *log, evalresp_options **options);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 void evalresp_free_options (evalresp_options **options);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_set_filename (evalresp_log_t *log, evalresp_options *options, const char *filename);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_set_frequency (evalresp_log_t *log, evalresp_options *options,
                             const char *min_freq, const char *max_freq, const char *nfreq);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_set_format (evalresp_log_t *log, evalresp_options *options,
                          const char *format);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_set_unit (evalresp_log_t *log, evalresp_options *options,
                        const char *unit);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_set_spacing (evalresp_log_t *log, evalresp_options *options,
                           const char *spacing);
 
 // these are separate because it simplifies calling from main routine
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_set_start_stage (evalresp_log_t *log, evalresp_options *options,
                               const char *stage);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_set_stop_stage (evalresp_log_t *log, evalresp_options *options,
                              const char *stage);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_set_b62_x (evalresp_log_t *log, evalresp_options *options,
                         const char *b62_x);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
                                   evalresp_options *options, evalresp_response **response);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_channels_to_responses (evalresp_log_t *log, evalresp_channels *channels,
                                     evalresp_options *options, evalresp_responses **responses);
 
@@ -230,12 +410,33 @@ int evalresp_response_to_stream (evalresp_log_t *log, const evalresp_response *r
 int evalresp_response_to_file (evalresp_log_t *log, const evalresp_response *response,
                                evalresp_file_format format, const char *filename);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_responses_to_cwd (evalresp_log_t *log, const evalresp_responses *responses,
                                evalresp_output_format format, int use_stdio);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_cwd_to_cwd (evalresp_log_t *log,
                          evalresp_options *options, evalresp_filter *filter);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @param[in] log logging structure
+ *
+ * @retval EVALRESP_OK on success
+ */
 int evalresp_channel_to_log(evalresp_log_t *log, evalresp_options const * const options, evalresp_channel * const channel);
 
 #endif
