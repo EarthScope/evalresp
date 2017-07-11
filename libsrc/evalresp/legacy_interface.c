@@ -139,11 +139,11 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   /*Call to new evresp */
   if (options->use_stdio)
   {
-    evalresp_process_stdio_to_responses(log, options, filter, &responses);
+    process_stdio (log, options, filter, &responses);
   }
   else
   {
-    evalresp_process_cwd_to_responses(log, options, filter, &responses);
+    process_cwd (log, options, filter, &responses);
   }
 
   /*TODO covert responses to response linked list */
