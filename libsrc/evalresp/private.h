@@ -1787,4 +1787,9 @@ parse_double (evalresp_log_t *log, const char *name, const char *str, double *va
 int
 calloc_doubles (evalresp_log_t *log, const char *name, int n, double **array);
 
+int process_cwd (evalresp_log_t *log, evalresp_options *options,
+                                       evalresp_filter *filter, evalresp_responses **responses);
+
+int process_stdio (evalresp_log_t *log, evalresp_options *options,
+                                         evalresp_filter *filter, evalresp_responses **responses);
 #endif

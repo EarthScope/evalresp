@@ -76,7 +76,7 @@ evalresp_responses_to_cwd (evalresp_log_t *log, const evalresp_responses *respon
 }
 
 int
-evalresp_process_stdio_to_responses (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter, evalresp_responses **responses)
+process_stdio (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter, evalresp_responses **responses)
 {
   int status = EVALRESP_OK;
   evalresp_channels *channels;
@@ -144,7 +144,7 @@ process_cwd_files (evalresp_log_t *log, evalresp_options *options, evalresp_filt
 }
 
 int
-evalresp_process_cwd_to_responses (evalresp_log_t *log, evalresp_options *options,
+process_cwd (evalresp_log_t *log, evalresp_options *options,
                                    evalresp_filter *filter, evalresp_responses **responses)
 {
   int status = EVALRESP_OK, mode;
@@ -176,8 +176,8 @@ evalresp_cwd_to_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_fi
     evalresp_log (log, EV_INFO, 0, "<< EVALRESP RESPONSE OUTPUT V%s >>", REVNUM);
   }
   status = (options && options->use_stdio) ?
-                evalresp_process_stdio_to_responses (log, options, filter, &responses) :
-                evalresp_process_cwd_to_responses (log, options, filter, &responses);
+                process_stdio (log, options, filter, &responses) :
+                process_cwd (log, options, filter, &responses);
 
   if (EVALRESP_OK == status)
   {

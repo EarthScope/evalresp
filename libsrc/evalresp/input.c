@@ -548,35 +548,26 @@ is_iir_coeffs (const char **seed)
   /* if the number of denominators is 0: we got FIR. Otherwise, it is IIR   */
   /* is_IIR_coeff reads the text response file; finds the proper line and   */
   /* decides if the response is IIR or FIR                                  */
-  /* The text file is then fseek to the original position and               */
-  /*   the function returns:                                                */
-  /* 1 if it is IIR; 0 if it is not IIR;                                    */
-  /*  it returns 0  in case of the error, so use it with a caution!         */
+  /* Returns 1 if it is IIR; 0 if it is not IIR;                            */
+  /* Tt returns 0  in case of the error, so use it with a caution!          */
   /* IGD I.Dricker ISTI i.dricker@isti.com 07/00 for evalresp 3.2.17        */
-  char line[MAXLINELEN];
-  const char *lookahead = *seed;
-  int i, denoms;
-  for (i = 0; i < 80; i++)
-  { /* enough to make sure we are getting field 10; not to much to get to the next blockette */
-    (void)sscanf (lookahead, "%s", line);
-    if (!strncmp (line, "B054F10", 7))
-    {
-      break;
-    }
-  }
-  if (!strncmp (line, "B054F10", 7))
+  /* IGD I.Dricker ISTI i.dricker@isti.com 07/17: Fully rewritten           */       
+  char *substr = NULL;
+  char words[5][MAXLINELEN];
+  int  denoms = 0;
+
+  substr = strstr(*seed, "B054F10");
+  if (substr)
   {
-    for (i = 0; i < 4; i++)
-    {
-      (void)sscanf (lookahead, "%s", line);
-    }
-    denoms = atoi (line);
-    return !denoms;
-  }
-  else
-  {
+
+   /* Parsing (B054F10     Number of denominators:                0) */
+    sscanf(substr, "%s %s %s %s %s", words[1], words[2], words[3], words[4], words[5]);
+    denoms = atoi (words[5]);
+  } 
+  if (0 == denoms)
     return 0;
-  }
+  return 1; 
+
 }
 
 // this was parse_iir_coeff
@@ -710,7 +701,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
 
   for (i = 0; i < ncoeffs; i++)
   {
-    if (0 > find_field (log, seed, ":", blkt_read, check_fld, 1, field))
+    if (0 > find_field (log, seed, " ", blkt_read, check_fld, 1, field))
     {
       return EVALRESP_PAR;
     }
@@ -727,7 +718,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
 
   for (i = 0; i < ndenom; i++)
   {
-    if (0 > find_field (log, seed, ":", blkt_read, check_fld, 1, field))
+    if (0 > find_field (log, seed, " ", blkt_read, check_fld, 1, field))
     {
       return EVALRESP_PAR;
     }
