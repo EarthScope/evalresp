@@ -326,6 +326,44 @@ save_b55 (evalresp_log_t *log, evalresp_channel *channel,
 }
 
 static int
+restrict_frequency_range (evalresp_log_t *log, double lo, double hi, int *nfreqs, double *freqs)
+{
+  int status = EVALRESP_OK, nbefore = 0, nafter = 0, i;
+  while (*nfreqs && freqs[0] < lo)
+  {
+    for (i = 1; i < *nfreqs; ++i) freqs[i-1] = freqs[i];
+    nbefore++;
+    (*nfreqs)--;
+  }
+  while (*nfreqs && freqs[*nfreqs-1] > hi)
+  {
+    nafter++;
+    (*nfreqs)--;
+  }
+  if (*nfreqs)
+  {
+    if (nbefore)
+    {
+      evalresp_log (log, EV_WARN, EV_WARN,
+                    "Dropped %d values from start of frequency range because they are not included in blockette 55",
+                    nbefore);
+    }
+    if (nafter)
+    {
+      evalresp_log (log, EV_WARN, EV_WARN,
+                    "Dropped %d values from end of frequency range because they are not included in blockette 55",
+                    nafter);
+    }
+  }
+  else
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "No blockette 55 values within requested frequency range");
+    status = EVALRESP_INP;
+  }
+  return status;
+}
+
+static int
 interpolate_b55 (evalresp_log_t *log, evalresp_channel *channel,
                  evalresp_response *response, evalresp_blkt **b55_save)
 {
@@ -334,8 +372,12 @@ interpolate_b55 (evalresp_log_t *log, evalresp_channel *channel,
   evalresp_list *list = &b55->blkt_info.list;
   if (!(status = save_b55 (log, channel, b55_save)))
   {
-    interpolate_list_blockette (&list->freq, &list->amp, &list->phase, &list->nresp,
-                                response->freqs, response->nfreqs, log);
+    if (!(status = restrict_frequency_range (log, list->freq[0], list->freq[list->nresp-1],
+                                             &response->nfreqs, response->freqs)))
+    {
+      interpolate_list_blockette (&list->freq, &list->amp, &list->phase, &list->nresp,
+                                  response->freqs, response->nfreqs, log);
+    }
   }
   return status;
 }
@@ -408,7 +450,6 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
          */
         if (options->b55_interpolate)
         {
-          status = use_b55_freqs (log, channel, *response);
           status = interpolate_b55 (log, channel, *response, &b55_save);
         }
         else
