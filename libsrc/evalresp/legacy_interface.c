@@ -230,7 +230,7 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
     responses->responses[i] =ptr;
   }
 
-  evalresp_responses_to_cwd (log, responses, options->format, stdio_flag);
+  responses_to_cwd (log, responses, options->format, stdio_flag);
   free(responses->responses);
 }
 

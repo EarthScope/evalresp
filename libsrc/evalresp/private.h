@@ -1792,4 +1792,18 @@ int process_cwd (evalresp_log_t *log, evalresp_options *options,
 
 int process_stdio (evalresp_log_t *log, evalresp_options *options,
                                          evalresp_filter *filter, evalresp_responses **responses);
+
+/**
+ * @private
+ * @ingroup evalresp_private
+ * @param[in] log logging structure
+ * @param[in] responses evalresp_responses object to be printed out
+ * @param[in] format evalresp_output_format that determines what files are outputed
+ * @param[in] use_stdio flag to determine if printing to stdio instead of to files
+ * @brief create files in the cwd (or stdio) based on the output formats selected
+ * @post files created in the current working directory
+ * @retval EVALRESP_OK on success
+ */
+int responses_to_cwd (evalresp_log_t *log, const evalresp_responses *responses,
+                               evalresp_output_format format, int use_stdio);
 #endif
