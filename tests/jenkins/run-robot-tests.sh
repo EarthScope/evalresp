@@ -28,7 +28,7 @@ mkdir -p run
 rm -fr run/*
 
 # this will run all tests
-#WORKSPACE=${WORKSPACE} robot --loglevel DEBUG all
+WORKSPACE=${WORKSPACE} robot --loglevel DEBUG all
 
 # this will run a single suite (all tests in the given file)
-WORKSPACE=${WORKSPACE} robot --loglevel DEBUG all/extended/2017/1/RESP.CI.BFS..ACE.robot
+#WORKSPACE=${WORKSPACE} robot --loglevel DEBUG all/extended/2017/1/RESP.CI.BFS..ACE.robot
