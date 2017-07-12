@@ -1437,8 +1437,9 @@ void merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalre
  *              structure.
  * @param[in] chan Channel structure.
  * @param[in] log Logging structure.
+ * @retval EVALRESP_OK on success
  */
-void check_channel (evalresp_channel *chan, evalresp_log_t *log);
+int check_channel (evalresp_channel *chan, evalresp_log_t *log);
 
 /**
  * @private
@@ -1778,18 +1779,82 @@ u *          want to change the number of arguments in evresp() function which
  */
 int use_estimated_delay (int flag);
 
+/**
+ * @private
+ * @ingroup evalresp_private
+ * @param[in] log logging structure
+ * @param[in] name label to use if needing to log error
+ * @param[in] str string to convert
+ * @param[out] value the result of the conversion
+ * @brief convert string to integar value
+ * @retval EVALRESP_OK on success
+ */
 int
 parse_int (evalresp_log_t *log, const char *name, const char *str, int *value);
 
+/**
+ * @private
+ * @ingroup evalresp_private
+ * @param[in] log logging structure
+ * @param[in] name label to use if needing to log error
+ * @param[in] str string to convert
+ * @param[out] value the result of the conversion
+ * @brief convert string to double value
+ * @retval EVALRESP_OK on success
+ */
 int
 parse_double (evalresp_log_t *log, const char *name, const char *str, double *value);
 
+/**
+ * @private
+ * @ingroup evalresp_private
+ * @param[in] log logging structure
+ * @param[in] name label to use if needing to log error
+ * @param[in] n number of elements to allocate
+ * @param[out] array the returned array
+ * @brief allocate a array of doubles with length n
+ * @retval EVALRESP_OK on success
+ */
 int
 calloc_doubles (evalresp_log_t *log, const char *name, int n, double **array);
 
+/**
+ * @private
+ * @ingroup evalresp_private
+ * @param[in] log logging structure
+ * @param[in] options object to control the flow of the conversion to responses
+ * @param[in] filter object on how to filter the inputed files
+ * @param[out] responses object pointer containing responses
+ * @brief take information from file and converthem into responses
+ * @retval EVALRESP_OK on success
+ */
 int process_cwd (evalresp_log_t *log, evalresp_options *options,
                                        evalresp_filter *filter, evalresp_responses **responses);
 
+/**
+ * @private
+ * @ingroup evalresp_private
+ * @param[in] log logging structure
+ * @param[in] options object to control the flow of the conversion to responses
+ * @param[in] filter object on how to filter the inputed files
+ * @param[out] responses object pointer containing responses
+ * @brief take information form stdin and convert them to responses
+ * @retval EVALRESP_OK on success
+ */
 int process_stdio (evalresp_log_t *log, evalresp_options *options,
                                          evalresp_filter *filter, evalresp_responses **responses);
+
+/**
+ * @private
+ * @ingroup evalresp_private
+ * @param[in] log logging structure
+ * @param[in] responses evalresp_responses object to be printed out
+ * @param[in] format evalresp_output_format that determines what files are outputed
+ * @param[in] use_stdio flag to determine if printing to stdio instead of to files
+ * @brief create files in the cwd (or stdio) based on the output formats selected
+ * @post files created in the current working directory
+ * @retval EVALRESP_OK on success
+ */
+int responses_to_cwd (evalresp_log_t *log, const evalresp_responses *responses,
+                               evalresp_output_format format, int use_stdio);
 #endif

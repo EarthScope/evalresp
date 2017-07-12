@@ -48,7 +48,7 @@ print_file (evalresp_log_t *log, evalresp_file_format format,
 }
 
 int
-evalresp_responses_to_cwd (evalresp_log_t *log, const evalresp_responses *responses,
+responses_to_cwd (evalresp_log_t *log, const evalresp_responses *responses,
                            evalresp_output_format format, int use_stdio)
 {
   int status = EVALRESP_OK, i;
@@ -181,7 +181,7 @@ evalresp_cwd_to_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_fi
 
   if (EVALRESP_OK == status)
   {
-    status = evalresp_responses_to_cwd (log, responses, options->format, options->use_stdio);
+    status = responses_to_cwd (log, responses, options->format, options->use_stdio);
     evalresp_free_responses (responses);
   }
   return status;
