@@ -174,7 +174,7 @@ static int regsize;   /* Code size. */
 #ifndef STATIC
 #define STATIC static
 #endif
-STATIC char *reg (int, int*, evalresp_log_t *);
+STATIC char *reg (int, int *, evalresp_log_t *);
 STATIC char *regbranch (int *, evalresp_log_t *);
 STATIC char *regpiece (int *, evalresp_log_t *);
 STATIC char *regatom (int *, evalresp_log_t *);

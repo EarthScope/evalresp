@@ -4,8 +4,8 @@
 
 #include "./private.h"
 #include "./ugly.h"
-#include "evalresp/public_api.h"
 #include "evalresp/public.h"
+#include "evalresp/public_api.h"
 #include "evalresp_log/log.h"
 
 // new code giving a high level interface.
@@ -49,7 +49,7 @@ print_file (evalresp_log_t *log, evalresp_file_format format,
 
 int
 responses_to_cwd (evalresp_log_t *log, const evalresp_responses *responses,
-                           evalresp_output_format format, int use_stdio)
+                  evalresp_output_format format, int use_stdio)
 {
   int status = EVALRESP_OK, i;
 
@@ -145,7 +145,7 @@ process_cwd_files (evalresp_log_t *log, evalresp_options *options, evalresp_filt
 
 int
 process_cwd (evalresp_log_t *log, evalresp_options *options,
-                                   evalresp_filter *filter, evalresp_responses **responses)
+             evalresp_filter *filter, evalresp_responses **responses)
 {
   int status = EVALRESP_OK, mode;
   struct matched_files *files = NULL;
@@ -175,9 +175,7 @@ evalresp_cwd_to_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_fi
   {
     evalresp_log (log, EV_INFO, 0, "<< EVALRESP RESPONSE OUTPUT V%s >>", REVNUM);
   }
-  status = (options && options->use_stdio) ?
-                process_stdio (log, options, filter, &responses) :
-                process_cwd (log, options, filter, &responses);
+  status = (options && options->use_stdio) ? process_stdio (log, options, filter, &responses) : process_cwd (log, options, filter, &responses);
 
   if (EVALRESP_OK == status)
   {
