@@ -169,7 +169,7 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
             eval_flag = 1;
           }
           break;
-        case LIST:                      /* This option is added in version 2.3.17 I.Dricker*/
+        case LIST: /* This option is added in version 2.3.17 I.Dricker*/
           calc_list (blkt_ptr, i, &of); /*compute real and imag parts for the i-th ampl and phase */
           eval_flag = 1;
           break;
@@ -396,7 +396,7 @@ calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
     evalresp_log (log, EV_ERROR, 0,
                   "Cannot compute B62 response for negative or zero input: %f",
                   x_for_b62);
-    exit (1);     /* TODO IGD 06/06/2017 To allow passing of the test: next, the function should become int */
+    exit (1); /* TODO IGD 06/06/2017 To allow passing of the test: next, the function should become int */
     /* return; */ /*TODO IMPROP_DATA_TYPE */
   }
 
@@ -708,7 +708,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
       {
         evalresp_log (log, EV_ERROR, 0,
                       "norm_resp; no stage gain defined, zero sensitivity");
-        exit (1);     /*TODO IGD 06/06/2017: Exit to satisfy test RESP.UW.STOR..ACE; need to return int */
+        exit (1); /*TODO IGD 06/06/2017: Exit to satisfy test RESP.UW.STOR..ACE; need to return int */
         /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
       }
       else
@@ -755,7 +755,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
       if (fil->type == GAIN && fil->blkt_info.gain.gain == 0.0)
       {
         evalresp_log (log, EV_ERROR, 0, "norm_resp; zero stage gain");
-        exit (1);     /* IGD 06/06/2017 TODO ILLEGAL_RESP_FORMAT */
+        exit (1); /* IGD 06/06/2017 TODO ILLEGAL_RESP_FORMAT */
         /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
       }
       fil = fil->next_blkt;

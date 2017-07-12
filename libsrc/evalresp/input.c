@@ -2212,8 +2212,7 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
             if (!filter || channel_matches (log, filter, channel))
             {
               /* check the filter sequence that was just read */
-              status = check_channel (channel, log);
-              if (status == EVALRESP_OK)
+              if (!(status = check_channel (channel, log)))
               {
 
                 if (!(status = add_channel (log, channel, *channels)))

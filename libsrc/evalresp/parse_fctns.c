@@ -2110,8 +2110,7 @@ get_resp (FILE *fptr, evalresp_sncl *scn, char *datime,
   while ((test = get_channel (fptr, this_channel, log)) != 0)
   {
 
-    if (string_match (this_channel->staname, scn->station, "-g", log) && ((!strlen (scn->network) && !strlen (this_channel->network)) || string_match (this_channel->network, scn->network,
-                                                                                                                                                       "-g", log)) &&
+    if (string_match (this_channel->staname, scn->station, "-g", log) && ((!strlen (scn->network) && !strlen (this_channel->network)) || string_match (this_channel->network, scn->network, "-g", log)) &&
         string_match (this_channel->locid, scn->locid, "-g", log) && string_match (this_channel->chaname, scn->channel, "-g", log) && in_epoch (datime, this_channel->beg_t, this_channel->end_t))
     {
       scn->found = 1;

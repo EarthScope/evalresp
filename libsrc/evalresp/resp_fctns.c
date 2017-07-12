@@ -214,7 +214,7 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
       switch (blkt_ptr->type)
       {
       case POLYNOMIAL: /* IGS 06/01/2013 */
-                       /* FIXME: Add checks for the stage */
+        /* FIXME: Add checks for the stage */
         stage_type = POLYNOMIAL_TYPE;
         filt_blkt = blkt_ptr;
         break;
@@ -470,7 +470,7 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
       if (prev_stage != (evalresp_stage *)NULL && prev_stage->output_units != stage_ptr->input_units)
       {
         evalresp_log (log, EV_ERROR, 0, "check_channel; units mismatch between stages");
-        exit (1);                   /*IGD 06/06/2017  TODO ILLEGAL_RESP_FORMAT */
+        exit (1); /*IGD 06/06/2017  TODO ILLEGAL_RESP_FORMAT */
         return ILLEGAL_RESP_FORMAT; /*TODO ILLEGAL_RESP_FORMAT */
       }
     }
@@ -484,7 +484,7 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
     if ((stage_type == IIR_TYPE || stage_type == FIR_TYPE || stage_type == IIR_COEFFS_TYPE) && !deci_flag)
     {
       evalresp_log (log, EV_ERROR, 0, "check_channel; required decimation blockette for IIR or FIR filter missing");
-      exit (1);     /* IGD 06/06/2017 To satisfy failure of RESP.BK.BDM..UCD; need return error and process it */
+      exit (1); /* IGD 06/06/2017 To satisfy failure of RESP.BK.BDM..UCD; need return error and process it */
       /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
     }
 
@@ -602,7 +602,7 @@ interpolate_list_blockette (double **frequency_ptr,
             then setup to replace it with first List frequency value: */
   if (i > 0 && fabs (first_freq - req_freq_arr[i - 1]) < first_freq * 1e-6)
   {
-    --i;                /* restore clipped value */
+    --i; /* restore clipped value */
     fix_first_flag = 1; /* indicate value should be "fixed" */
   }
   else
@@ -633,7 +633,7 @@ interpolate_list_blockette (double **frequency_ptr,
       fabs (req_freq_arr[used_req_num_freqs] - last_freq) < last_freq * 1e-6)
   {
     used_req_num_freqs++; /* restore clipped value */
-    fix_last_flag = 1;    /* indicate value should be "fixed" */
+    fix_last_flag = 1; /* indicate value should be "fixed" */
   }
   else
     fix_last_flag = 0;
@@ -644,9 +644,9 @@ interpolate_list_blockette (double **frequency_ptr,
                   "%s Note:  %d frequenc%s clipped from end of requested range\n",
                   myLabel, num, ((num == 1) ? "y" : "ies"));
   }
-  if (i > 0)            /* if freq entries were skipped then */
+  if (i > 0) /* if freq entries were skipped then */
     req_num_freqs -= i; /* subtract # of freqs clipped from beg */
-                        /* allocate new array for requested frequency values */
+  /* allocate new array for requested frequency values */
   used_req_freq_arr = (double *)calloc (req_num_freqs, sizeof (double));
   /* copy over freq values (excluding out-of-bounds values) */
   memcpy (used_req_freq_arr, &req_freq_arr[i], req_num_freqs * sizeof (double));
@@ -681,12 +681,12 @@ interpolate_list_blockette (double **frequency_ptr,
       min_ampval = val; /* if new mininum then save value */
   }
   if (min_ampval > 0.0)
-  {                     /* all "source" amplitude values are positive */
+  { /* all "source" amplitude values are positive */
     min_ampval /= 10.0; /* bring minimum a bit closer to zero */
-                        /* substitude minimum for any non-positive values */
+    /* substitude minimum for any non-positive values */
     for (i = 0; i < num_retvals; ++i)
-    {                                /* for each interpolated amplitude value */
-      if (retamps_arr[i] <= 0.0)     /* if value not positive then */
+    { /* for each interpolated amplitude value */
+      if (retamps_arr[i] <= 0.0) /* if value not positive then */
         retamps_arr[i] = min_ampval; /* use minimum value */
     }
   }
@@ -699,12 +699,12 @@ interpolate_list_blockette (double **frequency_ptr,
   { /* for each phase value; unwrap if necessary */
     old_pha = (*phase_ptr)[i];
     new_pha = unwrap_phase (old_pha, prev_phase, 360.0, &added_value);
-    if (added_value == 0.0)       /* if phase value not unwrapped */
+    if (added_value == 0.0) /* if phase value not unwrapped */
       local_pha_arr[i] = old_pha; /* then copy original value */
     else
-    {                             /* phase value was unwrapped */
+    { /* phase value was unwrapped */
       local_pha_arr[i] = new_pha; /* enter new phase value */
-      unwrapped_flag = 1;         /* indicate unwrapping */
+      unwrapped_flag = 1; /* indicate unwrapping */
     }
     prev_phase = new_pha;
   }
@@ -731,13 +731,13 @@ interpolate_list_blockette (double **frequency_ptr,
     added_value = 0.0;
     new_pha = retvals_arr[0]; /* check first phase value */
     if (new_pha > 180.0)
-    {    /* first phase value is too high */
+    { /* first phase value is too high */
       do /* set offset to put values in range */
         added_value -= 360.0;
       while (new_pha + added_value > 180.0);
     }
     else if (new_pha < -180.0)
-    {    /* first phase value is too low */
+    { /* first phase value is too low */
       do /* set offset to put values in range */
         added_value += 360.0;
       while (new_pha + added_value < -180.0);
@@ -745,7 +745,7 @@ interpolate_list_blockette (double **frequency_ptr,
     for (i = 0; i < num_retvals; i++)
     { /* for each phase value; wrap if out of range */
       new_pha = wrap_phase (retvals_arr[i], 360.0, &added_value);
-      if (added_value != 0.0)     /* if phase value wrapped then */
+      if (added_value != 0.0) /* if phase value wrapped then */
         retvals_arr[i] = new_pha; /* enter new phase value */
     }
   }
