@@ -3,24 +3,24 @@
 #include <fcntl.h>
 #include <stdio.h>
 
+#include "evalresp/public_api.h"
 #include "evalresp/stationxml2resp.h"
 #include "evalresp/stationxml2resp/wrappers.h"
 #include "evalresp_log/log.h"
-#include "evalresp/public_api.h"
 
 void
 run_test (char *input, char *response)
 {
-  FILE *in=NULL, *out = NULL;
+  FILE *in = NULL, *out = NULL;
   evalresp_log_t *log = NULL;
   ck_assert (NULL != (in = fopen (input, "r")));
   //fail_if (x2r_xml2resp_auto (&in, log));
-  ck_assert (EVALRESP_OK == evalresp_xml_stream_to_resp_stream_auto(log, in, NULL, &out));
+  ck_assert (EVALRESP_OK == evalresp_xml_stream_to_resp_stream_auto (log, in, NULL, &out));
   ck_assert_msg (out != NULL, "Should not get here, auto detection returned okay but no output fd");
   if (in != out)
   {
-      fclose(in);
-      in = NULL;
+    fclose (in);
+    in = NULL;
   }
   FILE *expect;
   fail_if (!(expect = fopen (response, "r")));

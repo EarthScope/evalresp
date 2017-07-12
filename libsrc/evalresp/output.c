@@ -68,7 +68,7 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
       }
       if (pha_arr)
       {
-        pha_arr[i] = atan2 (response->rvec[i].imag, response->rvec[i].real +1.e-200) * 180.0 / M_PI;
+        pha_arr[i] = atan2 (response->rvec[i].imag, response->rvec[i].real + 1.e-200) * 180.0 / M_PI;
       }
     }
     /* Get Size of output string */
@@ -132,7 +132,7 @@ evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *respons
 
 int
 evalresp_response_to_stream (evalresp_log_t *log, const evalresp_response *response,
-                             evalresp_file_format format, FILE * const file)
+                             evalresp_file_format format, FILE *const file)
 {
   char *resp_string = NULL;
   int status = EVALRESP_OK, len;
@@ -196,7 +196,7 @@ evalresp_response_to_file (evalresp_log_t *log, const evalresp_response *respons
 }
 
 int
-evalresp_channel_to_log(evalresp_log_t *log, evalresp_options const * const options, evalresp_channel * const channel)
+evalresp_channel_to_log (evalresp_log_t *log, evalresp_options const *const options, evalresp_channel *const channel)
 {
   evalresp_stage *this_stage, *last_stage, *first_stage;
   evalresp_blkt *this_blkt;

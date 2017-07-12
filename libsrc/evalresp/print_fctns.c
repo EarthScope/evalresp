@@ -445,7 +445,7 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
           }
           fclose (fptr1);
         } /* End of new FAP CASE */
-      }   /* End of AP or FAP case */
+      } /* End of AP or FAP case */
       else
       {
         fprintf (stdout,

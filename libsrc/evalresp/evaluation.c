@@ -4,8 +4,8 @@
 
 #include "./private.h"
 #include "./ugly.h"
-#include "evalresp/public_api.h"
 #include "evalresp/public.h"
+#include "evalresp/public_api.h"
 #include "evalresp_log/log.h"
 
 // new code as a clean wrapper for calc_resp etc.
@@ -94,14 +94,14 @@ parse_option (evalresp_log_t *log, const char *name, int noptions, option_pair *
     evalresp_log (log, EV_ERROR, EV_ERROR, "Could not match '%s' for %s", str, name);
     status = EVALRESP_INP;
   }
-  free(copy);
+  free (copy);
   return status;
 }
 
 static option_pair formats[] = {
     {evalresp_ap_output_format, "AP"},
     {evalresp_fap_output_format, "FAP"},
-    {evalresp_complex_output_format,  "CS"}};
+    {evalresp_complex_output_format, "CS"}};
 
 int
 evalresp_set_format (evalresp_log_t *log, evalresp_options *options,
@@ -331,11 +331,12 @@ restrict_frequency_range (evalresp_log_t *log, double lo, double hi, int *nfreqs
   int status = EVALRESP_OK, nbefore = 0, nafter = 0, i;
   while (*nfreqs && freqs[0] < lo)
   {
-    for (i = 1; i < *nfreqs; ++i) freqs[i-1] = freqs[i];
+    for (i = 1; i < *nfreqs; ++i)
+      freqs[i - 1] = freqs[i];
     nbefore++;
     (*nfreqs)--;
   }
-  while (*nfreqs && freqs[*nfreqs-1] > hi)
+  while (*nfreqs && freqs[*nfreqs - 1] > hi)
   {
     nafter++;
     (*nfreqs)--;
@@ -372,7 +373,7 @@ interpolate_b55 (evalresp_log_t *log, evalresp_channel *channel,
   evalresp_list *list = &b55->blkt_info.list;
   if (!(status = save_b55 (log, channel, b55_save)))
   {
-    if (!(status = restrict_frequency_range (log, list->freq[0], list->freq[list->nresp-1],
+    if (!(status = restrict_frequency_range (log, list->freq[0], list->freq[list->nresp - 1],
                                              &response->nfreqs, response->freqs)))
     {
       interpolate_list_blockette (&list->freq, &list->amp, &list->phase, &list->nresp,
@@ -472,7 +473,7 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
     strncpy ((*response)->channel, channel->chaname, CHALEN);
     if (options->verbose)
     {
-      evalresp_channel_to_log(log, options, channel);
+      evalresp_channel_to_log (log, options, channel);
     }
   }
 
