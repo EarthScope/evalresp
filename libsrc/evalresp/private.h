@@ -1829,7 +1829,7 @@ calloc_doubles (evalresp_log_t *log, const char *name, int n, double **array);
  * @retval EVALRESP_OK on success
  */
 int process_cwd (evalresp_log_t *log, evalresp_options *options,
-                                       evalresp_filter *filter, evalresp_responses **responses);
+                 evalresp_filter *filter, evalresp_responses **responses);
 
 /**
  * @private
@@ -1842,7 +1842,7 @@ int process_cwd (evalresp_log_t *log, evalresp_options *options,
  * @retval EVALRESP_OK on success
  */
 int process_stdio (evalresp_log_t *log, evalresp_options *options,
-                                         evalresp_filter *filter, evalresp_responses **responses);
+                   evalresp_filter *filter, evalresp_responses **responses);
 
 /**
  * @private
@@ -1856,5 +1856,5 @@ int process_stdio (evalresp_log_t *log, evalresp_options *options,
  * @retval EVALRESP_OK on success
  */
 int responses_to_cwd (evalresp_log_t *log, const evalresp_responses *responses,
-                               evalresp_output_format format, int use_stdio);
+                      evalresp_output_format format, int use_stdio);
 #endif

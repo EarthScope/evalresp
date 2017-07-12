@@ -6,9 +6,9 @@
 #include "./private.h"
 #include "./ugly.h"
 #include "evalresp/public_api.h"
-#include "evalresp_log/log.h"
-#include "evalresp/stationxml2resp/wrappers.h"
 #include "evalresp/stationxml2resp/dom_to_seed.h"
+#include "evalresp/stationxml2resp/wrappers.h"
+#include "evalresp_log/log.h"
 
 // code from parse_fctns.c heavily refactored to (1) parse all lines and (2)
 // read from strings rather than files.
@@ -550,23 +550,22 @@ is_iir_coeffs (const char **seed)
   /* Returns 1 if it is IIR; 0 if it is not IIR;                            */
   /* Tt returns 0  in case of the error, so use it with a caution!          */
   /* IGD I.Dricker ISTI i.dricker@isti.com 07/00 for evalresp 3.2.17        */
-  /* IGD I.Dricker ISTI i.dricker@isti.com 07/17: Fully rewritten           */       
+  /* IGD I.Dricker ISTI i.dricker@isti.com 07/17: Fully rewritten           */
   char *substr = NULL;
   char words[5][MAXLINELEN];
-  int  denoms = 0;
+  int denoms = 0;
 
-  substr = strstr(*seed, "B054F10");
+  substr = strstr (*seed, "B054F10");
   if (substr)
   {
 
-   /* Parsing (B054F10     Number of denominators:                0) */
-    sscanf(substr, "%s %s %s %s %s", words[1], words[2], words[3], words[4], words[5]);
+    /* Parsing (B054F10     Number of denominators:                0) */
+    sscanf (substr, "%s %s %s %s %s", words[1], words[2], words[3], words[4], words[5]);
     denoms = atoi (words[5]);
-  } 
+  }
   if (0 == denoms)
     return 0;
-  return 1; 
-
+  return 1;
 }
 
 // this was parse_iir_coeff
@@ -2213,10 +2212,10 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
             if (!filter || channel_matches (log, filter, channel))
             {
               /* check the filter sequence that was just read */
-              status = check_channel(channel, log);
+              status = check_channel (channel, log);
               if (status == EVALRESP_OK)
               {
- 
+
                 if (!(status = add_channel (log, channel, *channels)))
                 {
                   channel = NULL; // don't free below because added above
@@ -2253,22 +2252,22 @@ evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
 }
 
 int
-evalresp_filename_to_channels (evalresp_log_t *log, const char *filename, evalresp_options const * const options,
+evalresp_filename_to_channels (evalresp_log_t *log, const char *filename, evalresp_options const *const options,
                                const evalresp_filter *filter, evalresp_channels **channels)
 {
   FILE *file = NULL;
   int status = EVALRESP_OK;
   if (!(status = open_file (log, filename, &file)))
   {
-    FILE *temp_file=NULL;
+    FILE *temp_file = NULL;
 
     if (options != NULL && options->station_xml)
     {
-      if (EVALRESP_OK == (status = evalresp_xml_stream_to_resp_file(log, 1, file, NULL, &temp_file)))
+      if (EVALRESP_OK == (status = evalresp_xml_stream_to_resp_file (log, 1, file, NULL, &temp_file)))
       {
         if (temp_file != NULL)
         {
-          fclose(file);
+          fclose (file);
           file = temp_file;
           temp_file = NULL;
         }

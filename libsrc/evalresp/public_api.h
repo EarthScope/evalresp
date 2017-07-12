@@ -251,7 +251,7 @@ typedef struct
  * @brief take a filename, open it, and parse it into evalresp_channel object
  * @retval EVALRESP_OK on success
  */
-int evalresp_filename_to_channels (evalresp_log_t *log, const char *filename, evalresp_options const * const options,
+int evalresp_filename_to_channels (evalresp_log_t *log, const char *filename, evalresp_options const *const options,
                                    const evalresp_filter *filter, evalresp_channels **channels);
 
 /**
@@ -429,7 +429,7 @@ int evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *res
  * @retval EVALRESP_OK on success
  */
 int evalresp_response_to_stream (evalresp_log_t *log, const evalresp_response *response,
-                                 evalresp_file_format format, FILE * const file);
+                                 evalresp_file_format format, FILE *const file);
 
 /**
  * @public
@@ -466,6 +466,6 @@ int evalresp_cwd_to_cwd (evalresp_log_t *log,
  * @brief print the channel information of the channel be processed
  * @retval EVALRESP_OK on success
  */
-int evalresp_channel_to_log(evalresp_log_t *log, evalresp_options const * const options, evalresp_channel * const channel);
+int evalresp_channel_to_log (evalresp_log_t *log, evalresp_options const *const options, evalresp_channel *const channel);
 
 #endif

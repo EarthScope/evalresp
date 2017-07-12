@@ -470,8 +470,8 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
       if (prev_stage != (evalresp_stage *)NULL && prev_stage->output_units != stage_ptr->input_units)
       {
         evalresp_log (log, EV_ERROR, 0, "check_channel; units mismatch between stages");
-        exit (1); /*IGD 06/06/2017  TODO ILLEGAL_RESP_FORMAT */
-        return ILLEGAL_RESP_FORMAT;   /*TODO ILLEGAL_RESP_FORMAT */
+        exit (1);                   /*IGD 06/06/2017  TODO ILLEGAL_RESP_FORMAT */
+        return ILLEGAL_RESP_FORMAT; /*TODO ILLEGAL_RESP_FORMAT */
       }
     }
 

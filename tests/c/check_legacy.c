@@ -5,10 +5,10 @@
 #include <string.h>
 
 #include "evalresp/public.h"
-#include "evalresp/stationxml2resp/wrappers.h"
-#include <evalresp/private.h>
-#include "evalresp_log/log.h"
 #include "evalresp/public_api.h"
+#include "evalresp/stationxml2resp/wrappers.h"
+#include "evalresp_log/log.h"
+#include <evalresp/private.h>
 
 char SEEDUNITS[][UNITS_STR_LEN] =
     {"Undef Units", "Displacement", "Velocity", "Acceleration", "Counts",
@@ -18,14 +18,13 @@ char FirstLine[MAXLINELEN];
 int FirstField;
 jmp_buf jump_buffer;
 
-
 evalresp_response *
 old_evresp_itp (char *stalst, char *chalst, char *net_code,
-            char *locidlst, char *date_time, char *units, char *file, double *freqs,
-            int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
-            int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
-            double listinterp_tension, int useTotalSensitivityFlag,
-            double x_for_b62, int xml_flag, evalresp_log_t *log)
+                char *locidlst, char *date_time, char *units, char *file, double *freqs,
+                int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
+                int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
+                double listinterp_tension, int useTotalSensitivityFlag,
+                double x_for_b62, int xml_flag, evalresp_log_t *log)
 {
   evalresp_channel this_channel;
   evalresp_sncl *scn;
@@ -214,19 +213,19 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
     {
 
       /* convert from xml format if necessary, logging error messages to stderr. */
-      evalresp_xml_stream_to_resp_file(log, xml_flag, in_fptr, NULL, &fptr);
+      evalresp_xml_stream_to_resp_file (log, xml_flag, in_fptr, NULL, &fptr);
       if (in_fptr && in_fptr != stdin && xml_flag)
       {
-        fclose(in_fptr);
-        in_fptr=NULL;
+        fclose (in_fptr);
+        in_fptr = NULL;
       }
       else
       {
-          fptr = in_fptr;
+        fptr = in_fptr;
       }
       if (!fptr && !xml_flag)
       {
-          return NULL;
+        return NULL;
       }
       //if (x2r_xml2resp_on_flag (&fptr, xml_flag, log))
       //  return NULL;
@@ -446,11 +445,11 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
         {
 
           /* convert from xml format if necessary, logging error messages to stderr. */
-          evalresp_xml_stream_to_resp_file(log, xml_flag, in_fptr, NULL, &fptr);
+          evalresp_xml_stream_to_resp_file (log, xml_flag, in_fptr, NULL, &fptr);
           if (in_fptr && in_fptr != stdin && xml_flag)
           {
-            fclose(in_fptr);
-            in_fptr=NULL;
+            fclose (in_fptr);
+            in_fptr = NULL;
           }
           else
           {
@@ -803,60 +802,64 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
 
 START_TEST (test_legacy_1)
 {
-    evalresp_response *old_first = NULL, *new_first = NULL, *old_ptr, *new_ptr, *ptr;
-    int oldcount = 0, newcount = 0, i;
-    double freqs[3];
-    freqs[0]=2;
-    freqs[1]=3;
-    freqs[2]=4;
+  evalresp_response *old_first = NULL, *new_first = NULL, *old_ptr, *new_ptr, *ptr;
+  int oldcount = 0, newcount = 0, i;
+  double freqs[3];
+  freqs[0] = 2;
+  freqs[1] = 3;
+  freqs[2] = 4;
 
-    ck_assert_msg(NULL != (old_first = old_evresp_itp("ANMO","BH1", "IU", "00",
+  ck_assert_msg (NULL != (old_first = old_evresp_itp ("ANMO", "BH1", "IU", "00",
                                                       "2015,1,00:00:00", "VEL",
                                                       "./data/response-1",
-                                                      freqs, 3, "AP", NULL, 
-                                                      -1, 0 ,0, 0, 0.0, 0, 0, 0, 0, NULL)), "Failed to run old evresp_itp");
-    ck_assert_msg(NULL != (new_first = evresp_itp("ANMO","BH1", "IU", "00",
-                                                      "2015,1,00:00:00", "VEL",
-                                                      "./data/response-1",
-                                                      freqs, 3, "AP", NULL, 
-                                                      -1, 0 ,0, 0, 0.0, 0, 0, 0, 0, NULL)), "Failed to run evresp_itp");
-    
-    for (oldcount = 0, old_ptr = old_first; old_ptr != NULL; oldcount++, old_ptr=old_ptr->next);
-    for (newcount = 0, new_ptr = new_first; new_ptr != NULL; newcount++, new_ptr=new_ptr->next);
-    ck_assert_msg(oldcount == newcount, "number of responses do not match (new)%d != (old)%d", newcount, oldcount);
-    /*TODO more indepth comparison */
-    old_ptr=old_first;
-    new_ptr=new_first;
-    while (old_ptr && new_ptr)
+                                                      freqs, 3, "AP", NULL,
+                                                      -1, 0, 0, 0, 0.0, 0, 0, 0, 0, NULL)),
+                 "Failed to run old evresp_itp");
+  ck_assert_msg (NULL != (new_first = evresp_itp ("ANMO", "BH1", "IU", "00",
+                                                  "2015,1,00:00:00", "VEL",
+                                                  "./data/response-1",
+                                                  freqs, 3, "AP", NULL,
+                                                  -1, 0, 0, 0, 0.0, 0, 0, 0, 0, NULL)),
+                 "Failed to run evresp_itp");
+
+  for (oldcount = 0, old_ptr = old_first; old_ptr != NULL; oldcount++, old_ptr = old_ptr->next)
+    ;
+  for (newcount = 0, new_ptr = new_first; new_ptr != NULL; newcount++, new_ptr = new_ptr->next)
+    ;
+  ck_assert_msg (oldcount == newcount, "number of responses do not match (new)%d != (old)%d", newcount, oldcount);
+  /*TODO more indepth comparison */
+  old_ptr = old_first;
+  new_ptr = new_first;
+  while (old_ptr && new_ptr)
+  {
+    ck_assert (strcmp (old_ptr->station, new_ptr->station) == 0);
+    ck_assert (strcmp (old_ptr->network, new_ptr->network) == 0);
+    ck_assert (strcmp (old_ptr->locid, new_ptr->locid) == 0);
+    ck_assert (strcmp (old_ptr->channel, new_ptr->channel) == 0);
+    ck_assert (old_ptr->nfreqs == new_ptr->nfreqs);
+    for (i = 0; i < old_ptr->nfreqs; i++)
     {
-        ck_assert(strcmp(old_ptr->station, new_ptr->station) == 0);
-        ck_assert(strcmp(old_ptr->network, new_ptr->network) == 0);
-        ck_assert(strcmp(old_ptr->locid, new_ptr->locid) == 0);
-        ck_assert(strcmp(old_ptr->channel, new_ptr->channel) == 0);
-        ck_assert(old_ptr->nfreqs == new_ptr->nfreqs);
-        for (i = 0; i < old_ptr->nfreqs; i++)
-        {
-            ck_assert(old_ptr->freqs[i] == new_ptr->freqs[i]);
-            ck_assert(old_ptr->rvec[i].real == new_ptr->rvec[i].real);
-            ck_assert(old_ptr->rvec[i].imag == new_ptr->rvec[i].imag);
-        }
-        old_ptr = old_ptr->next;
-        new_ptr = new_ptr->next;
+      ck_assert (old_ptr->freqs[i] == new_ptr->freqs[i]);
+      ck_assert (old_ptr->rvec[i].real == new_ptr->rvec[i].real);
+      ck_assert (old_ptr->rvec[i].imag == new_ptr->rvec[i].imag);
     }
-    old_ptr=old_first;
-    new_ptr=new_first;
-    while (old_ptr)
-    {
-        ptr = old_ptr->next;
-        free(old_ptr);
-        old_ptr = ptr;
-    }
-    while (new_ptr)
-    {
-        ptr = new_ptr->next;
-        free(new_ptr);
-        new_ptr = ptr;
-    }
+    old_ptr = old_ptr->next;
+    new_ptr = new_ptr->next;
+  }
+  old_ptr = old_first;
+  new_ptr = new_first;
+  while (old_ptr)
+  {
+    ptr = old_ptr->next;
+    free (old_ptr);
+    old_ptr = ptr;
+  }
+  while (new_ptr)
+  {
+    ptr = new_ptr->next;
+    free (new_ptr);
+    new_ptr = ptr;
+  }
 }
 END_TEST
 
@@ -867,7 +870,7 @@ main (void)
   Suite *s = suite_create ("suite");
   TCase *tc = tcase_create ("case");
   tcase_add_test (tc, test_legacy_1);
-//  tcase_add_test (tc, test_legacy_2);
+  //  tcase_add_test (tc, test_legacy_2);
   suite_add_tcase (s, tc);
   SRunner *sr = srunner_create (s);
   srunner_set_xml (sr, "check-legacy.xml");
