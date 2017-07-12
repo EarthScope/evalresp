@@ -1438,7 +1438,7 @@ void merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalre
  * @param[in] chan Channel structure.
  * @param[in] log Logging structure.
  */
-void check_channel (evalresp_channel *chan, evalresp_log_t *log);
+int check_channel (evalresp_channel *chan, evalresp_log_t *log);
 
 /**
  * @private
