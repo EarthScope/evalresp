@@ -1477,27 +1477,17 @@ void check_channel (evalresp_channel *chan, evalresp_log_t *log);
 void check_sym (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log);
 
 /* routines used to calculate the instrument responses */
-
 /**
  * @private
  * @ingroup evalresp_private_calc
  * @brief Calculate response.
+ * @param[in] log Logging structure.
  * @param[in] chan Channel structure.
  * @param[in] freq Frequency array.
  * @param[in] nfreqs Number if numbers in @p freq.
  * @param[in] output Output.
- * @param[in] out_units Units of output.
- * @param[in] start_stage Start stage.
- * @param[in] stop_stage Stop stage.
- * @param[in] useTotalSensitivityFlag Use reported sensitivity to compute
- *                                    response.
- * @param[in] x_for_b62 Frequency for polynomial response (b62).
- * @param[in] log Logging structure.
  */
-void calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
-                evalresp_complex *output, const char *out_units, int start_stage,
-                int stop_stage, int useTotalSensitivityFlag, double x_for_b62,
-                evalresp_log_t *log);
+int calculate_response(evalresp_log_t *log, evalresp_options *options, evalresp_channel *chan, double *freq, int nfreqs, evalresp_complex *output);
 
 /**
  * @private
@@ -1509,8 +1499,7 @@ void calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
  * @param[in] w Frequency.
  * @param[in] log Logging structure.
  */
-void convert_to_units (int inp, const char *out_units, evalresp_complex *data,
-                       double w, evalresp_log_t *log);
+void convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, double w, evalresp_log_t *log);
 
 /**
  * @private
@@ -1790,18 +1779,13 @@ double wrap_phase (double phase, double range, double *added_value);
 /**
  * @private
  * @ingroup evalresp_private
- * @brief Small function to set and return a static flag to use or not use
- *        the estimated delay in response computation.
- * @details The reason we want to use this global variable is because we don't
-u *          want to change the number of arguments in evresp() function which
- *          is used in users programs.
- * @param[in] flag NEGATIVE means that we want to query the value of the flag
- *                 TRUE or FALSE means that we want to set corresponding
- *                 values.
- * @author 03/01/05: IGD.
+ * @param[in] log logging structure
+ * @param[in] name label to use if needing to log error
+ * @param[in] str string to convert
+ * @param[out] value the result of the conversion
+ * @brief convert string to integar value
+ * @retval EVALRESP_OK on success
  */
-int use_estimated_delay (int flag);
-
 int
 parse_int (evalresp_log_t *log, const char *name, const char *str, int *value);
 
