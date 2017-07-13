@@ -187,19 +187,10 @@ read_units_first_line_known(evalresp_log_t *log, const char **seed, int blkt_rea
   int status = EVALRESP_OK;
 
   *input_units = check_units (channel, line, log);
-  if (UNDEF_UNITS == *input_units)
-  {
-    return EVALRESP_PAR;
-  }
 
-  if ((status = find_line (log, seed, ":", blkt_read, (*check_fld)++, line)))
+  if (!(status = find_line (log, seed, ":", blkt_read, (*check_fld)++, line)))
   {
-    return status;
-  }
-  *output_units = check_units (channel, line, log);
-  if (UNDEF_UNITS == *output_units)
-  {
-    return EVALRESP_PAR;
+    *output_units = check_units (channel, line, log);
   }
 
   return status;

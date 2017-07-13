@@ -677,7 +677,7 @@ check_units (evalresp_channel *channel, char *line, evalresp_log_t *log)
 #ifdef LIB_MODE
   return (UNDEF_UNITS);
 #else
-  evalresp_log (log, EV_ERROR, 0,
+  evalresp_log (log, EV_WARN, EV_WARN,
                 "check_units; units found ('%s') are not supported", line);
   return UNDEF_UNITS;
 #endif
