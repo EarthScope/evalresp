@@ -5,11 +5,8 @@
 #include "evalresp/public_channels.h"
 #include "evalresp_log/log.h"
 
-// TODO - this should become evresp.h eventually
-
-// once this is defined (v4.0.6 onwards), some functions take an additional
-// xml flag argument
-#define EVRESP_XML
+/*NOTE: this should never be included directly outside libevalresp
+ * include evresp.h instead */
 
 /**
  * @public
