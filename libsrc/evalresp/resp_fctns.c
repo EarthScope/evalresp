@@ -159,7 +159,7 @@ merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_l
   *second_blkt = first_blkt->next_blkt;
 }
 
-void
+int
 check_channel (evalresp_channel *chan, evalresp_log_t *log)
 {
   // TODO - assignments below (0 + NULL) made blindly to fix compiler warning.  bug?
@@ -224,7 +224,7 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
         {
           evalresp_log (log, EV_ERROR, 0, "check_channel; %s in stage %d",
                         "more than one filter type", i);
-          return; /*TODO ILLEGAL_RESP_FORMAT */
+          return ILLEGAL_RESP_FORMAT; /*TODO ILLEGAL_RESP_FORMAT */
         }
         stage_type = PZ_TYPE;
         filt_blkt = blkt_ptr;
@@ -234,14 +234,14 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
         {
           evalresp_log (log, EV_ERROR, 0, "check_channel; %s in stage %d",
                         "more than one filter type", i);
-          return; /*TODO ILLEGAL_RESP_FORMAT */
+          return ILLEGAL_RESP_FORMAT; /*TODO ILLEGAL_RESP_FORMAT */
         }
         stage_type = IIR_TYPE;
         filt_blkt = blkt_ptr;
         break;
       case FIR_COEFFS:
         evalresp_log (log, EV_ERROR, 0, "check_channel; unsupported filter type");
-        return; /*TODO UNSUPPORT_FILTYPE */
+        return UNSUPPORT_FILTYPE; /*TODO UNSUPPORT_FILTYPE */
         break;
       case LIST:
         /* IGD         error_return(UNSUPPORT_FILTYPE, "check_channel; unsupported filter type"); */
@@ -265,7 +265,7 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
           {
             evalresp_log (log, EV_ERROR, 0,
                           "blockette 55 cannot be mixed with other filter blockettes\n");
-            return; /*TODO UNSUPPORT_FILTYPE */
+            return UNSUPPORT_FILTYPE; /*TODO UNSUPPORT_FILTYPE */
           }
         }
         else
@@ -284,7 +284,7 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
               {
                 evalresp_log (log, EV_ERROR, 0,
                               "blockette 55 cannot be mixed with other filter blockettes\n");
-                return; /*TODO UNSUPPORT_FILTYPE */
+                return UNSUPPORT_FILTYPE; /*TODO UNSUPPORT_FILTYPE */
               }
             }
           }
@@ -299,7 +299,7 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
         {
           evalresp_log (log, EV_ERROR, 0, "check_channel; %s in stage %d",
                         "more than one filter type", i + 1);
-          return; /*TODO ILLEGAL_RESP_FORMAT */
+          return ILLEGAL_RESP_FORMAT; /*TODO ILLEGAL_RESP_FORMAT */
         }
         /* check to see if next blockette(s) is(are) a continuation of this one.
         If so, merge them into one blockette */
@@ -307,7 +307,7 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
         {
           evalresp_log (log, EV_ERROR, 0,
                         "check_channel; multiple 55 blockettes in GENERIC stages are not supported yet");
-          return; /*TODO ILLEGAL_RESP_FORMAT */
+          return ILLEGAL_RESP_FORMAT; /*TODO ILLEGAL_RESP_FORMAT */
         }
         stage_type = GENERIC_TYPE;
         /*    nc = 1; */ /*for calc_delay to be 0 in decimation blockette */
@@ -322,7 +322,7 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
         {
           evalresp_log (log, EV_ERROR, 0, "check_channel; %s in stage %d",
                         "more than one filter type", i);
-          return; /*TODO ILLEGAL_RESP_FORMAT */
+          return ILLEGAL_RESP_FORMAT; /*TODO ILLEGAL_RESP_FORMAT */
         }
 
         /* check to see if next blockette(s) is(are) a continuation of this one.
@@ -352,7 +352,7 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
         {
           evalresp_log (log, EV_ERROR, 0, "check_channel; %s in stage %d",
                         "more than one filter type", i);
-          return; /*TODO ILLEGAL_RESP_FORMAT */
+          return ILLEGAL_RESP_FORMAT; /*TODO ILLEGAL_RESP_FORMAT */
         }
         /* check to see if next blockette(s) is(are) a continuation of this one.
         If so, merge them into one blockette */
@@ -360,7 +360,7 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
         {
           evalresp_log (log, EV_ERROR, 0,
                         "check_channel; multiple 55 blockettes in IIR stages are not supported yet");
-          return; /*TODO ILLEGAL_RESP_FORMAT */
+          return ILLEGAL_RESP_FORMAT; /*TODO ILLEGAL_RESP_FORMAT */
         }
         /* merge_coeffs(blkt_ptr,&next_blkt);  */ /* Leave it alone for now ! */
         /* set the stage type to be FIR_TYPE */
@@ -395,7 +395,7 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
         {
           evalresp_log (log, EV_ERROR, 0,
                         "check_channel; decimation blockette with no associated filter");
-          return; /*TODO ILLEGAL_RESP_FORMAT */
+          return ILLEGAL_RESP_FORMAT; /*TODO ILLEGAL_RESP_FORMAT */
         }
         deci_blkt = blkt_ptr;
         deci_flag = j;
@@ -405,8 +405,11 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
         ref_blkt = blkt_ptr;
         break;
       default:
-        error_return (UNSUPPORT_FILTYPE, "check_channel; unrecognized blkt type (type=%d)",
+        evalresp_log (log, EV_ERROR, 0, "check_channel; unrecognized blkt type (type=%d)",
                       blkt_ptr->type);
+        return UNSUPPORT_FILTYPE; /*TODO UNSUPPORT_FILTYPE */
+        /*XXX error_return (UNSUPPORT_FILTYPE, "check_channel; unrecognized blkt type (type=%d)",
+                      blkt_ptr->type);*/
       }
       blkt_ptr = next_blkt;
     }
@@ -468,7 +471,7 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
       {
         evalresp_log (log, EV_ERROR, 0, "check_channel; units mismatch between stages");
         exit (1); /*IGD 06/06/2017  TODO ILLEGAL_RESP_FORMAT */
-        return; /*TODO ILLEGAL_RESP_FORMAT */
+        return ILLEGAL_RESP_FORMAT; /*TODO ILLEGAL_RESP_FORMAT */
       }
     }
 
@@ -495,6 +498,7 @@ check_channel (evalresp_channel *chan, evalresp_log_t *log)
     }
     stage_ptr = next_stage;
   }
+  return EVALRESP_OK;
 }
 
 void

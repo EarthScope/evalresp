@@ -107,37 +107,6 @@
 /**
  * @private
  * @ingroup evalresp_private
- * @brief An array of strings presenting full SEED units names, like Counts, Volts, etc... .
- */
-extern char SEEDUNITS[][UNITS_STR_LEN];
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief Define the "first line" and "first field" arguments that are used by
- *        the parsing routines (they are used to compensate for the fact that
- *        in parsing the RESP files, one extra line is always read because the
- *        "end" of a filter sequence cannot be determined until the first line
- *        of the "next" filter sequence or station-channel pair is read from
- *        the file.
- */
-extern char FirstLine[];
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief Define the "first line" and "first field" arguments that are used by
- *        the parsing routines (they are used to compensate for the fact that
- *        in parsing the RESP files, one extra line is always read because the
- *        "end" of a filter sequence cannot be determined until the first line
- *        of the "next" filter sequence or station-channel pair is read from
- *        the file.
- */
-extern int FirstField;
-
-/**
- * @private
- * @ingroup evalresp_private
  * @brief Define a global flag to use if using "default" units.
  */
 extern int def_units_flag;
@@ -173,16 +142,6 @@ extern char *curr_file;
  * @brief Sequence number of the current stage.
  */
 extern int curr_seq_no;
-
-/* and set a global variable to contain the environment for the setjmp/longjmp
- combination for error handling */
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief Jump buffer for long jump function: obsolete and will be removed.
- */
-extern jmp_buf jump_buffer;
 
 /**
  * @private
