@@ -9,7 +9,7 @@
 #define REVNUM VERSION
 #else
 //TODO #define REVNUM "5.0.0"
-#define REVNUM "X.X.X"
+#define REVNUM "4.0.7"
 #endif
 
 #include "./public_api.h"
