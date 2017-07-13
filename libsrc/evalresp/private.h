@@ -1464,7 +1464,7 @@ void check_sym (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log);
  * @param[in] nfreqs Number if numbers in @p freq.
  * @param[in] output Output.
  */
-int calculate_response(evalresp_log_t *log, evalresp_options *options, evalresp_channel *chan, double *freq, int nfreqs, evalresp_complex *output);
+int calculate_response (evalresp_log_t *log, evalresp_options *options, evalresp_channel *chan, double *freq, int nfreqs, evalresp_complex *output);
 
 /**
  * @private
