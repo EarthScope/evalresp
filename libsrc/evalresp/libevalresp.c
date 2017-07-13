@@ -76,7 +76,6 @@ int def_units_flag;
 /* define a pointer to a channel structure to use in determining the input and
  output units if using "default" units and for use in error output*/
 evalresp_channel *GblChanPtr;
-float unitScaleFact;
 
 /* define global variables for use in printing error messages */
 char *curr_file;
