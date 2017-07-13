@@ -606,7 +606,7 @@ check_units (evalresp_channel *channel, char *line, evalresp_log_t *log)
   {
     first_flag = 1;
     strncpy (channel->first_units, line, MAXLINELEN);
-    unitScaleFact = 1.0; /* global variable used to change to MKS units */
+    channel->unit_scale_fact = 1.0;
   }
   else
     strncpy (channel->last_units, line, MAXLINELEN);
@@ -639,31 +639,31 @@ check_units (evalresp_channel *channel, char *line, evalresp_log_t *log)
   if (string_match (line, "^[CNM]?M/S\\*\\*2|^[CNM]?M/SEC\\*\\*2", "-r", log))
   {
     if (first_flag && !strncmp ("NM", line, (size_t)2))
-      unitScaleFact = 1.0e9;
+      channel->unit_scale_fact = 1.0e9;
     else if (first_flag && !strncmp ("MM", line, (size_t)2))
-      unitScaleFact = 1.0e3;
+      channel->unit_scale_fact = 1.0e3;
     else if (first_flag && !strncmp ("CM", line, (size_t)2))
-      unitScaleFact = 1.0e2;
+      channel->unit_scale_fact = 1.0e2;
     return (ACC);
   }
   else if (string_match (line, "^[CNM]?M/S|^[CNM]?M/SEC", "-r", log))
   {
     if (first_flag && !strncmp (line, "NM", 2))
-      unitScaleFact = 1.0e9;
+      channel->unit_scale_fact = 1.0e9;
     else if (first_flag && !strncmp (line, "MM", 2))
-      unitScaleFact = 1.0e3;
+      channel->unit_scale_fact = 1.0e3;
     else if (first_flag && !strncmp (line, "CM", 2))
-      unitScaleFact = 1.0e2;
+      channel->unit_scale_fact = 1.0e2;
     return (VEL);
   }
   else if (string_match (line, "^[CNM]?M[^A-Z/]?", "-r", log))
   {
     if (first_flag && !strncmp (line, "NM", 2))
-      unitScaleFact = 1.0e9;
+      channel->unit_scale_fact = 1.0e9;
     else if (first_flag && !strncmp (line, "MM", 2))
-      unitScaleFact = 1.0e3;
+      channel->unit_scale_fact = 1.0e3;
     else if (first_flag && !strncmp (line, "CM", 2))
-      unitScaleFact = 1.0e2;
+      channel->unit_scale_fact = 1.0e2;
     return (DIS);
   }
   else if (string_match (line, "^COUNTS?[^A-Z]?", "-r", log) || string_match (line, "^DIGITAL[^A-Z]?", "-r", log))

@@ -231,6 +231,7 @@ typedef struct evalresp_channel_s
   double calc_delay; /**< Calculated delay. */
   double estim_delay; /**< Estimated delay. */
   double applied_corr; /**< Applied correction. */
+  double unit_scale_fact; /**< Used to convert MKS / metric. */
   double sint; /**< Inverted sample rate (sample interval). */
   int nstages; /**< Number of stages. */
   evalresp_stage *first_stage; /**< Pointer to the head of a linked list of

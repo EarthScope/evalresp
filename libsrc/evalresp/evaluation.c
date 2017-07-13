@@ -682,19 +682,19 @@ int calculate_response(evalresp_log_t *log, evalresp_options *options,
       return NO_STAGE_MATCHED;
     }
 
-    /*  Write output for freq[i] in output[i] (note: unitScaleFact is a global variable
-         set by the 'check_units' function that is used to convert to 'MKS' units when the
-         the response was given as a displacement, velocity, or acceleration in units other
-         than meters) */
+    /*  Write output for freq[i] in output[i] (note: unit_scale_fact is set by the
+     * 'check_units' function that is used to convert to 'MKS' units when the
+     * the response was given as a displacement, velocity, or acceleration in units other
+     * than meters) */
     if (0 == options->use_total_sensitivity)
     {
-      output[i].real = val.real * chan->calc_sensit * unitScaleFact;
-      output[i].imag = val.imag * chan->calc_sensit * unitScaleFact;
+      output[i].real = val.real * chan->calc_sensit * chan->unit_scale_fact;
+      output[i].imag = val.imag * chan->calc_sensit * chan->unit_scale_fact;
     }
     else
     {
-      output[i].real = val.real * chan->sensit * unitScaleFact;
-      output[i].imag = val.imag * chan->sensit * unitScaleFact;
+      output[i].real = val.real * chan->sensit * chan->unit_scale_fact;
+      output[i].imag = val.imag * chan->sensit * chan->unit_scale_fact;
     }
 
     convert_to_units (units_code, options->unit_set?options->unit:evalresp_velocity_unit, &output[i], w, log);
