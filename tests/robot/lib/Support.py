@@ -10,7 +10,7 @@ TARGET = join(WORKSPACE, 'tests/robot/target')
 DATA = join(WORKSPACE, 'tests/robot/data')
 RUN = join(WORKSPACE, 'tests/robot/run')
 
-TINY = 1e-6
+TINY = 1e-5
 
 
 class Support:

@@ -135,5 +135,39 @@ evalresp_response *evresp_itp (char *stalst, char *chalst, char *net_code,
                                double listinterp_tension,
                                int useTotalSensitivityFlag, double x_for_b62,
                                int xml_flag, evalresp_log_t *log);
+/**
+ * @private
+ * @ingroup evalresp_private
+ * @brief Small function to set and return a static flag to use or not use
+ *        the estimated delay in response computation.
+ * @details The reason we want to use this global variable is because we don't
+u *          want to change the number of arguments in evresp() function which
+ *          is used in users programs.
+ * @param[in] flag NEGATIVE means that we want to query the value of the flag
+ *                 TRUE or FALSE means that we want to set corresponding
+ *                 values.
+ * @author 03/01/05: IGD.
+ */
+int use_estimated_delay (int flag);
 
+/**
+ * @private
+ * @ingroup evalresp_private_calc
+ * @brief Calculate response.
+ * @param[in] chan Channel structure.
+ * @param[in] freq Frequency array.
+ * @param[in] nfreqs Number if numbers in @p freq.
+ * @param[in] output Output.
+ * @param[in] out_units Units of output.
+ * @param[in] start_stage Start stage.
+ * @param[in] stop_stage Stop stage.
+ * @param[in] useTotalSensitivityFlag Use reported sensitivity to compute
+ *                                    response.
+ * @param[in] x_for_b62 Frequency for polynomial response (b62).
+ * @param[in] log Logging structure.
+ */
+void calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
+                evalresp_complex *output, const char *out_units, int start_stage,
+                int stop_stage, int useTotalSensitivityFlag, double x_for_b62,
+                evalresp_log_t *log);
 #endif

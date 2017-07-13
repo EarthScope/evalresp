@@ -11,6 +11,79 @@
 
 /* Fortran  interface */
 
+int
+evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
+          char *units, char *file, double *freqs, int nfreqs, double *resp,
+          char *rtype, char *verbose, int start_stage, int stop_stage,
+          int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
+          int xml_flag)
+{
+  evalresp_response *first = (evalresp_response *)NULL;
+  int i, j;
+  evalresp_log_t *log = NULL;
+
+  // some eyeball checks to make sure fortran is passing things ok
+  // printf("freqs: %f-%f\n", freqs[0], freqs[nfreqs-1]);
+  // printf("x_for_b62: %f\n", x_for_b62);
+
+  first = evresp (sta, cha, net, locid, datime, units, file, freqs, nfreqs,
+                  rtype, verbose, start_stage, stop_stage, stdio_flag, useTotalSensitivityFlag,
+                  x_for_b62, xml_flag, log);
+
+  /* check the output.  If no response found, return 1, else if more than one response
+     found, return -1 */
+
+  if (first == (evalresp_response *)NULL)
+  {
+    return (1);
+  }
+  else if (first->next != (evalresp_response *)NULL)
+  {
+    evalresp_free_response (first);
+    return (-1);
+  }
+
+  /* if only one response found, convert from complex output vector into multiplexed
+     real output for FORTRAN (real1, imag1, real2, imag2, ..., realN, imagN) */
+
+  for (i = 0, j = 0; i < nfreqs; i++)
+  {
+    resp[j++] = (float)first->rvec[i].real;
+    resp[j++] = (float)first->rvec[i].imag;
+  }
+
+  /* free up dynamically allocated space */
+
+  evalresp_free_response (first);
+
+  /* and return to FORTRAN program */
+
+  return (0);
+}
+
+/* 2/6/2006 -- [ET]  Moved from 'evalresp.c' to 'evresp.c' */
+/* 12-JUL-2017 -- [Dylan]  Moved from 'eivresp.c' to 'legacy_interface.cc' */
+int
+use_estimated_delay (int flag)
+{
+  /* WE USE THOSE WEIRD magic numbers here because
+     * there is a chance that use_delay_flag is not
+     * defined: in user program which uses evresp()
+     * when use_estimated_delay() is not used before evresp().
+     */
+  int magic_use_delay = 35443647;
+  int magic_dont_use_delay = -90934324;
+  static int use_delay_flag = FALSE;
+  if (TRUE == flag)
+    use_delay_flag = magic_use_delay;
+  if (FALSE == flag)
+    use_delay_flag = magic_dont_use_delay;
+
+  if (use_delay_flag == magic_use_delay)
+    return TRUE;
+  return FALSE;
+}
+
 static int
 convert_responses_to_response_chain (evalresp_responses *responses, evalresp_response **first_resp)
 {
@@ -147,7 +220,6 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
     process_cwd (log, options, filter, &responses);
   }
 
-  /*TODO covert responses to response linked list */
   convert_responses_to_response_chain (responses, &first_resp);
 
   evalresp_free_options (&options);
@@ -240,4 +312,39 @@ print_resp (double *freqs, int nfreqs, evalresp_response *first, char *rtype,
             int stdio_flag, evalresp_log_t *log)
 {
   print_resp_itp (freqs, nfreqs, first, rtype, stdio_flag, 0, 0.0, 0, log);
+}
+
+void
+calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
+           evalresp_complex *output, const char *out_units, int start_stage,
+           int stop_stage, int useTotalSensitivityFlag, double x_for_b62,
+           evalresp_log_t *log)
+{
+  evalresp_options *options= NULL;
+  if (EVALRESP_OK != evalresp_new_options (log, &options))
+  {
+    return;
+  }
+  options->b62_x = x_for_b62;
+  options->nfreq = nfreqs;
+  options->min_freq = freq[0];
+  options->max_freq = freq[nfreqs - 1];
+  options->lin_freq = determine_log_or_lin (nfreqs, freq);
+  options->start_stage = start_stage;
+  options->stop_stage = stop_stage;
+  options->use_estimated_delay = use_estimated_delay (QUERY_DELAY) == TRUE ? 1 : 0;
+  options->use_total_sensitivity = useTotalSensitivityFlag;
+  if (out_units)
+  {
+    if (EVALRESP_OK != evalresp_set_unit (log, options, out_units))
+    {
+      evalresp_free_options (&options);
+      return;
+    }
+    options->unit_set = 1;
+  }
+
+  calculate_response(log, options, chan, freq, nfreqs, output);
+
+  evalresp_free_options (&options);
 }

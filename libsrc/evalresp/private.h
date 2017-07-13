@@ -202,15 +202,15 @@
 enum units
 {
   UNDEF_UNITS, /**< Undefined. */
-  DIS,         /**< Displacement. */
-  VEL,         /**< Velocity. */
-  ACC,         /**< Acceleration. */
-  COUNTS,      /**< Counts. */
-  VOLTS,       /**< Volts. */
-  DEFAULT,     /**< Default. */
-  PRESSURE,    /**< Pressure. */
-  TESLA,       /**< Tesla. */
-  CENTIGRADE   /**< Degrees Celsius. */
+  DIS, /**< Displacement. */
+  VEL, /**< Velocity. */
+  ACC, /**< Acceleration. */
+  COUNTS, /**< Counts. */
+  VOLTS, /**< Volts. */
+  DEFAULT, /**< Default. */
+  PRESSURE, /**< Pressure. */
+  TESLA, /**< Tesla. */
+  CENTIGRADE /**< Degrees Celsius. */
 };
 
 /**
@@ -222,19 +222,19 @@ enum filt_types
 {
   UNDEF_FILT, /**< Undefined filter. */
   LAPLACE_PZ, /**< Laplace transform filter: poles and zeros representation B53 . */
-  ANALOG_PZ,  /**< Analog filter: poles and zeros representation B53. */
-  IIR_PZ,     /**< Infinite Impulse Response: polez and zeros representation B53. */
-  FIR_SYM_1,  /**< Finite Impulse Response Filter (symmetrical with odd number of weights) B61. */
-  FIR_SYM_2,  /**< Finie Impulse Response Filter (symmetrical with even number of weights) B61. */
-  FIR_ASYM,   /**< Finite Impulse Response Filter (assymetrical) B54. */
-  LIST,       /**< Filter presented as a list B55 (Frequency/amplitude). */
-  GENERIC,    /**< Filter presented as a generi B56 (via Corener frequencies/slopes. */
+  ANALOG_PZ, /**< Analog filter: poles and zeros representation B53. */
+  IIR_PZ, /**< Infinite Impulse Response: polez and zeros representation B53. */
+  FIR_SYM_1, /**< Finite Impulse Response Filter (symmetrical with odd number of weights) B61. */
+  FIR_SYM_2, /**< Finie Impulse Response Filter (symmetrical with even number of weights) B61. */
+  FIR_ASYM, /**< Finite Impulse Response Filter (assymetrical) B54. */
+  LIST, /**< Filter presented as a list B55 (Frequency/amplitude). */
+  GENERIC, /**< Filter presented as a generi B56 (via Corener frequencies/slopes. */
   DECIMATION, /**< Decimation B57. */
-  GAIN,       /**< Channel Sensitiity/Gain B58. */
-  REFERENCE,  /**< Response Reference B60 to replace B53-58,61 with the dictionary counterparts. */
+  GAIN, /**< Channel Sensitiity/Gain B58. */
+  REFERENCE, /**< Response Reference B60 to replace B53-58,61 with the dictionary counterparts. */
   FIR_COEFFS, /**< FIR response: coefficients representation B61. */
   IIR_COEFFS, /**< Infinite Impulse response represented in B54. */
-  POLYNOMIAL  /**< Polynomial filter via B62. */
+  POLYNOMIAL /**< Polynomial filter via B62. */
 };
 
 /**
@@ -244,15 +244,15 @@ enum filt_types
  */
 enum stage_types
 {
-  UNDEF_STAGE,     /**< Undefined stage. */
-  PZ_TYPE,         /**< Polez and zeros stage. */
-  IIR_TYPE,        /**< Infinite Impulse response stage. */
-  FIR_TYPE,        /**< Finite Impulse response stage. */
-  GAIN_TYPE,       /**< Channel Sensitivity/Gain stage. */
-  LIST_TYPE,       /**< List response representation stage. */
+  UNDEF_STAGE, /**< Undefined stage. */
+  PZ_TYPE, /**< Polez and zeros stage. */
+  IIR_TYPE, /**< Infinite Impulse response stage. */
+  FIR_TYPE, /**< Finite Impulse response stage. */
+  GAIN_TYPE, /**< Channel Sensitivity/Gain stage. */
+  LIST_TYPE, /**< List response representation stage. */
   IIR_COEFFS_TYPE, /**< Infinite Impulse response in coefficient form stage. */
-  GENERIC_TYPE,    /**< Generic response stage. */
-  POLYNOMIAL_TYPE  /**< Polynomial type stage. */
+  GENERIC_TYPE, /**< Generic response stage. */
+  POLYNOMIAL_TYPE /**< Polynomial type stage. */
 };
 
 /**
@@ -262,26 +262,26 @@ enum stage_types
  */
 enum error_codes
 {
-  NON_EXIST_FLD = -2,         /**< Field does not exist. */
-  ILLEGAL_RESP_FORMAT = -5,   /**< Illegal response format. */
-  PARSE_ERROR = -4,           /**< Parse error. */
-  UNDEF_PREFIX = -3,          /**< Undefined prefix. */
-  UNDEF_SEPSTR = -6,          /**< Undefined separator. */
-  OUT_OF_MEMORY = -1,         /**< Out of memory */
-  UNRECOG_FILTYPE = -7,       /**< Unrecognized filter type */
-  UNEXPECTED_EOF = -8,        /**< Unexpected EOF. */
+  NON_EXIST_FLD = -2, /**< Field does not exist. */
+  ILLEGAL_RESP_FORMAT = -5, /**< Illegal response format. */
+  PARSE_ERROR = -4, /**< Parse error. */
+  UNDEF_PREFIX = -3, /**< Undefined prefix. */
+  UNDEF_SEPSTR = -6, /**< Undefined separator. */
+  OUT_OF_MEMORY = -1, /**< Out of memory */
+  UNRECOG_FILTYPE = -7, /**< Unrecognized filter type */
+  UNEXPECTED_EOF = -8, /**< Unexpected EOF. */
   ARRAY_BOUNDS_EXCEEDED = -9, /**< Array bound exceeded. */
-  OPEN_FILE_ERROR = 2,        /**< Failure to open the file. */
-  RE_COMP_FAILED = 3,         /**< Failure to compile the pattern. */
-  MERGE_ERROR = 4,            /**< lure to merge blockettes. */
-  SWAP_FAILED = 5,            /**< Swapping failure: not used. */
-  USAGE_ERROR = 6,            /**< User errors detencted on teh command line. */
-  BAD_OUT_UNITS = 7,          /**< Bad output units error. */
-  IMPROP_DATA_TYPE = -10,     /**< Unsupported data type. */
-  UNSUPPORT_FILTYPE = -11,    /**< Unsupported filter type. */
-  ILLEGAL_FILT_SPEC = -12,    /**< Illigal filter specs. */
-  NO_STAGE_MATCHED = -13,     /**< No stage matched error. */
-  UNRECOG_UNITS = -14         /**< Unrecognized units. */
+  OPEN_FILE_ERROR = 2, /**< Failure to open the file. */
+  RE_COMP_FAILED = 3, /**< Failure to compile the pattern. */
+  MERGE_ERROR = 4, /**< lure to merge blockettes. */
+  SWAP_FAILED = 5, /**< Swapping failure: not used. */
+  USAGE_ERROR = 6, /**< User errors detencted on teh command line. */
+  BAD_OUT_UNITS = 7, /**< Bad output units error. */
+  IMPROP_DATA_TYPE = -10, /**< Unsupported data type. */
+  UNSUPPORT_FILTYPE = -11, /**< Unsupported filter type. */
+  ILLEGAL_FILT_SPEC = -12, /**< Illigal filter specs. */
+  NO_STAGE_MATCHED = -13, /**< No stage matched error. */
+  UNRECOG_UNITS = -14 /**< Unrecognized units. */
 };
 
 /* define structures for the compound data types used in evalesp */
@@ -293,7 +293,7 @@ enum error_codes
  */
 struct string_array
 {
-  int nstrings;   /**< Number of strings. */
+  int nstrings; /**< Number of strings. */
   char **strings; /**< String array. */
 };
 
@@ -304,7 +304,7 @@ struct string_array
  */
 struct file_list
 {
-  char *name;                  /**< File name. */
+  char *name; /**< File name. */
   struct file_list *next_file; /**< Pointer to next file list object. */
 };
 
@@ -315,8 +315,8 @@ struct file_list
  */
 struct matched_files
 {
-  int nfiles;                     /**< Number of files. */
-  struct file_list *first_list;   /**< Array of file list objects. */
+  int nfiles; /**< Number of files. */
+  struct file_list *first_list; /**< Array of file list objects. */
   struct matched_files *ptr_next; /**< Pointer to next matches files object. */
 };
 
@@ -1454,27 +1454,17 @@ int check_channel (evalresp_channel *chan, evalresp_log_t *log);
 void check_sym (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log);
 
 /* routines used to calculate the instrument responses */
-
 /**
  * @private
  * @ingroup evalresp_private_calc
  * @brief Calculate response.
+ * @param[in] log Logging structure.
  * @param[in] chan Channel structure.
  * @param[in] freq Frequency array.
  * @param[in] nfreqs Number if numbers in @p freq.
  * @param[in] output Output.
- * @param[in] out_units Units of output.
- * @param[in] start_stage Start stage.
- * @param[in] stop_stage Stop stage.
- * @param[in] useTotalSensitivityFlag Use reported sensitivity to compute
- *                                    response.
- * @param[in] x_for_b62 Frequency for polynomial response (b62).
- * @param[in] log Logging structure.
  */
-void calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
-                evalresp_complex *output, const char *out_units, int start_stage,
-                int stop_stage, int useTotalSensitivityFlag, double x_for_b62,
-                evalresp_log_t *log);
+int calculate_response(evalresp_log_t *log, evalresp_options *options, evalresp_channel *chan, double *freq, int nfreqs, evalresp_complex *output);
 
 /**
  * @private
@@ -1486,8 +1476,7 @@ void calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
  * @param[in] w Frequency.
  * @param[in] log Logging structure.
  */
-void convert_to_units (int inp, const char *out_units, evalresp_complex *data,
-                       double w, evalresp_log_t *log);
+void convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, double w, evalresp_log_t *log);
 
 /**
  * @private
@@ -1763,21 +1752,6 @@ double unwrap_phase (double phase, double prev_phase, double range,
  * @returns "Wrapped" version of the given phase value.
  */
 double wrap_phase (double phase, double range, double *added_value);
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief Small function to set and return a static flag to use or not use
- *        the estimated delay in response computation.
- * @details The reason we want to use this global variable is because we don't
-u *          want to change the number of arguments in evresp() function which
- *          is used in users programs.
- * @param[in] flag NEGATIVE means that we want to query the value of the flag
- *                 TRUE or FALSE means that we want to set corresponding
- *                 values.
- * @author 03/01/05: IGD.
- */
-int use_estimated_delay (int flag);
 
 /**
  * @private

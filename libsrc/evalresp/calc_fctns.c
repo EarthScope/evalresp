@@ -49,218 +49,35 @@
 
 #include "./private.h"
 
-/*=================================================================
- *                   Calculate response
- *=================================================================*/
-
-/* IGD 10/04/13 Reformatted */
-void
-calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
-           evalresp_complex *output, const char *out_units, int start_stage,
-           int stop_stage, int useTotalSensitivityFlag, double x_for_b62,
-           evalresp_log_t *log)
-{
-  evalresp_blkt *blkt_ptr;
-  evalresp_stage *stage_ptr;
-  int i, j, units_code, eval_flag = 0, nc = 0, sym_fir = 0;
-  double w;
-  int matching_stages = 0, has_stage0 = 0;
-  evalresp_complex of, val;
-  double corr_applied, calc_delay, estim_delay, delay;
-
-  /*  if(start_stage && start_stage > chan->nstages) {
-     error_return(NO_STAGE_MATCHED, "calc_resp: %s start_stage=%d, highest stage found=%d)",
-     "No Matching Stages Found (requested",start_stage, chan->nstages);
-     } */
-
-  /* for each frequency */
-
-  for (i = 0; i < nfreqs; i++)
-  {
-    w = 2 * M_PI * freq[i];
-    val.real = 1.0;
-    val.imag = 0.0;
-
-    /* loop through the stages and filters for each stage, calculating
-         the response for each frequency for all stages */
-
-    stage_ptr = chan->first_stage;
-    units_code = stage_ptr->input_units;
-    for (j = 0; j < chan->nstages; j++)
-    {
-      nc = 0;
-      sym_fir = 0;
-      if (!stage_ptr->sequence_no)
-        has_stage0 = 1;
-      if (start_stage >= 0 && stop_stage && (stage_ptr->sequence_no < start_stage || stage_ptr->sequence_no > stop_stage))
-      {
-        stage_ptr = stage_ptr->next_stage;
-        continue;
-      }
-      else if (start_stage >= 0 && !stop_stage && stage_ptr->sequence_no != start_stage)
-      {
-        stage_ptr = stage_ptr->next_stage;
-        continue;
-      }
-      matching_stages++;
-      blkt_ptr = stage_ptr->first_blkt;
-      while (blkt_ptr)
-      {
-        eval_flag = 0;
-        switch (blkt_ptr->type)
-        {
-        case ANALOG_PZ:
-        case LAPLACE_PZ:
-          analog_trans (blkt_ptr, freq[i], &of);
-          eval_flag = 1;
-          break;
-        case IIR_PZ:
-          if (blkt_ptr->blkt_info.pole_zero.nzeros || blkt_ptr->blkt_info.pole_zero.npoles)
-          {
-            iir_pz_trans (blkt_ptr, w, &of);
-            eval_flag = 1;
-          }
-          break;
-        case FIR_SYM_1:
-        case FIR_SYM_2:
-          if (blkt_ptr->type == FIR_SYM_1)
-            nc = (double)blkt_ptr->blkt_info.fir.ncoeffs * 2 - 1;
-          else if (blkt_ptr->type == FIR_SYM_2)
-            nc = (double)blkt_ptr->blkt_info.fir.ncoeffs * 2;
-          if (blkt_ptr->blkt_info.fir.ncoeffs)
-          {
-            fir_sym_trans (blkt_ptr, w, &of);
-            sym_fir = 1;
-            eval_flag = 1;
-          }
-          break;
-        case FIR_ASYM:
-          nc = (double)blkt_ptr->blkt_info.fir.ncoeffs;
-          if (blkt_ptr->blkt_info.fir.ncoeffs)
-          {
-            fir_asym_trans (blkt_ptr, w, &of);
-            sym_fir = -1;
-            eval_flag = 1;
-          }
-          break;
-        case DECIMATION: /* IGD 10/05/13 Logic updated to include calc_delay on demand */
-          if (blkt_ptr->type != IIR_PZ && nc != 0)
-          {
-            /* IGD 08/27/08 Use estimated delay instead of calculated */
-            estim_delay =
-                (double)blkt_ptr->blkt_info.decimation.estim_delay;
-            corr_applied =
-                blkt_ptr->blkt_info.decimation.applied_corr;
-            calc_delay = ((nc - 1) / 2.0) * blkt_ptr->blkt_info.decimation.sample_int;
-            /* Asymmetric FIR coefficients require a delay correction */
-            if (sym_fir == -1)
-            {
-              if (TRUE == use_estimated_delay (QUERY_DELAY))
-                delay = estim_delay;
-              else
-                delay = corr_applied - calc_delay;
-            }
-            /* Otherwise delay has already been handled in fir_sym_trans() */
-            else
-            {
-              delay = 0;
-            }
-            calc_time_shift (delay, w, &of);
-            eval_flag = 1;
-          }
-          break;
-        case LIST:                      /* This option is added in version 2.3.17 I.Dricker*/
-          calc_list (blkt_ptr, i, &of); /*compute real and imag parts for the i-th ampl and phase */
-          eval_flag = 1;
-          break;
-        case POLYNOMIAL: /* IGD 06/01/2013*/
-          calc_polynomial (blkt_ptr, &of, x_for_b62, log);
-          eval_flag = 1;
-          break;
-        case IIR_COEFFS: /* This option is added in version 2.3.17 I.Dricker*/
-          iir_trans (blkt_ptr, w, &of);
-          eval_flag = 1;
-          break;
-        default:
-          break;
-        }
-        if (eval_flag)
-          zmul (&val, &of);
-        blkt_ptr = blkt_ptr->next_blkt;
-      }
-      stage_ptr = stage_ptr->next_stage;
-    }
-
-    /* if no matching stages were found, then report the error */
-
-    if (!matching_stages && !has_stage0)
-    {
-      evalresp_log (log, EV_ERROR, 0,
-                    "calc_resp: %s start_stage=%d, highest stage found=%d)",
-                    "No Matching Stages Found (requested", start_stage,
-                    chan->nstages);
-      return; /*TODO NO_STAGE_MATCHED */
-    }
-    else if (!matching_stages)
-    {
-      evalresp_log (log, EV_ERROR, 0,
-                    "calc_resp: %s start_stage=%d, highest stage found=%d)",
-                    "No Matching Stages Found (requested", start_stage,
-                    chan->nstages - 1);
-      return; /*TODO NO_STAGE_MATCHED */
-    }
-
-    /*  Write output for freq[i] in output[i] (note: unitScaleFact is a global variable
-         set by the 'check_units' function that is used to convert to 'MKS' units when the
-         the response was given as a displacement, velocity, or acceleration in units other
-         than meters) */
-    if (0 == useTotalSensitivityFlag)
-    {
-      output[i].real = val.real * chan->calc_sensit * unitScaleFact;
-      output[i].imag = val.imag * chan->calc_sensit * unitScaleFact;
-    }
-    else
-    {
-      output[i].real = val.real * chan->sensit * unitScaleFact;
-      output[i].imag = val.imag * chan->sensit * unitScaleFact;
-    }
-
-    convert_to_units (units_code, out_units, &output[i], w, log);
-  }
-}
-
 /*==================================================================
  * Convert response to velocity first, then to specified units
  *=================================================================*/
 void
-convert_to_units (int inp, const char *out_units, evalresp_complex *data, double w, evalresp_log_t *log)
+convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, double w, evalresp_log_t *log)
 {
   // TODO - 0 assignment below made blindly to fix compiler warning.  bug?
-  int out = 0, l;
+  int out = 0;
   evalresp_complex scale_val;
 
   /* if default units were specified by the user, no conversion is made,
      otherwise convert to unit the user specified. */
-
-  if (out_units != NULL && (l = strlen (out_units)) > 0)
+  switch (units)
   {
-    curr_seq_no = -1;
-    if (!strncmp (out_units, "DEF", 3))
-      return;
-    else if (!strncmp (out_units, "DIS", 3))
+    case evalresp_displacement_unit:
       out = DIS;
-    else if (!strncmp (out_units, "VEL", 3))
+      break;
+    case evalresp_velocity_unit:
       out = VEL;
-    else if (!strncmp (out_units, "ACC", 3))
+      break;
+    case evalresp_acceleration_unit:
       out = ACC;
-    else
-    {
+      break;
+    case evalresp_default_unit:
+      return;
+    default:
       evalresp_log (log, EV_ERROR, 0, "convert_to_units: bad output units");
       return; /*TODO BAD_OUT_UNITS */
-    }
   }
-  else
-    out = VEL;
 
   if (inp == DIS)
   {
@@ -396,7 +213,7 @@ calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
     evalresp_log (log, EV_ERROR, 0,
                   "Cannot compute B62 response for negative or zero input: %f",
                   x_for_b62);
-    exit (1);     /* TODO IGD 06/06/2017 To allow passing of the test: next, the function should become int */
+    exit (1); /* TODO IGD 06/06/2017 To allow passing of the test: next, the function should become int */
     /* return; */ /*TODO IMPROP_DATA_TYPE */
   }
 
@@ -708,7 +525,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
       {
         evalresp_log (log, EV_ERROR, 0,
                       "norm_resp; no stage gain defined, zero sensitivity");
-        exit (1);     /*TODO IGD 06/06/2017: Exit to satisfy test RESP.UW.STOR..ACE; need to return int */
+        exit (1); /*TODO IGD 06/06/2017: Exit to satisfy test RESP.UW.STOR..ACE; need to return int */
         /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
       }
       else
@@ -755,7 +572,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
       if (fil->type == GAIN && fil->blkt_info.gain.gain == 0.0)
       {
         evalresp_log (log, EV_ERROR, 0, "norm_resp; zero stage gain");
-        exit (1);     /* IGD 06/06/2017 TODO ILLEGAL_RESP_FORMAT */
+        exit (1); /* IGD 06/06/2017 TODO ILLEGAL_RESP_FORMAT */
         /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
       }
       fil = fil->next_blkt;

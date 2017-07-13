@@ -31,7 +31,7 @@
 #include <sys/param.h> /* include header files */
 #include <sys/time.h>
 #include <unistd.h>
-#else             /* if Windows compiler then */
+#else /* if Windows compiler then */
 #include <time.h> /* 'time.h' is not in 'sys/' */
 #endif
 #include <evalresp/private.h>
@@ -39,7 +39,7 @@
 
 #ifdef _WIN32
 #include <direct.h> /* define macro used below: */
-#include <io.h>     /* include header files for directory functions */
+#include <io.h> /* include header files for directory functions */
 #define S_ISDIR(m) ((m)&S_IFDIR)
 #endif
 
@@ -280,7 +280,7 @@ get_names (char *in_file, struct matched_files *files, evalresp_log_t *log)
 #define findclose() _findclose (fhandval)
 
   if (findfirst (in_file, &fblk, 0) < 0)
-  {               /* no matching files found */
+  { /* no matching files found */
     findclose (); /* release resources for findfirst/findnext */
     return 0;
   }
