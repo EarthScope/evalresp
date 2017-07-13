@@ -88,6 +88,7 @@ jmp_buf jump_buffer;
 
 char myLabel[20];
 
+#if 0
 int
 evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
           char *units, char *file, double *freqs, int nfreqs, double *resp,
@@ -137,6 +138,7 @@ evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
 
   return (0);
 }
+#endif
 
 /* 2/6/2006 -- [ET]  Moved from 'evalresp.c' to 'evresp.c' */
 int
@@ -236,6 +238,7 @@ int FirstField;
 /* IGD 10/03/13 This version of the function includes x_for_b62 parameter. See comment to calc_resp() function
  for further explanation */
 
+#if 0
 /* IGD 09/30/13 reformatted the code */
 evalresp_response *
 evresp_itp (char *stalst, char *chalst, char *net_code,
@@ -1033,3 +1036,4 @@ evresp (char *stalst, char *chalst, char *net_code,
                      file, freqs, nfreqs, rtype, verbose, start_stage, stop_stage,
                      stdio_flag, 0, 0, 0.0, 0, x_for_b62, xml_flag, log);
 }
+#endif

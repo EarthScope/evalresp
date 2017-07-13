@@ -144,7 +144,6 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
     }
   }
 
-  use_estimated_delay (FALSE);
   if (argc - 1 >= first_switch)
   {
     flags_argc = argc - first_switch + 1;
@@ -198,7 +197,6 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
 
       case 'U':
         options->use_estimated_delay = 1;
-        use_estimated_delay (TRUE);
         break;
 
       case 'b':
