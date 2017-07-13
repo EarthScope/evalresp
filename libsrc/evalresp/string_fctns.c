@@ -449,7 +449,7 @@ parse_field (char *line, int fld_no, char *return_field, evalresp_log_t *log)
       evalresp_log (log, EV_ERROR, 0, "%s",
                     "parse_field; Data fields not found on line");
     }
-    return PARSE_ERROR;
+    return EVALRESP_PAR;
   }
 
   lcl_ptr = line;
@@ -463,7 +463,7 @@ parse_field (char *line, int fld_no, char *return_field, evalresp_log_t *log)
   }
 
   sscanf (lcl_ptr, "%s", return_field);
-  return (strlen (return_field));
+  return EVALRESP_OK;
 }
 
 int
@@ -613,7 +613,7 @@ check_units (evalresp_channel *channel, char *line, evalresp_log_t *log)
 
   if (def_units_flag)
   {
-    return (DEFAULT);
+    return DEFAULT;
   }
 
   for (i = 0; i < (int)strlen (line); i++)
@@ -626,15 +626,15 @@ check_units (evalresp_channel *channel, char *line, evalresp_log_t *log)
      * up for pressure data.
      ********************************************/
   if (strncasecmp (line, "PA", 2) == 0)
-    return (PRESSURE);
+    return PRESSURE;
 
   /* IGD 08/21/06 Added support for TESLA */
   if (strncasecmp (line, "T -", 3) == 0)
-    return (TESLA);
+    return TESLA;
 
   /* IHD 10/03/13 Adding DEGREES CENTIGRADE */
   if (strncasecmp (line, "C -", 3) == 0)
-    return (CENTIGRADE);
+    return CENTIGRADE;
 
   if (string_match (line, "^[CNM]?M/S\\*\\*2|^[CNM]?M/SEC\\*\\*2", "-r", log))
   {
@@ -644,7 +644,7 @@ check_units (evalresp_channel *channel, char *line, evalresp_log_t *log)
       channel->unit_scale_fact = 1.0e3;
     else if (first_flag && !strncmp ("CM", line, (size_t)2))
       channel->unit_scale_fact = 1.0e2;
-    return (ACC);
+    return ACC;
   }
   else if (string_match (line, "^[CNM]?M/S|^[CNM]?M/SEC", "-r", log))
   {
@@ -654,7 +654,7 @@ check_units (evalresp_channel *channel, char *line, evalresp_log_t *log)
       channel->unit_scale_fact = 1.0e3;
     else if (first_flag && !strncmp (line, "CM", 2))
       channel->unit_scale_fact = 1.0e2;
-    return (VEL);
+    return VEL;
   }
   else if (string_match (line, "^[CNM]?M[^A-Z/]?", "-r", log))
   {
@@ -664,22 +664,22 @@ check_units (evalresp_channel *channel, char *line, evalresp_log_t *log)
       channel->unit_scale_fact = 1.0e3;
     else if (first_flag && !strncmp (line, "CM", 2))
       channel->unit_scale_fact = 1.0e2;
-    return (DIS);
+    return DIS;
   }
   else if (string_match (line, "^COUNTS?[^A-Z]?", "-r", log) || string_match (line, "^DIGITAL[^A-Z]?", "-r", log))
   {
-    return (COUNTS);
+    return COUNTS;
   }
   else if (string_match (line, "^V[^A-Z]?", "-r", log) || string_match (line, "^VOLTS[^A-Z]?", "-r", log))
   {
-    return (VOLTS);
+    return VOLTS;
   }
 #ifdef LIB_MODE
   return (UNDEF_UNITS);
 #else
   evalresp_log (log, EV_ERROR, 0,
                 "check_units; units found ('%s') are not supported", line);
-  return (UNDEF_UNITS);
+  return UNDEF_UNITS;
 #endif
 }
 

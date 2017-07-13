@@ -114,6 +114,7 @@ determine_log_or_lin (int num_freq, double *freqs)
   }
   return 0; /*not linear step */
 }
+
 /* old main call */
 evalresp_response *
 evresp_itp (char *stalst, char *chalst, char *net_code,
@@ -220,7 +221,10 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
     process_cwd (log, options, filter, &responses);
   }
 
-  convert_responses_to_response_chain (responses, &first_resp);
+  if (responses)
+  {
+    convert_responses_to_response_chain (responses, &first_resp);
+  }
 
   evalresp_free_options (&options);
   evalresp_free_filter (&filter);

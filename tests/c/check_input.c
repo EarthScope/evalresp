@@ -45,12 +45,12 @@ START_TEST (test_find_line)
   const char *input = "B999F99 name1: value1 \nB666F66 name2: value2", *start;
   char line[MAXLINELEN];
   start = input;
-  fail_if (!find_line (NULL, &start, ":", 999, 99, line));
+  fail_if (find_line (NULL, &start, ":", 999, 99, line));
   fail_if (strcmp (line, "value1 "), "'%s'", line);
-  fail_if (!find_line (NULL, &start, ":", 666, 66, line));
+  fail_if (find_line (NULL, &start, ":", 666, 66, line));
   fail_if (strcmp (line, "value2"), "'%s'", line);
   start = input;
-  fail_if (!find_line (NULL, &start, ":", 666, 66, line));
+  fail_if (find_line (NULL, &start, ":", 666, 66, line));
   fail_if (strcmp (line, "value2"), "'%s'", line);
 }
 END_TEST
@@ -60,12 +60,12 @@ START_TEST (test_find_field)
   const char *input = "B999F99 name1: a b c \nB666F66 name2: value2", *start;
   char field[MAXLINELEN];
   start = input;
-  fail_if (!find_field (NULL, &start, ":", 999, 99, 0, field));
+  fail_if (find_field (NULL, &start, ":", 999, 99, 0, field));
   fail_if (strcmp (field, "a"), "'%s'", field);
-  fail_if (!find_field (NULL, &start, ":", 666, 66, 0, field));
+  fail_if (find_field (NULL, &start, ":", 666, 66, 0, field));
   fail_if (strcmp (field, "value2"), "'%s'", field);
   start = input;
-  fail_if (!find_field (NULL, &start, ":", 999, 99, 2, field));
+  fail_if (find_field (NULL, &start, ":", 999, 99, 2, field));
   fail_if (strcmp (field, "c"), "'%s'", field);
 }
 END_TEST
