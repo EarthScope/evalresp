@@ -9,6 +9,19 @@
 #include "./private.h"
 #include "evalresp/public_api.h"
 
+/*TODO make static once print_resp is replaced */
+const char *
+get_SEEDUNITS (int idx)
+{
+  static const char SEEDUNITS[][UNITS_STR_LEN] =
+      {"Undef Units", "Displacement", "Velocity", "Acceleration", "Counts",
+       "Volts", "", "Pascals", "Tesla", "Centigrade"};
+  if (0 > idx || 9 < idx)
+  {
+    return "";
+  }
+  return SEEDUNITS[idx];
+}
 int
 evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *response,
                            evalresp_file_format format, char **output)
@@ -258,8 +271,8 @@ evalresp_channel_to_log (evalresp_log_t *log, evalresp_options const *const opti
   if (!options->unit_set)
   {
     evalresp_log (log, EV_INFO, 0, " %s %s", channel->beg_t, channel->end_t);
-    evalresp_log (log, EV_INFO, 0, "   Seed units: %s(in)->%s(out)", SEEDUNITS[in_units],
-                  SEEDUNITS[out_units]);
+    evalresp_log (log, EV_INFO, 0, "   Seed units: %s(in)->%s(out)", get_SEEDUNITS (in_units),
+                  get_SEEDUNITS (out_units));
   }
   else
   {

@@ -14,7 +14,7 @@
  * @ingroup evalresp_public
  * @brief Complex data type.
  */
-typedef struct
+typedef struct evalresp_complex_s
 {
   double real; /**< Real part. */
   double imag; /**< Imaginary part. */
@@ -25,7 +25,7 @@ typedef struct
  * @ingroup evalresp_public
  * @brief A Response (Poles & Zeros) blockette.
  */
-typedef struct
+typedef struct evalresp_pole_zero_s
 {
   int nzeros; /**< Number of zeros (blockettes [43] or [53]). */
   int npoles; /**< Number of poles. */
@@ -40,7 +40,7 @@ typedef struct
  * @ingroup evalresp_public
  * @brief A Response (Coefficients) blockette.
  */
-typedef struct
+typedef struct evalresp_coeff_s
 {
   int nnumer; /**< Length of numerator vector . (blockettes [44] or [54]) */
   int ndenom; /**< Length of denominator vector. */
@@ -54,7 +54,7 @@ typedef struct
  * @ingroup evalresp_public
  * @brief A Response (Coefficients) blockette.
  */
-typedef struct
+typedef struct evalresp_polynomial_s
 {
   unsigned char approximation_type; /**< Approximation type. (blockettes [42] or [62]) */ /* IGD 05/31/2013 */
   unsigned char frequency_units; /**< Frequency unit. */
@@ -73,7 +73,7 @@ typedef struct
  * @ingroup evalresp_public
  * @brief A FIR Response blockette.
  */
-typedef struct
+typedef struct evalresp_fir_s
 {
   int ncoeffs; /**< Number of coefficients (blockettes [41] or [61]). */
   double *coeffs; /**< Array of coefficients. */
@@ -85,7 +85,7 @@ typedef struct
  * @ingroup evalresp_public
  * @brief A Response (List) blockette.
  */
-typedef struct
+typedef struct evalresp_list_s
 {
   int nresp; /**< Number of responses (blockettes [45] or [55]). */
   double *freq; /**< Array of freqencies. */
@@ -98,7 +98,7 @@ typedef struct
  * @ingroup evalresp_public
  * @brief A Generic Response blockette.
  */
-typedef struct
+typedef struct evalresp_generic_s
 {
   int ncorners; /**< Number of corners. (blockettes [46] or [56]) */
   double *corner_freq; /**< Corner frequency vector. */
@@ -110,7 +110,7 @@ typedef struct
  * @ingroup evalresp_public
  * @brief A Decimation blockette.
  */
-typedef struct
+typedef struct evalresp_decimation_s
 {
   double sample_int; /**< Sample interval. (blockettes [47] or [57]) */
   int deci_fact; /**< Decimation factor. */
@@ -124,7 +124,7 @@ typedef struct
  * @ingroup evalresp_public
  * @brief A Channel Sensitivity/Gain blockette.
  */
-typedef struct
+typedef struct evalresp_gain_s
 {
   double gain; /**< Gain. (blockettes [48] or [58]) */
   double gain_freq; /**< Frequency where gain is computed. */
@@ -135,7 +135,7 @@ typedef struct
  * @ingroup evalresp_public
  * @brief A Response Reference blockette.
  */
-typedef struct
+typedef struct evalresp_refer_s
 {
   int num_stages; /**< Total number of stages. */
   int stage_num; /**< Stage number. */
@@ -242,7 +242,7 @@ typedef struct evalresp_channel_s
  * @ingroup evalresp_public
  * @brief A collection of channel structures.
 */
-typedef struct
+typedef struct evalresp_channels_s
 {
   int nchannels;
   evalresp_channel **channels;
