@@ -2,6 +2,8 @@
 #define __EVRESP_H__
 
 #include <evalresp/public_compat.h>
+/*NOTE THIS HEADER IS ONLY A LEGACY INTERFACE*/
+/* DO NOT USE UNLESS YOU NEED DEPRECATED METHODS and TYPES */
 
 // once this is defined (v4.0.6 onwards), some functions take an additional
 // xml flag argument
