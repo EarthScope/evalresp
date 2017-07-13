@@ -524,9 +524,10 @@ evalresp_channels_to_responses (evalresp_log_t *log, evalresp_channels *channels
   return status;
 }
 
-int calculate_response(evalresp_log_t *log, evalresp_options *options,
-                                 evalresp_channel *chan, double *freq, int nfreqs,
-                                 evalresp_complex *output)
+int
+calculate_response (evalresp_log_t *log, evalresp_options *options,
+                    evalresp_channel *chan, double *freq, int nfreqs,
+                    evalresp_complex *output)
 {
   evalresp_blkt *blkt_ptr;
   evalresp_stage *stage_ptr;
@@ -697,7 +698,7 @@ int calculate_response(evalresp_log_t *log, evalresp_options *options,
       output[i].imag = val.imag * chan->sensit * chan->unit_scale_fact;
     }
 
-    convert_to_units (units_code, options->unit_set?options->unit:evalresp_velocity_unit, &output[i], w, log);
+    convert_to_units (units_code, options->unit_set ? options->unit : evalresp_velocity_unit, &output[i], w, log);
   }
   return EVALRESP_OK;
 }

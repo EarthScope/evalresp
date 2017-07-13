@@ -63,20 +63,20 @@ convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, do
      otherwise convert to unit the user specified. */
   switch (units)
   {
-    case evalresp_displacement_unit:
-      out = DIS;
-      break;
-    case evalresp_velocity_unit:
-      out = VEL;
-      break;
-    case evalresp_acceleration_unit:
-      out = ACC;
-      break;
-    case evalresp_default_unit:
-      return;
-    default:
-      evalresp_log (log, EV_ERROR, 0, "convert_to_units: bad output units");
-      return; /*TODO BAD_OUT_UNITS */
+  case evalresp_displacement_unit:
+    out = DIS;
+    break;
+  case evalresp_velocity_unit:
+    out = VEL;
+    break;
+  case evalresp_acceleration_unit:
+    out = ACC;
+    break;
+  case evalresp_default_unit:
+    return;
+  default:
+    evalresp_log (log, EV_ERROR, 0, "convert_to_units: bad output units");
+    return; /*TODO BAD_OUT_UNITS */
   }
 
   if (inp == DIS)

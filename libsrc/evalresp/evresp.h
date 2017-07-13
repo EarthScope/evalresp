@@ -20,5 +20,4 @@
 #define decimationType evalresp_decimation_s
 #define gainType evalresp_gain_s
 
-
 #endif /* __EVRESP_H__ */

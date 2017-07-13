@@ -320,7 +320,7 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
            int stop_stage, int useTotalSensitivityFlag, double x_for_b62,
            evalresp_log_t *log)
 {
-  evalresp_options *options= NULL;
+  evalresp_options *options = NULL;
   if (EVALRESP_OK != evalresp_new_options (log, &options))
   {
     return;
@@ -344,7 +344,7 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
     options->unit_set = 1;
   }
 
-  calculate_response(log, options, chan, freq, nfreqs, output);
+  calculate_response (log, options, chan, freq, nfreqs, output);
 
   evalresp_free_options (&options);
 }
