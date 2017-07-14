@@ -2483,9 +2483,36 @@ replace_comma_with_space (char *str)
 }
 
 static int
+append_string (struct string_array *array, char *string, int len)
+{
+  int status = EVALRESP_OK;
+
+  array->nstrings++;
+  if (!(array->strings = realloc (array->strings, array->nstrings * sizeof (char *))))
+  {
+    status = EVALRESP_MEM;
+  }
+  else
+  {
+    /* len+1 to include terminating NULL */
+    if (!(array->strings[array->nstrings - 1] = calloc (len + 1, 1)))
+    {
+      status = EVALRESP_MEM;
+    }
+    else
+    {
+      strncpy (array->strings[array->nstrings - 1], string, len);
+      trim_string_inplace (array->strings[array->nstrings - 1]);
+    }
+  }
+
+  return status;
+}
+
+static int
 split_on (evalresp_log_t *log, char *string, char *delim, struct string_array **array)
 {
-  int status = EVALRESP_OK, len;
+  int status = EVALRESP_OK;
   char *start = string, *end;
 
   if (!(*array = calloc (1, sizeof (**array))))
@@ -2500,28 +2527,17 @@ split_on (evalresp_log_t *log, char *string, char *delim, struct string_array **
       {
         end = start + strlen (start);
       }
-      len = end - start;
-      (*array)->nstrings++;
-      if (!((*array)->strings = realloc ((*array)->strings, (*array)->nstrings * sizeof (char *))))
-      {
-        status = EVALRESP_MEM;
-      }
-      else
-      {
-        /* len+1 to include terminating NULL */
-        if (!((*array)->strings[(*array)->nstrings - 1] = calloc (len + 1, 1)))
-        {
-          status = EVALRESP_MEM;
-        }
-        else
-        {
-          strncpy ((*array)->strings[(*array)->nstrings - 1], start, len);
-          trim_string_inplace ((*array)->strings[(*array)->nstrings - 1]);
-        }
-      }
+      status = append_string (*array, start, end - start);
       start = end + 1; /* drop delimiter */
     }
   }
+
+  if (!status && !(*array)->nstrings)
+  {
+    /* add in an single, empty value, since this is for user options */
+    status = append_string (*array, "", 0);
+  }
+
   return status;
 }
 
