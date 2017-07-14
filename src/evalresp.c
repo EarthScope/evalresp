@@ -240,7 +240,7 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
 
   if (!status)
   {
-    if (!(status = evalresp_add_sncl_text (*log, filter, network, argv[1], location, argv[2])))
+    if (!(status = evalresp_add_sncl_all (*log, filter, network, argv[1], location, argv[2])))
     {
       if (!(status = evalresp_set_year (*log, filter, argv[3])))
       {

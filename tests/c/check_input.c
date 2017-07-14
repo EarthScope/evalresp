@@ -103,6 +103,39 @@ START_TEST (test_filename_to_channels)
 }
 END_TEST
 
+int
+single_letter_prefix (char *string, int length)
+{
+  int i;
+  if (*string == ' ')
+    return 0;
+  if (strlen (string) != length)
+    return 0;
+  for (i = 1; i < length; ++i)
+  {
+    if (string[i] != ' ')
+      return 0;
+  }
+  return 1;
+}
+
+START_TEST (test_splits)
+{
+  int i;
+  evalresp_filter *filter = NULL;
+  fail_if (evalresp_new_filter (NULL, &filter));
+  fail_if (evalresp_add_sncl_all (NULL, filter, "A", " B, C ", " D ,  E,  F", "G,H,I ,J"));
+  fail_if (filter->sncls->nscn != 1 * 2 * 3 * 4);
+  for (i = 0; i < 1 * 2 * 3 * 4; ++i)
+  {
+    fail_if (!single_letter_prefix (filter->sncls->scn_vec[i]->network, 1), "'%s'", filter->sncls->scn_vec[i]->network);
+    fail_if (!single_letter_prefix (filter->sncls->scn_vec[i]->station, 1), "'%s'", filter->sncls->scn_vec[i]->station, "'%s'", filter->sncls->scn_vec[i]->network);
+    fail_if (!single_letter_prefix (filter->sncls->scn_vec[i]->locid, 1), "'%s'", filter->sncls->scn_vec[i]->locid);
+    fail_if (!single_letter_prefix (filter->sncls->scn_vec[i]->channel, 1), "'%s'", filter->sncls->scn_vec[i]->channel);
+  }
+}
+END_TEST
+
 START_TEST (test_filter)
 {
   evalresp_channels *channels = NULL;
@@ -158,6 +191,7 @@ main (void)
   tcase_add_test (tc, test_find_field);
   tcase_add_test (tc, test_file_to_char);
   tcase_add_test (tc, test_filename_to_channels);
+  tcase_add_test (tc, test_splits);
   tcase_add_test (tc, test_filter);
   suite_add_tcase (s, tc);
   SRunner *sr = srunner_create (s);

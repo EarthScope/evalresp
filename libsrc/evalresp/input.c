@@ -216,7 +216,7 @@ find_field (evalresp_log_t *log, const char **seed, char *sep,
 
 int
 find_int_field (evalresp_log_t *log, const char **seed, char *sep,
-    int blkt_no, int fld_no, int fld_wanted, int *value)
+                int blkt_no, int fld_no, int fld_wanted, int *value)
 {
   int status = EVALRESP_OK;
   char field[MAXFLDLEN];
@@ -230,7 +230,7 @@ find_int_field (evalresp_log_t *log, const char **seed, char *sep,
 
 int
 find_double_field (evalresp_log_t *log, const char **seed, char *sep,
-    int blkt_no, int fld_no, int fld_wanted, double *value)
+                   int blkt_no, int fld_no, int fld_wanted, double *value)
 {
   int status = EVALRESP_OK;
   char field[MAXFLDLEN];
@@ -256,8 +256,8 @@ parse_int_field (evalresp_log_t *log, char *line, int fld_wanted, int *value)
 }
 
 static int
-read_units_first_line_known(evalresp_log_t *log, const char **seed, int blkt_read, int *check_fld,
-    char *line, evalresp_channel *channel, int *input_units, int *output_units)
+read_units_first_line_known (evalresp_log_t *log, const char **seed, int blkt_read, int *check_fld,
+                             char *line, evalresp_channel *channel, int *input_units, int *output_units)
 {
   int status = EVALRESP_OK;
 
@@ -272,21 +272,20 @@ read_units_first_line_known(evalresp_log_t *log, const char **seed, int blkt_rea
 }
 
 static int
-read_units(evalresp_log_t *log, const char **seed, int blkt_read, int *check_fld,
-    evalresp_channel *channel, int *input_units, int *output_units)
+read_units (evalresp_log_t *log, const char **seed, int blkt_read, int *check_fld,
+            evalresp_channel *channel, int *input_units, int *output_units)
 {
   int status = EVALRESP_OK;
   char line[MAXLINELEN];
 
   if (!(status = find_line (log, seed, ":", blkt_read, (*check_fld)++, line)))
   {
-    status = read_units_first_line_known(log, seed, blkt_read, check_fld, line,
-                                         channel, input_units, output_units);
+    status = read_units_first_line_known (log, seed, blkt_read, check_fld, line,
+                                          channel, input_units, output_units);
   }
 
   return status;
 }
-
 
 // this was "read_channel"
 static int
@@ -484,8 +483,8 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
     curr_seq_no = stage_ptr->sequence_no;
   }
 
-  if ((status = read_units(log, seed, blkt_read, &check_fld, channel,
-                           &stage_ptr->input_units, &stage_ptr->output_units)))
+  if ((status = read_units (log, seed, blkt_read, &check_fld, channel,
+                            &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
   }
@@ -493,7 +492,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
   /* then the A0 normalization factor */
 
   if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
-      &blkt_ptr->blkt_info.pole_zero.a0)))
+                                   &blkt_ptr->blkt_info.pole_zero.a0)))
   {
     return status;
   }
@@ -501,7 +500,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
   /* the A0 normalization frequency */
 
   if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
-      &blkt_ptr->blkt_info.pole_zero.a0_freq)))
+                                   &blkt_ptr->blkt_info.pole_zero.a0_freq)))
   {
     return status;
   }
@@ -671,7 +670,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
   {
     return status;
   }
-  if (!strcmp(field, "D"))
+  if (!strcmp (field, "D"))
   {
     blkt_ptr->type = IIR_COEFFS;
   }
@@ -696,8 +695,8 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
     curr_seq_no = stage_ptr->sequence_no;
   }
 
-  if ((status = read_units(log, seed, blkt_read, &check_fld, channel,
-                           &stage_ptr->input_units, &stage_ptr->output_units)))
+  if ((status = read_units (log, seed, blkt_read, &check_fld, channel,
+                            &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
   }
@@ -808,7 +807,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
   {
     return status;
   }
-  if (!strcmp(field, "D"))
+  if (!strcmp (field, "D"))
   {
     blkt_ptr->type = FIR_ASYM;
   }
@@ -833,8 +832,8 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
     curr_seq_no = stage_ptr->sequence_no;
   }
 
-  if ((status = read_units(log, seed, blkt_read, &check_fld, channel,
-                           &stage_ptr->input_units, &stage_ptr->output_units)))
+  if ((status = read_units (log, seed, blkt_read, &check_fld, channel,
+                            &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
   }
@@ -950,16 +949,16 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
     check_fld++;
   }
 
-  if ((status = read_units_first_line_known(log, seed, blkt_read, &check_fld,
-                                            line, channel,
-                                            &stage_ptr->input_units, &stage_ptr->output_units)))
+  if ((status = read_units_first_line_known (log, seed, blkt_read, &check_fld,
+                                             line, channel,
+                                             &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
   }
 
   /* the number of responses */
 
-  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0,  &nresp)))
+  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0, &nresp)))
   {
     return status;
   }
@@ -1133,9 +1132,9 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
     check_fld++;
   }
 
-  if ((status = read_units_first_line_known(log, seed, blkt_read, &check_fld,
-                                            line, channel,
-                                            &stage_ptr->input_units, &stage_ptr->output_units)))
+  if ((status = read_units_first_line_known (log, seed, blkt_read, &check_fld,
+                                             line, channel,
+                                             &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
   }
@@ -1255,12 +1254,12 @@ read_deci (evalresp_log_t *log, const char **seed, int first_field, char *first_
 
   /* get the decimation factor and decimation offset */
   if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0,
-      &blkt_ptr->blkt_info.decimation.deci_fact)))
+                                &blkt_ptr->blkt_info.decimation.deci_fact)))
   {
     return status;
   }
   if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0,
-      &blkt_ptr->blkt_info.decimation.deci_offset)))
+                                &blkt_ptr->blkt_info.decimation.deci_offset)))
   {
     return status;
   }
@@ -1268,7 +1267,7 @@ read_deci (evalresp_log_t *log, const char **seed, int first_field, char *first_
   /* the estimated delay */
 
   if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
-      &blkt_ptr->blkt_info.decimation.estim_delay)))
+                                   &blkt_ptr->blkt_info.decimation.estim_delay)))
   {
     return status;
   }
@@ -1277,7 +1276,7 @@ read_deci (evalresp_log_t *log, const char **seed, int first_field, char *first_
      by this routine, although space does exist in this filter type for this parameter */
 
   if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
-      &blkt_ptr->blkt_info.decimation.applied_corr)))
+                                   &blkt_ptr->blkt_info.decimation.applied_corr)))
   {
     return status;
   }
@@ -1346,7 +1345,7 @@ read_gain (evalresp_log_t *log, const char **seed, int first_field, char *first_
   }
 
   if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
-      &blkt_ptr->blkt_info.gain.gain_freq)))
+                                   &blkt_ptr->blkt_info.gain.gain_freq)))
   {
     return status;
   }
@@ -1448,8 +1447,8 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
     return EVALRESP_PAR;
   }
 
-  if ((status = read_units(log, seed, blkt_read, &check_fld, channel,
-                           &stage_ptr->input_units, &stage_ptr->output_units)))
+  if ((status = read_units (log, seed, blkt_read, &check_fld, channel,
+                            &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
   }
@@ -1617,7 +1616,8 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
           status = EVALRESP_PAR;
         }
       }
-      if (status) {
+      if (status)
+      {
         return status;
       }
       last_blkt->next_blkt = blkt_ptr;
@@ -1694,7 +1694,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
   {
     return status;
   }
-  if (!strcmp(field, "P"))
+  if (!strcmp (field, "P"))
   {
     blkt_ptr->type = POLYNOMIAL;
   }
@@ -1717,8 +1717,8 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
     curr_seq_no = stage_ptr->sequence_no;
   }
 
-  if ((status = read_units(log, seed, blkt_read, &check_fld, channel,
-                           &stage_ptr->input_units, &stage_ptr->output_units)))
+  if ((status = read_units (log, seed, blkt_read, &check_fld, channel,
+                            &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
   }
@@ -1739,35 +1739,35 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
 
   /* Lower Valid Frequency Bound */
   if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
-      &blkt_ptr->blkt_info.polynomial.lower_freq_bound)))
+                                   &blkt_ptr->blkt_info.polynomial.lower_freq_bound)))
   {
     return status;
   }
 
   /* Upper Valid Frequency Bound */
   if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
-      &blkt_ptr->blkt_info.polynomial.upper_freq_bound)))
+                                   &blkt_ptr->blkt_info.polynomial.upper_freq_bound)))
   {
     return status;
   }
 
   /* Lower Bound of Approximation */
   if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
-      &blkt_ptr->blkt_info.polynomial.lower_approx_bound)))
+                                   &blkt_ptr->blkt_info.polynomial.lower_approx_bound)))
   {
     return status;
   }
 
   /* Upper Bound of Approximation */
   if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
-      &blkt_ptr->blkt_info.polynomial.upper_approx_bound)))
+                                   &blkt_ptr->blkt_info.polynomial.upper_approx_bound)))
   {
     return status;
   }
 
   /* Maximum Absolute Error */
   if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
-      &blkt_ptr->blkt_info.polynomial.max_abs_error)))
+                                   &blkt_ptr->blkt_info.polynomial.max_abs_error)))
   {
     return status;
   }
@@ -2161,9 +2161,9 @@ channel_matches (evalresp_log_t *log, const evalresp_filter *filter, evalresp_ch
       evalresp_sncl *sncl = filter->sncls->scn_vec[i];
       if (string_match (channel->staname, sncl->station, "-g", log) &&
           ((!strlen (sncl->network) && !strlen (channel->network)) ||
-              string_match (channel->network, sncl->network, "-g", log)) &&
-              string_match (channel->locid, sncl->locid, "-g", log) &&
-              string_match (channel->chaname, sncl->channel, "-g", log))
+           string_match (channel->network, sncl->network, "-g", log)) &&
+          string_match (channel->locid, sncl->locid, "-g", log) &&
+          string_match (channel->chaname, sncl->channel, "-g", log))
       {
         sncl->found++;
         return 1;
@@ -2412,6 +2412,65 @@ evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter, evalresp_sncl *
 }
 
 static void
+shift_string_left (char *string)
+{
+  char *c;
+  for (c = string + 1; *c; c++)
+  {
+    *(c - 1) = *c;
+  }
+  *(c - 1) = '\0';
+}
+
+static void
+trim_string_inplace (char *trimmed)
+{
+  char *c;
+
+  while (*trimmed == ' ')
+  {
+    shift_string_left (trimmed);
+  }
+
+  c = trimmed + strlen (trimmed) - 1;
+  while (c >= trimmed && *c == ' ')
+  {
+    *(c--) = '\0';
+  }
+}
+
+static int
+copy_and_trim_string (const char *string, char **trimmed)
+{
+  if (!(*trimmed = strdup (string ? string : "")))
+  {
+    return EVALRESP_MEM;
+  }
+  else
+  {
+    trim_string_inplace (*trimmed);
+    return EVALRESP_OK;
+  }
+}
+
+static void
+coallesce_spaces (char *string)
+{
+  char *c;
+
+  for (c = string; *c; c++)
+  {
+    if (*c == ' ')
+    {
+      while (*(c + 1) == ' ')
+      {
+        shift_string_left (c + 1);
+      }
+    }
+  }
+}
+
+static void
 replace_comma_with_space (char *str)
 {
   while (*str++)
@@ -2424,17 +2483,62 @@ replace_comma_with_space (char *str)
 }
 
 static int
+split_on (evalresp_log_t *log, char *string, char *delim, struct string_array **array)
+{
+  int status = EVALRESP_OK, len;
+  char *start = string, *end;
+
+  if (!(*array = calloc (1, sizeof (**array))))
+  {
+    status = EVALRESP_MEM;
+  }
+  else
+  {
+    while (!status && *start)
+    {
+      if (!(end = strstr (start, delim)))
+      {
+        end = start + strlen (start);
+      }
+      len = end - start;
+      (*array)->nstrings++;
+      if (!((*array)->strings = realloc ((*array)->strings, (*array)->nstrings * sizeof (char *))))
+      {
+        status = EVALRESP_MEM;
+      }
+      else
+      {
+        /* len+1 to include terminating NULL */
+        if (!((*array)->strings[(*array)->nstrings - 1] = calloc (len + 1, 1)))
+        {
+          status = EVALRESP_MEM;
+        }
+        else
+        {
+          strncpy ((*array)->strings[(*array)->nstrings - 1], start, len);
+          trim_string_inplace ((*array)->strings[(*array)->nstrings - 1]);
+        }
+      }
+      start = end + 1; /* drop delimiter */
+    }
+  }
+  return status;
+}
+
+static int
 split_on_space (evalresp_log_t *log, const char *name, const char *str, struct string_array **array)
 {
   int status = EVALRESP_OK;
-  char *local_str = strdup (str);
-  replace_comma_with_space (local_str);
-  if (!(*array = ev_parse_line (local_str, log)))
+  char *trimmed = NULL;
+
+  if (!(status = copy_and_trim_string (str, &trimmed)))
   {
-    evalresp_log (log, EV_ERROR, EV_ERROR, "No %s in '%s'", name, str);
-    status = EVALRESP_INP;
+    replace_comma_with_space (trimmed);
+    coallesce_spaces (trimmed);
+    status = split_on (log, trimmed, " ", array);
   }
-  free (local_str);
+
+  free (trimmed);
   return status;
 }
 
@@ -2442,23 +2546,14 @@ static int
 split_on_comma (evalresp_log_t *log, const char *name, const char *str, struct string_array **array)
 {
   int status = EVALRESP_OK;
-  char *local_str = strdup (str), *start, *end;
-  start = local_str;
-  while (*start == ' ')
+  char *trimmed = NULL;
+
+  if (!(status = copy_and_trim_string (str, &trimmed)))
   {
-    start++;
+    status = split_on (log, trimmed, ",", array);
   }
-  end = start + strlen (start);
-  while (*end == ' ')
-  {
-    *end-- = '\0';
-  }
-  if (!(*array = parse_delim_line (start, ",", log)))
-  {
-    evalresp_log (log, EV_ERROR, EV_ERROR, "No %s in '%s'", name, str);
-    status = EVALRESP_INP;
-  }
-  free (local_str);
+
+  free (trimmed);
   return status;
 }
 

@@ -240,7 +240,7 @@ check_channel (evalresp_log_t *log, evalresp_channel *chan)
         filt_blkt = blkt_ptr;
         break;
 
-      case FIR_COEFFS:  /* AFAICT this type is never even parsed?! */
+      case FIR_COEFFS: /* AFAICT this type is never even parsed?! */
 
         evalresp_log (log, EV_ERROR, EV_ERROR,
                       "%s.%s.%s.%s: unsupported filter type (FIR_COEFFS)",
@@ -453,7 +453,6 @@ check_channel (evalresp_log_t *log, evalresp_channel *chan)
                       chan->network, chan->staname, chan->locid, chan->chaname,
                       blkt_ptr->type);
         return EVALRESP_VAL;
-
       }
 
       blkt_ptr = next_blkt;
@@ -557,7 +556,6 @@ check_channel (evalresp_log_t *log, evalresp_channel *chan)
         prev_stage = stage_ptr;
     }
     stage_ptr = next_stage;
-
   }
 
   return EVALRESP_OK;

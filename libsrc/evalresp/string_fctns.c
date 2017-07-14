@@ -609,7 +609,9 @@ check_units (evalresp_channel *channel, char *line, evalresp_log_t *log)
     channel->unit_scale_fact = 1.0;
   }
   else
+  {
     strncpy (channel->last_units, line, MAXLINELEN);
+  }
 
   if (def_units_flag)
   {
@@ -621,7 +623,7 @@ check_units (evalresp_channel *channel, char *line, evalresp_log_t *log)
     line[i] = toupper (line[i]);
   }
 
-  /* IGD 02/03/01 a restricted case of pessure data is added
+  /* IGD 02/03/01 a restricted case of pressure data is added
      * We will play with string_match ater if more requests show
      * up for pressure data.
      ********************************************/
