@@ -101,7 +101,9 @@ read_line (evalresp_log_t *log, const char **seed, char *sep,
 
   drop_comments_and_blank_lines (seed);
   if (end_of_string (seed))
+  {
     return EVALRESP_EOF;
+  }
 
   slurp_line (seed, line, MAXLINELEN);
   remove_tabs_and_crlf (line);
@@ -322,24 +324,19 @@ read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
                   " and fld numbers do not match expected values\n\tblkt_xpt=B",
                   52, ", blkt_found=B", blkt_no, "; fld_xpt=F", 3, 4,
                   ", fld_found=F", fld_no);
-    // TODO - log reason
     return EVALRESP_PAR;
   }
 
   /* get the Start Date */
-
   if ((status = find_line (log, seed, ":", 52, 22, line)))
   {
-    // TODO - log reason
     return status;
   }
   strncpy (chan->beg_t, line, DATIMLEN);
 
   /* get the End Date */
-
   if ((status = find_line (log, seed, ":", 52, 23, line)))
   {
-    // TODO - log reason
     return status;
   }
   strncpy (chan->end_t, line, DATIMLEN);
@@ -2156,7 +2153,7 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
             if (!filter || channel_matches (log, filter, channel))
             {
               /* check the filter sequence that was just read */
-              if (!(status = check_channel (channel, log)))
+              if (!(status = check_channel (log, channel)))
               {
 
                 if (!(status = add_channel (log, channel, *channels)))
