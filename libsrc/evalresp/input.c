@@ -13,6 +13,38 @@
 // code from parse_fctns.c heavily refactored to (1) parse all lines and (2)
 // read from strings rather than files.
 
+static int
+read_int (evalresp_log_t *log, char *in_line, int *value)
+{
+  if (!is_int (in_line, log))
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "read_int; '%s' is not an integer",
+                  in_line);
+    return EVALRESP_PAR;
+  }
+  else
+  {
+    *value = atoi (in_line);
+    return EVALRESP_OK;
+  }
+}
+
+static int
+read_double (evalresp_log_t *log, char *in_line, double *value)
+{
+  if (!is_real (in_line, log))
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "read_double; '%s' is not a real number",
+                  in_line);
+    return EVALRESP_PAR;
+  }
+  else
+  {
+    *value = atof (in_line);
+    return EVALRESP_OK;
+  }
+}
+
 // non-static only for testing
 void
 slurp_line (const char **seed, char *line, int maxlen)
@@ -178,6 +210,47 @@ find_field (evalresp_log_t *log, const char **seed, char *sep,
   {
     /* then parse the field that the user wanted from the line find_line returned */
     status = parse_field (line, fld_wanted, return_field, log);
+  }
+  return status;
+}
+
+int
+find_int_field (evalresp_log_t *log, const char **seed, char *sep,
+    int blkt_no, int fld_no, int fld_wanted, int *value)
+{
+  int status = EVALRESP_OK;
+  char field[MAXFLDLEN];
+
+  if (!(status = find_field (log, seed, sep, blkt_no, fld_no, fld_wanted, field)))
+  {
+    status = read_int (log, field, value);
+  }
+  return status;
+}
+
+int
+find_double_field (evalresp_log_t *log, const char **seed, char *sep,
+    int blkt_no, int fld_no, int fld_wanted, double *value)
+{
+  int status = EVALRESP_OK;
+  char field[MAXFLDLEN];
+
+  if (!(status = find_field (log, seed, sep, blkt_no, fld_no, fld_wanted, field)))
+  {
+    status = read_double (log, field, value);
+  }
+  return status;
+}
+
+int
+parse_int_field (evalresp_log_t *log, char *line, int fld_wanted, int *value)
+{
+  int status = EVALRESP_OK;
+  char field[MAXFLDLEN];
+
+  if (!(status = parse_field (line, fld_wanted, field, log)))
+  {
+    status = read_int (log, field, value);
   }
   return status;
 }
@@ -404,11 +477,10 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
 
   if (check_fld == 4)
   {
-    if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+    if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0, &stage_ptr->sequence_no)))
     {
       return status;
     }
-    stage_ptr->sequence_no = get_int (field, log);
     curr_seq_no = stage_ptr->sequence_no;
   }
 
@@ -420,27 +492,26 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
 
   /* then the A0 normalization factor */
 
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
+      &blkt_ptr->blkt_info.pole_zero.a0)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.pole_zero.a0 = get_double (field, log);
 
   /* the A0 normalization frequency */
 
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
+      &blkt_ptr->blkt_info.pole_zero.a0_freq)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.pole_zero.a0_freq = get_double (field, log);
 
   /* the number of zeros */
 
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld, 0, field)))
+  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld, 0, &nzeros)))
   {
     return status;
   }
-  nzeros = get_int (field, log);
   blkt_ptr->blkt_info.pole_zero.nzeros = nzeros;
 
   /* remember to allocate enough space for the number of zeros to follow */
@@ -454,11 +525,10 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
 
   /* the number of poles */
 
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld, 0, field)))
+  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld, 0, &npoles)))
   {
     return status;
   }
-  npoles = get_int (field, log);
   blkt_ptr->blkt_info.pole_zero.npoles = npoles;
 
   /* remember to allocate enough space for the number of poles to follow */
@@ -619,11 +689,10 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
   /* then, if is a B054F04, get the stage sequence number (from the file) */
   if (check_fld == 4)
   {
-    if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+    if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0, &stage_ptr->sequence_no)))
     {
       return status;
     }
-    stage_ptr->sequence_no = get_int (field, log);
     curr_seq_no = stage_ptr->sequence_no;
   }
 
@@ -635,11 +704,10 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
 
   /* the number of coefficients */
 
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0, &ncoeffs)))
   {
     return status;
   }
-  ncoeffs = get_int (field, log);
   blkt_ptr->blkt_info.coeff.nnumer = ncoeffs;
 
   /* remember to allocate enough space for the number of coefficients to follow */
@@ -650,11 +718,10 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
   check_fld += 2;
 
   /* the number of denominators */
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld, 0, field)))
+  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld, 0, &ndenom)))
   {
     return status;
   }
-  ndenom = get_int (field, log);
 
   /* if the number of denominators is zero, then is not an IIR filter. */
 
@@ -759,11 +826,10 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
   /* then, if is a B054F04, get the stage sequence number (from the file) */
   if (check_fld == 4)
   {
-    if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+    if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0, &stage_ptr->sequence_no)))
     {
       return status;
     }
-    stage_ptr->sequence_no = get_int (field, log);
     curr_seq_no = stage_ptr->sequence_no;
   }
 
@@ -775,11 +841,10 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
 
   /* the number of coefficients */
 
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0, &ncoeffs)))
   {
     return status;
   }
-  ncoeffs = get_int (field, log);
   blkt_ptr->blkt_info.fir.ncoeffs = ncoeffs;
 
   /* remember to allocate enough space for the number of coefficients to follow */
@@ -793,11 +858,10 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
 
   /* the number of denominators */
 
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld, 0, field)))
+  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld, 0, &ndenom)))
   {
     return status;
   }
-  ndenom = get_int (field, log);
 
   /* if the number of denominators is not zero, then is not a FIR filter.
      evalresp cannot evaluate IIR and Analog filters that are represented
@@ -869,11 +933,10 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
 
   if (check_fld == 3)
   {
-    if ((status = parse_field (first_line, 0, field, log)))
+    if ((status = parse_int_field (log, first_line, 0, &stage_ptr->sequence_no)))
     {
       return status;
     }
-    stage_ptr->sequence_no = get_int (field, log);
     curr_seq_no = stage_ptr->sequence_no;
     check_fld++;
     if ((status = find_line (log, seed, ":", blkt_read, check_fld++, line)))
@@ -896,11 +959,10 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
 
   /* the number of responses */
 
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0,  &nresp)))
   {
     return status;
   }
-  nresp = get_int (field, log);
   blkt_ptr->blkt_info.list.nresp = nresp;
 
   /* remember to allocate enough space for the number frequency, amplitude, phase tuples
@@ -1054,11 +1116,10 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
 
   if (check_fld == 3)
   {
-    if ((status = parse_field (first_line, 0, field, log)))
+    if ((status = parse_int_field (log, first_line, 0, &stage_ptr->sequence_no)))
     {
       return status;
     }
-    stage_ptr->sequence_no = get_int (field, log);
     curr_seq_no = stage_ptr->sequence_no;
     check_fld++;
     if ((status = find_line (log, seed, ":", blkt_read, check_fld++, line)))
@@ -1081,11 +1142,10 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
 
   /* the number of responses */
 
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0, &ncorners)))
   {
     return status;
   }
-  ncorners = get_int (field, log);
   blkt_ptr->blkt_info.generic.ncorners = ncorners;
 
   /* remember to allocate enough space for the number corner_frequency, corner_slope pairs
@@ -1164,13 +1224,9 @@ read_deci (evalresp_log_t *log, const char **seed, int first_field, char *first_
 
   if (check_fld == 3)
   {
-    if ((status = parse_field (first_line, 0, field, log)))
+    if (sequence_no && (status = parse_int_field (log, first_line, 0, sequence_no)))
     {
       return status;
-    }
-    if (sequence_no)
-    {
-      *sequence_no = get_int (field, log);
     }
     check_fld++;
     if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
@@ -1188,40 +1244,43 @@ read_deci (evalresp_log_t *log, const char **seed, int first_field, char *first_
   }
 
   /* next (from the file) input sample rate, convert to input sample interval */
-  srate = get_double (field, log);
-  if (srate)
+  if ((status = read_double (log, field, &srate)))
+  {
+    return status;
+  }
+  else if (srate)
   {
     blkt_ptr->blkt_info.decimation.sample_int = 1.0 / srate;
   }
 
   /* get the decimation factor and decimation offset */
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0,
+      &blkt_ptr->blkt_info.decimation.deci_fact)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.decimation.deci_fact = get_int (field, log);
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0,
+      &blkt_ptr->blkt_info.decimation.deci_offset)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.decimation.deci_offset = get_int (field, log);
 
   /* the estimated delay */
 
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
+      &blkt_ptr->blkt_info.decimation.estim_delay)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.decimation.estim_delay = get_double (field, log);
 
   /* and, finally, the applied correction.  Note:  the calculated delay is left undefined
      by this routine, although space does exist in this filter type for this parameter */
 
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
+      &blkt_ptr->blkt_info.decimation.applied_corr)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.decimation.applied_corr = get_double (field, log);
 
   return status;
 }
@@ -1259,13 +1318,9 @@ read_gain (evalresp_log_t *log, const char **seed, int first_field, char *first_
 
   if (check_fld == 3)
   {
-    if ((status = parse_field (first_line, 0, field, log)))
+    if (sequence_no && (status = parse_int_field (log, first_line, 0, sequence_no)))
     {
       return status;
-    }
-    if (sequence_no)
-    {
-      *sequence_no = get_int (field, log);
     }
     check_fld++;
     if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
@@ -1285,20 +1340,23 @@ read_gain (evalresp_log_t *log, const char **seed, int first_field, char *first_
   /* then get the gain and frequency of gain (these correspond to sensitivity and frequency of
      sensitivity for stage 0 Sensitivity/Gain filters) */
 
-  blkt_ptr->blkt_info.gain.gain = get_double (field, log);
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = read_double (log, field, &blkt_ptr->blkt_info.gain.gain)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.gain.gain_freq = get_double (field, log);
+
+  if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
+      &blkt_ptr->blkt_info.gain.gain_freq)))
+  {
+    return status;
+  }
 
   /* if there is a history, skip it. First determine number of lines to skip */
 
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0, &nhist)))
   {
     return status;
   }
-  nhist = get_int (field, log);
 
   /* then skip them  */
 
@@ -1342,11 +1400,10 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
 
   if (check_fld == 3)
   {
-    if ((status = parse_field (first_line, 0, field, log)))
+    if ((status = parse_int_field (log, first_line, 0, &stage_ptr->sequence_no)))
     {
       return status;
     }
-    stage_ptr->sequence_no = get_int (field, log);
     curr_seq_no = stage_ptr->sequence_no;
     check_fld += 2;
     if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
@@ -1399,11 +1456,10 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
 
   /* the number of coefficients */
 
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0, &ncoeffs)))
   {
     return status;
   }
-  ncoeffs = get_int (field, log);
   blkt_ptr->blkt_info.fir.ncoeffs = ncoeffs;
 
   /* remember to allocate enough space for the number of coefficients to follow */
@@ -1654,11 +1710,10 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
 
   if (check_fld == 4)
   {
-    if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+    if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0, &stage_ptr->sequence_no)))
     {
       return status;
     }
-    stage_ptr->sequence_no = get_int (field, log);
     curr_seq_no = stage_ptr->sequence_no;
   }
 
@@ -1683,47 +1738,46 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
   blkt_ptr->blkt_info.polynomial.frequency_units = field[0];
 
   /* Lower Valid Frequency Bound */
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
+      &blkt_ptr->blkt_info.polynomial.lower_freq_bound)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.polynomial.lower_freq_bound = get_double (field, log);
 
   /* Upper Valid Frequency Bound */
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
+      &blkt_ptr->blkt_info.polynomial.upper_freq_bound)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.polynomial.upper_freq_bound = get_double (field, log);
 
   /* Lower Bound of Approximation */
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
+      &blkt_ptr->blkt_info.polynomial.lower_approx_bound)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.polynomial.lower_approx_bound = get_double (field, log);
 
   /* Upper Bound of Approximation */
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
+      &blkt_ptr->blkt_info.polynomial.upper_approx_bound)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.polynomial.upper_approx_bound = get_double (field, log);
 
   /* Maximum Absolute Error */
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
+  if ((status = find_double_field (log, seed, ":", blkt_read, check_fld++, 0,
+      &blkt_ptr->blkt_info.polynomial.max_abs_error)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.polynomial.max_abs_error = get_double (field, log);
 
   /* the number of coefficients */
 
-  if ((status = find_field (log, seed, ":", blkt_read, check_fld, 0, field)))
+  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld, 0, &ncoeffs)))
   {
     return status;
   }
-  ncoeffs = get_int (field, log);
   blkt_ptr->blkt_info.polynomial.ncoeffs = ncoeffs;
 
   /* remember to allocate enough space for the number of coeffs */
