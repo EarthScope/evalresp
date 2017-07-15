@@ -214,7 +214,7 @@ find_field (evalresp_log_t *log, const char **seed, char *sep,
   return status;
 }
 
-int
+static int
 find_int_field (evalresp_log_t *log, const char **seed, char *sep,
                 int blkt_no, int fld_no, int fld_wanted, int *value)
 {
@@ -228,7 +228,7 @@ find_int_field (evalresp_log_t *log, const char **seed, char *sep,
   return status;
 }
 
-int
+static int
 find_double_field (evalresp_log_t *log, const char **seed, char *sep,
                    int blkt_no, int fld_no, int fld_wanted, double *value)
 {
@@ -242,7 +242,7 @@ find_double_field (evalresp_log_t *log, const char **seed, char *sep,
   return status;
 }
 
-int
+static int
 parse_int_field (evalresp_log_t *log, char *line, int fld_wanted, int *value)
 {
   int status = EVALRESP_OK;
