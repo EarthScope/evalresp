@@ -9,6 +9,7 @@
 #include "evalresp/stationxml2resp/wrappers.h"
 #include "evalresp_log/log.h"
 #include <evalresp/private.h>
+#include "old_fctns.h"
 
 extern int in_epoch (const char *datime, const char *beg_t, const char *end_t);
 char SEEDUNITS[][UNITS_STR_LEN] =

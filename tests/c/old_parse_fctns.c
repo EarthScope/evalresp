@@ -20,6 +20,7 @@
 
 #include "evalresp/public_channels.h"
 #include <evalresp/private.h>
+#include "old_fctns.h"
 
 /*TODO these need to be removed eventually used by parse_fcnts */
 /* define a pointer to a channel structure to use in determining the input and
@@ -1796,44 +1797,6 @@ parse_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
   }
   free_stages (tmp_stage);
   return (FirstField);
-}
-
-int
-timecmp (evalresp_datetime *dt1, evalresp_datetime *dt2)
-{
-
-  /* check year */
-  if (dt1->year < dt2->year)
-    return (-1);
-  if (dt1->year > dt2->year)
-    return (1);
-
-  /* check day */
-  if (dt1->jday < dt2->jday)
-    return (-1);
-  if (dt1->jday > dt2->jday)
-    return (1);
-
-  /* check hour */
-  if (dt1->hour < dt2->hour)
-    return (-1);
-  if (dt1->hour > dt2->hour)
-    return (1);
-
-  /* check minute */
-  if (dt1->min < dt2->min)
-    return (-1);
-  if (dt1->min > dt2->min)
-    return (1);
-
-  /* check second */
-  if (dt1->sec < dt2->sec)
-    return (-1);
-  if (dt1->sec > dt2->sec)
-    return (1);
-
-  /* if I got this far, times are equal */
-  return (0);
 }
 
 /* in_epoch:  determines if an input date-time lies within the response epoch
