@@ -525,7 +525,7 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
             }
 
             /* check the filter sequence that was just read */
-            check_channel (&this_channel, log);
+            check_channel (log, &this_channel);
 
             /* If we process blockette 55, we should recompute resp->rvec */
             /* because the number of output responses is generally different from */
@@ -810,7 +810,7 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
                 }
 
                 /* check the filter sequence that was just read */
-                check_channel (&this_channel, log);
+                check_channel (log, &this_channel);
 
                 /* If we process blockette 55, we should recompute resp->rvec */
                 /* because the number of output responses is generally different from */

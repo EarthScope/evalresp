@@ -1435,11 +1435,11 @@ void merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalre
  *          (3) the expected delay from the FIR filter stages in the channel's
  *              filter sequence is calculated and stored in the filter
  *              structure.
- * @param[in] chan Channel structure.
  * @param[in] log Logging structure.
+ * @param[in] chan Channel structure.
  * @retval EVALRESP_OK on success
  */
-int check_channel (evalresp_channel *chan, evalresp_log_t *log);
+int check_channel (evalresp_log_t *log, evalresp_channel *chan);
 
 /**
  * @private
