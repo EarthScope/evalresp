@@ -464,16 +464,18 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
 
   if (!status)
   {
-    norm_resp (channel, options->start_stage, options->stop_stage, log);
-    if (!(status = calculate_response (log, options, channel, (*response)->freqs, (*response)->nfreqs, (*response)->rvec)))
+    if (!(status = norm_resp (channel, options->start_stage, options->stop_stage, log)))
     {
-      strncpy ((*response)->network, channel->network, NETLEN);
-      strncpy ((*response)->station, channel->staname, STALEN);
-      strncpy ((*response)->locid, channel->locid, LOCIDLEN);
-      strncpy ((*response)->channel, channel->chaname, CHALEN);
-      if (options->verbose)
+      if (!(status = calculate_response (log, options, channel, (*response)->freqs, (*response)->nfreqs, (*response)->rvec)))
       {
-        evalresp_channel_to_log (log, options, channel);
+        strncpy ((*response)->network, channel->network, NETLEN);
+        strncpy ((*response)->station, channel->staname, STALEN);
+        strncpy ((*response)->locid, channel->locid, LOCIDLEN);
+        strncpy ((*response)->channel, channel->chaname, CHALEN);
+        if (options->verbose)
+        {
+          evalresp_channel_to_log (log, options, channel);
+        }
       }
     }
   }

@@ -1187,7 +1187,7 @@ void zmul (evalresp_complex *val1, evalresp_complex *val2);
  * @param[in] stop_stage Stop stage.
  * @param[in] log Logging structure.
  */
-void norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log_t *log);
+int norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log_t *log);
 
 /**
  * @private

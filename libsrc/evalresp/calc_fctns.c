@@ -473,7 +473,7 @@ zmul (evalresp_complex *val1, evalresp_complex *val2)
 /*=================================================================
  *                   Normalize response
  *=================================================================*/
-void
+int
 norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log_t *log)
 {
   evalresp_stage *stage_ptr;
@@ -508,7 +508,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
     {
       evalresp_log (log, EV_ERROR, 0,
                     "norm_resp; no stage gain defined, zero sensitivity");
-      return; /*TODO ILLEGAL_RESP_FORMAT */
+      return EVALRESP_VAL; /* ILLEGAL_RESP_FORMAT */
     }
   }
   else if (chan->nstages == 2)
@@ -526,8 +526,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
       {
         evalresp_log (log, EV_ERROR, 0,
                       "norm_resp; no stage gain defined, zero sensitivity");
-        exit (1); /*TODO IGD 06/06/2017: Exit to satisfy test RESP.UW.STOR..ACE; need to return int */
-        /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
+         return EVALRESP_VAL;  /* ILLEGAL_RESP_FORMAT */
       }
       else
       {
@@ -573,8 +572,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
       if (fil->type == GAIN && fil->blkt_info.gain.gain == 0.0)
       {
         evalresp_log (log, EV_ERROR, 0, "norm_resp; zero stage gain");
-        exit (1); /* IGD 06/06/2017 TODO ILLEGAL_RESP_FORMAT */
-        /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
+        return EVALRESP_VAL;  /* ILLEGAL_RESP_FORMAT */
       }
       fil = fil->next_blkt;
     }
@@ -669,14 +667,14 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
               {
                 evalresp_log (log, EV_ERROR, 0,
                               "norm_resp: Gain frequency of zero found in bandpass analog filter");
-                return; /*TODO ILLEGAL_FILT_S{EC */
+                return EVALRESP_VAL; /* ILLEGAL_FILT_S{EC */
               }
               analog_trans (main_filt, f, &of);
               if (of.real == 0.0 && of.imag == 0.0)
               {
                 evalresp_log (log, EV_ERROR, 0,
                               "norm_resp: Chan. Sens. frequency found with bandpass analog filter");
-                return; /*TODO ILLEGAL_FILT_S{EC */
+                return EVALRESP_VAL; /* ILLEGAL_FILT_S{EC */
               }
             }
             else if (main_type == IIR_PZ)
@@ -760,14 +758,13 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
     percent_diff = fabs ((chan->sensit - chan->calc_sensit) / chan->sensit);
     if (percent_diff >= 0.05)
     {
-#ifndef LIB_MODE
       evalresp_log (log, EV_WARN, 0,
                     " (norm_resp): computed and reported sensitivities");
       evalresp_log (log, EV_WARN, 0, " differ by more than 5 percent. \n");
       evalresp_log (log, EV_WARN, 0, "\t Execution continuing.\n");
-#endif
     }
   }
+  return EVALRESP_OK;
 }
 
 /* IGD 04/05/04 Phase unwrapping function
