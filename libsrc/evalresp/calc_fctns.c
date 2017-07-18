@@ -483,6 +483,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
   double w, f;
   double percent_diff;
   evalresp_complex of, df;
+  int curr_seq_no;
 
   /* -------- TEST 1 -------- */
   /*
@@ -761,10 +762,9 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
     {
 #ifndef LIB_MODE
       evalresp_log (log, EV_WARN, 0,
-                    "%s (norm_resp): computed and reported sensitivities",
-                    myLabel);
-      evalresp_log (log, EV_WARN, 0, "%s differ by more than 5 percent. \n", myLabel);
-      evalresp_log (log, EV_WARN, 0, "%s\t Execution continuing.\n", myLabel);
+                    " (norm_resp): computed and reported sensitivities");
+      evalresp_log (log, EV_WARN, 0, " differ by more than 5 percent. \n");
+      evalresp_log (log, EV_WARN, 0, "\t Execution continuing.\n");
 #endif
     }
   }

@@ -28,6 +28,7 @@
 evalresp_channel *GblChanPtr;
 char FirstLine[MAXLINELEN];
 int FirstField;
+int curr_seq_no;
 
 double atof (); // TODO - why are we declaring this?!
 

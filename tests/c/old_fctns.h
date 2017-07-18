@@ -1,5 +1,16 @@
 /**
  * @private
+ * @ingroup evalresp_private
+ * @brief Define a pointer to a channel structure to use in determining the
+ *        input and output units if using "default" units and for use in error
+ *        output.
+ */
+extern struct evalresp_channel_s *GblChanPtr;
+extern char myLabel[20];
+
+
+/**
+ * @private
  * @ingroup evalresp_private_string
  * @brief Compares an input string (string) with a regular expression or
  *        glob-style "pattern" (expr) using the re_comp() and re_exec()

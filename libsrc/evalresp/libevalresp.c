@@ -70,15 +70,10 @@ Notes:
 #include "evalresp_log/log.h"
 #include <evalresp/private.h>
 
-/* define a global flag to use if using "default" units */
-int def_units_flag;
-
-/* define global variables for use in printing error messages */
-char *curr_file;
-int curr_seq_no;
+//int curr_seq_no;
 
 /* and set a global variable to contain the environment for the setjmp/longjmp
  combination for error handling */
-jmp_buf jump_buffer;
+//jmp_buf jump_buffer;
 
-char myLabel[20];
+//char myLabel[20];

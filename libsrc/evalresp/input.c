@@ -364,8 +364,8 @@ reg_string_match (evalresp_log_t *log, const char *string, char *expr, char *typ
     glob_type = 1;
   else
   {
-    evalresp_log (log, EV_ERROR, 0, "%s string_match; improper pattern type (%s)\n",
-                  myLabel, type_flag);
+    evalresp_log (log, EV_ERROR, 0, " string_match; improper pattern type (%s)\n",
+                  type_flag);
     return 0; /*TODO error improper pattern type */
   }
   while (*lcl_ptr && i < (MAXLINELEN - 1))
@@ -401,7 +401,7 @@ reg_string_match (evalresp_log_t *log, const char *string, char *expr, char *typ
 
 /* was check_units */
 static int
-parse_units (evalresp_log_t *log, char *line, evalresp_channel *channel, int *units)
+parse_units (evalresp_log_t *log, evalresp_options const * const options, char *line, evalresp_channel *channel, int *units)
 {
   int i, first_flag = 0, status = EVALRESP_OK;
 
@@ -416,7 +416,7 @@ parse_units (evalresp_log_t *log, char *line, evalresp_channel *channel, int *un
     strncpy (channel->last_units, line, MAXLINELEN);
   }
 
-  if (def_units_flag)
+  if (options && options->unit_set && options->unit == evalresp_default_unit)
   {
     *units = DEFAULT;
     return status;
@@ -494,25 +494,25 @@ parse_units (evalresp_log_t *log, char *line, evalresp_channel *channel, int *un
 
 
 static int
-read_units_first_line_known (evalresp_log_t *log, const char **seed, int blkt_read, int *check_fld,
+read_units_first_line_known (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int blkt_read, int *check_fld,
                              char *line, evalresp_channel *channel, int *input_units, int *output_units)
 {
   int status = EVALRESP_OK;
 
   //*input_units = check_units (channel, line, log);
-  parse_units(log, line, channel, input_units);
+  parse_units(log, options, line, channel, input_units);
 
   if (!(status = find_line (log, seed, ":", blkt_read, (*check_fld)++, line)))
   {
     //*output_units = check_units (channel, line, log);
-    parse_units(log, line, channel, output_units);
+    parse_units(log, options, line, channel, output_units);
   }
 
   return status;
 }
 
 static int
-read_units (evalresp_log_t *log, const char **seed, int blkt_read, int *check_fld,
+read_units (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int blkt_read, int *check_fld,
             evalresp_channel *channel, int *input_units, int *output_units)
 {
   int status = EVALRESP_OK;
@@ -520,7 +520,7 @@ read_units (evalresp_log_t *log, const char **seed, int blkt_read, int *check_fl
 
   if (!(status = find_line (log, seed, ":", blkt_read, (*check_fld)++, line)))
   {
-    status = read_units_first_line_known (log, seed, blkt_read, check_fld, line,
+    status = read_units_first_line_known (log, options, seed, blkt_read, check_fld, line,
                                           channel, input_units, output_units);
   }
 
@@ -658,7 +658,7 @@ read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
 
 // this was parse_pz
 static int
-read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
+read_pz (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int first_field, char *first_line,
          evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, check_fld, blkt_read, npoles, nzeros;
@@ -720,10 +720,10 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
     {
       return status;
     }
-    curr_seq_no = stage_ptr->sequence_no;
+    //curr_seq_no = stage_ptr->sequence_no;
   }
 
-  if ((status = read_units (log, seed, blkt_read, &check_fld, channel,
+  if ((status = read_units (log, options, seed, blkt_read, &check_fld, channel,
                             &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
@@ -885,7 +885,7 @@ is_iir_coeffs (const char **seed)
 
 // this was parse_iir_coeff
 static int
-read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
+read_iir_coeff (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int first_field, char *first_line,
                 evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, check_fld, blkt_read, ncoeffs, ndenom;
@@ -932,10 +932,10 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
     {
       return status;
     }
-    curr_seq_no = stage_ptr->sequence_no;
+    //curr_seq_no = stage_ptr->sequence_no;
   }
 
-  if ((status = read_units (log, seed, blkt_read, &check_fld, channel,
+  if ((status = read_units (log, options, seed, blkt_read, &check_fld, channel,
                             &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
@@ -1022,7 +1022,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
 
 // this was "parse_coeff"
 static int
-read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
+read_coeff (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int first_field, char *first_line,
             evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, check_fld, blkt_read, ncoeffs, ndenom;
@@ -1069,10 +1069,10 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
     {
       return status;
     }
-    curr_seq_no = stage_ptr->sequence_no;
+    //curr_seq_no = stage_ptr->sequence_no;
   }
 
-  if ((status = read_units (log, seed, blkt_read, &check_fld, channel,
+  if ((status = read_units (log, options, seed, blkt_read, &check_fld, channel,
                             &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
@@ -1144,7 +1144,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
 
 // this was "parse_list"
 static int
-read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
+read_list (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int first_field, char *first_line,
            evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, blkt_read, check_fld, nresp, format;
@@ -1176,7 +1176,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
     {
       return status;
     }
-    curr_seq_no = stage_ptr->sequence_no;
+    //curr_seq_no = stage_ptr->sequence_no;
     check_fld++;
     if ((status = find_line (log, seed, ":", blkt_read, check_fld++, line)))
     {
@@ -1189,7 +1189,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
     check_fld++;
   }
 
-  if ((status = read_units_first_line_known (log, seed, blkt_read, &check_fld,
+  if ((status = read_units_first_line_known (log, options, seed, blkt_read, &check_fld,
                                              line, channel,
                                              &stage_ptr->input_units, &stage_ptr->output_units)))
   {
@@ -1326,7 +1326,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
 
 // this was "parse_generic"
 static int
-read_generic (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
+read_generic (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int first_field, char *first_line,
               evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, blkt_read, check_fld, ncorners;
@@ -1360,7 +1360,7 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
     {
       return status;
     }
-    curr_seq_no = stage_ptr->sequence_no;
+    //curr_seq_no = stage_ptr->sequence_no;
     check_fld++;
     if ((status = find_line (log, seed, ":", blkt_read, check_fld++, line)))
     {
@@ -1373,7 +1373,7 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
     check_fld++;
   }
 
-  if ((status = read_units_first_line_known (log, seed, blkt_read, &check_fld,
+  if ((status = read_units_first_line_known (log, options, seed, blkt_read, &check_fld,
                                              line, channel,
                                              &stage_ptr->input_units, &stage_ptr->output_units)))
   {
@@ -1615,7 +1615,7 @@ read_gain (evalresp_log_t *log, const char **seed, int first_field, char *first_
 
 // this was "parse_fir"
 static int
-read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
+read_fir (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int first_field, char *first_line,
           evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, blkt_read, check_fld, ncoeffs;
@@ -1644,7 +1644,7 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
     {
       return status;
     }
-    curr_seq_no = stage_ptr->sequence_no;
+    //curr_seq_no = stage_ptr->sequence_no;
     check_fld += 2;
     if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
     {
@@ -1688,7 +1688,7 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
     return EVALRESP_PAR;
   }
 
-  if ((status = read_units (log, seed, blkt_read, &check_fld, channel,
+  if ((status = read_units (log, options, seed, blkt_read, &check_fld, channel,
                             &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
@@ -1728,7 +1728,7 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
 
 // this was "parse_ref"
 static int
-read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
+read_ref (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int first_field, char *first_line,
           evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, this_blkt_no = 60, blkt_no, fld_no, i, j, prev_blkt_no = 60;
@@ -1785,7 +1785,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
     /* set the stage sequence number and the pointer to the first blockette */
 
     this_stage->sequence_no = stage_num;
-    curr_seq_no = this_stage->sequence_no;
+    //curr_seq_no = this_stage->sequence_no;
 
     /* then the number of responses in this stage */
 
@@ -1814,19 +1814,19 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
         {
         case 43:
           blkt_ptr = alloc_pz (log);
-          status = read_pz (log, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
+          status = read_pz (log, options, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
           break;
         case 44:
           blkt_ptr = alloc_fir (log);
-          status = read_coeff (log, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
+          status = read_coeff (log, options, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
           break;
         case 45:
           blkt_ptr = alloc_list (log);
-          status = read_list (log, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
+          status = read_list (log, options, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
           break;
         case 46:
           blkt_ptr = alloc_generic (log);
-          status = read_generic (log, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
+          status = read_generic (log, options, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
           break;
         case 47:
           blkt_ptr = alloc_deci (log);
@@ -1838,7 +1838,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
           break;
         case 41:
           blkt_ptr = alloc_fir (log);
-          status = read_fir (log, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
+          status = read_fir (log, options, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
           break;
         case 60:
           evalresp_log (log, EV_ERROR, EV_ERROR,
@@ -1912,7 +1912,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
 
 // this was "parse_polynomial"
 static int
-read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
+read_polynomial (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int first_field, char *first_line,
                  evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, blkt_read, check_fld, ncoeffs;
@@ -1955,10 +1955,10 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
     {
       return status;
     }
-    curr_seq_no = stage_ptr->sequence_no;
+    //curr_seq_no = stage_ptr->sequence_no;
   }
 
-  if ((status = read_units (log, seed, blkt_read, &check_fld, channel,
+  if ((status = read_units (log, options, seed, blkt_read, &check_fld, channel,
                             &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
@@ -2065,7 +2065,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
 
 // this was "parse_channel"
 static int
-read_channel_data (evalresp_log_t *log, const char **seed, char *first_line,
+read_channel_data (evalresp_log_t *log, evalresp_options const * const options, const char **seed, char *first_line,
                    evalresp_channel *channel)
 {
 
@@ -2092,7 +2092,7 @@ read_channel_data (evalresp_log_t *log, const char **seed, char *first_line,
     {
     case 53:
       blkt_ptr = alloc_pz (log);
-      status = read_pz (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
+      status = read_pz (log, options, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       curr_seq_no = tmp_stage->sequence_no;
       break;
     case 54:
@@ -2101,23 +2101,23 @@ read_channel_data (evalresp_log_t *log, const char **seed, char *first_line,
       if (is_iir_coeffs (seed))
       {
         blkt_ptr = alloc_coeff (log);
-        status = read_iir_coeff (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
+        status = read_iir_coeff (log, options, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       }
       else
       {
         blkt_ptr = alloc_fir (log);
-        status = read_coeff (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
+        status = read_coeff (log, options, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       }
       curr_seq_no = tmp_stage->sequence_no;
       break;
     case 55:
       blkt_ptr = alloc_list (log);
-      status = read_list (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
+      status = read_list (log, options, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       curr_seq_no = tmp_stage->sequence_no;
       break;
     case 56:
       blkt_ptr = alloc_generic (log);
-      status = read_generic (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
+      status = read_generic (log, options, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       curr_seq_no = tmp_stage->sequence_no;
       break;
     case 57:
@@ -2131,18 +2131,18 @@ read_channel_data (evalresp_log_t *log, const char **seed, char *first_line,
     case 60: /* never see a blockette [41], [43]-[48] without a [60], parse_ref handles these */
       blkt_ptr = alloc_ref (log);
       tmp_stage2 = alloc_stage (log);
-      status = read_ref (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage2);
+      status = read_ref (log, options, seed, first_field, first_line, channel, blkt_ptr, tmp_stage2);
       curr_seq_no = tmp_stage2->sequence_no;
       tmp_stage2->first_blkt = blkt_ptr;
       break;
     case 61:
       blkt_ptr = alloc_fir (log);
-      status = read_fir (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
+      status = read_fir (log, options, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       curr_seq_no = tmp_stage->sequence_no;
       break;
     case 62:
       blkt_ptr = alloc_polynomial (log);
-      status = read_polynomial (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
+      status = read_polynomial (log, options, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       curr_seq_no = tmp_stage->sequence_no;
       break;
     default:
@@ -2458,6 +2458,7 @@ channel_matches (evalresp_log_t *log, const evalresp_filter *filter, evalresp_ch
 
 int
 evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
+                           evalresp_options const * const options, 
                            const evalresp_filter *filter, evalresp_channels **channels)
 {
   const char *read_ptr = seed_or_xml;
@@ -2481,7 +2482,7 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
       {
         if (!(status = read_channel_header (log, &read_ptr, first_line, channel)))
         {
-          if (!(status = read_channel_data (log, &read_ptr, first_line, channel)))
+          if (!(status = read_channel_data (log, options, &read_ptr, first_line, channel)))
           {
             if (!filter || channel_matches (log, filter, channel))
             {
@@ -2512,13 +2513,14 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
 
 int
 evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
+                           evalresp_options const *const options,
                            const evalresp_filter *filter, evalresp_channels **channels)
 {
   char *seed = NULL;
   int status = EVALRESP_OK;
   if (!(status = file_to_char (log, file, &seed)))
   {
-    status = evalresp_char_to_channels (log, seed, filter, channels);
+    status = evalresp_char_to_channels (log, seed, options, filter, channels);
   }
   free (seed);
   return status;
@@ -2548,7 +2550,7 @@ evalresp_filename_to_channels (evalresp_log_t *log, const char *filename, evalre
     }
     if (EVALRESP_OK == status)
     {
-      status = evalresp_file_to_channels (log, file, filter, channels);
+      status = evalresp_file_to_channels (log, file, options, filter, channels);
     }
   }
   if (file)

@@ -85,7 +85,7 @@ process_stdio (evalresp_log_t *log, evalresp_options *options, evalresp_filter *
   {
     evalresp_log (log, EV_WARN, EV_WARN, "Using stdio so ignoring file '%s'", options->filename);
   }
-  if (!(status = evalresp_file_to_channels (log, stdin, filter, &channels)))
+  if (!(status = evalresp_file_to_channels (log, stdin, options, filter, &channels)))
   {
     status = evalresp_channels_to_responses (log, channels, options, responses);
     evalresp_free_channels (&channels);

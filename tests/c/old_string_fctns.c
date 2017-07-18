@@ -37,7 +37,10 @@
 #include <evalresp/private.h>
 #include <evalresp/regexp.h> // TODO - should all private imports be relative like this?
 #include <evalresp/public_channels.h>
+#include <evalresp/evresp.h>
 #include "./old_fctns.h"
+
+char myLabel[20];
 
 struct string_array *
 ev_parse_line (char *line, evalresp_log_t *log)

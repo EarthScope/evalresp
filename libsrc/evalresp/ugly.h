@@ -107,41 +107,27 @@
 /**
  * @private
  * @ingroup evalresp_private
- * @brief Define a global flag to use if using "default" units.
- */
-extern int def_units_flag;
-
-/**
- * @private
- * @ingroup evalresp_private
  * @brief Define a pointer to a channel structure to use in determining the
  *        input and output units if using "default" units and for use in error
  *        output.
  */
-extern struct evalresp_channel_s *GblChanPtr;
+//extern struct evalresp_channel_s *GblChanPtr;
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Scaling factor to convert from the units in RESP file to MKS units.
  */
-extern float unitScaleFact;
+//extern float unitScaleFact;
 
 /* define global variables for use in printing error messages */
 
 /**
  * @private
  * @ingroup evalresp_private
- * @brief Name of the current RESP file processed by evalresp.
- */
-extern char *curr_file;
-
-/**
- * @private
- * @ingroup evalresp_private
  * @brief Sequence number of the current stage.
  */
-extern int curr_seq_no;
+//extern int curr_seq_no;
 
 /**
  * @private
@@ -149,7 +135,7 @@ extern int curr_seq_no;
  * @brief Global variable to keep Net-Station-Loc-Channel info in case enabling log-label configure option is used.
  * @author 2007/02/27: IGD.
  */
-extern char myLabel[20];
+//extern char myLabel[20];
 //char myLabel[20] = "aa";
 
 #define DATIMESIZE 32

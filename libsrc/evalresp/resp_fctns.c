@@ -206,7 +206,7 @@ check_channel (evalresp_log_t *log, evalresp_channel *chan)
     next_stage = stage_ptr->next_stage;
     stage_type = gain_flag = deci_flag = ref_flag = 0;
     blkt_ptr = stage_ptr->first_blkt;
-    curr_seq_no = stage_ptr->sequence_no;
+    //curr_seq_no = stage_ptr->sequence_no;
 
     while (blkt_ptr)
     {
@@ -575,8 +575,8 @@ check_sym (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log)
     sum += f->blkt_info.fir.coeffs[k];
   if (nc && (sum < (1.0 - FIR_NORM_TOL) || sum > (1.0 + FIR_NORM_TOL)))
   {
-    evalresp_log (log, EV_WARN, 0, "%s WARNING: FIR normalized: sum[coef]=%E; ", myLabel, sum);
-    evalresp_log (log, EV_WARN, 0, "%s %s %s %s %s\n", myLabel, chan->network, chan->staname, chan->locid, chan->chaname);
+    evalresp_log (log, EV_WARN, 0, " WARNING: FIR normalized: sum[coef]=%E; ", sum);
+    evalresp_log (log, EV_WARN, 0, " %s %s %s %s\n", chan->network, chan->staname, chan->locid, chan->chaname);
     for (k = 0; k < nc; k++)
       f->blkt_info.fir.coeffs[k] /= sum;
   }
@@ -676,8 +676,8 @@ interpolate_list_blockette (double **frequency_ptr,
       return; /*TODO return error */
     }
     evalresp_log (log, EV_INFO, 0,
-                  "%s Note:  %d frequenc%s clipped from beginning of requested range\n",
-                  myLabel, i, ((i == 1) ? "y" : "ies"));
+                  " Note:  %d frequenc%s clipped from beginning of requested range\n",
+                  i, ((i == 1) ? "y" : "ies"));
   }
   used_req_num_freqs = req_num_freqs;
   while (used_req_num_freqs > 0 &&
@@ -701,8 +701,8 @@ interpolate_list_blockette (double **frequency_ptr,
   { /* some requested frequency values were clipped; show message */
     req_num_freqs = used_req_num_freqs;
     evalresp_log (log, EV_INFO, 0,
-                  "%s Note:  %d frequenc%s clipped from end of requested range\n",
-                  myLabel, num, ((num == 1) ? "y" : "ies"));
+                  " Note:  %d frequenc%s clipped from end of requested range\n",
+                  num, ((num == 1) ? "y" : "ies"));
   }
   if (i > 0) /* if freq entries were skipped then */
     req_num_freqs -= i; /* subtract # of freqs clipped from beg */

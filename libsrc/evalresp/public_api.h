@@ -72,6 +72,45 @@ typedef struct
   evalresp_datetime *datetime;
 } evalresp_filter;
 
+typedef enum {
+  evalresp_ap_output_format, /**< Two files, AMP and PHASE. */
+  evalresp_fap_output_format, /**< One file, FAP. */
+  evalresp_complex_output_format /**< One file, COMPLEX. */
+} evalresp_output_format;
+
+typedef enum {
+  evalresp_default_unit, /**< Despite the name, this is not the default. */
+  evalresp_displacement_unit,
+  evalresp_velocity_unit,
+  evalresp_acceleration_unit
+} evalresp_unit;
+
+#define EVALRESP_ALL_STAGES -1 /**< Default for start and stop stage. */
+#define EVALRESP_NO_FREQ -1 /**< Default for frequency limits. */
+
+typedef struct
+{
+  char *filename;
+  double b62_x;
+  double min_freq;
+  double max_freq;
+  int nfreq;
+  int lin_freq;
+  int start_stage;
+  int stop_stage;
+  int use_estimated_delay;
+  int unwrap_phase;
+  int b55_interpolate;
+  int use_total_sensitivity;
+  int use_stdio;
+  int station_xml;
+  evalresp_output_format format;
+  evalresp_unit unit;
+  char format_set;
+  int verbose;
+  char unit_set;
+} evalresp_options;
+
 /**
  * @public
  * @ingroup evalresp_public
@@ -188,6 +227,7 @@ void evalresp_free_sncls (evalresp_sncls *sncls);
  * @retval EVALRESP_OK on success
  */
 int evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
+                               evalresp_options const * const options,
                                const evalresp_filter *filter, evalresp_channels **channels);
 
 /**
@@ -201,46 +241,8 @@ int evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
  * @retval EVALRESP_OK on success
  */
 int evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
+                               evalresp_options const * const options,
                                const evalresp_filter *filter, evalresp_channels **channels);
-
-typedef enum {
-  evalresp_ap_output_format, /**< Two files, AMP and PHASE. */
-  evalresp_fap_output_format, /**< One file, FAP. */
-  evalresp_complex_output_format /**< One file, COMPLEX. */
-} evalresp_output_format;
-
-typedef enum {
-  evalresp_default_unit, /**< Despite the name, this is not the default. */
-  evalresp_displacement_unit,
-  evalresp_velocity_unit,
-  evalresp_acceleration_unit
-} evalresp_unit;
-
-#define EVALRESP_ALL_STAGES -1 /**< Default for start and stop stage. */
-#define EVALRESP_NO_FREQ -1 /**< Default for frequency limits. */
-
-typedef struct
-{
-  char *filename;
-  double b62_x;
-  double min_freq;
-  double max_freq;
-  int nfreq;
-  int lin_freq;
-  int start_stage;
-  int stop_stage;
-  int use_estimated_delay;
-  int unwrap_phase;
-  int b55_interpolate;
-  int use_total_sensitivity;
-  int use_stdio;
-  int station_xml;
-  evalresp_output_format format;
-  evalresp_unit unit;
-  char format_set;
-  int verbose;
-  char unit_set;
-} evalresp_options;
 
 /**
  * @public
