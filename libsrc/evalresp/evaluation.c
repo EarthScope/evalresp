@@ -377,8 +377,8 @@ interpolate_b55 (evalresp_log_t *log, evalresp_channel *channel,
     if (!(status = restrict_frequency_range (log, list->freq[0], list->freq[list->nresp - 1],
                                              &response->nfreqs, response->freqs)))
     {
-      interpolate_list_blockette (&list->freq, &list->amp, &list->phase, &list->nresp,
-                                  response->freqs, response->nfreqs, log);
+      status = interpolate_list_blockette (&list->freq, &list->amp, &list->phase, &list->nresp,
+                                           response->freqs, response->nfreqs, log);
     }
   }
   return status;
@@ -538,6 +538,7 @@ calculate_response (evalresp_log_t *log, evalresp_options *options,
   int matching_stages = 0, has_stage0 = 0;
   evalresp_complex of, val;
   double corr_applied, calc_delay, estim_delay, delay;
+  int status = EVALRESP_OK;
 
   /*  if(options->start_stage && options->start_stage > chan->nstages) {
      error_return(NO_STAGE_MATCHED, "calc_resp: %s options->start_stage=%d, highest stage found=%d)",
@@ -649,7 +650,10 @@ calculate_response (evalresp_log_t *log, evalresp_options *options,
           eval_flag = 1;
           break;
         case POLYNOMIAL: /* IGD 06/01/2013*/
-          calc_polynomial (blkt_ptr, &of, options->b62_x, log);
+          if ((status = calc_polynomial (blkt_ptr, &of, options->b62_x, log)))
+          {
+              return status;
+          }
           eval_flag = 1;
           break;
         case IIR_COEFFS: /* This option is added in version 2.3.17 I.Dricker*/
@@ -700,7 +704,10 @@ calculate_response (evalresp_log_t *log, evalresp_options *options,
       output[i].imag = val.imag * chan->sensit * chan->unit_scale_fact;
     }
 
-    convert_to_units (units_code, options->unit_set ? options->unit : evalresp_velocity_unit, &output[i], w, log);
+    if ((status = convert_to_units (units_code, options->unit_set ? options->unit : evalresp_velocity_unit, &output[i], w, log)))
+    {
+        return status;
+    }
   }
   return EVALRESP_OK;
 }

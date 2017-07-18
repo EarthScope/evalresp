@@ -14,7 +14,7 @@
 #include "evalresp_log/log.h"
 #include "evr_spline.h"
 
-void
+static int
 merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log)
 {
   int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;
@@ -28,14 +28,14 @@ merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_lo
     break;
   default:
     evalresp_log (log, EV_ERROR, 0, "merge_lists; filter types must be LIST");
-    return; /*TODO MERGE_ERROR */
+    return EVALRESP_ERR;
   }
 
   if (first_blkt->type != tmp_blkt->type)
   {
     evalresp_log (log, EV_ERROR, 0,
                   "merge_lists; both filters must have the same type");
-    return; /*TODO MERGE_ERROR */
+    return EVALRESP_ERR;
   }
 
   /* set up some local pointers and values */
@@ -59,21 +59,21 @@ merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_lo
   {
     evalresp_log (log, EV_ERROR, 0,
                   "merge_lists; insufficient memory for combined amplitudes");
-    return; /*TODO OUT_OF_MEMORY */
+    return EVALRESP_MEM; /* OUT_OF_MEMORY */
   }
 
   if ((phase1 = (double *)realloc (phase1, new_ncoeffs * sizeof (double))) == (double *)NULL)
   {
     evalresp_log (log, EV_ERROR, 0,
                   "merge_lists; insufficient memory for combined phases");
-    return; /*TODO OUT_OF_MEMORY */
+    return EVALRESP_MEM; /* OUT_OF_MEMORY */
   }
 
   if ((freq1 = (double *)realloc (freq1, new_ncoeffs * sizeof (double))) == (double *)NULL)
   {
     evalresp_log (log, EV_ERROR, 0,
                   "merge_lists; insufficient memory for combined frequencies");
-    return; /*TODO OUT_OF_MEMORY */
+    return EVALRESP_MEM; /* OUT_OF_MEMORY */
   };
 
   /* copy the coeff values to the new space */
@@ -95,9 +95,11 @@ merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_lo
   first_blkt->next_blkt = tmp_blkt->next_blkt;
   free_fir (tmp_blkt);
   *second_blkt = first_blkt->next_blkt;
+
+  return EVALRESP_OK;
 }
 
-void
+static int
 merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log)
 {
   int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;
@@ -113,14 +115,14 @@ merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_l
     break;
   default:
     evalresp_log (log, EV_ERROR, 0, "merge_coeffs; filter types must be FIR");
-    return; /*TODO MERGE_ERROR */
+    return EVALRESP_ERR; /* MERGE_ERROR */
   }
 
   if (first_blkt->type != tmp_blkt->type)
   {
     evalresp_log (log, EV_ERROR, 0,
                   "merge_coeffs; both filters must have the same type");
-    return; /*TODO MERGE_ERROR */
+    return EVALRESP_ERR; /* MERGE_ERROR */
   }
 
   /* set up some local pointers and values */
@@ -139,7 +141,7 @@ merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_l
   {
     evalresp_log (log, EV_ERROR, 0,
                   "merge_coeffs; insufficient memory for combined coeffs");
-    return; /*TODO OUT_OF_MEMORY */
+    return EVALRESP_MEM;
   }
 
   /* copy the coeff values to the new space */
@@ -157,6 +159,8 @@ merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_l
   first_blkt->next_blkt = tmp_blkt->next_blkt;
   free_fir (tmp_blkt);
   *second_blkt = first_blkt->next_blkt;
+
+  return EVALRESP_OK;
 }
 
 int
@@ -264,7 +268,11 @@ check_channel (evalresp_log_t *log, evalresp_channel *chan)
 
         while (next_blkt && next_blkt->type == blkt_ptr->type)
         {
-          merge_lists (blkt_ptr, &next_blkt, log);
+          int status = merge_lists (blkt_ptr, &next_blkt, log);
+          if (status)
+          {
+              return status;
+          }
         }
         if (stage_ptr->next_stage || prev_stage)
         {
@@ -346,7 +354,13 @@ check_channel (evalresp_log_t *log, evalresp_channel *chan)
         /* check to see if next blockette(s) is(are) a continuation of this one.
            If so, merge them into one blockette */
         while (next_blkt && next_blkt->type == blkt_ptr->type)
-          merge_coeffs (blkt_ptr, &next_blkt, log);
+        {
+          int status = merge_coeffs (blkt_ptr, &next_blkt, log);
+          if (status)
+          {
+              return status;
+          }
+        }
 
         /* set the stage type to be FIR_TYPE */
         stage_type = FIR_TYPE;
@@ -625,7 +639,7 @@ void sscdns_free_double (double *array)
 }
 */
 
-void
+int
 interpolate_list_blockette (double **frequency_ptr,
                             double **amplitude_ptr, double **phase_ptr,
                             int *p_number_points, double *req_freq_arr,
@@ -673,7 +687,7 @@ interpolate_list_blockette (double **frequency_ptr,
     { /* all requested frequency values were clipped */
       evalresp_log (log, EV_ERROR, 0, "Error interpolating amp/phase values:  %s",
                     "All requested freqencies out of range\n");
-      return; /*TODO return error */
+      return EVALRESP_VAL;
     }
     evalresp_log (log, EV_INFO, 0,
                   " Note:  %d frequenc%s clipped from beginning of requested range\n",
@@ -722,13 +736,13 @@ interpolate_list_blockette (double **frequency_ptr,
                             &retvals_arr, &num_retvals, log)))
   {
     evalresp_log (log, EV_ERROR, 0, "Error interpolating amplitudes:  %s", retstr);
-    return; /*TODO This should return somethin */
+    return EVALRESP_VAL;
   }
   if (num_retvals != req_num_freqs)
   { /* # of generated values != # requested (shouldn't happen) */
     evalresp_log (log, EV_ERROR, 0, "Error interpolating amplitudes:  %s",
                   "Bad # of values");
-    return; /*TODO This should return somethin */
+    return EVALRESP_VAL;
   }
   retamps_arr = retvals_arr; /* save ptr to interpolated amplitudes */
 
@@ -777,13 +791,13 @@ interpolate_list_blockette (double **frequency_ptr,
   if (retstr)
   {
     evalresp_log (log, EV_ERROR, 0, "Error interpolating phases:  %s", retstr);
-    return; /*TODO this should return something */
+    return EVALRESP_VAL;
   }
   if (num_retvals != req_num_freqs)
   { /* # of generated values != # requested (shouldn't happen) */
     evalresp_log (log, EV_ERROR, 0, "Error interpolating phases:  %s",
                   "Bad # of values");
-    return; /*TODO this should return something */
+    return EVALRESP_VAL;
   }
 
   if (unwrapped_flag)
@@ -820,4 +834,6 @@ interpolate_list_blockette (double **frequency_ptr,
   *amplitude_ptr = retamps_arr;
   *phase_ptr = retvals_arr;
   *p_number_points = num_retvals;
+
+  return EVALRESP_OK;
 }

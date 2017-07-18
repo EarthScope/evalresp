@@ -52,7 +52,7 @@
 /*==================================================================
  * Convert response to velocity first, then to specified units
  *=================================================================*/
-void
+int
 convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, double w, evalresp_log_t *log)
 {
   // TODO - 0 assignment below made blindly to fix compiler warning.  bug?
@@ -73,16 +73,16 @@ convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, do
     out = ACC;
     break;
   case evalresp_default_unit:
-    return;
+    return EVALRESP_OK;
   default:
     evalresp_log (log, EV_ERROR, 0, "convert_to_units: bad output units");
-    return; /*TODO BAD_OUT_UNITS */
+    return EVALRESP_ERR; /* BAD_OUT_UNITS */
   }
 
   if (inp == DIS)
   {
     if (out == DIS)
-      return;
+      return EVALRESP_OK;
     if (w != 0.0)
     {
       scale_val.real = 0.0;
@@ -95,7 +95,7 @@ convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, do
   else if (inp == ACC)
   {
     if (out == ACC)
-      return;
+      return EVALRESP_OK;
     scale_val.real = 0.0;
     scale_val.imag = w;
     zmul (data, &scale_val);
@@ -118,6 +118,7 @@ convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, do
     else
       data->real = data->imag = 0.0;
   }
+  return EVALRESP_OK;
 }
 
 /*==================================================================
@@ -201,7 +202,7 @@ iir_trans (evalresp_blkt *blkt_ptr, double wint, evalresp_complex *out)
  * Function introduced in version 3.3.4 of evalresp
  * Ilya Dricker ISTI (.dricker@isti.com) 06/01/13
  *===============================================================*/
-void
+int
 calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
                  double x_for_b62, evalresp_log_t *log)
 {
@@ -213,8 +214,7 @@ calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
     evalresp_log (log, EV_ERROR, 0,
                   "Cannot compute B62 response for negative or zero input: %f",
                   x_for_b62);
-    exit (1); /* TODO IGD 06/06/2017 To allow passing of the test: next, the function should become int */
-    /* return; */ /*TODO IMPROP_DATA_TYPE */
+    return EVALRESP_VAL; /* IMPROP_DATA_TYPE */
   }
 
   // Compute a first derivate of MacLaurin polynomial
@@ -234,6 +234,8 @@ calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
 
   out->real = amp * cos (phase);
   out->imag = amp * sin (phase);
+
+  return EVALRESP_OK;
 }
 
 /*================================================================

@@ -1026,7 +1026,7 @@ int add_null (char *s, int len, char where);
  * @param[in,out] second_blkt Second filter.
  * @param[in] log Logging structure.
  */
-void merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log);
+//void merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log);
 
 /**
  * @private
@@ -1046,7 +1046,7 @@ void merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalr
  * @author 07/07/00: Ilya Dricker IGD (i.dricker@isti.com): Modified from
  *         merge_coeffs() for 3.2.17 of evalresp.
  */
-void merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log);
+//void merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log);
 
 /**
  * @private
@@ -1115,7 +1115,7 @@ int calculate_response (evalresp_log_t *log, evalresp_options *options, evalresp
  * @param[in] w Frequency.
  * @param[in] log Logging structure.
  */
-void convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, double w, evalresp_log_t *log);
+int convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, double w, evalresp_log_t *log);
 
 /**
  * @private
@@ -1212,7 +1212,7 @@ void calc_list (evalresp_blkt *blkt_ptr, int i, evalresp_complex *out);
  * @author 06/01/13: Ilya Dricker ISTI (.dricker@isti.com): Function
  *         introduced in version 3.3.4 of evalresp
  */
-void calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
+int calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
                       double x_for_b62, evalresp_log_t *log);
 
 /**
@@ -1359,7 +1359,7 @@ void print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
  * @param[in] eq_num_freqs Number values in @p req_freq_arr array.
  * @param[in] log Logging structure.
  */
-void interpolate_list_blockette (double **frequency_ptr,
+int interpolate_list_blockette (double **frequency_ptr,
                                  double **amplitude_ptr, double **phase_ptr,
                                  int *p_number_points, double *req_freq_arr,
                                  int req_num_freqs, evalresp_log_t *log);
