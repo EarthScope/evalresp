@@ -1,6 +1,6 @@
 
-#ifndef EVALRESP_UGLY_H
-#define EVALRESP_UGLY_H
+#ifndef EVALRESP_CONSTANTS_H
+#define EVALRESP_CONSTANTS_H
 
 #include <setjmp.h>
 
@@ -9,14 +9,18 @@
  * @ingroup evalresp_private
  * @brief True.
  */
+#ifndef TRUE
 #define TRUE 1
+#endif
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief False.
  */
+#ifndef FALSE
 #define FALSE 0
+#endif
 
 /**
  * @private
@@ -24,14 +28,18 @@
  * @brief Maximum length of station name.
 
  */
+#ifndef STALEN
 #define STALEN 64
+#endif
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Maximum length of network name.
  */
+#ifndef NETLEN
 #define NETLEN 64
+#endif
 
 /**
  * @private
@@ -39,106 +47,96 @@
  * @brief Maximum length of location ID.
 
  */
+#ifndef LOCIDLEN
 #define LOCIDLEN 64
+#endif
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Maximum length of channel name.
  */
+#ifndef CHALEN
 #define CHALEN 64
+#endif
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Maximum length of output string.
  */
+#ifndef OUTPUTLEN
 #define OUTPUTLEN 256
+#endif
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Maximum length of temporary string.
  */
+#ifndef TMPSTRLEN
 #define TMPSTRLEN 64
+#endif
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Maximum length of unit name strings.
  */
+#ifndef UNITS_STR_LEN
 #define UNITS_STR_LEN 16
+#endif
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Maximum length of date-time string.
  */
+#ifndef DATIMLEN
 #define DATIMLEN 23
+#endif
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Blockette string length.
  */
+#ifndef BLKTSTRLEN
 #define BLKTSTRLEN 4
+#endif
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Field string length.
  */
+#ifndef FLDSTRLEN
 #define FLDSTRLEN 3
+#endif
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Maximum field string length.
  */
+#ifndef MAXFLDLEN
 #define MAXFLDLEN 50
+#endif
 
 /**
  * @private
  * @ingroup evalresp_private
  * @brief Maximum line string length.
  */
+#ifndef MAXLINELEN
 #define MAXLINELEN 256
+#endif
 
-/**
- * @private
- * @ingroup evalresp_private
- * @brief Define a pointer to a channel structure to use in determining the
- *        input and output units if using "default" units and for use in error
- *        output.
- */
-//extern struct evalresp_channel_s *GblChanPtr;
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief Scaling factor to convert from the units in RESP file to MKS units.
- */
-//extern float unitScaleFact;
-
-/* define global variables for use in printing error messages */
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief Sequence number of the current stage.
- */
-//extern int curr_seq_no;
-
-/**
- * @private
- * @ingroup evalresp_private
- * @brief Global variable to keep Net-Station-Loc-Channel info in case enabling log-label configure option is used.
- * @author 2007/02/27: IGD.
- */
-//extern char myLabel[20];
-//char myLabel[20] = "aa";
-
+#ifndef DATIMESIZE
 #define DATIMESIZE 32
+#endif
+#ifndef TODAYSIZE
 #define TODAYSIZE 10
+#endif
 
 #endif

@@ -2,8 +2,8 @@
 #ifndef EVALRESP_PUBLIC_RESPONSE_H
 #define EVALRESP_PUBLIC_RESPONSE_H
 
-#include "./public_channels.h" // TODO - needed for complex?  needs separate public common?
-#include "./ugly.h"
+#include "evalresp/public_channels.h" // TODO - needed for complex?  needs separate public common?
+#include "evalresp/constants.h"
 
 /**
  * @public

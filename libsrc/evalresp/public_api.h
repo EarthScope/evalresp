@@ -221,6 +221,7 @@ void evalresp_free_sncls (evalresp_sncls *sncls);
  * @ingroup evalresp_public
  * @param[in] log logging structure
  * @param[in] seed_or_xml char * read from a file or stdio
+ * @param[in] options evalresp_options to determine wether or not to convert xml or not
  * @param[in] filter evalresp filter to use when getting the channels
  * @param[out] channels evalresp_channel object that gets allocated and returned
  * @brief take a char string and parse it into evalresp_channel object
@@ -235,6 +236,7 @@ int evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
  * @ingroup evalresp_public
  * @param[in] log logging structure
  * @param[in] file stream pointer that contains the seed/xml data to convert
+ * @param[in] options evalresp_options to determine wether or not to convert xml or not
  * @param[in] filter evalresp filter to use when getting the channels
  * @param[out] channels evalresp_channel object that gets allocated and returned
  * @brief take a stream and parse it into evalresp_channel object

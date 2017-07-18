@@ -4,7 +4,7 @@
 
 #include "./input.h"
 #include "./private.h"
-#include "./ugly.h"
+#include "evalresp/constants.h"
 #include "./regexp.h" // TODO - should all private imports be relative like this?
 #include "evalresp/public_api.h"
 #include "evalresp/stationxml2resp/dom_to_seed.h"

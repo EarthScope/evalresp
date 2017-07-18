@@ -154,7 +154,7 @@
 #include "evalresp/public_api.h"
 #include "evalresp/public_channels.h"
 #include "evalresp/public_responses.h"
-#include "evalresp/ugly.h"
+#include "evalresp/constants.h"
 #include "evalresp_log/log.h"
 
 /* if Windows compiler then redefine 'complex' to */

@@ -5,7 +5,7 @@ libevalresp_la_SOURCES = input.c evaluation.c output.c highlevel.c\
 						 regexp.c regerror.c\
 						 regsub.c calc_fctns.c\
 						 resp_fctns.c file_ops.c\
-						 libevalresp.c alloc_fctns.c\
+						 alloc_fctns.c\
 						 spline.c legacy_interface.c\
 						 stationxml2resp/dom_to_seed.c\
 						 stationxml2resp/xml_to_dom.c\

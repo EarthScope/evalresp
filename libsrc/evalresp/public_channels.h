@@ -2,7 +2,7 @@
 #ifndef EVALRESP_PUBLIC_CHANNELS_H
 #define EVALRESP_PUBLIC_CHANNELS_H
 
-#include "evalresp/ugly.h"
+#include "evalresp/constants.h"
 #include "evalresp_log/log.h"
 
 // TODO - all comments about private need to be changed (and group)

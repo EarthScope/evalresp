@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "./private.h"
-#include "./ugly.h"
+#include "evalresp/constants.h"
 #include "evalresp/public.h"
 #include "evalresp/public_api.h"
 #include "evalresp_log/log.h"
