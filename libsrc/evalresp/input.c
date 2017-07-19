@@ -4,7 +4,8 @@
 
 #include "./input.h"
 #include "./private.h"
-#include "./ugly.h"
+#include "./regexp.h" // TODO - should all private imports be relative like this?
+#include "evalresp/constants.h"
 #include "evalresp/public_api.h"
 #include "evalresp/stationxml2resp/dom_to_seed.h"
 #include "evalresp/stationxml2resp/wrappers.h"
@@ -122,12 +123,45 @@ remove_tabs_and_crlf (char *line)
   }
 }
 
+static int
+read_pref (evalresp_log_t *log, char *const line, int *blkt_no, int *fld_no)
+{
+  char fldstr[FLDSTRLEN], blktstr[BLKTSTRLEN];
+
+  strncpy (fldstr, "", FLDSTRLEN);
+  strncpy (blktstr, "", BLKTSTRLEN);
+  if (*line != 'B' || strlen (line) < 7)
+    return EVALRESP_PAR;
+
+  strncpy (blktstr, (line + 1), 3);
+  strncpy (fldstr, (line + 5), 2);
+  *(blktstr + 3) = '\0';
+  *(fldstr + 2) = '\0';
+
+  if (!is_int (blktstr, log))
+  {
+    evalresp_log (log, EV_ERROR, 0, "parse_pref; prefix '%s' cannot be %s",
+                  blktstr, "converted to a blockette number");
+    return EVALRESP_PAR;
+  }
+  *blkt_no = atoi (blktstr);
+  if (!is_int (fldstr, log))
+  {
+    evalresp_log (log, EV_ERROR, 0, "parse_pref; prefix '%s' cannot be %s",
+                  fldstr, "converted to a blockette number");
+    return EVALRESP_PAR;
+  }
+  *fld_no = atoi (fldstr);
+  return EVALRESP_OK;
+}
+
 // this was "next_line"
 static int
 read_line (evalresp_log_t *log, const char **seed, char *sep,
            int *blkt_no, int *fld_no, char *return_line)
 {
   char *lcl_ptr, line[MAXLINELEN];
+  int status;
 
   return_line[0] = '\0';
 
@@ -139,10 +173,10 @@ read_line (evalresp_log_t *log, const char **seed, char *sep,
 
   slurp_line (seed, line, MAXLINELEN);
   remove_tabs_and_crlf (line);
-  if (!parse_pref (blkt_no, fld_no, line, log))
+  if ((status = read_pref (log, line, blkt_no, fld_no)))
   {
     evalresp_log (log, EV_ERROR, EV_ERROR, "unrecognised prefix: '%s'", line);
-    return EVALRESP_PAR;
+    return status;
   }
 
   if (!(lcl_ptr = strstr (line, sep)))
@@ -166,7 +200,7 @@ read_line (evalresp_log_t *log, const char **seed, char *sep,
 int
 find_line (evalresp_log_t *log, const char **seed, char *sep, int blkt_no, int fld_no, char *return_line)
 {
-  int lcl_blkt, lcl_fld;
+  int lcl_blkt, lcl_fld, status;
   char line[MAXLINELEN];
   const char *lookahead;
 
@@ -179,10 +213,10 @@ find_line (evalresp_log_t *log, const char **seed, char *sep, int blkt_no, int f
     lookahead = *seed;
     slurp_line (&lookahead, line, MAXLINELEN);
     remove_tabs_and_crlf (line);
-    if (!parse_pref (&lcl_blkt, &lcl_fld, line, log))
+    if ((status = read_pref (log, line, &lcl_blkt, &lcl_fld)))
     {
       evalresp_log (log, EV_ERROR, EV_ERROR, "unrecognised prefix: '%s'", line);
-      return EVALRESP_PAR;
+      return status;
     }
     else if (blkt_no == lcl_blkt && fld_no == lcl_fld)
     {
@@ -197,6 +231,63 @@ find_line (evalresp_log_t *log, const char **seed, char *sep, int blkt_no, int f
   return EVALRESP_EOF;
 }
 
+static int
+number_of_fields (evalresp_log_t *log, char *line, int *count)
+{
+  char *lcl_ptr, *new_ptr;
+  char lcl_field[50];
+  int nfields = 0, test;
+
+  lcl_ptr = line;
+  /* added test of 'strstr()' result -- 10/21/2005 -- [ET] */
+  while (*lcl_ptr && (test = sscanf (lcl_ptr, "%s", lcl_field)) != 0 && (new_ptr = strstr (lcl_ptr, lcl_field)) != NULL)
+  {
+    lcl_ptr = new_ptr + strlen (lcl_field);
+    nfields++;
+  }
+  *count = nfields;
+  return EVALRESP_OK;
+}
+
+/* was parse_field */
+static int
+get_field_to_parse (evalresp_log_t *log, char *line, int fld_no, char *return_field)
+{
+  char *lcl_ptr, *new_ptr;
+  char lcl_field[MAXFLDLEN];
+  int nfields, i;
+
+  number_of_fields (log, line, &nfields);
+  if (fld_no >= nfields)
+  {
+    if (nfields > 0)
+    {
+      evalresp_log (log, EV_ERROR, 0, "%s%d%s%d%s",
+                    "parse_field; Input field number (", fld_no,
+                    ") exceeds number of fields on line(", nfields, ")");
+    }
+    else
+    {
+      evalresp_log (log, EV_ERROR, 0, "%s",
+                    "parse_field; Data fields not found on line");
+    }
+    return EVALRESP_PAR;
+  }
+
+  lcl_ptr = line;
+  /* added test of 'strstr()' result -- 10/21/2005 -- [ET] */
+  for (i = 0; i < fld_no; i++)
+  {
+    sscanf (lcl_ptr, "%s", lcl_field);
+    if ((new_ptr = strstr (lcl_ptr, lcl_field)) == NULL)
+      break;
+    lcl_ptr = new_ptr + strlen (lcl_field);
+  }
+
+  sscanf (lcl_ptr, "%s", return_field);
+  return EVALRESP_OK;
+}
+
 // non-static only for testing
 int
 find_field (evalresp_log_t *log, const char **seed, char *sep,
@@ -209,7 +300,7 @@ find_field (evalresp_log_t *log, const char **seed, char *sep,
   if (!(status = find_line (log, seed, sep, blkt_no, fld_no, line)))
   {
     /* then parse the field that the user wanted from the line find_line returned */
-    status = parse_field (line, fld_wanted, return_field, log);
+    status = get_field_to_parse (log, line, fld_wanted, return_field);
   }
   return status;
 }
@@ -248,7 +339,7 @@ parse_int_field (evalresp_log_t *log, char *line, int fld_wanted, int *value)
   int status = EVALRESP_OK;
   char field[MAXFLDLEN];
 
-  if (!(status = parse_field (line, fld_wanted, field, log)))
+  if (!(status = get_field_to_parse (log, line, fld_wanted, field)))
   {
     status = read_int (log, field, value);
   }
@@ -256,23 +347,172 @@ parse_int_field (evalresp_log_t *log, char *line, int fld_wanted, int *value)
 }
 
 static int
-read_units_first_line_known (evalresp_log_t *log, const char **seed, int blkt_read, int *check_fld,
+reg_string_match (evalresp_log_t *log, const char *string, char *expr, char *type_flag)
+{
+  char lcl_string[MAXLINELEN], regexp_pattern[MAXLINELEN];
+  int i = 0, glob_type, test;
+  register regexp *prog;
+  register char *lcl_ptr;
+
+  memset (lcl_string, 0, sizeof (lcl_string));
+  memset (regexp_pattern, 0, sizeof (regexp_pattern));
+  strncpy (lcl_string, string, strlen (string));
+  lcl_ptr = expr;
+  if (!strcmp (type_flag, "-r"))
+    glob_type = 0;
+  else if (!strcmp (type_flag, "-g"))
+    glob_type = 1;
+  else
+  {
+    evalresp_log (log, EV_ERROR, 0, " string_match; improper pattern type (%s)\n",
+                  type_flag);
+    return 0; /*TODO error improper pattern type */
+  }
+  while (*lcl_ptr && i < (MAXLINELEN - 1))
+  {
+    if (glob_type && *lcl_ptr == '?')
+    {
+      regexp_pattern[i++] = '.';
+      lcl_ptr++;
+    }
+    else if (glob_type && *lcl_ptr == '*')
+    {
+      regexp_pattern[i++] = '.';
+      regexp_pattern[i++] = '*';
+      lcl_ptr++;
+    }
+    else
+      regexp_pattern[i++] = *(lcl_ptr++);
+  }
+  regexp_pattern[i] = '\0';
+
+  if ((prog = evr_regcomp (regexp_pattern, log)) == NULL)
+  {
+    evalresp_log (log, EV_ERROR, 0,
+                  "string_match; pattern '%s' didn't compile", regexp_pattern);
+    return 0; /*TODO RE_COMP_FAILED*/
+  }
+  lcl_ptr = lcl_string;
+  test = evr_regexec (prog, lcl_ptr, log);
+
+  free (prog);
+  return (test);
+}
+
+/* was check_units */
+static int
+parse_units (evalresp_log_t *log, evalresp_options const *const options, char *line, evalresp_channel *channel, int *units)
+{
+  int i, first_flag = 0, status = EVALRESP_OK;
+
+  if (!strlen (channel->first_units))
+  {
+    first_flag = 1;
+    strncpy (channel->first_units, line, MAXLINELEN);
+    channel->unit_scale_fact = 1.0;
+  }
+  else
+  {
+    strncpy (channel->last_units, line, MAXLINELEN);
+  }
+
+  if (options && options->unit_set && options->unit == evalresp_default_unit)
+  {
+    *units = DEFAULT;
+    return status;
+  }
+
+  for (i = 0; i < (int)strlen (line); i++)
+  {
+    line[i] = toupper (line[i]);
+  }
+
+  /* IGD 02/03/01 a restricted case of pressure data is added
+     * We will play with string_match ater if more requests show
+     * up for pressure data.
+     ********************************************/
+  if (strncasecmp (line, "PA", 2) == 0)
+  {
+    *units = PRESSURE;
+  }
+  /* IGD 08/21/06 Added support for TESLA */
+  else if (strncasecmp (line, "T -", 3) == 0)
+  {
+    *units = TESLA;
+  }
+  /* IHD 10/03/13 Adding DEGREES CENTIGRADE */
+  else if (strncasecmp (line, "C -", 3) == 0)
+  {
+    *units = CENTIGRADE;
+  }
+  else if (reg_string_match (log, line, "^[CNM]?M/S\\*\\*2|^[CNM]?M/SEC\\*\\*2", "-r"))
+  {
+    if (first_flag && !strncmp ("NM", line, (size_t)2))
+      channel->unit_scale_fact = 1.0e9;
+    else if (first_flag && !strncmp ("MM", line, (size_t)2))
+      channel->unit_scale_fact = 1.0e3;
+    else if (first_flag && !strncmp ("CM", line, (size_t)2))
+      channel->unit_scale_fact = 1.0e2;
+    *units = ACC;
+  }
+  else if (reg_string_match (log, line, "^[CNM]?M/S|^[CNM]?M/SEC", "-r"))
+  {
+    if (first_flag && !strncmp (line, "NM", 2))
+      channel->unit_scale_fact = 1.0e9;
+    else if (first_flag && !strncmp (line, "MM", 2))
+      channel->unit_scale_fact = 1.0e3;
+    else if (first_flag && !strncmp (line, "CM", 2))
+      channel->unit_scale_fact = 1.0e2;
+    *units = VEL;
+  }
+  else if (reg_string_match (log, line, "^[CNM]?M[^A-Z/]?", "-r"))
+  {
+    if (first_flag && !strncmp (line, "NM", 2))
+      channel->unit_scale_fact = 1.0e9;
+    else if (first_flag && !strncmp (line, "MM", 2))
+      channel->unit_scale_fact = 1.0e3;
+    else if (first_flag && !strncmp (line, "CM", 2))
+      channel->unit_scale_fact = 1.0e2;
+    *units = DIS;
+  }
+  else if (reg_string_match (log, line, "^COUNTS?[^A-Z]?", "-r") || reg_string_match (log, line, "^DIGITAL[^A-Z]?", "-r"))
+  {
+    *units = COUNTS;
+  }
+  else if (reg_string_match (log, line, "^V[^A-Z]?", "-r") || reg_string_match (log, line, "^VOLTS[^A-Z]?", "-r"))
+  {
+    *units = VOLTS;
+  }
+  else
+  {
+    *units = UNDEF_UNITS;
+    evalresp_log (log, EV_WARN, EV_WARN,
+                  "check_units; units found ('%s') are not supported", line);
+    status = EVALRESP_PAR;
+  }
+  return status;
+}
+
+static int
+read_units_first_line_known (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int blkt_read, int *check_fld,
                              char *line, evalresp_channel *channel, int *input_units, int *output_units)
 {
   int status = EVALRESP_OK;
 
-  *input_units = check_units (channel, line, log);
+  //*input_units = check_units (channel, line, log);
+  parse_units (log, options, line, channel, input_units);
 
   if (!(status = find_line (log, seed, ":", blkt_read, (*check_fld)++, line)))
   {
-    *output_units = check_units (channel, line, log);
+    //*output_units = check_units (channel, line, log);
+    parse_units (log, options, line, channel, output_units);
   }
 
   return status;
 }
 
 static int
-read_units (evalresp_log_t *log, const char **seed, int blkt_read, int *check_fld,
+read_units (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int blkt_read, int *check_fld,
             evalresp_channel *channel, int *input_units, int *output_units)
 {
   int status = EVALRESP_OK;
@@ -280,7 +520,7 @@ read_units (evalresp_log_t *log, const char **seed, int blkt_read, int *check_fl
 
   if (!(status = find_line (log, seed, ":", blkt_read, (*check_fld)++, line)))
   {
-    status = read_units_first_line_known (log, seed, blkt_read, check_fld, line,
+    status = read_units_first_line_known (log, options, seed, blkt_read, check_fld, line,
                                           channel, input_units, output_units);
   }
 
@@ -321,7 +561,7 @@ read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
   }
   else
   {
-    if ((status = parse_field (first_line, 0, field, log)))
+    if ((status = get_field_to_parse (log, first_line, 0, field)))
     {
       // TODO - log reason
       return status;
@@ -350,12 +590,12 @@ read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
      "old style" RESP files so assume old style RESP files contain a null location
      identifier) and the channel name */
 
-  /* Modified to use 'next_line()' and 'parse_field()' directly
+  /* Modified to use 'next_line()' and 'get_field_to_parse()' directly
      to handle case where file contains "B052F03 Location:" and
      nothing afterward -- 10/19/2005 -- [ET] */
   if (!read_line (log, seed, ":", &blkt_no, &fld_no, line)) /* if data after "Location:" */
   {
-    if ((status = parse_field (line, 0, field, log))) /* parse location data */
+    if ((status = get_field_to_parse (log, line, 0, field))) /* parse location data */
     {
       // TODO - log reason
       return status;
@@ -418,7 +658,7 @@ read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
 
 // this was parse_pz
 static int
-read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
+read_pz (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int first_field, char *first_line,
          evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, check_fld, blkt_read, npoles, nzeros;
@@ -439,7 +679,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
 
   blkt_read = first_field == 3 ? 53 : 43;
 
-  if ((status = parse_field (first_line, 0, field, log)))
+  if ((status = get_field_to_parse (log, first_line, 0, field)))
   {
     return status;
   }
@@ -480,10 +720,10 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
     {
       return status;
     }
-    curr_seq_no = stage_ptr->sequence_no;
+    //curr_seq_no = stage_ptr->sequence_no;
   }
 
-  if ((status = read_units (log, seed, blkt_read, &check_fld, channel,
+  if ((status = read_units (log, options, seed, blkt_read, &check_fld, channel,
                             &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
@@ -547,7 +787,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
     {
       return status;
     }
-    if ((status = parse_field (line, 1, field, log)))
+    if ((status = get_field_to_parse (log, line, 1, field)))
     {
       return status;
     }
@@ -558,7 +798,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
       return EVALRESP_PAR;
     }
     blkt_ptr->blkt_info.pole_zero.zeros[i].real = atof (field);
-    if ((status = parse_field (line, 2, field, log)))
+    if ((status = get_field_to_parse (log, line, 2, field)))
     {
       return status;
     }
@@ -584,7 +824,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
     {
       return status;
     }
-    if ((status = parse_field (line, 1, field, log)))
+    if ((status = get_field_to_parse (log, line, 1, field)))
     {
       return status;
     }
@@ -595,7 +835,7 @@ read_pz (evalresp_log_t *log, const char **seed, int first_field, char *first_li
       return EVALRESP_PAR;
     }
     blkt_ptr->blkt_info.pole_zero.poles[i].real = atof (field);
-    if ((status = parse_field (line, 2, field, log)))
+    if ((status = get_field_to_parse (log, line, 2, field)))
     {
       return status;
     }
@@ -645,7 +885,7 @@ is_iir_coeffs (const char **seed)
 
 // this was parse_iir_coeff
 static int
-read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
+read_iir_coeff (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int first_field, char *first_line,
                 evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, check_fld, blkt_read, ncoeffs, ndenom;
@@ -666,7 +906,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
 
   blkt_read = first_field == 3 ? 54 : 44;
 
-  if ((status = parse_field (first_line, 0, field, log)))
+  if ((status = get_field_to_parse (log, first_line, 0, field)))
   {
     return status;
   }
@@ -692,10 +932,10 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
     {
       return status;
     }
-    curr_seq_no = stage_ptr->sequence_no;
+    //curr_seq_no = stage_ptr->sequence_no;
   }
 
-  if ((status = read_units (log, seed, blkt_read, &check_fld, channel,
+  if ((status = read_units (log, options, seed, blkt_read, &check_fld, channel,
                             &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
@@ -782,7 +1022,7 @@ read_iir_coeff (evalresp_log_t *log, const char **seed, int first_field, char *f
 
 // this was "parse_coeff"
 static int
-read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
+read_coeff (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int first_field, char *first_line,
             evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, check_fld, blkt_read, ncoeffs, ndenom;
@@ -803,7 +1043,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
 
   blkt_read = first_field == 3 ? 54 : 44;
 
-  if ((status = parse_field (first_line, 0, field, log)))
+  if ((status = get_field_to_parse (log, first_line, 0, field)))
   {
     return status;
   }
@@ -829,10 +1069,10 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
     {
       return status;
     }
-    curr_seq_no = stage_ptr->sequence_no;
+    //curr_seq_no = stage_ptr->sequence_no;
   }
 
-  if ((status = read_units (log, seed, blkt_read, &check_fld, channel,
+  if ((status = read_units (log, options, seed, blkt_read, &check_fld, channel,
                             &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
@@ -904,7 +1144,7 @@ read_coeff (evalresp_log_t *log, const char **seed, int first_field, char *first
 
 // this was "parse_list"
 static int
-read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
+read_list (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int first_field, char *first_line,
            evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, blkt_read, check_fld, nresp, format;
@@ -936,7 +1176,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
     {
       return status;
     }
-    curr_seq_no = stage_ptr->sequence_no;
+    //curr_seq_no = stage_ptr->sequence_no;
     check_fld++;
     if ((status = find_line (log, seed, ":", blkt_read, check_fld++, line)))
     {
@@ -949,7 +1189,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
     check_fld++;
   }
 
-  if ((status = read_units_first_line_known (log, seed, blkt_read, &check_fld,
+  if ((status = read_units_first_line_known (log, options, seed, blkt_read, &check_fld,
                                              line, channel,
                                              &stage_ptr->input_units, &stage_ptr->output_units)))
   {
@@ -981,7 +1221,8 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
     {
       return status;
     }
-    format = count_fields (line) - 5;
+    number_of_fields (log, line, &format);
+    format -= 5;
 
     /*format == 0 if no number of responses in the file */
     /*format == 1 if number of responses in the sec column*/
@@ -999,7 +1240,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
       {
         return status;
       }
-      if ((status = parse_field (line, format, field, log))) /* Frequency */
+      if ((status = get_field_to_parse (log, line, format, field))) /* Frequency */
       {
         return status;
       }
@@ -1010,7 +1251,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
         return EVALRESP_PAR;
       }
       blkt_ptr->blkt_info.list.freq[i] = atof (field);
-      if ((status = parse_field (line, 1 + format, field, log))) /* the amplitude of the Fourier transform */
+      if ((status = get_field_to_parse (log, line, 1 + format, field))) /* the amplitude of the Fourier transform */
       {
         return status;
       }
@@ -1021,7 +1262,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
         return EVALRESP_PAR;
       }
       blkt_ptr->blkt_info.list.amp[i] = atof (field);
-      if ((status = parse_field (line, 3 + format, field, log))) /* Phase of the transform */
+      if ((status = get_field_to_parse (log, line, 3 + format, field))) /* Phase of the transform */
       {
         return status;
       }
@@ -1043,7 +1284,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
       {
         return status;
       }
-      if ((status = parse_field (line, 0, field, log)))
+      if ((status = get_field_to_parse (log, line, 0, field)))
       {
         return status;
       }
@@ -1054,7 +1295,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
         return EVALRESP_PAR;
       }
       blkt_ptr->blkt_info.list.freq[i] = atof (field);
-      if ((status = parse_field (line, 1, field, log)))
+      if ((status = get_field_to_parse (log, line, 1, field)))
       {
         return status;
       }
@@ -1065,7 +1306,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
         return EVALRESP_PAR;
       }
       blkt_ptr->blkt_info.list.amp[i] = atof (field);
-      if ((status = parse_field (line, 3, field, log)))
+      if ((status = get_field_to_parse (log, line, 3, field)))
       {
         return status;
       }
@@ -1085,7 +1326,7 @@ read_list (evalresp_log_t *log, const char **seed, int first_field, char *first_
 
 // this was "parse_generic"
 static int
-read_generic (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
+read_generic (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int first_field, char *first_line,
               evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, blkt_read, check_fld, ncorners;
@@ -1119,7 +1360,7 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
     {
       return status;
     }
-    curr_seq_no = stage_ptr->sequence_no;
+    //curr_seq_no = stage_ptr->sequence_no;
     check_fld++;
     if ((status = find_line (log, seed, ":", blkt_read, check_fld++, line)))
     {
@@ -1132,7 +1373,7 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
     check_fld++;
   }
 
-  if ((status = read_units_first_line_known (log, seed, blkt_read, &check_fld,
+  if ((status = read_units_first_line_known (log, options, seed, blkt_read, &check_fld,
                                              line, channel,
                                              &stage_ptr->input_units, &stage_ptr->output_units)))
   {
@@ -1161,7 +1402,7 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
     {
       return status;
     }
-    if ((status = parse_field (line, 1, field, log)))
+    if ((status = get_field_to_parse (log, line, 1, field)))
     {
       return status;
     }
@@ -1172,7 +1413,7 @@ read_generic (evalresp_log_t *log, const char **seed, int first_field, char *fir
       return EVALRESP_PAR;
     }
     blkt_ptr->blkt_info.generic.corner_freq[i] = atof (field);
-    if ((status = parse_field (line, 2, field, log)))
+    if ((status = get_field_to_parse (log, line, 2, field)))
     {
       return status;
     }
@@ -1235,7 +1476,7 @@ read_deci (evalresp_log_t *log, const char **seed, int first_field, char *first_
   }
   else
   {
-    if ((status = parse_field (first_line, 0, field, log)))
+    if ((status = get_field_to_parse (log, first_line, 0, field)))
     {
       return status;
     }
@@ -1329,7 +1570,7 @@ read_gain (evalresp_log_t *log, const char **seed, int first_field, char *first_
   }
   else
   {
-    if ((status = parse_field (first_line, 0, field, log)))
+    if ((status = get_field_to_parse (log, first_line, 0, field)))
     {
       return status;
     }
@@ -1374,7 +1615,7 @@ read_gain (evalresp_log_t *log, const char **seed, int first_field, char *first_
 
 // this was "parse_fir"
 static int
-read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
+read_fir (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int first_field, char *first_line,
           evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, blkt_read, check_fld, ncoeffs;
@@ -1403,7 +1644,7 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
     {
       return status;
     }
-    curr_seq_no = stage_ptr->sequence_no;
+    //curr_seq_no = stage_ptr->sequence_no;
     check_fld += 2;
     if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
     {
@@ -1412,7 +1653,7 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
   }
   else
   {
-    if ((status = parse_field (first_line, 0, field, log)))
+    if ((status = get_field_to_parse (log, first_line, 0, field)))
     {
       return status;
     }
@@ -1447,7 +1688,7 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
     return EVALRESP_PAR;
   }
 
-  if ((status = read_units (log, seed, blkt_read, &check_fld, channel,
+  if ((status = read_units (log, options, seed, blkt_read, &check_fld, channel,
                             &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
@@ -1487,7 +1728,7 @@ read_fir (evalresp_log_t *log, const char **seed, int first_field, char *first_l
 
 // this was "parse_ref"
 static int
-read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
+read_ref (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int first_field, char *first_line,
           evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, this_blkt_no = 60, blkt_no, fld_no, i, j, prev_blkt_no = 60;
@@ -1509,7 +1750,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
                   ", fld_found=F", first_field);
     return EVALRESP_PAR;
   }
-  if ((status = parse_field (first_line, 0, field, log)))
+  if ((status = get_field_to_parse (log, first_line, 0, field)))
   {
     return status;
   }
@@ -1544,7 +1785,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
     /* set the stage sequence number and the pointer to the first blockette */
 
     this_stage->sequence_no = stage_num;
-    curr_seq_no = this_stage->sequence_no;
+    //curr_seq_no = this_stage->sequence_no;
 
     /* then the number of responses in this stage */
 
@@ -1573,19 +1814,19 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
         {
         case 43:
           blkt_ptr = alloc_pz (log);
-          status = read_pz (log, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
+          status = read_pz (log, options, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
           break;
         case 44:
           blkt_ptr = alloc_fir (log);
-          status = read_coeff (log, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
+          status = read_coeff (log, options, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
           break;
         case 45:
           blkt_ptr = alloc_list (log);
-          status = read_list (log, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
+          status = read_list (log, options, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
           break;
         case 46:
           blkt_ptr = alloc_generic (log);
-          status = read_generic (log, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
+          status = read_generic (log, options, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
           break;
         case 47:
           blkt_ptr = alloc_deci (log);
@@ -1597,7 +1838,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
           break;
         case 41:
           blkt_ptr = alloc_fir (log);
-          status = read_fir (log, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
+          status = read_fir (log, options, seed, fld_no, first_line, channel, blkt_ptr, this_stage);
           break;
         case 60:
           evalresp_log (log, EV_ERROR, EV_ERROR,
@@ -1671,7 +1912,7 @@ read_ref (evalresp_log_t *log, const char **seed, int first_field, char *first_l
 
 // this was "parse_polynomial"
 static int
-read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *first_line,
+read_polynomial (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int first_field, char *first_line,
                  evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, blkt_read, check_fld, ncoeffs;
@@ -1690,7 +1931,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
 
   blkt_read = first_field == 3 ? 62 : 42;
 
-  if ((status = parse_field (first_line, 0, field, log)))
+  if ((status = get_field_to_parse (log, first_line, 0, field)))
   {
     return status;
   }
@@ -1714,10 +1955,10 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
     {
       return status;
     }
-    curr_seq_no = stage_ptr->sequence_no;
+    //curr_seq_no = stage_ptr->sequence_no;
   }
 
-  if ((status = read_units (log, seed, blkt_read, &check_fld, channel,
+  if ((status = read_units (log, options, seed, blkt_read, &check_fld, channel,
                             &stage_ptr->input_units, &stage_ptr->output_units)))
   {
     return status;
@@ -1795,7 +2036,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
     {
       return status;
     }
-    if ((status = parse_field (line, 1, field, log)))
+    if ((status = get_field_to_parse (log, line, 1, field)))
     {
       return status;
     }
@@ -1806,7 +2047,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
       return EVALRESP_PAR;
     }
     blkt_ptr->blkt_info.polynomial.coeffs[i] = atof (field);
-    if ((status = parse_field (line, 2, field, log)))
+    if ((status = get_field_to_parse (log, line, 2, field)))
     {
       return status;
     }
@@ -1824,7 +2065,7 @@ read_polynomial (evalresp_log_t *log, const char **seed, int first_field, char *
 
 // this was "parse_channel"
 static int
-read_channel_data (evalresp_log_t *log, const char **seed, char *first_line,
+read_channel_data (evalresp_log_t *log, evalresp_options const *const options, const char **seed, char *first_line,
                    evalresp_channel *channel)
 {
 
@@ -1851,7 +2092,7 @@ read_channel_data (evalresp_log_t *log, const char **seed, char *first_line,
     {
     case 53:
       blkt_ptr = alloc_pz (log);
-      status = read_pz (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
+      status = read_pz (log, options, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       curr_seq_no = tmp_stage->sequence_no;
       break;
     case 54:
@@ -1860,23 +2101,23 @@ read_channel_data (evalresp_log_t *log, const char **seed, char *first_line,
       if (is_iir_coeffs (seed))
       {
         blkt_ptr = alloc_coeff (log);
-        status = read_iir_coeff (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
+        status = read_iir_coeff (log, options, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       }
       else
       {
         blkt_ptr = alloc_fir (log);
-        status = read_coeff (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
+        status = read_coeff (log, options, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       }
       curr_seq_no = tmp_stage->sequence_no;
       break;
     case 55:
       blkt_ptr = alloc_list (log);
-      status = read_list (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
+      status = read_list (log, options, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       curr_seq_no = tmp_stage->sequence_no;
       break;
     case 56:
       blkt_ptr = alloc_generic (log);
-      status = read_generic (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
+      status = read_generic (log, options, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       curr_seq_no = tmp_stage->sequence_no;
       break;
     case 57:
@@ -1890,18 +2131,18 @@ read_channel_data (evalresp_log_t *log, const char **seed, char *first_line,
     case 60: /* never see a blockette [41], [43]-[48] without a [60], parse_ref handles these */
       blkt_ptr = alloc_ref (log);
       tmp_stage2 = alloc_stage (log);
-      status = read_ref (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage2);
+      status = read_ref (log, options, seed, first_field, first_line, channel, blkt_ptr, tmp_stage2);
       curr_seq_no = tmp_stage2->sequence_no;
       tmp_stage2->first_blkt = blkt_ptr;
       break;
     case 61:
       blkt_ptr = alloc_fir (log);
-      status = read_fir (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
+      status = read_fir (log, options, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       curr_seq_no = tmp_stage->sequence_no;
       break;
     case 62:
       blkt_ptr = alloc_polynomial (log);
-      status = read_polynomial (log, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
+      status = read_polynomial (log, options, seed, first_field, first_line, channel, blkt_ptr, tmp_stage);
       curr_seq_no = tmp_stage->sequence_no;
       break;
     default:
@@ -2126,6 +2367,44 @@ parse_datetime (const char *str, evalresp_datetime *datetime)
   }
 }
 
+int
+timecmp (evalresp_datetime *dt1, evalresp_datetime *dt2)
+{
+
+  /* check year */
+  if (dt1->year < dt2->year)
+    return (-1);
+  if (dt1->year > dt2->year)
+    return (1);
+
+  /* check day */
+  if (dt1->jday < dt2->jday)
+    return (-1);
+  if (dt1->jday > dt2->jday)
+    return (1);
+
+  /* check hour */
+  if (dt1->hour < dt2->hour)
+    return (-1);
+  if (dt1->hour > dt2->hour)
+    return (1);
+
+  /* check minute */
+  if (dt1->min < dt2->min)
+    return (-1);
+  if (dt1->min > dt2->min)
+    return (1);
+
+  /* check second */
+  if (dt1->sec < dt2->sec)
+    return (-1);
+  if (dt1->sec > dt2->sec)
+    return (1);
+
+  /* if I got this far, times are equal */
+  return (0);
+}
+
 static int
 in_epoch (evalresp_datetime *requirement, const char *beg_t, const char *end_t)
 {
@@ -2159,11 +2438,11 @@ channel_matches (evalresp_log_t *log, const evalresp_filter *filter, evalresp_ch
     for (i = 0; i < filter->sncls->nscn; ++i)
     {
       evalresp_sncl *sncl = filter->sncls->scn_vec[i];
-      if (string_match (channel->staname, sncl->station, "-g", log) &&
+      if (reg_string_match (log, channel->staname, sncl->station, "-g") &&
           ((!strlen (sncl->network) && !strlen (channel->network)) ||
-           string_match (channel->network, sncl->network, "-g", log)) &&
-          string_match (channel->locid, sncl->locid, "-g", log) &&
-          string_match (channel->chaname, sncl->channel, "-g", log))
+           reg_string_match (log, channel->network, sncl->network, "-g")) &&
+          reg_string_match (log, channel->locid, sncl->locid, "-g") &&
+          reg_string_match (log, channel->chaname, sncl->channel, "-g"))
       {
         sncl->found++;
         return 1;
@@ -2179,6 +2458,7 @@ channel_matches (evalresp_log_t *log, const evalresp_filter *filter, evalresp_ch
 
 int
 evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
+                           evalresp_options const *const options,
                            const evalresp_filter *filter, evalresp_channels **channels)
 {
   const char *read_ptr = seed_or_xml;
@@ -2202,7 +2482,7 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
       {
         if (!(status = read_channel_header (log, &read_ptr, first_line, channel)))
         {
-          if (!(status = read_channel_data (log, &read_ptr, first_line, channel)))
+          if (!(status = read_channel_data (log, options, &read_ptr, first_line, channel)))
           {
             if (!filter || channel_matches (log, filter, channel))
             {
@@ -2233,13 +2513,14 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
 
 int
 evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
+                           evalresp_options const *const options,
                            const evalresp_filter *filter, evalresp_channels **channels)
 {
   char *seed = NULL;
   int status = EVALRESP_OK;
   if (!(status = file_to_char (log, file, &seed)))
   {
-    status = evalresp_char_to_channels (log, seed, filter, channels);
+    status = evalresp_char_to_channels (log, seed, options, filter, channels);
   }
   free (seed);
   return status;
@@ -2269,7 +2550,7 @@ evalresp_filename_to_channels (evalresp_log_t *log, const char *filename, evalre
     }
     if (EVALRESP_OK == status)
     {
-      status = evalresp_file_to_channels (log, file, filter, channels);
+      status = evalresp_file_to_channels (log, file, options, filter, channels);
     }
   }
   if (file)
@@ -2616,4 +2897,59 @@ evalresp_free_filter (evalresp_filter **filter)
     free (*filter);
     *filter = NULL;
   }
+}
+
+int
+parse_int (evalresp_log_t *log, const char *name, const char *str, int *value)
+{
+  int status = EVALRESP_OK;
+  char *end;
+  *value = (int)strtol (str, &end, 10);
+  while (isspace (*end))
+    ++end;
+  if (*end)
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot parse '%s' as an integer for %s", str, name);
+    status = EVALRESP_INP;
+  }
+  return status;
+}
+
+int
+parse_double (evalresp_log_t *log, const char *name, const char *str, double *value)
+{
+  int status = EVALRESP_OK;
+  char *end;
+  *value = strtod (str, &end);
+  while (isspace (*end))
+    ++end;
+  if (*end)
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot parse '%s' as a double for %s", str, name);
+    status = EVALRESP_INP;
+  }
+  return status;
+}
+
+int
+is_int (const char *test, evalresp_log_t *log)
+{
+  char ipattern[MAXLINELEN];
+
+  /* first check to see if is an integer prefixed by a plus or minus.  If not
+     then check to see if is simply an integer */
+
+  strncpy (ipattern, "^[-+]?[0-9]+$", MAXLINELEN);
+  return (reg_string_match (log, test, ipattern, "-r"));
+}
+
+int
+is_real (const char *test, evalresp_log_t *log)
+{
+  char fpattern[MAXLINELEN];
+  strncpy (fpattern, "^[-+]?[0-9]+\\.?[0-9]*[Ee][-+]?[0-9]+$", MAXLINELEN);
+  strcat (fpattern, "|^[-+]?[0-9]*\\.[0-9]+[Ee][-+]?[0-9]+$");
+  strcat (fpattern, "|^[-+]?[0-9]+\\.?[0-9]*$");
+  strcat (fpattern, "|^[-+]?[0-9]*\\.[0-9]+$");
+  return (reg_string_match (log, test, fpattern, "-r"));
 }

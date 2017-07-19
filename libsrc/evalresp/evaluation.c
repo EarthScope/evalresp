@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "./private.h"
-#include "./ugly.h"
+#include "evalresp/constants.h"
 #include "evalresp/public.h"
 #include "evalresp/public_api.h"
 #include "evalresp_log/log.h"
@@ -377,8 +377,8 @@ interpolate_b55 (evalresp_log_t *log, evalresp_channel *channel,
     if (!(status = restrict_frequency_range (log, list->freq[0], list->freq[list->nresp - 1],
                                              &response->nfreqs, response->freqs)))
     {
-      interpolate_list_blockette (&list->freq, &list->amp, &list->phase, &list->nresp,
-                                  response->freqs, response->nfreqs, log);
+      status = interpolate_list_blockette (&list->freq, &list->amp, &list->phase, &list->nresp,
+                                           response->freqs, response->nfreqs, log);
     }
   }
   return status;
@@ -464,16 +464,18 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
 
   if (!status)
   {
-    norm_resp (channel, options->start_stage, options->stop_stage, log);
-    if (!(status = calculate_response (log, options, channel, (*response)->freqs, (*response)->nfreqs, (*response)->rvec)))
+    if (!(status = norm_resp (channel, options->start_stage, options->stop_stage, log)))
     {
-      strncpy ((*response)->network, channel->network, NETLEN);
-      strncpy ((*response)->station, channel->staname, STALEN);
-      strncpy ((*response)->locid, channel->locid, LOCIDLEN);
-      strncpy ((*response)->channel, channel->chaname, CHALEN);
-      if (options->verbose)
+      if (!(status = calculate_response (log, options, channel, (*response)->freqs, (*response)->nfreqs, (*response)->rvec)))
       {
-        evalresp_channel_to_log (log, options, channel);
+        strncpy ((*response)->network, channel->network, NETLEN);
+        strncpy ((*response)->station, channel->staname, STALEN);
+        strncpy ((*response)->locid, channel->locid, LOCIDLEN);
+        strncpy ((*response)->channel, channel->chaname, CHALEN);
+        if (options->verbose)
+        {
+          evalresp_channel_to_log (log, options, channel);
+        }
       }
     }
   }
@@ -536,6 +538,7 @@ calculate_response (evalresp_log_t *log, evalresp_options *options,
   int matching_stages = 0, has_stage0 = 0;
   evalresp_complex of, val;
   double corr_applied, calc_delay, estim_delay, delay;
+  int status = EVALRESP_OK;
 
   /*  if(options->start_stage && options->start_stage > chan->nstages) {
      error_return(NO_STAGE_MATCHED, "calc_resp: %s options->start_stage=%d, highest stage found=%d)",
@@ -642,12 +645,15 @@ calculate_response (evalresp_log_t *log, evalresp_options *options,
             eval_flag = 1;
           }
           break;
-        case LIST: /* This option is added in version 2.3.17 I.Dricker*/
+        case LIST:                      /* This option is added in version 2.3.17 I.Dricker*/
           calc_list (blkt_ptr, i, &of); /*compute real and imag parts for the i-th ampl and phase */
           eval_flag = 1;
           break;
         case POLYNOMIAL: /* IGD 06/01/2013*/
-          calc_polynomial (blkt_ptr, &of, options->b62_x, log);
+          if ((status = calc_polynomial (blkt_ptr, &of, options->b62_x, log)))
+          {
+            return status;
+          }
           eval_flag = 1;
           break;
         case IIR_COEFFS: /* This option is added in version 2.3.17 I.Dricker*/
@@ -698,7 +704,10 @@ calculate_response (evalresp_log_t *log, evalresp_options *options,
       output[i].imag = val.imag * chan->sensit * chan->unit_scale_fact;
     }
 
-    convert_to_units (units_code, options->unit_set ? options->unit : evalresp_velocity_unit, &output[i], w, log);
+    if ((status = convert_to_units (units_code, options->unit_set ? options->unit : evalresp_velocity_unit, &output[i], w, log)))
+    {
+      return status;
+    }
   }
   return EVALRESP_OK;
 }

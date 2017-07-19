@@ -9,8 +9,7 @@
 #include "./private.h"
 #include "evalresp/public_api.h"
 
-/*TODO make static once print_resp is replaced */
-const char *
+static const char *
 get_SEEDUNITS (int idx)
 {
   static const char SEEDUNITS[][UNITS_STR_LEN] =

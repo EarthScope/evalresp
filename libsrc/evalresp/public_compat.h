@@ -9,6 +9,20 @@
  * include evresp.h instead */
 
 /**
+ * @private
+ * @ingroup evalresp_private
+ * @brief Define a global flag to use if using "default" units.
+ */
+extern int def_units_flag;
+
+/**
+ * @private
+ * @ingroup evalresp_private
+ * @brief Name of the current RESP file processed by evalresp.
+ */
+extern char *curr_file;
+
+/**
  * @public
  * @ingroup evalresp_public_compat
  * @brief Evaluate responses for user requested station/channel/network tuple

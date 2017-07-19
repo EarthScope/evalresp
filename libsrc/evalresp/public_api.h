@@ -11,13 +11,13 @@
 enum evalresp_status_enum
 {
   EVALRESP_OK = 0, /**< No error (intentionally false). */
-  EVALRESP_MEM, /**< Memory error. */
-  EVALRESP_IO, /**< IO Error. */
-  EVALRESP_INP, /**< Bad user input. */
-  EVALRESP_ERR, /**< Internal (coding) error. */
-  EVALRESP_PAR, /**< Parsing error in file. */
-  EVALRESP_EOF, /**< End of input. */
-  EVALRESP_VAL /**< Validation error. */
+  EVALRESP_MEM,    /**< Memory error. */
+  EVALRESP_IO,     /**< IO Error. */
+  EVALRESP_INP,    /**< Bad user input. */
+  EVALRESP_ERR,    /**< Internal (coding) error. */
+  EVALRESP_PAR,    /**< Parsing error in file. */
+  EVALRESP_EOF,    /**< End of input. */
+  EVALRESP_VAL     /**< Validation error. */
 };
 
 // TODO - see design doc for details that should go into comments
@@ -31,9 +31,9 @@ typedef struct
 {
   char *station; /**< Station name. */
   char *network; /**< Network name. */
-  char *locid; /**< Location ID. */
+  char *locid;   /**< Location ID. */
   char *channel; /**< Channel name. */
-  int found; /**< Number of times found in the input RESP file. */
+  int found;     /**< Number of times found in the input RESP file. */
 } evalresp_sncl;
 
 /**
@@ -43,10 +43,10 @@ typedef struct
  */
 typedef struct
 {
-  int year; /**< Year. */
-  int jday; /**< Day of year. */
-  int hour; /**< Hour. */
-  int min; /**< Minutes. */
+  int year;  /**< Year. */
+  int jday;  /**< Day of year. */
+  int hour;  /**< Hour. */
+  int min;   /**< Minutes. */
   float sec; /**< Seconds. */
 } evalresp_datetime;
 
@@ -57,7 +57,7 @@ typedef struct
  */
 typedef struct
 {
-  int nscn; /**< Number of network-station-locid-channel objects. */
+  int nscn;                /**< Number of network-station-locid-channel objects. */
   evalresp_sncl **scn_vec; /**< Array of network-station-locid-channel objects. */
 } evalresp_sncls;
 
@@ -71,6 +71,45 @@ typedef struct
   evalresp_sncls *sncls;
   evalresp_datetime *datetime;
 } evalresp_filter;
+
+typedef enum {
+  evalresp_ap_output_format,     /**< Two files, AMP and PHASE. */
+  evalresp_fap_output_format,    /**< One file, FAP. */
+  evalresp_complex_output_format /**< One file, COMPLEX. */
+} evalresp_output_format;
+
+typedef enum {
+  evalresp_default_unit, /**< Despite the name, this is not the default. */
+  evalresp_displacement_unit,
+  evalresp_velocity_unit,
+  evalresp_acceleration_unit
+} evalresp_unit;
+
+#define EVALRESP_ALL_STAGES -1 /**< Default for start and stop stage. */
+#define EVALRESP_NO_FREQ -1    /**< Default for frequency limits. */
+
+typedef struct
+{
+  char *filename;
+  double b62_x;
+  double min_freq;
+  double max_freq;
+  int nfreq;
+  int lin_freq;
+  int start_stage;
+  int stop_stage;
+  int use_estimated_delay;
+  int unwrap_phase;
+  int b55_interpolate;
+  int use_total_sensitivity;
+  int use_stdio;
+  int station_xml;
+  evalresp_output_format format;
+  evalresp_unit unit;
+  char format_set;
+  int verbose;
+  char unit_set;
+} evalresp_options;
 
 /**
  * @public
@@ -182,12 +221,14 @@ void evalresp_free_sncls (evalresp_sncls *sncls);
  * @ingroup evalresp_public
  * @param[in] log logging structure
  * @param[in] seed_or_xml char * read from a file or stdio
+ * @param[in] options evalresp_options to determine wether or not to convert xml or not
  * @param[in] filter evalresp filter to use when getting the channels
  * @param[out] channels evalresp_channel object that gets allocated and returned
  * @brief take a char string and parse it into evalresp_channel object
  * @retval EVALRESP_OK on success
  */
 int evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
+                               evalresp_options const *const options,
                                const evalresp_filter *filter, evalresp_channels **channels);
 
 /**
@@ -195,52 +236,15 @@ int evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
  * @ingroup evalresp_public
  * @param[in] log logging structure
  * @param[in] file stream pointer that contains the seed/xml data to convert
+ * @param[in] options evalresp_options to determine wether or not to convert xml or not
  * @param[in] filter evalresp filter to use when getting the channels
  * @param[out] channels evalresp_channel object that gets allocated and returned
  * @brief take a stream and parse it into evalresp_channel object
  * @retval EVALRESP_OK on success
  */
 int evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
+                               evalresp_options const *const options,
                                const evalresp_filter *filter, evalresp_channels **channels);
-
-typedef enum {
-  evalresp_ap_output_format, /**< Two files, AMP and PHASE. */
-  evalresp_fap_output_format, /**< One file, FAP. */
-  evalresp_complex_output_format /**< One file, COMPLEX. */
-} evalresp_output_format;
-
-typedef enum {
-  evalresp_default_unit, /**< Despite the name, this is not the default. */
-  evalresp_displacement_unit,
-  evalresp_velocity_unit,
-  evalresp_acceleration_unit
-} evalresp_unit;
-
-#define EVALRESP_ALL_STAGES -1 /**< Default for start and stop stage. */
-#define EVALRESP_NO_FREQ -1 /**< Default for frequency limits. */
-
-typedef struct
-{
-  char *filename;
-  double b62_x;
-  double min_freq;
-  double max_freq;
-  int nfreq;
-  int lin_freq;
-  int start_stage;
-  int stop_stage;
-  int use_estimated_delay;
-  int unwrap_phase;
-  int b55_interpolate;
-  int use_total_sensitivity;
-  int use_stdio;
-  int station_xml;
-  evalresp_output_format format;
-  evalresp_unit unit;
-  char format_set;
-  int verbose;
-  char unit_set;
-} evalresp_options;
 
 /**
  * @public

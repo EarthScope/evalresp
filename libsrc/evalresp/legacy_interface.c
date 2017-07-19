@@ -9,7 +9,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Fortran  interface */
+/* define a global flag to use if using "default" units */
+int def_units_flag;
+/* define global variables for use in printing error messages */
+char *curr_file;
 
 int
 evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
@@ -167,6 +170,11 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
       return NULL;
     }
     options->unit_set = 1;
+  }
+  else if (def_units_flag)
+  {
+    options->unit_set = 1;
+    options->unit = evalresp_default_unit;
   }
 
   if (verbose)
@@ -346,6 +354,11 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
       return;
     }
     options->unit_set = 1;
+  }
+  else if (def_units_flag)
+  {
+    options->unit_set = 1;
+    options->unit = evalresp_default_unit;
   }
 
   calculate_response (log, options, chan, freq, nfreqs, output);

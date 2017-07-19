@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "evalresp/constants.h"
 #include "evalresp/public_api.h"
-#include "evalresp/ugly.h"
 
 START_TEST (test_no_options)
 {

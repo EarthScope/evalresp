@@ -34,9 +34,13 @@
 
 #include <string.h>
 
-#include "./private.h"
-#include "./regexp.h" // TODO - should all private imports be relative like this?
-#include "evalresp/public_channels.h"
+#include "./old_fctns.h"
+#include <evalresp/evresp.h>
+#include <evalresp/private.h>
+#include <evalresp/public_channels.h>
+#include <evalresp/regexp.h> // TODO - should all private imports be relative like this?
+
+char myLabel[20];
 
 struct string_array *
 ev_parse_line (char *line, evalresp_log_t *log)
@@ -677,13 +681,9 @@ check_units (evalresp_channel *channel, char *line, evalresp_log_t *log)
   {
     return VOLTS;
   }
-#ifdef LIB_MODE
-  return (UNDEF_UNITS);
-#else
   evalresp_log (log, EV_WARN, EV_WARN,
                 "check_units; units found ('%s') are not supported", line);
   return UNDEF_UNITS;
-#endif
 }
 
 int
@@ -737,29 +737,6 @@ string_match (const char *string, char *expr, char *type_flag, evalresp_log_t *l
 
   free (prog);
   return (test);
-}
-
-int
-is_int (const char *test, evalresp_log_t *log)
-{
-  char ipattern[MAXLINELEN];
-
-  /* first check to see if is an integer prefixed by a plus or minus.  If not
-     then check to see if is simply an integer */
-
-  strncpy (ipattern, "^[-+]?[0-9]+$", MAXLINELEN);
-  return (string_match (test, ipattern, "-r", log));
-}
-
-int
-is_real (const char *test, evalresp_log_t *log)
-{
-  char fpattern[MAXLINELEN];
-  strncpy (fpattern, "^[-+]?[0-9]+\\.?[0-9]*[Ee][-+]?[0-9]+$", MAXLINELEN);
-  strcat (fpattern, "|^[-+]?[0-9]*\\.[0-9]+[Ee][-+]?[0-9]+$");
-  strcat (fpattern, "|^[-+]?[0-9]+\\.?[0-9]*$");
-  strcat (fpattern, "|^[-+]?[0-9]*\\.[0-9]+$");
-  return (string_match (test, fpattern, "-r", log));
 }
 
 int
@@ -856,36 +833,4 @@ is_IIR_coeffs (FILE *fp, int position)
     result = 0;
   fseek (fp, position, SEEK_SET);
   return (result);
-}
-
-int
-parse_int (evalresp_log_t *log, const char *name, const char *str, int *value)
-{
-  int status = EVALRESP_OK;
-  char *end;
-  *value = (int)strtol (str, &end, 10);
-  while (isspace (*end))
-    ++end;
-  if (*end)
-  {
-    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot parse '%s' as an integer for %s", str, name);
-    status = EVALRESP_INP;
-  }
-  return status;
-}
-
-int
-parse_double (evalresp_log_t *log, const char *name, const char *str, double *value)
-{
-  int status = EVALRESP_OK;
-  char *end;
-  *value = strtod (str, &end);
-  while (isspace (*end))
-    ++end;
-  if (*end)
-  {
-    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot parse '%s' as a double for %s", str, name);
-    status = EVALRESP_INP;
-  }
-  return status;
 }

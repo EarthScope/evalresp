@@ -67,7 +67,7 @@ check_evaluation_SOURCES = check_evaluation.c
 check_evaluation_CFLAGS = @CHECK_CFLAGS@ -I../../src/ $(AM_CFLAGS)
 check_evaluation_LDADD = @CHECK_LIBS@ $(AM_LDFLAGS)
 
-check_legacy_SOURCES = check_legacy.c
+check_legacy_SOURCES = check_legacy.c old_parse_fctns.c old_string_fctns.c
 check_legacy_CFLAGS = @CHECK_CFLAGS@ -I../../src/ $(AM_CFLAGS)
 check_legacy_LDADD = @CHECK_LIBS@ $(AM_LDFLAGS)
 endif

@@ -52,7 +52,7 @@
 /*==================================================================
  * Convert response to velocity first, then to specified units
  *=================================================================*/
-void
+int
 convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, double w, evalresp_log_t *log)
 {
   // TODO - 0 assignment below made blindly to fix compiler warning.  bug?
@@ -73,16 +73,16 @@ convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, do
     out = ACC;
     break;
   case evalresp_default_unit:
-    return;
+    return EVALRESP_OK;
   default:
     evalresp_log (log, EV_ERROR, 0, "convert_to_units: bad output units");
-    return; /*TODO BAD_OUT_UNITS */
+    return EVALRESP_ERR; /* BAD_OUT_UNITS */
   }
 
   if (inp == DIS)
   {
     if (out == DIS)
-      return;
+      return EVALRESP_OK;
     if (w != 0.0)
     {
       scale_val.real = 0.0;
@@ -95,7 +95,7 @@ convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, do
   else if (inp == ACC)
   {
     if (out == ACC)
-      return;
+      return EVALRESP_OK;
     scale_val.real = 0.0;
     scale_val.imag = w;
     zmul (data, &scale_val);
@@ -118,6 +118,7 @@ convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, do
     else
       data->real = data->imag = 0.0;
   }
+  return EVALRESP_OK;
 }
 
 /*==================================================================
@@ -201,7 +202,7 @@ iir_trans (evalresp_blkt *blkt_ptr, double wint, evalresp_complex *out)
  * Function introduced in version 3.3.4 of evalresp
  * Ilya Dricker ISTI (.dricker@isti.com) 06/01/13
  *===============================================================*/
-void
+int
 calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
                  double x_for_b62, evalresp_log_t *log)
 {
@@ -213,8 +214,7 @@ calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
     evalresp_log (log, EV_ERROR, 0,
                   "Cannot compute B62 response for negative or zero input: %f",
                   x_for_b62);
-    exit (1); /* TODO IGD 06/06/2017 To allow passing of the test: next, the function should become int */
-    /* return; */ /*TODO IMPROP_DATA_TYPE */
+    return EVALRESP_VAL; /* IMPROP_DATA_TYPE */
   }
 
   // Compute a first derivate of MacLaurin polynomial
@@ -234,6 +234,8 @@ calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
 
   out->real = amp * cos (phase);
   out->imag = amp * sin (phase);
+
+  return EVALRESP_OK;
 }
 
 /*================================================================
@@ -473,7 +475,7 @@ zmul (evalresp_complex *val1, evalresp_complex *val2)
 /*=================================================================
  *                   Normalize response
  *=================================================================*/
-void
+int
 norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log_t *log)
 {
   evalresp_stage *stage_ptr;
@@ -483,6 +485,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
   double w, f;
   double percent_diff;
   evalresp_complex of, df;
+  int curr_seq_no;
 
   /* -------- TEST 1 -------- */
   /*
@@ -507,7 +510,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
     {
       evalresp_log (log, EV_ERROR, 0,
                     "norm_resp; no stage gain defined, zero sensitivity");
-      return; /*TODO ILLEGAL_RESP_FORMAT */
+      return EVALRESP_VAL; /* ILLEGAL_RESP_FORMAT */
     }
   }
   else if (chan->nstages == 2)
@@ -525,8 +528,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
       {
         evalresp_log (log, EV_ERROR, 0,
                       "norm_resp; no stage gain defined, zero sensitivity");
-        exit (1); /*TODO IGD 06/06/2017: Exit to satisfy test RESP.UW.STOR..ACE; need to return int */
-        /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
+        return EVALRESP_VAL; /* ILLEGAL_RESP_FORMAT */
       }
       else
       {
@@ -572,8 +574,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
       if (fil->type == GAIN && fil->blkt_info.gain.gain == 0.0)
       {
         evalresp_log (log, EV_ERROR, 0, "norm_resp; zero stage gain");
-        exit (1); /* IGD 06/06/2017 TODO ILLEGAL_RESP_FORMAT */
-        /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
+        return EVALRESP_VAL; /* ILLEGAL_RESP_FORMAT */
       }
       fil = fil->next_blkt;
     }
@@ -668,14 +669,14 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
               {
                 evalresp_log (log, EV_ERROR, 0,
                               "norm_resp: Gain frequency of zero found in bandpass analog filter");
-                return; /*TODO ILLEGAL_FILT_S{EC */
+                return EVALRESP_VAL; /* ILLEGAL_FILT_S{EC */
               }
               analog_trans (main_filt, f, &of);
               if (of.real == 0.0 && of.imag == 0.0)
               {
                 evalresp_log (log, EV_ERROR, 0,
                               "norm_resp: Chan. Sens. frequency found with bandpass analog filter");
-                return; /*TODO ILLEGAL_FILT_S{EC */
+                return EVALRESP_VAL; /* ILLEGAL_FILT_S{EC */
               }
             }
             else if (main_type == IIR_PZ)
@@ -759,15 +760,13 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
     percent_diff = fabs ((chan->sensit - chan->calc_sensit) / chan->sensit);
     if (percent_diff >= 0.05)
     {
-#ifndef LIB_MODE
       evalresp_log (log, EV_WARN, 0,
-                    "%s (norm_resp): computed and reported sensitivities",
-                    myLabel);
-      evalresp_log (log, EV_WARN, 0, "%s differ by more than 5 percent. \n", myLabel);
-      evalresp_log (log, EV_WARN, 0, "%s\t Execution continuing.\n", myLabel);
-#endif
+                    " (norm_resp): computed and reported sensitivities");
+      evalresp_log (log, EV_WARN, 0, " differ by more than 5 percent. \n");
+      evalresp_log (log, EV_WARN, 0, "\t Execution continuing.\n");
     }
   }
+  return EVALRESP_OK;
 }
 
 /* IGD 04/05/04 Phase unwrapping function
