@@ -88,8 +88,8 @@ process_stdio (evalresp_log_t *log, evalresp_options *options, evalresp_filter *
   if (!(status = evalresp_file_to_channels (log, stdin, options, filter, &channels)))
   {
     status = evalresp_channels_to_responses (log, channels, options, responses);
-    evalresp_free_channels (&channels);
   }
+  evalresp_free_channels (&channels);
 
   return status;
 }
@@ -104,8 +104,8 @@ process_file (evalresp_log_t *log, evalresp_options *options, evalresp_filter *f
   if (!(status = evalresp_filename_to_channels (log, filename, options, filter, &channels)))
   {
     status = evalresp_channels_to_responses (log, channels, options, responses);
-    evalresp_free_channels (&channels);
   }
+  evalresp_free_channels (&channels);
   return status;
 }
 
