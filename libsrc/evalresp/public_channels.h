@@ -268,4 +268,13 @@ TODO IGD: finish the description
 void
 evalresp_free_channels (evalresp_channels **channels);
 
+/**
+ * @public
+ * @ingroup evalresp_public
+ * @brief A function freeing memory after evalresp_channels object
+TODO IGD: finish the description
+*/
+void
+evalresp_free_channel (evalresp_channel *channel);
+
 #endif

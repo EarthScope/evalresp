@@ -2498,7 +2498,7 @@ evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
             }
           }
         }
-        free_channel (channel);
+        evalresp_free_channel (channel);
       }
     }
   }

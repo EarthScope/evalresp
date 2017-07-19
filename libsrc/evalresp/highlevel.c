@@ -44,6 +44,8 @@ print_file (evalresp_log_t *log, evalresp_file_format format,
       status = evalresp_response_to_file (log, response, format, filename);
     }
   }
+  free(filename);
+  filename = NULL;
   return status;
 }
 
@@ -88,8 +90,8 @@ process_stdio (evalresp_log_t *log, evalresp_options *options, evalresp_filter *
   if (!(status = evalresp_file_to_channels (log, stdin, options, filter, &channels)))
   {
     status = evalresp_channels_to_responses (log, channels, options, responses);
-    evalresp_free_channels (&channels);
   }
+  evalresp_free_channels (&channels);
 
   return status;
 }
@@ -104,8 +106,8 @@ process_file (evalresp_log_t *log, evalresp_options *options, evalresp_filter *f
   if (!(status = evalresp_filename_to_channels (log, filename, options, filter, &channels)))
   {
     status = evalresp_channels_to_responses (log, channels, options, responses);
-    evalresp_free_channels (&channels);
   }
+  evalresp_free_channels (&channels);
   return status;
 }
 
@@ -180,7 +182,7 @@ evalresp_cwd_to_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_fi
   if (EVALRESP_OK == status)
   {
     status = responses_to_cwd (log, responses, options->format, options->use_stdio);
-    evalresp_free_responses (responses);
   }
+  evalresp_free_responses (responses);
   return status;
 }
