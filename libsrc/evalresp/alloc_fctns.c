@@ -786,6 +786,7 @@ evalresp_free_channels (evalresp_channels **channels)
       free_channel ((*channels)->channels[i]);
     }
     free((*channels)->channels);
+    (*channels)->channels = NULL;
   }
   free (*channels);
   *channels = NULL;
