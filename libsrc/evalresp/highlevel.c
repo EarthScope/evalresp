@@ -180,7 +180,7 @@ evalresp_cwd_to_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_fi
   if (EVALRESP_OK == status)
   {
     status = responses_to_cwd (log, responses, options->format, options->use_stdio);
-    evalresp_free_responses (responses);
   }
+  evalresp_free_responses (responses);
   return status;
 }
