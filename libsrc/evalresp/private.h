@@ -151,10 +151,10 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include "evalresp/constants.h"
 #include "evalresp/public_api.h"
 #include "evalresp/public_channels.h"
 #include "evalresp/public_responses.h"
-#include "evalresp/constants.h"
 #include "evalresp_log/log.h"
 
 /* if Windows compiler then redefine 'complex' to */
@@ -202,15 +202,15 @@
 enum units
 {
   UNDEF_UNITS, /**< Undefined. */
-  DIS, /**< Displacement. */
-  VEL, /**< Velocity. */
-  ACC, /**< Acceleration. */
-  COUNTS, /**< Counts. */
-  VOLTS, /**< Volts. */
-  DEFAULT, /**< Default. */
-  PRESSURE, /**< Pressure. */
-  TESLA, /**< Tesla. */
-  CENTIGRADE /**< Degrees Celsius. */
+  DIS,         /**< Displacement. */
+  VEL,         /**< Velocity. */
+  ACC,         /**< Acceleration. */
+  COUNTS,      /**< Counts. */
+  VOLTS,       /**< Volts. */
+  DEFAULT,     /**< Default. */
+  PRESSURE,    /**< Pressure. */
+  TESLA,       /**< Tesla. */
+  CENTIGRADE   /**< Degrees Celsius. */
 };
 
 /**
@@ -222,19 +222,19 @@ enum filt_types
 {
   UNDEF_FILT, /**< Undefined filter. */
   LAPLACE_PZ, /**< Laplace transform filter: poles and zeros representation B53 . */
-  ANALOG_PZ, /**< Analog filter: poles and zeros representation B53. */
-  IIR_PZ, /**< Infinite Impulse Response: polez and zeros representation B53. */
-  FIR_SYM_1, /**< Finite Impulse Response Filter (symmetrical with odd number of weights) B61. */
-  FIR_SYM_2, /**< Finie Impulse Response Filter (symmetrical with even number of weights) B61. */
-  FIR_ASYM, /**< Finite Impulse Response Filter (assymetrical) B54. */
-  LIST, /**< Filter presented as a list B55 (Frequency/amplitude). */
-  GENERIC, /**< Filter presented as a generi B56 (via Corener frequencies/slopes. */
+  ANALOG_PZ,  /**< Analog filter: poles and zeros representation B53. */
+  IIR_PZ,     /**< Infinite Impulse Response: polez and zeros representation B53. */
+  FIR_SYM_1,  /**< Finite Impulse Response Filter (symmetrical with odd number of weights) B61. */
+  FIR_SYM_2,  /**< Finie Impulse Response Filter (symmetrical with even number of weights) B61. */
+  FIR_ASYM,   /**< Finite Impulse Response Filter (assymetrical) B54. */
+  LIST,       /**< Filter presented as a list B55 (Frequency/amplitude). */
+  GENERIC,    /**< Filter presented as a generi B56 (via Corener frequencies/slopes. */
   DECIMATION, /**< Decimation B57. */
-  GAIN, /**< Channel Sensitiity/Gain B58. */
-  REFERENCE, /**< Response Reference B60 to replace B53-58,61 with the dictionary counterparts. */
+  GAIN,       /**< Channel Sensitiity/Gain B58. */
+  REFERENCE,  /**< Response Reference B60 to replace B53-58,61 with the dictionary counterparts. */
   FIR_COEFFS, /**< FIR response: coefficients representation B61. */
   IIR_COEFFS, /**< Infinite Impulse response represented in B54. */
-  POLYNOMIAL /**< Polynomial filter via B62. */
+  POLYNOMIAL  /**< Polynomial filter via B62. */
 };
 
 /**
@@ -244,15 +244,15 @@ enum filt_types
  */
 enum stage_types
 {
-  UNDEF_STAGE, /**< Undefined stage. */
-  PZ_TYPE, /**< Polez and zeros stage. */
-  IIR_TYPE, /**< Infinite Impulse response stage. */
-  FIR_TYPE, /**< Finite Impulse response stage. */
-  GAIN_TYPE, /**< Channel Sensitivity/Gain stage. */
-  LIST_TYPE, /**< List response representation stage. */
+  UNDEF_STAGE,     /**< Undefined stage. */
+  PZ_TYPE,         /**< Polez and zeros stage. */
+  IIR_TYPE,        /**< Infinite Impulse response stage. */
+  FIR_TYPE,        /**< Finite Impulse response stage. */
+  GAIN_TYPE,       /**< Channel Sensitivity/Gain stage. */
+  LIST_TYPE,       /**< List response representation stage. */
   IIR_COEFFS_TYPE, /**< Infinite Impulse response in coefficient form stage. */
-  GENERIC_TYPE, /**< Generic response stage. */
-  POLYNOMIAL_TYPE /**< Polynomial type stage. */
+  GENERIC_TYPE,    /**< Generic response stage. */
+  POLYNOMIAL_TYPE  /**< Polynomial type stage. */
 };
 
 /**
@@ -262,26 +262,26 @@ enum stage_types
  */
 enum error_codes
 {
-  NON_EXIST_FLD = -2, /**< Field does not exist. */
-  ILLEGAL_RESP_FORMAT = -5, /**< Illegal response format. */
-  PARSE_ERROR = -4, /**< Parse error. */
-  UNDEF_PREFIX = -3, /**< Undefined prefix. */
-  UNDEF_SEPSTR = -6, /**< Undefined separator. */
-  OUT_OF_MEMORY = -1, /**< Out of memory */
-  UNRECOG_FILTYPE = -7, /**< Unrecognized filter type */
-  UNEXPECTED_EOF = -8, /**< Unexpected EOF. */
+  NON_EXIST_FLD = -2,         /**< Field does not exist. */
+  ILLEGAL_RESP_FORMAT = -5,   /**< Illegal response format. */
+  PARSE_ERROR = -4,           /**< Parse error. */
+  UNDEF_PREFIX = -3,          /**< Undefined prefix. */
+  UNDEF_SEPSTR = -6,          /**< Undefined separator. */
+  OUT_OF_MEMORY = -1,         /**< Out of memory */
+  UNRECOG_FILTYPE = -7,       /**< Unrecognized filter type */
+  UNEXPECTED_EOF = -8,        /**< Unexpected EOF. */
   ARRAY_BOUNDS_EXCEEDED = -9, /**< Array bound exceeded. */
-  OPEN_FILE_ERROR = 2, /**< Failure to open the file. */
-  RE_COMP_FAILED = 3, /**< Failure to compile the pattern. */
-  MERGE_ERROR = 4, /**< lure to merge blockettes. */
-  SWAP_FAILED = 5, /**< Swapping failure: not used. */
-  USAGE_ERROR = 6, /**< User errors detencted on teh command line. */
-  BAD_OUT_UNITS = 7, /**< Bad output units error. */
-  IMPROP_DATA_TYPE = -10, /**< Unsupported data type. */
-  UNSUPPORT_FILTYPE = -11, /**< Unsupported filter type. */
-  ILLEGAL_FILT_SPEC = -12, /**< Illigal filter specs. */
-  NO_STAGE_MATCHED = -13, /**< No stage matched error. */
-  UNRECOG_UNITS = -14 /**< Unrecognized units. */
+  OPEN_FILE_ERROR = 2,        /**< Failure to open the file. */
+  RE_COMP_FAILED = 3,         /**< Failure to compile the pattern. */
+  MERGE_ERROR = 4,            /**< lure to merge blockettes. */
+  SWAP_FAILED = 5,            /**< Swapping failure: not used. */
+  USAGE_ERROR = 6,            /**< User errors detencted on teh command line. */
+  BAD_OUT_UNITS = 7,          /**< Bad output units error. */
+  IMPROP_DATA_TYPE = -10,     /**< Unsupported data type. */
+  UNSUPPORT_FILTYPE = -11,    /**< Unsupported filter type. */
+  ILLEGAL_FILT_SPEC = -12,    /**< Illigal filter specs. */
+  NO_STAGE_MATCHED = -13,     /**< No stage matched error. */
+  UNRECOG_UNITS = -14         /**< Unrecognized units. */
 };
 
 /* define structures for the compound data types used in evalesp */
@@ -293,7 +293,7 @@ enum error_codes
  */
 struct string_array
 {
-  int nstrings; /**< Number of strings. */
+  int nstrings;   /**< Number of strings. */
   char **strings; /**< String array. */
 };
 
@@ -304,7 +304,7 @@ struct string_array
  */
 struct file_list
 {
-  char *name; /**< File name. */
+  char *name;                  /**< File name. */
   struct file_list *next_file; /**< Pointer to next file list object. */
 };
 
@@ -315,8 +315,8 @@ struct file_list
  */
 struct matched_files
 {
-  int nfiles; /**< Number of files. */
-  struct file_list *first_list; /**< Array of file list objects. */
+  int nfiles;                     /**< Number of files. */
+  struct file_list *first_list;   /**< Array of file list objects. */
   struct matched_files *ptr_next; /**< Pointer to next matches files object. */
 };
 
@@ -385,7 +385,7 @@ int get_resp (FILE *fptr, evalresp_sncl *scn, char *datime,
  * @returns 1 on success.
  * @returns 0 on failure.
  */
- int get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log);
+int get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log);
 
 /**
  * @private
@@ -1213,7 +1213,7 @@ void calc_list (evalresp_blkt *blkt_ptr, int i, evalresp_complex *out);
  *         introduced in version 3.3.4 of evalresp
  */
 int calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
-                      double x_for_b62, evalresp_log_t *log);
+                     double x_for_b62, evalresp_log_t *log);
 
 /**
  * @private
@@ -1255,7 +1255,7 @@ int is_time (const char *test, evalresp_log_t *log);
  *          @p dt1 is greater than (1), equal to (0), or less than (-1) the
  *          time in the input argument @p dt2.
  */
- int timecmp (evalresp_datetime *dt1, evalresp_datetime *dt2);
+int timecmp (evalresp_datetime *dt1, evalresp_datetime *dt2);
 
 /**
  * @private
@@ -1360,9 +1360,9 @@ void print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
  * @param[in] log Logging structure.
  */
 int interpolate_list_blockette (double **frequency_ptr,
-                                 double **amplitude_ptr, double **phase_ptr,
-                                 int *p_number_points, double *req_freq_arr,
-                                 int req_num_freqs, evalresp_log_t *log);
+                                double **amplitude_ptr, double **phase_ptr,
+                                int *p_number_points, double *req_freq_arr,
+                                int req_num_freqs, evalresp_log_t *log);
 
 /**
  * @private

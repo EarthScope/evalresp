@@ -34,11 +34,11 @@
 
 #include <string.h>
 
-#include <evalresp/private.h>
-#include <evalresp/regexp.h> // TODO - should all private imports be relative like this?
-#include <evalresp/public_channels.h>
-#include <evalresp/evresp.h>
 #include "./old_fctns.h"
+#include <evalresp/evresp.h>
+#include <evalresp/private.h>
+#include <evalresp/public_channels.h>
+#include <evalresp/regexp.h> // TODO - should all private imports be relative like this?
 
 char myLabel[20];
 

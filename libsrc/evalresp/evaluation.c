@@ -649,14 +649,14 @@ calculate_response (evalresp_log_t *log, evalresp_options *options,
             eval_flag = 1;
           }
           break;
-        case LIST: /* This option is added in version 2.3.17 I.Dricker*/
+        case LIST:                      /* This option is added in version 2.3.17 I.Dricker*/
           calc_list (blkt_ptr, i, &of); /*compute real and imag parts for the i-th ampl and phase */
           eval_flag = 1;
           break;
         case POLYNOMIAL: /* IGD 06/01/2013*/
           if ((status = calc_polynomial (blkt_ptr, &of, options->b62_x, log)))
           {
-              return status;
+            return status;
           }
           eval_flag = 1;
           break;
@@ -710,7 +710,7 @@ calculate_response (evalresp_log_t *log, evalresp_options *options,
 
     if ((status = convert_to_units (units_code, options->unit_set ? options->unit : evalresp_velocity_unit, &output[i], w, log)))
     {
-        return status;
+      return status;
     }
   }
   return EVALRESP_OK;

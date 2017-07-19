@@ -2,8 +2,6 @@
 #ifndef EVALRESP_CONSTANTS_H
 #define EVALRESP_CONSTANTS_H
 
-#include <setjmp.h>
-
 /**
  * @private
  * @ingroup evalresp_private

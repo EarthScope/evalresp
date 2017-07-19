@@ -76,10 +76,10 @@ extern "C" {
 #define REPLACE_GETOPT /* use this getopt as the system getopt(3) */
 
 #ifdef REPLACE_GETOPT
-int opterr = 1; /* if error message should be printed */
-int optind = 1; /* index into parent argv vector */
+int opterr = 1;   /* if error message should be printed */
+int optind = 1;   /* index into parent argv vector */
 int optopt = '?'; /* character checked for validity */
-#undef optreset /* see getopt.h */
+#undef optreset   /* see getopt.h */
 #define optreset __mingw_optreset
 int optreset; /* reset getopt */
 char *optarg; /* argument associated with option */
@@ -94,8 +94,8 @@ char *optarg; /* argument associated with option */
 
 #define PRINT_ERROR ((opterr) && (*options != ':'))
 
-#define FLAG_PERMUTE 0x01 /* permute non-options to the end of argv */
-#define FLAG_ALLARGS 0x02 /* treat non-options as args to option "-1" */
+#define FLAG_PERMUTE 0x01  /* permute non-options to the end of argv */
+#define FLAG_ALLARGS 0x02  /* treat non-options as args to option "-1" */
 #define FLAG_LONGONLY 0x04 /* operate as getopt_long_only */
 
 /* return values */
@@ -126,7 +126,7 @@ static char *place = EMSG; /* option letter processing */
 
 /* XXX: set optreset to 1 rather than these two */
 static int nonopt_start = -1; /* first non option argument (for permute) */
-static int nonopt_end = -1; /* first option after non options (for permute) */
+static int nonopt_end = -1;   /* first option after non options (for permute) */
 
 /* Error messages */
 static const char recargchar[] = "option requires an argument -- %c";
@@ -271,16 +271,16 @@ extern "C" {
 struct option /* specification for a long form option...	*/
 {
   const char *name; /* option name, without leading hyphens */
-  int has_arg; /* does it take an argument?		*/
-  int *flag; /* where to save its status, or NULL	*/
-  int val; /* its associated status value		*/
+  int has_arg;      /* does it take an argument?		*/
+  int *flag;        /* where to save its status, or NULL	*/
+  int val;          /* its associated status value		*/
 };
 
 enum /* permitted values for its `has_arg' field...	*/
 {
-  no_argument = 0, /* option never takes an argument	*/
+  no_argument = 0,   /* option never takes an argument	*/
   required_argument, /* option always requires an argument	*/
-  optional_argument /* option may take an argument		*/
+  optional_argument  /* option may take an argument		*/
 };
 
 /*

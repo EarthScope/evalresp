@@ -44,9 +44,9 @@
 typedef struct evalresp_log_msg
 {
   char msg[MAX_LOG_MSG_LEN]; /**< the message itself */
-  int log_level; /**< what log_level_ref this message should be at */
-  int verbosity_level; /**< the verbosity level that this message is */
-  time_t timestamp; /**< seconds since epoch that this message was created */
+  int log_level;             /**< what log_level_ref this message should be at */
+  int verbosity_level;       /**< the verbosity level that this message is */
+  time_t timestamp;          /**< seconds since epoch that this message was created */
 } evalresp_log_msg_t;
 
 /**
@@ -67,7 +67,7 @@ typedef int (*evalresp_log_func_t) (evalresp_log_msg_t *, void *);
 typedef struct evalresp_log
 {
   evalresp_log_func_t log_func; /**< the function that the logger should call back */
-  void *func_data; /**< a pointer to the data portion that should be sent to the callback function */
+  void *func_data;              /**< a pointer to the data portion that should be sent to the callback function */
 } evalresp_log_t;
 
 /**
@@ -77,9 +77,9 @@ typedef struct evalresp_log
  */
 typedef enum log_level_ref {
   EV_ERROR = 0, /**< level when reporting an error */
-  EV_WARN, /**< level when a warning occurs */
-  EV_INFO, /**< the level that information should be presented to user */
-  EV_DEBUG /**< level for the most information */
+  EV_WARN,      /**< level when a warning occurs */
+  EV_INFO,      /**< the level that information should be presented to user */
+  EV_DEBUG      /**< level for the most information */
 } log_level_ref_t;
 
 /**

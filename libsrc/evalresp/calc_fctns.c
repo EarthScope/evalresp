@@ -528,7 +528,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
       {
         evalresp_log (log, EV_ERROR, 0,
                       "norm_resp; no stage gain defined, zero sensitivity");
-         return EVALRESP_VAL;  /* ILLEGAL_RESP_FORMAT */
+        return EVALRESP_VAL; /* ILLEGAL_RESP_FORMAT */
       }
       else
       {
@@ -574,7 +574,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
       if (fil->type == GAIN && fil->blkt_info.gain.gain == 0.0)
       {
         evalresp_log (log, EV_ERROR, 0, "norm_resp; zero stage gain");
-        return EVALRESP_VAL;  /* ILLEGAL_RESP_FORMAT */
+        return EVALRESP_VAL; /* ILLEGAL_RESP_FORMAT */
       }
       fil = fil->next_blkt;
     }
