@@ -44,6 +44,8 @@ print_file (evalresp_log_t *log, evalresp_file_format format,
       status = evalresp_response_to_file (log, response, format, filename);
     }
   }
+  free(filename);
+  filename = NULL;
   return status;
 }
 
