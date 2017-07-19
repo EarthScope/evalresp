@@ -1,3 +1,4 @@
+#include <evalresp/public_api.h>
 /**
  * @private
  * @ingroup evalresp_private
