@@ -764,6 +764,13 @@ free_channel (evalresp_channel *chan_ptr)
 }
 
 void
+evalresp_free_channel (evalresp_channel *chan_ptr)
+{
+  free_channel (chan_ptr);
+  free(chan_ptr);
+}
+
+void
 evalresp_free_response (evalresp_response *resp_ptr)
 {
   evalresp_response *this_resp, *next_resp;
@@ -815,7 +822,8 @@ evalresp_free_channels (evalresp_channels **channels)
   {
     for (i = 0; i < (*channels)->nchannels; ++i)
     {
-      free_channel ((*channels)->channels[i]);
+      evalresp_free_channel ((*channels)->channels[i]);
+      (*channels)->channels[i] = NULL;
     }
     free((*channels)->channels);
     (*channels)->channels = NULL;
