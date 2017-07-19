@@ -4,8 +4,8 @@
 
 #include "./input.h"
 #include "./private.h"
-#include "evalresp/constants.h"
 #include "./regexp.h" // TODO - should all private imports be relative like this?
+#include "evalresp/constants.h"
 #include "evalresp/public_api.h"
 #include "evalresp/stationxml2resp/dom_to_seed.h"
 #include "evalresp/stationxml2resp/wrappers.h"
@@ -124,7 +124,7 @@ remove_tabs_and_crlf (char *line)
 }
 
 static int
-read_pref (evalresp_log_t *log, char * const line, int *blkt_no, int *fld_no)
+read_pref (evalresp_log_t *log, char *const line, int *blkt_no, int *fld_no)
 {
   char fldstr[FLDSTRLEN], blktstr[BLKTSTRLEN];
 
@@ -257,7 +257,7 @@ get_field_to_parse (evalresp_log_t *log, char *line, int fld_no, char *return_fi
   char lcl_field[MAXFLDLEN];
   int nfields, i;
 
-  number_of_fields(log, line, &nfields);
+  number_of_fields (log, line, &nfields);
   if (fld_no >= nfields)
   {
     if (nfields > 0)
@@ -401,7 +401,7 @@ reg_string_match (evalresp_log_t *log, const char *string, char *expr, char *typ
 
 /* was check_units */
 static int
-parse_units (evalresp_log_t *log, evalresp_options const * const options, char *line, evalresp_channel *channel, int *units)
+parse_units (evalresp_log_t *log, evalresp_options const *const options, char *line, evalresp_channel *channel, int *units)
 {
   int i, first_flag = 0, status = EVALRESP_OK;
 
@@ -453,7 +453,7 @@ parse_units (evalresp_log_t *log, evalresp_options const * const options, char *
       channel->unit_scale_fact = 1.0e3;
     else if (first_flag && !strncmp ("CM", line, (size_t)2))
       channel->unit_scale_fact = 1.0e2;
-    *units =  ACC;
+    *units = ACC;
   }
   else if (reg_string_match (log, line, "^[CNM]?M/S|^[CNM]?M/SEC", "-r"))
   {
@@ -483,7 +483,8 @@ parse_units (evalresp_log_t *log, evalresp_options const * const options, char *
   {
     *units = VOLTS;
   }
-  else {
+  else
+  {
     *units = UNDEF_UNITS;
     evalresp_log (log, EV_WARN, EV_WARN,
                   "check_units; units found ('%s') are not supported", line);
@@ -492,27 +493,26 @@ parse_units (evalresp_log_t *log, evalresp_options const * const options, char *
   return status;
 }
 
-
 static int
-read_units_first_line_known (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int blkt_read, int *check_fld,
+read_units_first_line_known (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int blkt_read, int *check_fld,
                              char *line, evalresp_channel *channel, int *input_units, int *output_units)
 {
   int status = EVALRESP_OK;
 
   //*input_units = check_units (channel, line, log);
-  parse_units(log, options, line, channel, input_units);
+  parse_units (log, options, line, channel, input_units);
 
   if (!(status = find_line (log, seed, ":", blkt_read, (*check_fld)++, line)))
   {
     //*output_units = check_units (channel, line, log);
-    parse_units(log, options, line, channel, output_units);
+    parse_units (log, options, line, channel, output_units);
   }
 
   return status;
 }
 
 static int
-read_units (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int blkt_read, int *check_fld,
+read_units (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int blkt_read, int *check_fld,
             evalresp_channel *channel, int *input_units, int *output_units)
 {
   int status = EVALRESP_OK;
@@ -658,7 +658,7 @@ read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
 
 // this was parse_pz
 static int
-read_pz (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int first_field, char *first_line,
+read_pz (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int first_field, char *first_line,
          evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, check_fld, blkt_read, npoles, nzeros;
@@ -885,7 +885,7 @@ is_iir_coeffs (const char **seed)
 
 // this was parse_iir_coeff
 static int
-read_iir_coeff (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int first_field, char *first_line,
+read_iir_coeff (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int first_field, char *first_line,
                 evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, check_fld, blkt_read, ncoeffs, ndenom;
@@ -1022,7 +1022,7 @@ read_iir_coeff (evalresp_log_t *log, evalresp_options const * const options, con
 
 // this was "parse_coeff"
 static int
-read_coeff (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int first_field, char *first_line,
+read_coeff (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int first_field, char *first_line,
             evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, check_fld, blkt_read, ncoeffs, ndenom;
@@ -1144,7 +1144,7 @@ read_coeff (evalresp_log_t *log, evalresp_options const * const options, const c
 
 // this was "parse_list"
 static int
-read_list (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int first_field, char *first_line,
+read_list (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int first_field, char *first_line,
            evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, blkt_read, check_fld, nresp, format;
@@ -1221,7 +1221,7 @@ read_list (evalresp_log_t *log, evalresp_options const * const options, const ch
     {
       return status;
     }
-    number_of_fields(log, line, &format);
+    number_of_fields (log, line, &format);
     format -= 5;
 
     /*format == 0 if no number of responses in the file */
@@ -1326,7 +1326,7 @@ read_list (evalresp_log_t *log, evalresp_options const * const options, const ch
 
 // this was "parse_generic"
 static int
-read_generic (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int first_field, char *first_line,
+read_generic (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int first_field, char *first_line,
               evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, blkt_read, check_fld, ncorners;
@@ -1615,7 +1615,7 @@ read_gain (evalresp_log_t *log, const char **seed, int first_field, char *first_
 
 // this was "parse_fir"
 static int
-read_fir (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int first_field, char *first_line,
+read_fir (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int first_field, char *first_line,
           evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, blkt_read, check_fld, ncoeffs;
@@ -1728,7 +1728,7 @@ read_fir (evalresp_log_t *log, evalresp_options const * const options, const cha
 
 // this was "parse_ref"
 static int
-read_ref (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int first_field, char *first_line,
+read_ref (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int first_field, char *first_line,
           evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, this_blkt_no = 60, blkt_no, fld_no, i, j, prev_blkt_no = 60;
@@ -1912,7 +1912,7 @@ read_ref (evalresp_log_t *log, evalresp_options const * const options, const cha
 
 // this was "parse_polynomial"
 static int
-read_polynomial (evalresp_log_t *log, evalresp_options const * const options, const char **seed, int first_field, char *first_line,
+read_polynomial (evalresp_log_t *log, evalresp_options const *const options, const char **seed, int first_field, char *first_line,
                  evalresp_channel *channel, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr)
 {
   int status = EVALRESP_OK, i, blkt_read, check_fld, ncoeffs;
@@ -2065,7 +2065,7 @@ read_polynomial (evalresp_log_t *log, evalresp_options const * const options, co
 
 // this was "parse_channel"
 static int
-read_channel_data (evalresp_log_t *log, evalresp_options const * const options, const char **seed, char *first_line,
+read_channel_data (evalresp_log_t *log, evalresp_options const *const options, const char **seed, char *first_line,
                    evalresp_channel *channel)
 {
 
@@ -2458,7 +2458,7 @@ channel_matches (evalresp_log_t *log, const evalresp_filter *filter, evalresp_ch
 
 int
 evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
-                           evalresp_options const * const options, 
+                           evalresp_options const *const options,
                            const evalresp_filter *filter, evalresp_channels **channels)
 {
   const char *read_ptr = seed_or_xml;

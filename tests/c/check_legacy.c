@@ -8,8 +8,8 @@
 #include "evalresp/public_api.h"
 #include "evalresp/stationxml2resp/wrappers.h"
 #include "evalresp_log/log.h"
-#include <evalresp/private.h>
 #include "old_fctns.h"
+#include <evalresp/private.h>
 
 extern int in_epoch (const char *datime, const char *beg_t, const char *end_t);
 char SEEDUNITS[][UNITS_STR_LEN] =
@@ -560,7 +560,7 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
             else
             {
               nfreqs = nfreqs_orig;
-              freqs = (double *)malloc (sizeof (double) * nfreqs); /* malloc a new vector */
+              freqs = (double *)malloc (sizeof (double) * nfreqs);  /* malloc a new vector */
               memcpy (freqs, freqs_orig, sizeof (double) * nfreqs); /*cp*/
               resp->rvec = alloc_complex (nfreqs, log);
               output = resp->rvec;
@@ -979,7 +979,7 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
 
   /* added file close if single input file -- 2/13/2006 -- [ET]: */
   if (!mode && !stdio_flag) /* if single file was opened then */
-    fclose (fptr); /* close input file */
+    fclose (fptr);          /* close input file */
 
   /* and print a list of WARNINGS about the station-channel pairs that were not
        found in the input RESP files */

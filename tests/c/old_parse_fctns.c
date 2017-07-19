@@ -19,8 +19,8 @@
 #include <string.h>
 
 #include "evalresp/public_channels.h"
-#include <evalresp/private.h>
 #include "old_fctns.h"
+#include <evalresp/private.h>
 
 /*TODO these need to be removed eventually used by parse_fcnts */
 /* define a pointer to a channel structure to use in determining the input and

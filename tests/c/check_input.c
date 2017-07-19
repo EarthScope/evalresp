@@ -4,9 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "evalresp/constants.h"
 #include "evalresp/input.h"
 #include "evalresp/public_api.h"
-#include "evalresp/constants.h"
 
 START_TEST (test_slurp_line)
 {

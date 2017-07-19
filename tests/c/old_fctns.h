@@ -8,7 +8,6 @@
 extern struct evalresp_channel_s *GblChanPtr;
 extern char myLabel[20];
 
-
 /**
  * @private
  * @ingroup evalresp_private_string
@@ -140,7 +139,7 @@ struct string_array *parse_delim_line (char *line, char *delim, evalresp_log_t *
  *       white space.
  */
 int get_field (FILE *fptr, char *return_field, int blkt_no, int fld_no,
-              char *sep, int fld_wanted, evalresp_log_t *log);
+               char *sep, int fld_wanted, evalresp_log_t *log);
 
 /**
  * @private
@@ -163,7 +162,7 @@ int get_field (FILE *fptr, char *return_field, int blkt_no, int fld_no,
  *       white space.
  */
 int test_field (FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
-               char *sep, int fld_wanted, evalresp_log_t *log);
+                char *sep, int fld_wanted, evalresp_log_t *log);
 /**
  * @private
  * @ingroup evalresp_private_string

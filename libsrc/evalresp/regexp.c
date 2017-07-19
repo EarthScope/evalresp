@@ -78,19 +78,19 @@
  */
 
 /* definition    number    opnd?    meaning */
-#define END 0 /* no    End of program. */
-#define BOL 1 /* no    Match "" at beginning of line. */
-#define EOL 2 /* no    Match "" at end of line. */
-#define ANY 3 /* no    Match any one character. */
-#define ANYOF 4 /* str    Match any character in this string. */
-#define ANYBUT 5 /* str    Match any character not in this string. */
-#define BRANCH 6 /* node    Match this alternative, or the next... */
-#define BACK 7 /* no    Match "", "next" ptr points backward. */
+#define END 0     /* no    End of program. */
+#define BOL 1     /* no    Match "" at beginning of line. */
+#define EOL 2     /* no    Match "" at end of line. */
+#define ANY 3     /* no    Match any one character. */
+#define ANYOF 4   /* str    Match any character in this string. */
+#define ANYBUT 5  /* str    Match any character not in this string. */
+#define BRANCH 6  /* node    Match this alternative, or the next... */
+#define BACK 7    /* no    Match "", "next" ptr points backward. */
 #define EXACTLY 8 /* str    Match this string. */
 #define NOTHING 9 /* no    Match empty string. */
-#define STAR 10 /* node    Match this (simple) thing 0 or more times. */
-#define PLUS 11 /* node    Match this (simple) thing 1 or more times. */
-#define OPEN 20 /* no    Mark this point in input as start of #n. */
+#define STAR 10   /* node    Match this (simple) thing 0 or more times. */
+#define PLUS 11   /* node    Match this (simple) thing 1 or more times. */
+#define OPEN 20   /* no    Mark this point in input as start of #n. */
 /*    OPEN+1 is number 1, etc. */
 #define CLOSE 30 /* no    Analogous to OPEN. */
 
@@ -155,18 +155,18 @@
  * Flags to be passed up and down.
  */
 #define HASWIDTH 01 /* Known never to match null string. */
-#define SIMPLE 02 /* Simple enough to be STAR/PLUS operand. */
-#define SPSTART 04 /* Starts with * or +. */
-#define WORST 0 /* Worst case. */
+#define SIMPLE 02   /* Simple enough to be STAR/PLUS operand. */
+#define SPSTART 04  /* Starts with * or +. */
+#define WORST 0     /* Worst case. */
 
 /*
  * Global work variables for evr_regcomp().
  */
 static char *regparse; /* Input-scan pointer. */
-static int regnpar; /* () count. */
+static int regnpar;    /* () count. */
 static char regdummy;
 static char *regcode; /* Code-emit pointer; &regdummy = don't. */
-static int regsize; /* Code size. */
+static int regsize;   /* Code size. */
 
 /*
  * Forward declarations for evr_regcomp()'s friends.
@@ -439,11 +439,11 @@ evalresp_log_t *log;
   else if (op == '*')
   {
     /* Emit x* as (x&|), where & means "self". */
-    reginsert (BRANCH, ret); /* Either x */
+    reginsert (BRANCH, ret);              /* Either x */
     regoptail (ret, regnode (BACK), log); /* and loop */
-    regoptail (ret, ret, log); /* back */
-    regtail (ret, regnode (BRANCH)); /* or */
-    regtail (ret, regnode (NOTHING)); /* null. */
+    regoptail (ret, ret, log);            /* back */
+    regtail (ret, regnode (BRANCH));      /* or */
+    regtail (ret, regnode (NOTHING));     /* null. */
   }
   else if (op == '+' && (flags & SIMPLE))
     reginsert (PLUS, ret);
@@ -452,16 +452,16 @@ evalresp_log_t *log;
     /* Emit x+ as x(&|), where & means "self". */
     next = regnode (BRANCH); /* Either */
     regtail (ret, next);
-    regtail (regnode (BACK), ret); /* loop back */
+    regtail (regnode (BACK), ret);    /* loop back */
     regtail (next, regnode (BRANCH)); /* or */
     regtail (ret, regnode (NOTHING)); /* null. */
   }
   else if (op == '?')
   {
     /* Emit x? as (x|) */
-    reginsert (BRANCH, ret); /* Either x */
+    reginsert (BRANCH, ret);         /* Either x */
     regtail (ret, regnode (BRANCH)); /* or */
-    next = regnode (NOTHING); /* null. */
+    next = regnode (NOTHING);        /* null. */
     regtail (ret, next);
     regoptail (ret, next, log);
   }
@@ -712,10 +712,10 @@ evalresp_log_t *log;
 /*
  * Global work variables for evr_regexec().
  */
-static char *reginput; /* String-input pointer. */
-static char *regbol; /* Beginning of input, for ^ check. */
+static char *reginput;   /* String-input pointer. */
+static char *regbol;     /* Beginning of input, for ^ check. */
 static char **regstartp; /* Pointer to startp array. */
-static char **regendp; /* Ditto for endp. */
+static char **regendp;   /* Ditto for endp. */
 
 /*
  * Forwards.
@@ -845,7 +845,7 @@ static int /* 0 failure, 1 success */
 evalresp_log_t *log;
 {
   register char *scan; /* Current node. */
-  char *next; /* Next node. */
+  char *next;          /* Next node. */
 
   scan = prog;
 #ifdef DEBUG
