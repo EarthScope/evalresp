@@ -181,4 +181,15 @@ void calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
                 evalresp_complex *output, const char *out_units, int start_stage,
                 int stop_stage, int useTotalSensitivityFlag, double x_for_b62,
                 evalresp_log_t *log);
+
+/**
+ * @private
+ * @ingroup evalresp_private_calc
+ * @brief Normalize response.
+ * @param[in,out] chan Channel structure.
+ * @param[in] start_stage Start stage.
+ * @param[in] stop_stage Stop stage.
+ * @param[in] log Logging structure.
+ */
+void norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log_t *log);
 #endif

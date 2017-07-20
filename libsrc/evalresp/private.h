@@ -1182,12 +1182,11 @@ void zmul (evalresp_complex *val1, evalresp_complex *val2);
  * @private
  * @ingroup evalresp_private_calc
  * @brief Normalize response.
- * @param[in,out] chan Channel structure.
- * @param[in] start_stage Start stage.
- * @param[in] stop_stage Stop stage.
  * @param[in] log Logging structure.
+ * @param[in] options object to control the flow of the conversion to responses
+ * @param[in,out] chan Channel structure.
  */
-int norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log_t *log);
+int normalize_response (evalresp_log_t *log, evalresp_options const * const options, evalresp_channel *chan);
 
 /**
  * @private
