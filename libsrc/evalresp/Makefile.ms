@@ -1,7 +1,7 @@
 
 OBJ = alloc_fctns.obj calc_fctns.obj file_ops.obj \
 			  regexp.obj regsub.obj resp_fctns.obj spline.obj input.obj\
-			  print_fctns.obj output.obj stationxml2resp\wrappers.obj\
+			  output.obj stationxml2resp\wrappers.obj\
               highlevel.obj evaluation.obj legacy_interface.obj\
 			  stationxml2resp\dom_to_seed.obj stationxml2resp\xml_to_dom.obj
 
