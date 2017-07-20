@@ -476,7 +476,7 @@ zmul (evalresp_complex *val1, evalresp_complex *val2)
  *                   Normalize response
  *=================================================================*/
 int
-norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log_t *log)
+normalize_response(evalresp_log_t *log, evalresp_options const * const options, evalresp_channel *chan)
 {
   evalresp_stage *stage_ptr;
   // TODO - NULL assignments below made blindly to fix compiler warning.  bug?
@@ -618,14 +618,14 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log
   stage_ptr = chan->first_stage;
   for (i = 0; i < chan->nstages; i++)
   {
-    if (start_stage >= 0 && stop_stage && (stage_ptr->sequence_no < start_stage || stage_ptr->sequence_no > stop_stage))
+    if (options->start_stage >= 0 && options->stop_stage && (stage_ptr->sequence_no < options->start_stage || stage_ptr->sequence_no > options->stop_stage))
     {
       if (stage_ptr->sequence_no)
         skipped_stages = 1;
       stage_ptr = stage_ptr->next_stage;
       continue;
     }
-    else if (start_stage >= 0 && !stop_stage && stage_ptr->sequence_no != start_stage)
+    else if (options->start_stage >= 0 && !options->stop_stage && stage_ptr->sequence_no != options->start_stage)
     {
       if (stage_ptr->sequence_no)
         skipped_stages = 1;

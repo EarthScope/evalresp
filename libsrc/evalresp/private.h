@@ -1182,12 +1182,11 @@ void zmul (evalresp_complex *val1, evalresp_complex *val2);
  * @private
  * @ingroup evalresp_private_calc
  * @brief Normalize response.
- * @param[in,out] chan Channel structure.
- * @param[in] start_stage Start stage.
- * @param[in] stop_stage Stop stage.
  * @param[in] log Logging structure.
+ * @param[in] options object to control the flow of the conversion to responses
+ * @param[in,out] chan Channel structure.
  */
-int norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log_t *log);
+int normalize_response (evalresp_log_t *log, evalresp_options const * const options, evalresp_channel *chan);
 
 /**
  * @private
@@ -1256,92 +1255,6 @@ int is_time (const char *test, evalresp_log_t *log);
  *          time in the input argument @p dt2.
  */
 int timecmp (evalresp_datetime *dt1, evalresp_datetime *dt2);
-
-/**
- * @private
- * @ingroup evalresp_private_print
- * @brief Print the channel info, followed by the list of filters.
- * @param[in] chan Channel structure.
- * @param[in] start_stage Start stage.
- * @param[in] stop_stage Stop stage.
- * @param[in] stdio_flag Flag if standard input was used.
- * @param[in] listinterp_out_flag Flag if interpolated output was used.
- * @param[in] listinterp_in_flag Flag if interpolated input was used.
- * @param[in] useTotalSensitivityFlag Flag if reported sensitivity was used to
- *                                  compute response.
- * @param[in] log Logging structure.
- */
-void print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
-                 int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
-                 int useTotalSensitivityFlag, evalresp_log_t *log);
-
-/**
- * @private
- * @ingroup evalresp_private_print
- * @brief Print the response information to the output files.
- * @details Prints the response information in the fashion that the user
- *          requested it.  The response is either in the form of a complex
- *          spectra (freq, real_resp, imag_resp) to the file
- *          SPECTRA.NETID.STANAME.CHANAME (if rtype = "cs") or in the form of
- *          seperate amplitude and phase files (if rtype = "ap") with names
- *          like AMP.NETID.STANAME.CHANAME and PHASE.NETID.STANAME.CHANAME. In
- *          all cases, the pointer to the channel is used to obtain the NETID,
- *          STANAME, and CHANAME values. If the 'stdio_flag' is set to 1, then
- *          the response information will be output to stdout, prefixed by a
- *          header that includes the NETID, STANAME, and CHANAME, as well as
- *          whether the response given is in amplitude/phase or complex
- *          response (real/imaginary) values. If either case, the output to
- *          stdout will be in the form of three columns of real numbers, in
- *          the former case they will be freq/amp/phase tuples, in the latter
- *          case freq/real/imaginary tuples.
- * @param[in] freqs Array of frequencies.
- * @param[in] nfreqs Number of frequencies.
- * @param[in] first Pointer to first response in chain.
- * @param[in] rtype Reponse type.
- * @param[in] stdio_flag Flag controlling output.
- * @param[in] log Logging structure.
- * @see print_resp_itp().
- * @note This version of the function does not include the 'listinterp...'
- *       parameters.
- */
-void print_resp (double *freqs, int nfreqs, evalresp_response *first, char *rtype,
-                 int stdio_flag, evalresp_log_t *log);
-
-/**
- * @private
- * @ingroup evalresp_private_print
- * @brief Print the response information to the output files.
- * @details Prints the response information in the fashion that the user
- *          requested it. The response is either in the form of a complex
- *          spectra (freq, real_resp, imag_resp) to the file
- *          SPECTRA.NETID.STANAME.CHANAME (if rtype = "cs") or in the form of
- *          seperate amplitude and phase files (if rtype = "ap") with names
- *          like AMP.NETID.STANAME.CHANAME and PHASE.NETID.STANAME.CHANAME.
- *          In all cases, the pointer to the channel is used to obtain the
- *          NETID, STANAME, and CHANAME values. If the 'stdio_flag' is set to
- *          1, then the response information will be output to stdout,
- *          prefixed by a header that includes the NETID, STANAME, and
- *          CHANAME, as well as whether the response given is in
- *          amplitude/phase or complex response (real/imaginary) values. If
- *          either case, the output to stdout will be in the form of three
- *          columns of real numbers, in the former case they will be
- *          freq/amp/phase tuples, in the latter case freq/real/imaginary
- *          tuples.
- * @param[in] freqs Array of frequencies.
- * @param[in] nfreqs Number of frequencies.
- * @param[in] first Pointer to first response in chain.
- * @param[in] rtype Reponse type.
- * @param[in] stdio_flag Flag controlling output.
- * @param[in] listinterp_out_flag Flag if interpolated output was used.
- * @param[in] listinterp_tension Interpolation tension used.
- * @param[in] unwrap_flag Flag if phases are unwrapped.
- * @param[in] log Logging structure.
- * @see print_resp().
- * @note This version of the function includes the 'listinterp...' parameters.
- */
-void print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
-                     char *rtype, int stdio_flag, int listinterp_out_flag,
-                     double listinterp_tension, int unwrap_flag, evalresp_log_t *log);
 
 /**
  * @private

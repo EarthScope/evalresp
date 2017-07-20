@@ -573,12 +573,12 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
             }
 
             /* normalize the response of the filter sequence */
-            norm_resp (&this_channel, start_stage, stop_stage, log);
+            norm_resp (&this_channel, start_stage, stop_stage);
 
             /* calculate the response at the requested frequencies */
             calc_resp (&this_channel, freqs, nfreqs, output, units,
                        start_stage, stop_stage,
-                       useTotalSensitivityFlag, x_for_b62, log);
+                       useTotalSensitivityFlag, x_for_b62);
 
             /* diagnostic output, if the user requested it */
 
@@ -587,7 +587,7 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
               print_chan (&this_channel, start_stage, stop_stage,
                           stdio_flag, listinterp_out_flag,
                           listinterp_in_flag,
-                          useTotalSensitivityFlag, log);
+                          useTotalSensitivityFlag);
             }
 
             free (freqs); /* free array that was allocated above */
@@ -861,12 +861,12 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
 
                 /* normalize the response of the filter sequence */
                 norm_resp (&this_channel, start_stage,
-                           stop_stage, log);
+                           stop_stage);
 
                 /* calculate the response at the requested frequencies */
                 calc_resp (&this_channel, freqs, nfreqs, output,
                            units, start_stage, stop_stage,
-                           useTotalSensitivityFlag, x_for_b62, log);
+                           useTotalSensitivityFlag, x_for_b62);
 
                 /* diagnostic output, if the user requested it */
 
@@ -876,7 +876,7 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
                               stop_stage, stdio_flag,
                               listinterp_out_flag,
                               listinterp_in_flag,
-                              useTotalSensitivityFlag, log);
+                              useTotalSensitivityFlag);
                 }
 
                 free (freqs); /* free array that was allocated above */
@@ -1027,7 +1027,7 @@ START_TEST (test_legacy_1)
                                                   "2015,1,00:00:00", "VEL",
                                                   "./data/response-1",
                                                   freqs, 3, "AP", NULL,
-                                                  -1, 0, 0, 0, 0.0, 0, 0, 0, 0, NULL)),
+                                                  -1, 0, 0, 0, 0.0, 0, 0, 0, 0)),
                  "Failed to run evresp_itp");
 
   for (oldcount = 0, old_ptr = old_first; old_ptr != NULL; oldcount++, old_ptr = old_ptr->next)
