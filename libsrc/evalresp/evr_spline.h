@@ -14,11 +14,6 @@
  * Technologies, Inc.</a> (ISTI) in 2017.
  */
 
-/**
- * @defgroup evalresp_private_spline evalresp Private Spline Interpolation Interface
- * @ingroup evalresp_private
- * @brief Private cubic spline interpolation interface for evalresp.
- */
 
 /**
  * @file

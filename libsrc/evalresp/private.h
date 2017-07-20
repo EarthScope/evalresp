@@ -18,7 +18,7 @@
  */
 
 /**
- * @defgroup evalresp_public_compat evalresp Legacy Public Interface
+ * @defgroup evalresp_public_compat evalresp Legacy Public Interface (Compatibility Layer)
  * @ingroup evalresp
  * @brief Legacy public evalresp interface (predating version 5.0) is included for comatibility purpose.
  */
@@ -82,6 +82,13 @@
  * @ingroup evalresp_private
  * @brief Private evalresp string interface.
  */
+
+/**
+ * @defgroup evalresp_private_spline evalresp Private Spline Interpolation Interface
+ * @ingroup evalresp_private
+ * @brief Private cubic spline interpolation interface for evalresp.
+ */
+
 
 /**
  * @file
