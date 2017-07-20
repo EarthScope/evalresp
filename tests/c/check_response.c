@@ -63,7 +63,6 @@ START_TEST (test_response)
   int n_freq = 19, i;
   double lof = 0.1, hif = 10, delta, *freqs = NULL, err;
   evalresp_response *response = NULL;
-  evalresp_log_t *log = NULL;
 
   fail_if (!mkdtemp (tmpdir));
   fail_if (!getcwd (cwd, 1000));
@@ -80,8 +79,8 @@ START_TEST (test_response)
   }
 
   fail_if (!(response = evresp ("ANMO", "BH1", "IU", "00", "2015,1,00:00:00", "VEL", data, freqs, n_freq,
-                                "AP", "-v", 0, 99, 0, 0, 0.1, 1, NULL)));
-  print_resp (freqs, n_freq, response, "AP", 0, log);
+                                "AP", "-v", 0, 99, 0, 0, 0.1, 1)));
+  print_resp (freqs, n_freq, response, "AP", 0);
 
   err = max_err (cwd, "data/AMP.IU.ANMO.00.BH1", tmpdir, "AMP.IU.ANMO.00.BH1");
   fail_if (err > 0.1, "Error > 10%");

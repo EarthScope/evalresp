@@ -87,7 +87,6 @@ START_TEST (test_match)
   int n_freq = 19, i;
   double lof = 0.1, hif = 10, delta, *freqs = NULL, err;
   evalresp_response *response = NULL;
-  evalresp_log_t *log = NULL;
 
   fail_if (!mkdtemp (tmpdir));
   fail_if (!getcwd (cwd, 1000));
@@ -106,8 +105,8 @@ START_TEST (test_match)
   }
 
   ck_assert (NULL != (response = evresp_itp ("ANMO", "BHZ", "IU", "??", "2015,1,00:00:00", "VEL",
-                                             tmpdir, freqs, n_freq, "AP", "-v", 0, 99, 0, 0, 0, 0, 0, 0.1, 0, log)));
-  print_resp (freqs, n_freq, response, "AP", 0, log);
+                                             tmpdir, freqs, n_freq, "AP", "-v", 0, 99, 0, 0, 0, 0, 0, 0.1, 0)));
+  print_resp (freqs, n_freq, response, "AP", 0);
 
   // reference files take from evalresp
   err = max_err (data, tmpdir, "AMP.IU.ANMO.00.BHZ");

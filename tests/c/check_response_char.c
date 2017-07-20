@@ -57,7 +57,7 @@ max_err (const char *check_dir, const char *check_file, const char *test_string)
 evalresp_response *
 get_response (char *cwd, char *input, char *stalst,
               char *chalst, char *net_code, char *locidlst,
-              char *date_time, evalresp_log_t *log)
+              char *date_time)
 {
   char data[1000];
   int n_freq = 19, i;
@@ -75,7 +75,7 @@ get_response (char *cwd, char *input, char *stalst,
   }
 
   ck_assert (NULL != (response = evresp (stalst, chalst, net_code, locidlst, date_time, "VEL", data, freqs, n_freq,
-                                         "AP", "-v", 0, 99, 0, 0, 0.1, 1, log)));
+                                         "AP", "-v", 0, 99, 0, 0, 0.1, 1)));
   return response;
 }
 
@@ -90,7 +90,7 @@ START_TEST (test_response_char_amp)
 
   ck_assert (NULL != getcwd (cwd, 1000));
 
-  response = get_response (cwd, "data/station-1.xml", "ANMO", "BH1", "IU", "00", "2015,1,00:00:00", log);
+  response = get_response (cwd, "data/station-1.xml", "ANMO", "BH1", "IU", "00", "2015,1,00:00:00");
 
   ck_assert_msg (evalresp_response_to_char (log, response, evalresp_amplitude_file_format, &test_string) == EVALRESP_OK,
                  "Failed to create char");
@@ -110,7 +110,7 @@ START_TEST (test_response_char_phase)
 
   ck_assert (NULL != getcwd (cwd, 1000));
 
-  response = get_response (cwd, "data/station-1.xml", "ANMO", "BH1", "IU", "00", "2015,1,00:00:00", log);
+  response = get_response (cwd, "data/station-1.xml", "ANMO", "BH1", "IU", "00", "2015,1,00:00:00");
 
   ck_assert_msg (evalresp_response_to_char (log, response, evalresp_phase_file_format, &test_string) == EVALRESP_OK,
                  "Failed to create char");
