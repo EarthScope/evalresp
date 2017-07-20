@@ -12,9 +12,16 @@
  */
 
 /**
- * @defgroup evalresp evalresp
+ * @defgroup evalresp evalresp Application Programming Interface (API)
  * @ingroup iris
  * @brief Application Programming Interface (API) for evalresp.
+ */
+
+
+/**
+ * @defgroup evalresp_public evalresp Public Interface
+ * @ingroup evalresp
+ * @brief Public evalresp interface.
  */
 
 /**
@@ -23,11 +30,6 @@
  * @brief Legacy public evalresp interface (predating version 5.0) is included for comatibility purpose.
  */
 
-/**
- * @defgroup evalresp_public evalresp Public Interface
- * @ingroup evalresp
- * @brief Public evalresp interface.
- */
 
 /**
  * @defgroup evalresp_private evalresp Private Interface
@@ -95,60 +97,6 @@
  * @brief This file contains declarations and global structures for evalresp.
  */
 
-/*==================================================================
- *                    evresp.h
- *=================================================================*/
-
-/*
- 8/28/2001 -- [ET]  Added 'WIN32' directives for Windows compiler
- compatibility; added 'extern' to variable
- declarations at end of file.
- 8/2/2001 -- [ET]  Version 3.2.28:  Modified to allow command-line
- parameters for frequency values to be missing
- (default values used).
- 10/21/2005 -- [ET]  Version 3.2.29:  Implemented interpolation of
- amplitude/phase values from responses containing
- List blockettes (55); modified message shown when
- List blockette encountered; modified so as not to
- require characters after 'units' specifiers like
- "M" and "COUNTS"; modified to handle case where
- file contains "B052F03 Location:" and nothing
- after it on line; added warnings for unrecognized
- parameters; fixed issue where program would crash
- under Linux/UNIX ("segmentation fault") if input
- response file contained Windows-style "CR/LF"
- line ends; renamed 'strncasecmp()' function
- to 'strnicmp()' when compiling under Windows.
- 11/3/2005 -- [ET]  Version 3.2.30:  Modified to unwrap phase values
- before interpolation and re-wrap after (if needed);
- modified to detect when all requested interpolated
- frequencies are out of range.
- 1/18/2006 -- [ET]  Version 3.2.31:  Renamed 'regexp' functions to
- prevent name clashes with other libraries.
- 2/13/2006 -- [ET]  Version 3.2.32:  Moved 'use_delay()' function from
- 'evalresp.c' to 'evresp.c'; modified to close input
- file when a single response file is specified.
- 3/27/2006 -- [ID]  Version 3.2.33:  Added include_HEADERS target
- "evr_spline.h" to "Makefile.am"; upgraded "missing"
- script.
- 3/28/2006 -- [ET]  Version 3.2.34:  Added 'free()' calls to "evresp.c"
- to fix memory leaks when program functions used
- in external applications.
- 4/4/2006 -- [ET]  Version 3.2.35:  Modified to support channel-IDs with
- location codes equal to an empty string.
- 8/21/2006 -- [IGD] Version 3.2.36:  Added support for TESLA units.
- 10/16/2006 -- [ET]  Version 3.2.37:  Added two more 'free()' calls to
- "evresp.c" to fix memory leaks when program functions
- are used in external applications.
- 8/11/2006 -- [IGD] Libtoolized evresp library
- 4/03/2007 -- [IGD] Added myLabel global variable which is used to add NSLC
- labels in evalresp logging if --enable-log-label config
- option is used
- 5/14/2010 -- [ET]  Version 3.3.3:  Added "#define strcasecmp stricmp"
- if Windows.
- 5/31/2013 -- [IGD] Version 3.3.4: Adding polynomial filter
- 10/02/2013 -- [IGD] Version 3.3.4: Adding DEGREE CENTIGRADE as units
- */
 
 #ifndef EVALRESP_PRIVATE_H
 #define EVALRESP_PRIVATE_H
