@@ -34,7 +34,7 @@ next_resp (FILE *fptr, evalresp_log_t *log)
   {
     if (0 > parse_field (tmp_line, 2, FirstLine, log))
     {
-      return 0 /*TODO PARSE_ERROR should be returned ?*/;
+      return 0;
     }
     return (1);
   }
@@ -68,14 +68,14 @@ get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
   {
     if (0 > get_field (fptr, field, 50, 3, ":", 0, log))
     {
-      return 0 /*TODO PARSE_ERROR should be returned */;
+      return 0;
     }
   }
   else
   {
     if (0 > parse_field (FirstLine, 0, field, log))
     {
-      return 0 /*TODO PARSE_ERROR should be returned */;
+      return 0;
     }
   }
 
@@ -85,7 +85,7 @@ get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
 
   if (0 > get_field (fptr, field, 50, 16, ":", 0, log))
   {
-    return 0 /*TODO PARSE_ERROR should be returned */;
+    return 0;
   }
   if (!strncmp (field, "??", 2))
   {
@@ -110,7 +110,7 @@ get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
   {
     if (0 > parse_field (line, 0, field, log)) /* parse location data */
     {
-      return 0 /*TODO PARSE_ERROR should be returned */;
+      return 0;
     }
   }
   else
@@ -131,7 +131,7 @@ get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
     }
     if (0 > get_field (fptr, field, 52, 4, ":", 0, log))
     {
-      return 0 /*TODO PARSE_ERROR should be returned */;
+      return 0;
     }
     strncpy (chan->chaname, field, CHALEN);
   }
@@ -150,7 +150,7 @@ get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
                   " and fld numbers do not match expected values\n\tblkt_xpt=B",
                   52, ", blkt_found=B", blkt_no, "; fld_xpt=F", 3, 4,
                   ", fld_found=F", fld_no);
-    return 0; /*TODO error code maybe? */
+    return 0;
 #endif
   }
 
@@ -158,7 +158,7 @@ get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
 
   if (0 > get_line (fptr, line, 52, 22, ":", log))
   {
-    return 0; /*TODO */
+    return 0; 
   }
   strncpy (chan->beg_t, line, DATIMLEN);
 
@@ -166,7 +166,7 @@ get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
 
   if (0 > get_line (fptr, line, 52, 23, ":", log))
   {
-    return 0; /*TODO */
+    return 0; 
   }
   strncpy (chan->end_t, line, DATIMLEN);
 
@@ -238,7 +238,6 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
   evalresp_sncl *scn;
   struct string_array *sta_list, *chan_list;
   struct string_array *locid_list;
-  // TODO - new_file assigned 0 blindly to fix compiler warning.  bug?
   int i, j, k, count = 0, which_matched, test = 1, mode, new_file = 0;
   int err_type;
   char out_name[MAXLINELEN], locid[LOCIDLEN + 1];
@@ -303,7 +302,6 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
   }
   if (!(sta_list = ev_parse_line (stalst, log)))
   {
-    /*TODO free things */
     return NULL;
   }
 
@@ -321,7 +319,6 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
   /* parse the "locidlst" string to form a list of locations  */
   if (!(locid_list = parse_delim_line (locid, ",", log)))
   {
-    /*TODO free things */
     return NULL;
   }
 
@@ -334,7 +331,6 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
 
   if (!(chan_list = ev_parse_line (chalst, log)))
   {
-    /*TODO free things */
     return NULL;
   }
 
@@ -1035,7 +1031,6 @@ START_TEST (test_legacy_1)
   for (newcount = 0, new_ptr = new_first; new_ptr != NULL; newcount++, new_ptr = new_ptr->next)
     ;
   ck_assert_msg (oldcount == newcount, "number of responses do not match (new)%d != (old)%d", newcount, oldcount);
-  /*TODO more indepth comparison */
   old_ptr = old_first;
   new_ptr = new_first;
   while (old_ptr && new_ptr)

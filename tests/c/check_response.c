@@ -88,7 +88,6 @@ START_TEST (test_response)
   err = max_err (cwd, "data/PHASE.IU.ANMO.00.BH1", tmpdir, "PHASE.IU.ANMO.00.BH1");
   fail_if (err > 0.1, "Error > 10%");
 
-  // TODO - delete directory?
 }
 END_TEST
 

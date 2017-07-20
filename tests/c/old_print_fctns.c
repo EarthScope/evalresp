@@ -353,7 +353,7 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
           {
             evalresp_log (log, EV_ERROR, 0,
                           "print_resp; failed to open file %s", filename);
-            return; /*TODO error? */
+            return;
           }
           sprintf (filename, "PHASE.%s.%s.%s.%s", resp->network,
                    resp->station, resp->locid, resp->channel);
@@ -361,7 +361,7 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
           {
             evalresp_log (log, EV_ERROR, 0,
                           "print_resp; failed to open file %s", filename);
-            return; /*TODO error? */
+            return; 
           }
           if (1 == unwrap_flag)
           {
@@ -422,7 +422,7 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
           {
             evalresp_log (log, EV_ERROR, 0,
                           "print_resp; failed to open file %s", filename);
-            return; /*TODO error? */
+            return; 
           }
 
           /* 04/27/2010 unwraped phases should only start causal! - Johannes Schweitzer*/
@@ -490,7 +490,7 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
         {
           evalresp_log (log, EV_ERROR, 0,
                         "print_resp; failed to open file %s", filename);
-          return; /*TODO some error thinging */
+          return; 
         }
       }
       else

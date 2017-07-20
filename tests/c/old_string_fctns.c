@@ -38,7 +38,7 @@
 #include <evalresp/evresp.h>
 #include <evalresp/private.h>
 #include <evalresp/public_channels.h>
-#include <evalresp/regexp.h> // TODO - should all private imports be relative like this?
+#include <evalresp/regexp.h> 
 
 char myLabel[20];
 
@@ -69,7 +69,6 @@ ev_parse_line (char *line, evalresp_log_t *log)
       {
         evalresp_log (log, EV_ERROR, 0,
                       "ev_parse_line; malloc() failed for (char) vector");
-        /*TODO RETURN  OUT_OF_MEMORY */
         break;
       }
       strncpy (lcl_strings->strings[i], "", fld_len);
@@ -99,7 +98,7 @@ ev_parse_line (char *line, evalresp_log_t *log)
                     "ev_parse_line; malloc() failed for (char) vector");
       free (lcl_strings->strings);
       free (lcl_strings);
-      return NULL; /*TODO OUT_OF_MEMORY */
+      return NULL;
     }
     strncpy (lcl_strings->strings[0], "", 1);
   }
@@ -134,7 +133,6 @@ parse_delim_line (char *line, char *delim, evalresp_log_t *log)
       {
         evalresp_log (log, EV_ERROR, 0,
                       "parse_delim_line; malloc() failed for (char) vector");
-        /*TODO return OUT_OF_MEMORY */
         break;
       }
       strncpy (lcl_strings->strings[i], "", fld_len);
@@ -164,7 +162,7 @@ parse_delim_line (char *line, char *delim, evalresp_log_t *log)
                     "parse_delim_line; malloc() failed for (char) vector");
       free (lcl_strings->strings);
       free (lcl_strings);
-      return NULL; /*TODO OUT_OF_MEMORY */
+      return NULL;
     }
     strncpy (lcl_strings->strings[0], "", 1);
   }
@@ -196,7 +194,7 @@ test_field (FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
 
   if (0 >= next_line (fptr, line, blkt_no, fld_no, sep, log))
   {
-    return 0; /*TODO carry retval */
+    return 0;
   }
 
   /* then parse the field that the user wanted from the line get_line returned
@@ -364,19 +362,19 @@ next_line (FILE *fptr, char *return_line, int *blkt_no, int *fld_no,
     evalresp_log (log, EV_ERROR, 0,
                   "get_field; unrecogn. prefix on the following line:\n\t  '%s'",
                   line);
-    return 0 /*TODO UNDEF_PREFIX */;
+    return 0;
   }
 
   if ((lcl_ptr = strstr (line, sep)) == (char *)NULL)
   {
     evalresp_log (log, EV_ERROR, 0, "get_field; seperator string not found");
-    return 0 /*TODO UNDER_SEPSTR */;
+    return 0;
   }
   else if ((lcl_ptr - line) > (int)(strlen (line) - 1))
   {
     evalresp_log (log, EV_ERROR, 0,
                   "get_field; nothing to parse after seperator string");
-    return 0 /*TODO UNDER_SEPSTR */;
+    return 0;
   }
 
   lcl_ptr++;
@@ -431,8 +429,7 @@ count_delim_fields (char *line, char *delim)
   return (nfields);
 }
 
-// TODO - log at start, errors, etc
-// (dylan - can you do this on eparse_fctns cleared out?  thanks...)
+
 int
 parse_field (char *line, int fld_no, char *return_field, evalresp_log_t *log)
 {
@@ -475,7 +472,6 @@ int
 parse_delim_field (char *line, int fld_no, char *delim, char *return_field, evalresp_log_t *log)
 {
 
-  // TODO - tmp_prt assignment below made blindly to fix compiler warning.  bug?
   char *lcl_ptr, *tmp_ptr = NULL;
   int nfields, i;
 
@@ -564,14 +560,14 @@ check_line (FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_log_t
     evalresp_log (log, EV_ERROR, 0,
                   "check_line; unrecogn. prefix on the following line:\n\t  '%s'",
                   line);
-    return 0 /*TODO UNDEF_PREFIX */;
+    return 0;
   }
 
   strncpy (in_line, line, MAXLINELEN);
   return (1);
 }
 
-// TODO - log at start
+
 int
 get_int (char *in_line, evalresp_log_t *log)
 {
@@ -581,7 +577,6 @@ get_int (char *in_line, evalresp_log_t *log)
   {
     evalresp_log (log, EV_ERROR, 0, "get_int; '%s' is not an integer",
                   in_line);
-    /*TODO IMPRP_DATA_TYPE */
   }
   value = atoi (in_line);
   return (value);
@@ -596,7 +591,6 @@ get_double (char *in_line, evalresp_log_t *log)
   {
     evalresp_log (log, EV_ERROR, 0, "get_double; '%s' is not a real number",
                   in_line);
-    /*TODO IMPRP_DATA_TYPE */
   }
   lcl_val = atof (in_line);
   return (lcl_val);
@@ -706,7 +700,7 @@ string_match (const char *string, char *expr, char *type_flag, evalresp_log_t *l
   {
     evalresp_log (log, EV_ERROR, 0, "%s string_match; improper pattern type (%s)\n",
                   myLabel, type_flag);
-    return 0; /*TODO error improper pattern type */
+    return 0;
   }
   while (*lcl_ptr && i < (MAXLINELEN - 1))
   {
@@ -730,7 +724,7 @@ string_match (const char *string, char *expr, char *type_flag, evalresp_log_t *l
   {
     evalresp_log (log, EV_ERROR, 0,
                   "string_match; pattern '%s' didn't compile", regexp_pattern);
-    return 0; /*TODO RE_COMP_FAILED*/
+    return 0;
   }
   lcl_ptr = lcl_string;
   test = evr_regexec (prog, lcl_ptr, log);
