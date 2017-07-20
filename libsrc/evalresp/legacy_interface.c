@@ -23,7 +23,6 @@ evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
 {
   evalresp_response *first = (evalresp_response *)NULL;
   int i, j;
-  evalresp_log_t *log = NULL;
 
   // some eyeball checks to make sure fortran is passing things ok
   // printf("freqs: %f-%f\n", freqs[0], freqs[nfreqs-1]);
@@ -31,7 +30,7 @@ evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
 
   first = evresp (sta, cha, net, locid, datime, units, file, freqs, nfreqs,
                   rtype, verbose, start_stage, stop_stage, stdio_flag, useTotalSensitivityFlag,
-                  x_for_b62, xml_flag, log);
+                  x_for_b62, xml_flag);
 
   /* check the output.  If no response found, return 1, else if more than one response
      found, return -1 */
@@ -125,8 +124,9 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
             int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
             int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
             double listinterp_tension, int useTotalSensitivityFlag,
-            double x_for_b62, int xml_flag, evalresp_log_t *log)
+            double x_for_b62, int xml_flag)
 {
+  evalresp_log_t *log = NULL;
   evalresp_options *options = NULL;
   evalresp_filter *filter = NULL;
   evalresp_responses *responses = NULL;
@@ -246,18 +246,19 @@ evresp (char *stalst, char *chalst, char *net_code,
         char *locidlst, char *date_time, char *units, char *file, double *freqs,
         int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
         int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
-        int xml_flag, evalresp_log_t *log)
+        int xml_flag)
 {
   return evresp_itp (stalst, chalst, net_code, locidlst, date_time, units,
                      file, freqs, nfreqs, rtype, verbose, start_stage, stop_stage,
-                     stdio_flag, 0, 0, 0.0, 0, x_for_b62, xml_flag, log);
+                     stdio_flag, 0, 0, 0.0, 0, x_for_b62, xml_flag);
 }
 
 void
 print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
             int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
-            int useTotalSensitivityFlag, evalresp_log_t *log)
+            int useTotalSensitivityFlag)
 {
+  evalresp_log_t *log = NULL;
   evalresp_options *options = NULL;
   if (EVALRESP_OK != evalresp_new_options (log, &options))
   {
@@ -279,8 +280,9 @@ print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
 void
 print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
                 char *rtype, int stdio_flag, int listinterp_out_flag,
-                double listinterp_tension, int unwrap_flag, evalresp_log_t *log)
+                double listinterp_tension, int unwrap_flag)
 {
+  evalresp_log_t *log = NULL;
   evalresp_responses responses[1];
   evalresp_response *ptr;
   evalresp_options *options = NULL;
@@ -321,17 +323,17 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
 
 void
 print_resp (double *freqs, int nfreqs, evalresp_response *first, char *rtype,
-            int stdio_flag, evalresp_log_t *log)
+            int stdio_flag)
 {
-  print_resp_itp (freqs, nfreqs, first, rtype, stdio_flag, 0, 0.0, 0, log);
+  print_resp_itp (freqs, nfreqs, first, rtype, stdio_flag, 0, 0.0, 0);
 }
 
 void
 calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
            evalresp_complex *output, const char *out_units, int start_stage,
-           int stop_stage, int useTotalSensitivityFlag, double x_for_b62,
-           evalresp_log_t *log)
+           int stop_stage, int useTotalSensitivityFlag, double x_for_b62)
 {
+  evalresp_log_t *log = NULL;
   evalresp_options *options = NULL;
   if (EVALRESP_OK != evalresp_new_options (log, &options))
   {
@@ -366,8 +368,9 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
   evalresp_free_options (&options);
 }
 void
-norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log_t *log)
+norm_resp (evalresp_channel *chan, int start_stage, int stop_stage)
 {
+  evalresp_log_t *log = NULL;
   evalresp_options *options = NULL;
   if (EVALRESP_OK != evalresp_new_options (log, &options))
   {
