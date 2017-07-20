@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* NEEDED for M_PI on windows */
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include "./private.h"
 #include "evalresp/constants.h"
 #include "evalresp/public.h"
