@@ -365,3 +365,18 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
 
   evalresp_free_options (&options);
 }
+void
+norm_resp (evalresp_channel *chan, int start_stage, int stop_stage, evalresp_log_t *log)
+{
+  evalresp_options *options = NULL;
+  if (EVALRESP_OK != evalresp_new_options (log, &options))
+  {
+    return;
+  }
+  options->start_stage = start_stage;
+  options->stop_stage = stop_stage;
+
+  normalize_response(log, options, chan);
+
+  evalresp_free_options(&options);
+}

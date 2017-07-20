@@ -464,7 +464,7 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
 
   if (!status)
   {
-    if (!(status = norm_resp (channel, options->start_stage, options->stop_stage, log)))
+    if (!(status = normalize_response (log, options, channel)))
     {
       if (!(status = calculate_response (log, options, channel, (*response)->freqs, (*response)->nfreqs, (*response)->rvec)))
       {
