@@ -157,4 +157,4 @@ B55 interpolation
     Run process  evalresp  ATTU  BHE  1998  57  0.001  10  100  -f  RESP.IM.ATTU..BHE  -il
     # 50% difference is high, but leave this in as it checks the file count
     Count and compare target files two float cols  base/args/b55  0.5
-    Compare target files two float cols average  base/args/b55  0.01
+    Compare target files two float cols average  base/args/b55  0.015
