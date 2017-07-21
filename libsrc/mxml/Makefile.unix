@@ -7,9 +7,9 @@ install: Makefile
 %: Makefile
 	$(MAKE) $*
 
-Makefile: configure Makefile.in.at
+Makefile: configure
 	./configure --prefix=`readline -f $(INSTALL_DIR)` --disable-threads
-	mv Makfile.in.at Makefile.in
+	-mv Makefile.in.at Makefile.in
 
 configure: configure.ac Makefile.in.at
 	rm -rf m4
