@@ -20,7 +20,6 @@ doxygen: Doxyfile mostlyclean
 EXTRA_DIST = \
 	Doxyfile \
 	evalresp.1 \
-	evalresp_dox.h \
 	intro_dox.h \
 	xml2resp.1
 
