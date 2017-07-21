@@ -3,8 +3,8 @@ lib_LTLIBRARIES = libmxmlev.la
 
 #(2.2) define a list of library source files
 libmxmlev_la_SOURCES = mxml-attr.c    mxml-file.c   mxml-node.c     mxml-set.c \
-mxmldoc.c      mxml-get.c    mxml-private.c  mxml-string.c \
-mxml-entity.c  mxml-index.c  mxml-search.c   testmxml.c 
+     mxml-get.c    mxml-private.c  mxml-string.c \
+mxml-entity.c  mxml-index.c  mxml-search.c   
 
 #(2.3) define library FLAGS/OPTIONS
 #libmxmlev_la_LDFLAGS = 
