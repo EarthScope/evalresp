@@ -8,11 +8,11 @@
 */
 
 #include <evalresp/private.h>
+#include <spline.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "evalresp_log/log.h"
-#include "evr_spline.h"
 
 static int
 merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log)
@@ -627,32 +627,19 @@ check_sym (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log)
   }
 }
 
-/*********** function free for freeing of double arrays *******************************************/
-/*
-void sscdns_free_double (double *array)
-{
-  if (array != NULL)
-  {
-    free (array);
-    array = NULL;
-  }
-}
-*/
-
 int
 interpolate_list_blockette (double **frequency_ptr,
                             double **amplitude_ptr, double **phase_ptr,
                             int *p_number_points, double *req_freq_arr,
                             int req_num_freqs, evalresp_log_t *log)
 {
-  int i, num;
+  int i, num, status = EVALRESP_OK;
   double first_freq, last_freq, val, min_ampval;
   int fix_first_flag, fix_last_flag, unwrapped_flag;
   double *used_req_freq_arr;
   int used_req_num_freqs;
   double *retvals_arr, *retamps_arr;
   int num_retvals;
-  char *retstr;
   double old_pha, new_pha, added_value, prev_phase;
   double *local_pha_arr;
 
@@ -731,12 +718,11 @@ interpolate_list_blockette (double **frequency_ptr,
     req_freq_arr[req_num_freqs - 1] = last_freq;
 
   /* interpolate amplitude values */
-  if ((retstr = evr_spline (*p_number_points, *frequency_ptr, *amplitude_ptr,
-                            req_freq_arr, req_num_freqs,
-                            &retvals_arr, &num_retvals, log)))
+  if ((status = spline_interpolate (*p_number_points, *frequency_ptr, *amplitude_ptr,
+                                    req_freq_arr, req_num_freqs,
+                                    &retvals_arr, &num_retvals, log)))
   {
-    evalresp_log (log, EV_ERROR, 0, "Error interpolating amplitudes:  %s", retstr);
-    return EVALRESP_VAL;
+    return status;
   }
   if (num_retvals != req_num_freqs)
   { /* # of generated values != # requested (shouldn't happen) */
@@ -784,20 +770,20 @@ interpolate_list_blockette (double **frequency_ptr,
   }
 
   /* interpolate phase values */
-  retstr = evr_spline (*p_number_points, *frequency_ptr, local_pha_arr,
-                       req_freq_arr, req_num_freqs,
-                       &retvals_arr, &num_retvals, log);
+  status = spline_interpolate (*p_number_points, *frequency_ptr, local_pha_arr,
+                               req_freq_arr, req_num_freqs,
+                               &retvals_arr, &num_retvals, log);
   free (local_pha_arr);
-  if (retstr)
+  if (status)
   {
-    evalresp_log (log, EV_ERROR, 0, "Error interpolating phases:  %s", retstr);
-    return EVALRESP_VAL;
+    return status;
   }
-  if (num_retvals != req_num_freqs)
+  else if (num_retvals != req_num_freqs)
   { /* # of generated values != # requested (shouldn't happen) */
     evalresp_log (log, EV_ERROR, 0, "Error interpolating phases:  %s",
                   "Bad # of values");
-    return EVALRESP_VAL;
+    status = EVALRESP_ERR;
+    return status;
   }
 
   if (unwrapped_flag)
@@ -835,5 +821,5 @@ interpolate_list_blockette (double **frequency_ptr,
   *phase_ptr = retvals_arr;
   *p_number_points = num_retvals;
 
-  return EVALRESP_OK;
+  return status;
 }
