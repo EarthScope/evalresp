@@ -3,7 +3,10 @@ all: Makefile
 	$(MAKE) libmxmlev.a
 
 install: Makefile
-	$(MAKE) install-libmxmlev.a
+	#$(MAKE) install-libmxmlev.a
+	test -z "$(LIB_DIR)" || /bin/mkdir -p "$(LIB_DIR)"
+	/bin/sh libtool   --mode=install /usr/bin/install -c   libmxmlev.a '$(LIB_DIR)'
+
 %: Makefile
 	$(MAKE) $*
 
