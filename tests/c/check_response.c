@@ -86,7 +86,6 @@ START_TEST (test_response)
   fail_if (err > 0.1, "Error > 10%");
   err = max_err (cwd, "data/PHASE.IU.ANMO.00.BH1", tmpdir, "PHASE.IU.ANMO.00.BH1");
   fail_if (err > 0.1, "Error > 10%");
-
 }
 END_TEST
 

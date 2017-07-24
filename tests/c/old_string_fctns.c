@@ -38,7 +38,7 @@
 #include <evalresp/evresp.h>
 #include <evalresp/private.h>
 #include <evalresp/public_channels.h>
-#include <evalresp/regexp.h> 
+#include <evalresp/regexp.h>
 
 char myLabel[20];
 
@@ -429,7 +429,6 @@ count_delim_fields (char *line, char *delim)
   return (nfields);
 }
 
-
 int
 parse_field (char *line, int fld_no, char *return_field, evalresp_log_t *log)
 {
@@ -566,7 +565,6 @@ check_line (FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_log_t
   strncpy (in_line, line, MAXLINELEN);
   return (1);
 }
-
 
 int
 get_int (char *in_line, evalresp_log_t *log)

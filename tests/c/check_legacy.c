@@ -158,7 +158,7 @@ get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
 
   if (0 > get_line (fptr, line, 52, 22, ":", log))
   {
-    return 0; 
+    return 0;
   }
   strncpy (chan->beg_t, line, DATIMLEN);
 
@@ -166,7 +166,7 @@ get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
 
   if (0 > get_line (fptr, line, 52, 23, ":", log))
   {
-    return 0; 
+    return 0;
   }
   strncpy (chan->end_t, line, DATIMLEN);
 
@@ -208,8 +208,7 @@ get_resp (FILE *fptr, evalresp_sncl *scn, char *datime,
   while ((test = get_channel (fptr, this_channel, log)) != 0)
   {
 
-    if (string_match (this_channel->staname, scn->station, "-g", log) && ((!strlen (scn->network) && !strlen (this_channel->network)) || string_match (this_channel->network, scn->network,
-                                                                                                                                                       "-g", log)) &&
+    if (string_match (this_channel->staname, scn->station, "-g", log) && ((!strlen (scn->network) && !strlen (this_channel->network)) || string_match (this_channel->network, scn->network, "-g", log)) &&
         string_match (this_channel->locid, scn->locid, "-g", log) && string_match (this_channel->chaname, scn->channel, "-g", log) && in_epoch (datime, this_channel->beg_t, this_channel->end_t))
     {
       scn->found = 1;
@@ -557,7 +556,7 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
             else
             {
               nfreqs = nfreqs_orig;
-              freqs = (double *)malloc (sizeof (double) * nfreqs);  /* malloc a new vector */
+              freqs = (double *)malloc (sizeof (double) * nfreqs); /* malloc a new vector */
               memcpy (freqs, freqs_orig, sizeof (double) * nfreqs); /*cp*/
               resp->rvec = alloc_complex (nfreqs, log);
               output = resp->rvec;
@@ -976,7 +975,7 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
 
   /* added file close if single input file -- 2/13/2006 -- [ET]: */
   if (!mode && !stdio_flag) /* if single file was opened then */
-    fclose (fptr);          /* close input file */
+    fclose (fptr); /* close input file */
 
   /* and print a list of WARNINGS about the station-channel pairs that were not
        found in the input RESP files */

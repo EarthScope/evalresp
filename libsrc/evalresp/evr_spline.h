@@ -14,7 +14,6 @@
  * Technologies, Inc.</a> (ISTI) in 2017.
  */
 
-
 /**
  * @file
  * @brief This file contains declarations and global structures for evalresp

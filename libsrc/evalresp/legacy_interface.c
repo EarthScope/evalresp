@@ -379,7 +379,7 @@ norm_resp (evalresp_channel *chan, int start_stage, int stop_stage)
   options->start_stage = start_stage;
   options->stop_stage = stop_stage;
 
-  normalize_response(log, options, chan);
+  normalize_response (log, options, chan);
 
-  evalresp_free_options(&options);
+  evalresp_free_options (&options);
 }

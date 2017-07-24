@@ -139,12 +139,12 @@ parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalre
 
   if (0 > get_line (fptr, line, blkt_read, check_fld++, ":", log))
   {
-    return; 
+    return;
   }
   stage_ptr->input_units = check_units (GblChanPtr, line, log);
   if (UNDEF_UNITS == stage_ptr->input_units)
   {
-    return; 
+    return;
   }
 
   if (0 > get_line (fptr, line, blkt_read, check_fld++, ":", log))
@@ -278,7 +278,6 @@ parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalre
     blkt_ptr->blkt_info.pole_zero.poles[i].imag = atof (field);
   }
 }
-
 
 void
 parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log)
@@ -600,7 +599,6 @@ parse_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eva
     blkt_ptr->blkt_info.fir.coeffs[i] = atof (field);
   }
 }
-
 
 void
 parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log)

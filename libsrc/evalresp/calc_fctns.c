@@ -476,7 +476,7 @@ zmul (evalresp_complex *val1, evalresp_complex *val2)
  *                   Normalize response
  *=================================================================*/
 int
-normalize_response(evalresp_log_t *log, evalresp_options const * const options, evalresp_channel *chan)
+normalize_response (evalresp_log_t *log, evalresp_options const *const options, evalresp_channel *chan)
 {
   evalresp_stage *stage_ptr;
   // TODO - NULL assignments below made blindly to fix compiler warning.  bug?

@@ -485,7 +485,7 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
   }
   if (status && *response)
   {
-      evalresp_free_response(*response);
+    evalresp_free_response (*response);
   }
 
   if (b55_save)
@@ -653,7 +653,7 @@ calculate_response (evalresp_log_t *log, evalresp_options *options,
             eval_flag = 1;
           }
           break;
-        case LIST:                      /* This option is added in version 2.3.17 I.Dricker*/
+        case LIST: /* This option is added in version 2.3.17 I.Dricker*/
           calc_list (blkt_ptr, i, &of); /*compute real and imag parts for the i-th ampl and phase */
           eval_flag = 1;
           break;
