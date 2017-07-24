@@ -1059,126 +1059,12 @@ int calculate_response (evalresp_log_t *log, evalresp_options *options, evalresp
 /**
  * @private
  * @ingroup evalresp_private_calc
- * @brief Convert response to velocity first, then to specified units.
- * @param[in] inp Input units. See units constants.
- * @param[in] out_units Output units. @c DEF, @c DIS, @c VEL, @c ACC.
- * @param[in,out] data Data.
- * @param[in] w Frequency.
- * @param[in] log Logging structure.
- */
-int convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, double w, evalresp_log_t *log);
-
-/**
- * @private
- * @ingroup evalresp_private_calc
- * @brief Response of analog filter.
- * @param[in] blkt_ptr Filter.
- * @param[in] freq Frequency.
- * @param[out] out Response.
- */
-void analog_trans (evalresp_blkt *blkt_ptr, double freq, evalresp_complex *out);
-
-/**
- * @private
- * @ingroup evalresp_private_calc
- * @brief Response of symetrical FIR filters.
- * @param[in] blkt_ptr Filter.
- * @param[in] w Frequency.
- * @param[out] out Response.
- */
-void fir_sym_trans (evalresp_blkt *blkt_ptr, double w, evalresp_complex *out);
-
-/**
- * @private
- * @ingroup evalresp_private_calc
- * @brief Response of asymetrical FIR filters.
- * @param[in] blkt_ptr Filter.
- * @param[in] w Frequency.
- * @param[out] out Response.
- */
-void fir_asym_trans (evalresp_blkt *blkt_ptr, double w, evalresp_complex *out);
-
-/**
- * @private
- * @ingroup evalresp_private_calc
- * @brief Response of IIR filters.
- * @param[in] blkt_ptr Filter.
- * @param[in] w Frequency.
- * @param[out] out Response.
- */
-void iir_pz_trans (evalresp_blkt *blkt_ptr, double w, evalresp_complex *out);
-
-/**
- * @private
- * @ingroup evalresp_private_calc
- * @brief Calculate the phase shift equivalent to the time shift.
- * @details Delta at the frequency w (rads/sec).
- * @param[in] delta Delta.
- * @param[in] w Frequency.
- * @param[out] out Phase shift equivalent.
- */
-void calc_time_shift (double delta, double w, evalresp_complex *out);
-
-/**
- * @private
- * @ingroup evalresp_private_calc
- * @brief Complex multiplication.
- * @details Complex version of val1 *= val2.
- * @param[in,out] val1 Complex number 1.
- * @param[in] val2 Complex number 2.
- */
-void zmul (evalresp_complex *val1, evalresp_complex *val2);
-
-/**
- * @private
- * @ingroup evalresp_private_calc
  * @brief Normalize response.
  * @param[in] log Logging structure.
  * @param[in] options object to control the flow of the conversion to responses
  * @param[in,out] chan Channel structure.
  */
 int normalize_response (evalresp_log_t *log, evalresp_options const *const options, evalresp_channel *chan);
-
-/**
- * @private
- * @ingroup evalresp_private_calc
- * @brief Response of blockette 55 (Response List Blockette) for a given frequency.
- * @param[in] blkt_ptr Response List Blockette (55).
- * @param[in] i Index in the frequency input vector.
- * @param[out] out Response.
- * @author 06/22/00: Ilya Dricker ISTI (.dricker@isti.com): Function
- *         introduced in version 3.2.17 of evalresp.
- */
-void calc_list (evalresp_blkt *blkt_ptr, int i, evalresp_complex *out);
-
-/**
- * @private
- * @ingroup evalresp_private_calc
- * @brief Response of blockette 62 (Polynomial)i for a given frequency.
- * @param[in] blkt_ptr Polynomial Blockette (62).
- * @param[out] out Response.
- * @param[in] x_for_b62 Frequency for response computation.
- * @param[in] log Logging structure.
- * @author 06/01/13: Ilya Dricker ISTI (.dricker@isti.com): Function
- *         introduced in version 3.3.4 of evalresp
- */
-int calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
-                     double x_for_b62, evalresp_log_t *log);
-
-/**
- * @private
- * @ingroup evalresp_private_calc
- * @brief Response of a digital IIR filter.
- * @details This code is modified from the FORTRAN subroutine written and
- *          tested by Bob Hutt (ASL USGS). Evaluates phase directly from
- *          imaginary and real parts of IIR filter coefficients.
- * @param[in] blkt_ptr Digital IIR filter.
- * @param[in] wint Circular frequency (2*PI*f).
- * @param[out] out Response.
- * @author 07/12/00: Ilya Dricker (ISTI), i.dricker@isti.com: C translation
- *         from FORTRAN function. Version 0.2. For version 3.2.17.
- */
-void iir_trans (evalresp_blkt *blkt_ptr, double wint, evalresp_complex *out);
 
 /**
  * @private
