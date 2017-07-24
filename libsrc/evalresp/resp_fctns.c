@@ -163,6 +163,58 @@ merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_l
   return EVALRESP_OK;
 }
 
+static void
+check_symmetry (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log)
+{
+  int nc, n0, k;
+  double sum = 0.0;
+
+  nc = f->blkt_info.fir.ncoeffs;
+
+  /* CHECK IF IF FILTER IS NORMALIZED TO 1 AT FREQ 0 */
+
+  for (k = 0; k < nc; k++)
+    sum += f->blkt_info.fir.coeffs[k];
+  if (nc && (sum < (1.0 - FIR_NORM_TOL) || sum > (1.0 + FIR_NORM_TOL)))
+  {
+    evalresp_log (log, EV_WARN, 0, " WARNING: FIR normalized: sum[coef]=%E; ", sum);
+    evalresp_log (log, EV_WARN, 0, " %s %s %s %s\n", chan->network, chan->staname, chan->locid, chan->chaname);
+    for (k = 0; k < nc; k++)
+      f->blkt_info.fir.coeffs[k] /= sum;
+  }
+
+  if (f->type != FIR_ASYM)
+    return;
+
+  /* CHECK IF FILTER IS SYMETRICAL WITH EVEN NUM OF WEIGHTS */
+
+  if ((nc % 2) == 0)
+  {
+    n0 = nc / 2;
+    for (k = 0; k < n0; k++)
+    {
+      if (f->blkt_info.fir.coeffs[n0 + k] != f->blkt_info.fir.coeffs[n0 - k - 1])
+        return;
+    }
+    f->type = FIR_SYM_2;
+    f->blkt_info.fir.ncoeffs = n0;
+  }
+
+  /* CHECK IF FILTER IS SYMETRICAL WITH ODD NUM OF WEIGHTS */
+
+  else
+  {
+    n0 = (nc - 1) / 2;
+    for (k = 1; k < nc - n0; k++)
+    {
+      if (f->blkt_info.fir.coeffs[n0 + k] != f->blkt_info.fir.coeffs[n0 - k])
+        return;
+    }
+    f->type = FIR_SYM_1;
+    f->blkt_info.fir.ncoeffs = nc - n0;
+  }
+}
+
 int
 check_channel (evalresp_log_t *log, evalresp_channel *chan)
 {
@@ -367,7 +419,7 @@ check_channel (evalresp_log_t *log, evalresp_channel *chan)
 
         /* make FIR filters symmetric if possible */
         if (blkt_ptr->type == FIR_ASYM)
-          check_sym (blkt_ptr, chan, log);
+          check_symmetry (blkt_ptr, chan, log);
 
         /* increment the channel delay for this stage using the number of coefficients
            and the filter type */
@@ -573,58 +625,6 @@ check_channel (evalresp_log_t *log, evalresp_channel *chan)
   }
 
   return EVALRESP_OK;
-}
-
-void
-check_sym (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log)
-{
-  int nc, n0, k;
-  double sum = 0.0;
-
-  nc = f->blkt_info.fir.ncoeffs;
-
-  /* CHECK IF IF FILTER IS NORMALIZED TO 1 AT FREQ 0 */
-
-  for (k = 0; k < nc; k++)
-    sum += f->blkt_info.fir.coeffs[k];
-  if (nc && (sum < (1.0 - FIR_NORM_TOL) || sum > (1.0 + FIR_NORM_TOL)))
-  {
-    evalresp_log (log, EV_WARN, 0, " WARNING: FIR normalized: sum[coef]=%E; ", sum);
-    evalresp_log (log, EV_WARN, 0, " %s %s %s %s\n", chan->network, chan->staname, chan->locid, chan->chaname);
-    for (k = 0; k < nc; k++)
-      f->blkt_info.fir.coeffs[k] /= sum;
-  }
-
-  if (f->type != FIR_ASYM)
-    return;
-
-  /* CHECK IF FILTER IS SYMETRICAL WITH EVEN NUM OF WEIGHTS */
-
-  if ((nc % 2) == 0)
-  {
-    n0 = nc / 2;
-    for (k = 0; k < n0; k++)
-    {
-      if (f->blkt_info.fir.coeffs[n0 + k] != f->blkt_info.fir.coeffs[n0 - k - 1])
-        return;
-    }
-    f->type = FIR_SYM_2;
-    f->blkt_info.fir.ncoeffs = n0;
-  }
-
-  /* CHECK IF FILTER IS SYMETRICAL WITH ODD NUM OF WEIGHTS */
-
-  else
-  {
-    n0 = (nc - 1) / 2;
-    for (k = 1; k < nc - n0; k++)
-    {
-      if (f->blkt_info.fir.coeffs[n0 + k] != f->blkt_info.fir.coeffs[n0 - k])
-        return;
-    }
-    f->type = FIR_SYM_1;
-    f->blkt_info.fir.ncoeffs = nc - n0;
-  }
 }
 
 int

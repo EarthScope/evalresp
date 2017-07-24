@@ -92,7 +92,7 @@ find_files (char *file, evalresp_sncls *scn_lst,
         nfiles = get_names (comp_name, flst_ptr, log);
         if (!nfiles && !loc_wild)
         {
-          evalresp_log (log, EV_WARN, 0, "evresp_; no files match '%s'",
+          evalresp_log (log, EV_WARN, EV_WARN, "no files match '%s'",
                         comp_name);
         }
         else if (!nfiles && loc_wild)
@@ -104,8 +104,8 @@ find_files (char *file, evalresp_sncls *scn_lst,
           nfiles = get_names (comp_name, flst_ptr, log);
           if (!nfiles)
           {
-            evalresp_log (log, EV_WARN, 0,
-                          "evresp_; no files match '%s' (or globbed location)",
+            evalresp_log (log, EV_WARN, EV_WARN,
+                          "no files match '%s' (or globbed location)",
                           comp_name);
           }
         }
@@ -145,7 +145,7 @@ find_files (char *file, evalresp_sncls *scn_lst,
       nfiles = get_names (comp_name, flst_ptr, log);
       if (!nfiles && strcmp (scn_ptr->locid, "*"))
       {
-        evalresp_log (log, EV_WARN, 0, "evresp_; no files match '%s'",
+        evalresp_log (log, EV_WARN, EV_WARN, "no files match '%s'",
                       comp_name);
       }
       else if (!nfiles && !strcmp (scn_ptr->locid, "*"))
@@ -169,7 +169,7 @@ find_files (char *file, evalresp_sncls *scn_lst,
         nfiles = get_names (comp_name, flst_ptr, log);
         if (!nfiles)
         {
-          evalresp_log (log, EV_WARN, 0, "evresp_; no files match '%s'",
+          evalresp_log (log, EV_WARN, EV_WARN, "no files match '%s'",
                         comp_name);
         }
       }
