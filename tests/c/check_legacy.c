@@ -22,7 +22,7 @@ int FirstField;
 jmp_buf jump_buffer;
 
 int
-next_resp (FILE *fptr, evalresp_log_t *log)
+next_resp (FILE *fptr, evalresp_logger *log)
 {
   int blkt_no, fld_no, test;
   char tmp_line[MAXLINELEN];
@@ -43,7 +43,7 @@ next_resp (FILE *fptr, evalresp_log_t *log)
 }
 
 int
-get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
+get_channel (FILE *fptr, evalresp_channel *chan, evalresp_logger *log)
 {
   int blkt_no, fld_no;
   char field[MAXFLDLEN], line[MAXLINELEN];
@@ -175,7 +175,7 @@ get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
 
 int
 find_resp (FILE *fptr, evalresp_sncls *scn_lst, char *datime,
-           evalresp_channel *this_channel, evalresp_log_t *log)
+           evalresp_channel *this_channel, evalresp_logger *log)
 {
   int test, i;
   evalresp_sncl *scn = NULL;
@@ -201,7 +201,7 @@ find_resp (FILE *fptr, evalresp_sncls *scn_lst, char *datime,
 
 int
 get_resp (FILE *fptr, evalresp_sncl *scn, char *datime,
-          evalresp_channel *this_channel, evalresp_log_t *log)
+          evalresp_channel *this_channel, evalresp_logger *log)
 {
   int test;
 
@@ -231,7 +231,7 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
                 int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
                 int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
                 double listinterp_tension, int useTotalSensitivityFlag,
-                double x_for_b62, int xml_flag, evalresp_log_t *log)
+                double x_for_b62, int xml_flag, evalresp_logger *log)
 {
   evalresp_channel this_channel;
   evalresp_sncl *scn;

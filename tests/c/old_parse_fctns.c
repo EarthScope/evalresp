@@ -32,7 +32,7 @@ int curr_seq_no;
 double atof ();
 
 int
-parse_pref (int *blkt_no, int *fld_no, char *line, evalresp_log_t *log)
+parse_pref (int *blkt_no, int *fld_no, char *line, evalresp_logger *log)
 {
   char fldstr[FLDSTRLEN], blktstr[BLKTSTRLEN];
 
@@ -64,7 +64,7 @@ parse_pref (int *blkt_no, int *fld_no, char *line, evalresp_log_t *log)
 }
 
 void
-parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log)
+parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_logger *log)
 {
   int i, blkt_typ, check_fld;
   int blkt_read;
@@ -280,7 +280,7 @@ parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalre
 }
 
 void
-parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log)
+parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_logger *log)
 {
   int i, blkt_typ, check_fld;
   int blkt_read;
@@ -449,7 +449,7 @@ parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr,
 }
 
 void
-parse_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log)
+parse_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_logger *log)
 {
   int i, blkt_typ, check_fld;
   int blkt_read;
@@ -601,7 +601,7 @@ parse_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eva
 }
 
 void
-parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log)
+parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_logger *log)
 {
   int i, blkt_typ = LIST;
   int blkt_read, check_fld;
@@ -798,7 +798,7 @@ parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, eval
 }
 
 void
-parse_generic (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log)
+parse_generic (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_logger *log)
 {
   int i, blkt_typ = GENERIC;
   int blkt_read, check_fld;
@@ -918,7 +918,7 @@ parse_generic (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, e
 }
 
 int
-parse_deci (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_log_t *log)
+parse_deci (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_logger *log)
 {
   int blkt_typ = DECIMATION;
   int blkt_read, check_fld;
@@ -1022,7 +1022,7 @@ parse_deci (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_log_t *log)
 }
 
 int
-parse_gain (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_log_t *log)
+parse_gain (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_logger *log)
 {
   int i, blkt_typ = GAIN;
   int blkt_read, check_fld;
@@ -1118,7 +1118,7 @@ parse_gain (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_log_t *log)
 
 void
 parse_polynomial (FILE *fptr, evalresp_blkt *blkt_ptr,
-                  evalresp_stage *stage_ptr, evalresp_log_t *log)
+                  evalresp_stage *stage_ptr, evalresp_logger *log)
 {
   int i, blkt_typ;
   int blkt_read, check_fld;
@@ -1302,7 +1302,7 @@ parse_polynomial (FILE *fptr, evalresp_blkt *blkt_ptr,
 }
 
 void
-parse_fir (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log)
+parse_fir (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_logger *log)
 {
   int i, blkt_typ;
   int blkt_read, check_fld;
@@ -1440,7 +1440,7 @@ parse_fir (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalr
 }
 
 void
-parse_ref (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log)
+parse_ref (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_logger *log)
 {
   int this_blkt_no = 60, blkt_no, fld_no, i, j, prev_blkt_no = 60;
   int nstages, stage_num, nresps, lcl_nstages;
@@ -1620,7 +1620,7 @@ parse_ref (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalr
 }
 
 int
-parse_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log)
+parse_channel (FILE *fptr, evalresp_channel *chan, evalresp_logger *log)
 {
 
   int blkt_no, read_blkt = 0, fld_no, no_units = 0;

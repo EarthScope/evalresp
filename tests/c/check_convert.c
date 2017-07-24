@@ -14,7 +14,7 @@ run_test (char *station, char *response)
   fail_if (!(in = fopen (station, "r")));
   FILE *out;
   fail_if (!(out = tmpfile ()));
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
   /*XXX x2r_log *log;
     fail_if(x2r_alloc_log(X2R_DEBUG, stderr, &log)); */
   x2r_fdsn_station_xml *root = NULL;

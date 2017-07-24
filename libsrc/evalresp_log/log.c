@@ -7,7 +7,7 @@
 const char *log_level_strs[] = {"ERROR", "WARN", "INFO", "DEBUG"};
 
 int
-evalresp_log (evalresp_log_t *log, int level, int verbosity, char *fmt, ...)
+evalresp_log (evalresp_logger *log, int level, int verbosity, char *fmt, ...)
 {
   va_list p_args;
   int status;
@@ -25,7 +25,7 @@ evalresp_log (evalresp_log_t *log, int level, int verbosity, char *fmt, ...)
 }
 
 int
-evalresp_log_basic (evalresp_log_func_t log_func, void *log_func_data, int level, int verbosity, char *fmt, ...)
+evalresp_log_basic (evalresp_log_func log_func, void *log_func_data, int level, int verbosity, char *fmt, ...)
 {
   int status;
   va_list p_args;
@@ -36,9 +36,9 @@ evalresp_log_basic (evalresp_log_func_t log_func, void *log_func_data, int level
 }
 
 int
-evalresp_log_v (evalresp_log_func_t log_func, void *log_func_data, int level, int verbosity, char *fmt, va_list args)
+evalresp_log_v (evalresp_log_func log_func, void *log_func_data, int level, int verbosity, char *fmt, va_list args)
 {
-  evalresp_log_msg_t msg[1];
+  evalresp_log_msg msg[1];
   char date_str[256]; /*TODO this is tomany bytes*/
 
   /* create message string */

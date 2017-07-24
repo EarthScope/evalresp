@@ -119,7 +119,7 @@ typedef struct
  * @brief allocate and intialize a evalresp_filter
  * @retval EVALRESP_OK on success
  */
-int evalresp_new_filter (evalresp_log_t *log, evalresp_filter **filter);
+int evalresp_new_filter (evalresp_logger *log, evalresp_filter **filter);
 
 /**
  * @public
@@ -130,7 +130,7 @@ int evalresp_new_filter (evalresp_log_t *log, evalresp_filter **filter);
  * @brief set the year in an evalresp_filter object
  * @retval EVALRESP_OK on success
  */
-int evalresp_set_year (evalresp_log_t *log, evalresp_filter *filter, const char *year);
+int evalresp_set_year (evalresp_logger *log, evalresp_filter *filter, const char *year);
 
 /**
  * @public
@@ -141,7 +141,7 @@ int evalresp_set_year (evalresp_log_t *log, evalresp_filter *filter, const char 
  * @brief set the jday in an evalresp_filter object
  * @retval EVALRESP_OK on success
  */
-int evalresp_set_julian_day (evalresp_log_t *log, evalresp_filter *filter, const char *julian_day);
+int evalresp_set_julian_day (evalresp_logger *log, evalresp_filter *filter, const char *julian_day);
 
 /**
  * @public
@@ -152,7 +152,7 @@ int evalresp_set_julian_day (evalresp_log_t *log, evalresp_filter *filter, const
  * @brief set the time in an evalresp_filter object
  * @retval EVALRESP_OK on success
  */
-int evalresp_set_time (evalresp_log_t *log, evalresp_filter *filter, const char *time);
+int evalresp_set_time (evalresp_logger *log, evalresp_filter *filter, const char *time);
 
 /**
  * @public
@@ -166,7 +166,7 @@ int evalresp_set_time (evalresp_log_t *log, evalresp_filter *filter, const char 
  * @brief set the sncl in an evalresp_filter object from the text string, expects single station
  * @retval EVALRESP_OK on success
  */
-int evalresp_add_sncl_text (evalresp_log_t *log, evalresp_filter *filter,
+int evalresp_add_sncl_text (evalresp_logger *log, evalresp_filter *filter,
                             const char *sta, const char *net, const char *chan, const char *locid);
 
 /**
@@ -178,7 +178,7 @@ int evalresp_add_sncl_text (evalresp_log_t *log, evalresp_filter *filter,
  * @brief set the sncl in an evalresp_filter object from sncl object, expects single station
  * @retval EVALRESP_OK on success
  */
-int evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter, evalresp_sncl *sncl);
+int evalresp_add_sncl (evalresp_logger *log, evalresp_filter *filter, evalresp_sncl *sncl);
 
 /**
  * Splits comma-separated values in input and adds all combinations.
@@ -195,7 +195,7 @@ int evalresp_add_sncl (evalresp_log_t *log, evalresp_filter *filter, evalresp_sn
  * @brief Splits comma-separated values in input and adds all combinations to evalresp_filter object.
  * @retval EVALRESP_OK on success
  */
-int evalresp_add_sncl_all (evalresp_log_t *log, evalresp_filter *filter,
+int evalresp_add_sncl_all (evalresp_logger *log, evalresp_filter *filter,
                            const char *sta, const char *net, const char *chan, const char *locid);
 
 /**
@@ -227,7 +227,7 @@ void evalresp_free_sncls (evalresp_sncls *sncls);
  * @brief take a char string and parse it into evalresp_channel object
  * @retval EVALRESP_OK on success
  */
-int evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
+int evalresp_char_to_channels (evalresp_logger *log, const char *seed_or_xml,
                                evalresp_options const *const options,
                                const evalresp_filter *filter, evalresp_channels **channels);
 
@@ -242,7 +242,7 @@ int evalresp_char_to_channels (evalresp_log_t *log, const char *seed_or_xml,
  * @brief take a stream and parse it into evalresp_channel object
  * @retval EVALRESP_OK on success
  */
-int evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
+int evalresp_file_to_channels (evalresp_logger *log, FILE *file,
                                evalresp_options const *const options,
                                const evalresp_filter *filter, evalresp_channels **channels);
 
@@ -257,7 +257,7 @@ int evalresp_file_to_channels (evalresp_log_t *log, FILE *file,
  * @brief take a filename, open it, and parse it into evalresp_channel object
  * @retval EVALRESP_OK on success
  */
-int evalresp_filename_to_channels (evalresp_log_t *log, const char *filename, evalresp_options const *const options,
+int evalresp_filename_to_channels (evalresp_logger *log, const char *filename, evalresp_options const *const options,
                                    const evalresp_filter *filter, evalresp_channels **channels);
 
 /**
@@ -268,7 +268,7 @@ int evalresp_filename_to_channels (evalresp_log_t *log, const char *filename, ev
  * @brief allocate and initialize an evalresp_options.
  * @retval EVALRESP_OK on success
  */
-int evalresp_new_options (evalresp_log_t *log, evalresp_options **options);
+int evalresp_new_options (evalresp_logger *log, evalresp_options **options);
 
 /**
  * @public
@@ -287,7 +287,7 @@ void evalresp_free_options (evalresp_options **options);
  * @brief parse filename into options
  * @retval EVALRESP_OK on success
  */
-int evalresp_set_filename (evalresp_log_t *log, evalresp_options *options, const char *filename);
+int evalresp_set_filename (evalresp_logger *log, evalresp_options *options, const char *filename);
 
 /**
  * @public
@@ -300,7 +300,7 @@ int evalresp_set_filename (evalresp_log_t *log, evalresp_options *options, const
  * @brief parse the frequency string inputs into options
  * @retval EVALRESP_OK on success
  */
-int evalresp_set_frequency (evalresp_log_t *log, evalresp_options *options,
+int evalresp_set_frequency (evalresp_logger *log, evalresp_options *options,
                             const char *min_freq, const char *max_freq, const char *nfreq);
 
 /**
@@ -312,7 +312,7 @@ int evalresp_set_frequency (evalresp_log_t *log, evalresp_options *options,
  * @brief parse the format string into options
  * @retval EVALRESP_OK on success
  */
-int evalresp_set_format (evalresp_log_t *log, evalresp_options *options,
+int evalresp_set_format (evalresp_logger *log, evalresp_options *options,
                          const char *format);
 
 /**
@@ -324,7 +324,7 @@ int evalresp_set_format (evalresp_log_t *log, evalresp_options *options,
  * @brief[in] parse unit string into options
  * @retval EVALRESP_OK on success
  */
-int evalresp_set_unit (evalresp_log_t *log, evalresp_options *options,
+int evalresp_set_unit (evalresp_logger *log, evalresp_options *options,
                        const char *unit);
 
 /**
@@ -336,7 +336,7 @@ int evalresp_set_unit (evalresp_log_t *log, evalresp_options *options,
  * @brief parse the spaceing string into options
  * @retval EVALRESP_OK on success
  */
-int evalresp_set_spacing (evalresp_log_t *log, evalresp_options *options,
+int evalresp_set_spacing (evalresp_logger *log, evalresp_options *options,
                           const char *spacing);
 
 // these are separate because it simplifies calling from main routine
@@ -350,7 +350,7 @@ int evalresp_set_spacing (evalresp_log_t *log, evalresp_options *options,
  * @brief parse stage into starting_stage of options
  * @retval EVALRESP_OK on success
  */
-int evalresp_set_start_stage (evalresp_log_t *log, evalresp_options *options,
+int evalresp_set_start_stage (evalresp_logger *log, evalresp_options *options,
                               const char *stage);
 
 /**
@@ -362,7 +362,7 @@ int evalresp_set_start_stage (evalresp_log_t *log, evalresp_options *options,
  * @brief parse stage into starting_stage of options
  * @retval EVALRESP_OK on success
  */
-int evalresp_set_stop_stage (evalresp_log_t *log, evalresp_options *options,
+int evalresp_set_stop_stage (evalresp_logger *log, evalresp_options *options,
                              const char *stage);
 
 /**
@@ -374,7 +374,7 @@ int evalresp_set_stop_stage (evalresp_log_t *log, evalresp_options *options,
  * @brief parse counts or volts from b62_x to options
  * @retval EVALRESP_OK on success
  */
-int evalresp_set_b62_x (evalresp_log_t *log, evalresp_options *options,
+int evalresp_set_b62_x (evalresp_logger *log, evalresp_options *options,
                         const char *b62_x);
 
 /**
@@ -387,7 +387,7 @@ int evalresp_set_b62_x (evalresp_log_t *log, evalresp_options *options,
  * @brief convert an evalresp_channel to and evalresp_response and allocate it
  * @retval EVALRESP_OK on success
  */
-int evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
+int evalresp_channel_to_response (evalresp_logger *log, evalresp_channel *channel,
                                   evalresp_options *options, evalresp_response **response);
 
 /**
@@ -400,7 +400,7 @@ int evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel
  * @brief go through the channels in evalresp_channels and converthem into a evalresp_responses object
  * @retval EVALRESP_OK on success
  */
-int evalresp_channels_to_responses (evalresp_log_t *log, evalresp_channels *channels,
+int evalresp_channels_to_responses (evalresp_logger *log, evalresp_channels *channels,
                                     evalresp_options *options, evalresp_responses **responses);
 
 typedef enum {
@@ -421,7 +421,7 @@ typedef enum {
  * @retval EVALRESP_OK on success
  * @post output will be allocated on success and must be free'd by other functions
  */
-int evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *response,
+int evalresp_response_to_char (evalresp_logger *log, const evalresp_response *response,
                                evalresp_file_format format, char **output);
 
 /**
@@ -434,7 +434,7 @@ int evalresp_response_to_char (evalresp_log_t *log, const evalresp_response *res
  * @brief take an evalresp response and put it in an evalresp formated stream
  * @retval EVALRESP_OK on success
  */
-int evalresp_response_to_stream (evalresp_log_t *log, const evalresp_response *response,
+int evalresp_response_to_stream (evalresp_logger *log, const evalresp_response *response,
                                  evalresp_file_format format, FILE *const file);
 
 /**
@@ -447,7 +447,7 @@ int evalresp_response_to_stream (evalresp_log_t *log, const evalresp_response *r
  * @brief take an evalresp response and put it in an evalresp formated file
  * @retval EVALRESP_OK on success
  */
-int evalresp_response_to_file (evalresp_log_t *log, const evalresp_response *response,
+int evalresp_response_to_file (evalresp_logger *log, const evalresp_response *response,
                                evalresp_file_format format, const char *filename);
 
 /**
@@ -460,7 +460,7 @@ int evalresp_response_to_file (evalresp_log_t *log, const evalresp_response *res
  * @post response files created in current working directory or stdio
  * @retval EVALRESP_OK on success
  */
-int evalresp_cwd_to_cwd (evalresp_log_t *log,
+int evalresp_cwd_to_cwd (evalresp_logger *log,
                          evalresp_options *options, evalresp_filter *filter);
 
 /**
@@ -472,6 +472,6 @@ int evalresp_cwd_to_cwd (evalresp_log_t *log,
  * @brief print the channel information of the channel be processed
  * @retval EVALRESP_OK on success
  */
-int evalresp_channel_to_log (evalresp_log_t *log, evalresp_options const *const options, evalresp_channel *const channel);
+int evalresp_channel_to_log (evalresp_logger *log, evalresp_options const *const options, evalresp_channel *const channel);
 
 #endif

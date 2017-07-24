@@ -34,7 +34,7 @@ extern char myLabel[20];
  * @returns 0 if false.
  * @returns >0 if true.
  */
-int string_match (const char *string, char *expr, char *type_flag, evalresp_log_t *log);
+int string_match (const char *string, char *expr, char *type_flag, evalresp_logger *log);
 
 /**
  * @private
@@ -70,7 +70,7 @@ int count_delim_fields (char *line, char *delim);
  * @returns Length of the resulting field if successful.
  * @note Exits with error if no field exists with that number.
  */
-int parse_field (char *line, int fld_no, char *return_field, evalresp_log_t *log);
+int parse_field (char *line, int fld_no, char *return_field, evalresp_logger *log);
 
 /**
  * @private
@@ -84,7 +84,7 @@ int parse_field (char *line, int fld_no, char *return_field, evalresp_log_t *log
  * @returns Length of the resulting field if successful.
  * @note Exits with error if no field exists with that number.
  */
-int parse_delim_field (char *line, int fld_no, char *delim, char *return_field, evalresp_log_t *log);
+int parse_delim_field (char *line, int fld_no, char *delim, char *return_field, evalresp_logger *log);
 
 /* utility routines that are used to parse the input file line by line and
  convert the input to what the user wants */
@@ -102,7 +102,7 @@ int parse_delim_field (char *line, int fld_no, char *delim, char *return_field, 
  * @param[in] log Logging structure.
  * @returns Array of string objects.
  */
-struct string_array *ev_parse_line (char *line, evalresp_log_t *log);
+struct string_array *ev_parse_line (char *line, evalresp_logger *log);
 
 /**
  * @private
@@ -118,7 +118,7 @@ struct string_array *ev_parse_line (char *line, evalresp_log_t *log);
  * @param[in] log Logging structure.
  * @returns Array of string objects.
  */
-struct string_array *parse_delim_line (char *line, char *delim, evalresp_log_t *log);
+struct string_array *parse_delim_line (char *line, char *delim, evalresp_logger *log);
 
 /**
  * @private
@@ -140,7 +140,7 @@ struct string_array *parse_delim_line (char *line, char *delim, evalresp_log_t *
  *       white space.
  */
 int get_field (FILE *fptr, char *return_field, int blkt_no, int fld_no,
-               char *sep, int fld_wanted, evalresp_log_t *log);
+               char *sep, int fld_wanted, evalresp_logger *log);
 
 /**
  * @private
@@ -163,7 +163,7 @@ int get_field (FILE *fptr, char *return_field, int blkt_no, int fld_no,
  *       white space.
  */
 int test_field (FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
-                char *sep, int fld_wanted, evalresp_log_t *log);
+                char *sep, int fld_wanted, evalresp_logger *log);
 /**
  * @private
  * @ingroup evalresp_private_string
@@ -186,7 +186,7 @@ int test_field (FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
  *                        expect. Support for SHAPE formatte RESP files, and
  *                        to skip blank lines.
  */
-int get_line (FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, evalresp_log_t *log);
+int get_line (FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, evalresp_logger *log);
 
 /**
  * @private
@@ -205,7 +205,7 @@ int get_line (FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep,
  *          and @p blkt_no).
  * @author 2004.079: SBH: Added code to skip blank lines.
  */
-int next_line (FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *sep, evalresp_log_t *log);
+int next_line (FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *sep, evalresp_logger *log);
 
 /**
  * @private
@@ -221,7 +221,7 @@ int next_line (FILE *fptr, char *return_line, int *blkt_no, int *fld_no, char *s
  * @returns @c NULL if no non-comment line is found.
  * @author 2004.079: SBH: Added code to skip blank lines.
  */
-int check_line (FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_log_t *log);
+int check_line (FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_logger *log);
 
 /**
  * @private
@@ -233,7 +233,7 @@ int check_line (FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_l
  * @param[in] log Logging structure.
  * @returns Integer value on success.
  */
-int get_int (char *in_line, evalresp_log_t *log);
+int get_int (char *in_line, evalresp_logger *log);
 
 /**
  * @private
@@ -246,7 +246,7 @@ int get_int (char *in_line, evalresp_log_t *log);
  * @param[in] log Logging structure.
  * @returns Double value on success.
  */
-double get_double (char *in_line, evalresp_log_t *log);
+double get_double (char *in_line, evalresp_logger *log);
 
 /**
  * @private
@@ -262,7 +262,7 @@ double get_double (char *in_line, evalresp_log_t *log);
  * @param[in] log Logging structure.
  * @see units
  */
-int check_units (evalresp_channel *channel, char *line, evalresp_log_t *log);
+int check_units (evalresp_channel *channel, char *line, evalresp_logger *log);
 
 /**
  * @private
@@ -311,7 +311,7 @@ int is_IIR_coeffs (FILE *fp, int position);
  *       information to be reread.
  */
 int find_resp (FILE *fptr, evalresp_sncls *scn_lst, char *datime,
-               evalresp_channel *this_channel, evalresp_log_t *log);
+               evalresp_channel *this_channel, evalresp_logger *log);
 
 /**
  * @private
@@ -332,7 +332,7 @@ int find_resp (FILE *fptr, evalresp_sncls *scn_lst, char *datime,
  * @param[in] log Logging structure.
  * @returns First field number.
  */
-int parse_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log);
+int parse_channel (FILE *fptr, evalresp_channel *chan, evalresp_logger *log);
 
 /* parsing routines for various types of filters */
 
@@ -352,7 +352,7 @@ int parse_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log);
  * @returns 0 on failure.
  */
 //int read_pref (evalresp_log_t *log, char * const line, int *blkt_no, int *fld_no);
-int parse_pref (int *blkt_no, int *fld_no, char *line, evalresp_log_t *log);
+int parse_pref (int *blkt_no, int *fld_no, char *line, evalresp_logger *log);
 
 /**
  * @private
@@ -369,4 +369,4 @@ int parse_pref (int *blkt_no, int *fld_no, char *line, evalresp_log_t *log);
  * @param[in,out] stage_ptr Stage structure.
  * @param[in] log Logging structure.
  */
-void parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log);
+void parse_pz (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_logger *log);

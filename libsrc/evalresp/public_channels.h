@@ -257,7 +257,7 @@ TODO IGD: finish the description
 */
 
 int
-evalresp_alloc_channels (evalresp_log_t *log, evalresp_channels **channels);
+evalresp_alloc_channels (evalresp_logger *log, evalresp_channels **channels);
 
 /**
  * @public

@@ -19,7 +19,7 @@
 #endif
 
 /* Read an XML file from the given stream and create an in-memory model. */
-static int stream2doc(evalresp_log_t *log, FILE *in, mxml_node_t **doc) {
+static int stream2doc(evalresp_logger *log, FILE *in, mxml_node_t **doc) {
 
     int status = X2R_OK;
 
@@ -50,7 +50,7 @@ void free_nodelist(nodelist **nodes) {
 
 
 /* Find all children with the given name. */
-static int find_children(evalresp_log_t *log, nodelist **result, mxml_node_t *from, const char *name) {
+static int find_children(evalresp_logger *log, nodelist **result, mxml_node_t *from, const char *name) {
 
     int status = X2R_OK;
     mxml_node_t *child;
@@ -91,7 +91,7 @@ static int find_children(evalresp_log_t *log, nodelist **result, mxml_node_t *fr
  *
  * Other children (possible duplicates) are ignored.
  */
-static int find_child(evalresp_log_t *log, mxml_node_t **result, int* found, mxml_node_t *from,
+static int find_child(evalresp_logger *log, mxml_node_t **result, int* found, mxml_node_t *from,
         const char *name) {
 
     int status = X2R_OK, count = 0;
@@ -126,7 +126,7 @@ static int find_child(evalresp_log_t *log, mxml_node_t **result, int* found, mxm
 
 
 /* Read the text contents of an element as a char*. */
-static int char_element(evalresp_log_t *log, mxml_node_t *node, const char *name,
+static int char_element(evalresp_logger *log, mxml_node_t *node, const char *name,
         const char *deflt, char **value) {
 
     int status = X2R_OK, found;
@@ -163,7 +163,7 @@ static int char_element(evalresp_log_t *log, mxml_node_t *node, const char *name
 
 
 /* Read the text contents of an element as an int. */
-static int int_element(evalresp_log_t *log, mxml_node_t *node, const char *name,
+static int int_element(evalresp_logger *log, mxml_node_t *node, const char *name,
         const char *deflt, int *value) {
 
     int status = X2R_OK;
@@ -184,7 +184,7 @@ static int int_element(evalresp_log_t *log, mxml_node_t *node, const char *name,
 
 
 /* Read the text contents of an element as a double. */
-static int double_element(evalresp_log_t *log, mxml_node_t *node, const char *name,
+static int double_element(evalresp_logger *log, mxml_node_t *node, const char *name,
         const char *deflt, double *value) {
 
     int status = X2R_OK;
@@ -205,7 +205,7 @@ static int double_element(evalresp_log_t *log, mxml_node_t *node, const char *na
 
 
 /* Read an attribute value as a char*. */
-static int char_attribute(evalresp_log_t *log, mxml_node_t *node, const char *name,
+static int char_attribute(evalresp_logger *log, mxml_node_t *node, const char *name,
         const char *deflt, char **value) {
 
     int status = X2R_OK;
@@ -234,7 +234,7 @@ static int char_attribute(evalresp_log_t *log, mxml_node_t *node, const char *na
  * the IRIS-WS code elsewhere).  Originally used strptime, but that's not available on
  * Windows.
  */
-int x2r_parse_iso_datetime(evalresp_log_t *log, const char *datetime, time_t *epoch) {
+int x2r_parse_iso_datetime(evalresp_logger *log, const char *datetime, time_t *epoch) {
 
     int status = X2R_OK, year, month;
     struct tm tm;
@@ -263,7 +263,7 @@ int x2r_parse_iso_datetime(evalresp_log_t *log, const char *datetime, time_t *ep
 
 
 /* Read an attribute value as an ISO formatted epoch. */
-static int datetime_attribute(evalresp_log_t *log, mxml_node_t *node, const char *name, time_t *epoch) {
+static int datetime_attribute(evalresp_logger *log, mxml_node_t *node, const char *name, time_t *epoch) {
 
     int status = X2R_OK;
     char *value = NULL;
@@ -278,7 +278,7 @@ static int datetime_attribute(evalresp_log_t *log, mxml_node_t *node, const char
 
 
 /* Read an attribute value as an int. */
-static int int_attribute(evalresp_log_t *log, mxml_node_t *node, const char *name,
+static int int_attribute(evalresp_logger *log, mxml_node_t *node, const char *name,
         const char *deflt, int *value) {
 
     int status = X2R_OK;
@@ -298,7 +298,7 @@ static int int_attribute(evalresp_log_t *log, mxml_node_t *node, const char *nam
 
 
 /* Read an attribute value as double. */
-static int double_attribute(evalresp_log_t *log, mxml_node_t *node, const char *name, double *value) {
+static int double_attribute(evalresp_logger *log, mxml_node_t *node, const char *name, double *value) {
 
     int status = X2R_OK;
     char *text = NULL, *end;
@@ -317,7 +317,7 @@ static int double_attribute(evalresp_log_t *log, mxml_node_t *node, const char *
 
 
 /* Read an x2r_float value from the given path. */
-static int parse_float(evalresp_log_t *log, mxml_node_t *parent, const char *path, x2r_float *flt) {
+static int parse_float(evalresp_logger *log, mxml_node_t *parent, const char *path, x2r_float *flt) {
 
     int status = X2R_OK;
     mxml_node_t *node;
@@ -337,7 +337,7 @@ static int parse_float(evalresp_log_t *log, mxml_node_t *parent, const char *pat
 
 
 /* Read an x2r_pole_zero value from the current node. */
-static int parse_pole_zero(evalresp_log_t *log, mxml_node_t *node, x2r_pole_zero *pole_zero) {
+static int parse_pole_zero(evalresp_logger *log, mxml_node_t *node, x2r_pole_zero *pole_zero) {
 
     int status = X2R_OK;
 
@@ -354,7 +354,7 @@ static int parse_pole_zero(evalresp_log_t *log, mxml_node_t *node, x2r_pole_zero
 
 
 /* Read an x2r_coefficient value from the current node. */
-static int parse_coefficient(evalresp_log_t *log, mxml_node_t *node, x2r_coefficient *coefficient) {
+static int parse_coefficient(evalresp_logger *log, mxml_node_t *node, x2r_coefficient *coefficient) {
 
     int status = X2R_OK;
 
@@ -369,7 +369,7 @@ static int parse_coefficient(evalresp_log_t *log, mxml_node_t *node, x2r_coeffic
 
 
 /* Read an x2r_response_list_element value from the current node. */
-static int parse_response_list_element(evalresp_log_t *log, mxml_node_t *node,
+static int parse_response_list_element(evalresp_logger *log, mxml_node_t *node,
         x2r_response_list_element *element) {
 
     int status = X2R_OK;
@@ -387,7 +387,7 @@ static int parse_response_list_element(evalresp_log_t *log, mxml_node_t *node,
 
 
 /* Read an x2r_numerator_coefficient value from the current node. */
-static int parse_numerator_coefficient(evalresp_log_t *log, mxml_node_t *node,
+static int parse_numerator_coefficient(evalresp_logger *log, mxml_node_t *node,
         x2r_numerator_coefficient *numerator_coefficient) {
 
     int status = X2R_OK;
@@ -405,7 +405,7 @@ static int parse_numerator_coefficient(evalresp_log_t *log, mxml_node_t *node,
 
 
 /* Read an x2r_units value from the given path. */
-static int parse_units(evalresp_log_t *log, mxml_node_t *parent, const char *path,
+static int parse_units(evalresp_logger *log, mxml_node_t *parent, const char *path,
         x2r_units *units) {
 
     int status = X2R_OK;
@@ -434,7 +434,7 @@ static int free_units(x2r_units *units, int status) {
 
 
 /* Parse the (non-pole/zero) data associated with poles and zeros. */
-static int parse_poles_zeros_data(evalresp_log_t *log, mxml_node_t *node,
+static int parse_poles_zeros_data(evalresp_logger *log, mxml_node_t *node,
         x2r_poles_zeros *poles_zeros) {
 
     int status = X2R_OK;
@@ -459,7 +459,7 @@ static int parse_poles_zeros_data(evalresp_log_t *log, mxml_node_t *node,
 
 
 /* Parse the zeros. */
-static int parse_poles_zeros_zeros(evalresp_log_t *log, mxml_node_t *node,
+static int parse_poles_zeros_zeros(evalresp_logger *log, mxml_node_t *node,
         x2r_poles_zeros *poles_zeros) {
 
     int status = X2R_OK, i;
@@ -482,7 +482,7 @@ static int parse_poles_zeros_zeros(evalresp_log_t *log, mxml_node_t *node,
 
 
 /* Parse the poles. */
-static int parse_poles_zeros_poles(evalresp_log_t *log, mxml_node_t *node,
+static int parse_poles_zeros_poles(evalresp_logger *log, mxml_node_t *node,
         x2r_poles_zeros *poles_zeros) {
 
     int status = X2R_OK, i;
@@ -504,7 +504,7 @@ static int parse_poles_zeros_poles(evalresp_log_t *log, mxml_node_t *node,
 
 
 /* Read an x2r_poles_zeros value from the current node. */
-static int parse_poles_zeros(evalresp_log_t *log, mxml_node_t *node,
+static int parse_poles_zeros(evalresp_logger *log, mxml_node_t *node,
         x2r_poles_zeros *poles_zeros) {
 
     int status = X2R_OK;
@@ -535,7 +535,7 @@ static int free_poles_zeros(x2r_poles_zeros *poles_zeros, int status) {
 
 
 /* Parse the (non-numerator/denominator) data associated with coefficients. */
-static int parse_coefficients_data(evalresp_log_t *log, mxml_node_t *node,
+static int parse_coefficients_data(evalresp_logger *log, mxml_node_t *node,
         x2r_coefficients *coefficients) {
 
     int status = X2R_OK;
@@ -554,7 +554,7 @@ static int parse_coefficients_data(evalresp_log_t *log, mxml_node_t *node,
 
 
 /* Parse the numerators. */
-static int parse_coefficients_numerators(evalresp_log_t *log, mxml_node_t *node,
+static int parse_coefficients_numerators(evalresp_logger *log, mxml_node_t *node,
         x2r_coefficients *coefficients) {
 
     int status = X2R_OK, i;
@@ -580,7 +580,7 @@ static int parse_coefficients_numerators(evalresp_log_t *log, mxml_node_t *node,
 
 
 /* Parse the denominators. */
-static int parse_coefficients_denominators(evalresp_log_t *log, mxml_node_t *node,
+static int parse_coefficients_denominators(evalresp_logger *log, mxml_node_t *node,
         x2r_coefficients *coefficients) {
 
     int status = X2R_OK, i;
@@ -606,7 +606,7 @@ static int parse_coefficients_denominators(evalresp_log_t *log, mxml_node_t *nod
 
 
 /* Read an x2r_coefficients value from the current node. */
-static int parse_coefficients(evalresp_log_t *log, mxml_node_t *node,
+static int parse_coefficients(evalresp_logger *log, mxml_node_t *node,
         x2r_coefficients *coefficients) {
 
     int status = X2R_OK;
@@ -637,7 +637,7 @@ static int free_coefficients(x2r_coefficients *coefficients, int status) {
 
 
 /* Read an x2r_response_list value from the current node. */
-static int parse_response_list(evalresp_log_t *log, mxml_node_t *node,
+static int parse_response_list(evalresp_logger *log, mxml_node_t *node,
         x2r_response_list *response_list) {
 
     int status = X2R_OK, i;
@@ -682,7 +682,7 @@ static int free_response_list(x2r_response_list *response_list, int status) {
 
 
 /* Parse (non-numerator/denominator) FIR data. */
-static int parse_fir_data(evalresp_log_t *log, mxml_node_t *node, x2r_fir *fir) {
+static int parse_fir_data(evalresp_logger *log, mxml_node_t *node, x2r_fir *fir) {
 
     int status = X2R_OK;
 
@@ -700,7 +700,7 @@ static int parse_fir_data(evalresp_log_t *log, mxml_node_t *node, x2r_fir *fir) 
 
 
 /* Read an x2r_fir value from the current node. */
-static int parse_fir(evalresp_log_t *log, mxml_node_t *node, x2r_fir *fir) {
+static int parse_fir(evalresp_logger *log, mxml_node_t *node, x2r_fir *fir) {
 
     int status = X2R_OK, i;
     nodelist *numerator_coefficients = NULL;
@@ -742,7 +742,7 @@ static int free_fir(x2r_fir *fir, int status) {
 
 
 /* Parse (non-coefficient) polynomial data. */
-static int parse_polynomial_data(evalresp_log_t *log, mxml_node_t *node,
+static int parse_polynomial_data(evalresp_logger *log, mxml_node_t *node,
         x2r_polynomial *polynomial) {
 
     int status = X2R_OK;
@@ -777,7 +777,7 @@ static int parse_polynomial_data(evalresp_log_t *log, mxml_node_t *node,
 
 
 /* Read an x2r_polynomial value from the current node. */
-static int parse_polynomial(evalresp_log_t *log, mxml_node_t *node, x2r_polynomial *polynomial) {
+static int parse_polynomial(evalresp_logger *log, mxml_node_t *node, x2r_polynomial *polynomial) {
 
     int status = X2R_OK, i;
     nodelist *coefficents = NULL;
@@ -819,7 +819,7 @@ static int free_polynomial(x2r_polynomial *polynomial, int status) {
 
 
 /* Read an x2r_decimation value from the current node. */
-static int parse_decimation(evalresp_log_t *log, mxml_node_t *node, x2r_decimation *decimation) {
+static int parse_decimation(evalresp_logger *log, mxml_node_t *node, x2r_decimation *decimation) {
 
     int status = X2R_OK;
 
@@ -845,7 +845,7 @@ static int parse_decimation(evalresp_log_t *log, mxml_node_t *node, x2r_decimati
 
 
 /* Read an x2r_gain value from the current node. */
-static int parse_gain(evalresp_log_t *log, mxml_node_t *node, x2r_gain *gain) {
+static int parse_gain(evalresp_logger *log, mxml_node_t *node, x2r_gain *gain) {
 
     int status = X2R_OK;
 
@@ -858,7 +858,7 @@ static int parse_gain(evalresp_log_t *log, mxml_node_t *node, x2r_gain *gain) {
 
 
 /* Set the stage type (checking it is not already set). */
-static int set_stage(evalresp_log_t *log, x2r_stage *stage, x2r_stage_type type) {
+static int set_stage(evalresp_logger *log, x2r_stage *stage, x2r_stage_type type) {
     if (stage->type) {
         evalresp_log(log, EV_ERROR, 0, "Multiple content in a single stage");
         return X2R_ERR_XML;
@@ -870,7 +870,7 @@ static int set_stage(evalresp_log_t *log, x2r_stage *stage, x2r_stage_type type)
 
 
 /* Read an x2r_stage value from the current node. */
-static int parse_stage(evalresp_log_t *log, mxml_node_t *node, x2r_stage *stage) {
+static int parse_stage(evalresp_logger *log, mxml_node_t *node, x2r_stage *stage) {
 
     int status = X2R_OK, found;
     mxml_node_t *poles_zeros, *coefficients, *response_list, *fir, *polynomial;
@@ -1015,7 +1015,7 @@ static int free_stage(x2r_stage *stage, int status) {
 
 
 /* Read an x2r_response value from the current node. */
-static int parse_response(evalresp_log_t *log, mxml_node_t *node, x2r_response *response) {
+static int parse_response(evalresp_logger *log, mxml_node_t *node, x2r_response *response) {
 
     int status = X2R_OK, i, found;
     nodelist *stages = NULL;
@@ -1086,7 +1086,7 @@ static int free_response(x2r_response *response, int status) {
 
 
 /* Read an x2r_channel value from the current node. */
-static int parse_channel(evalresp_log_t *log, mxml_node_t *node, x2r_channel *channel) {
+static int parse_channel(evalresp_logger *log, mxml_node_t *node, x2r_channel *channel) {
 
     int status = X2R_OK;
     mxml_node_t *response;
@@ -1123,7 +1123,7 @@ static int free_channel(x2r_channel *channel, int status) {
 
 
 /* Read an x2r_station value from the current node. */
-static int parse_station(evalresp_log_t *log, mxml_node_t *node, x2r_station *station) {
+static int parse_station(evalresp_logger *log, mxml_node_t *node, x2r_station *station) {
 
     int status = X2R_OK, i;
     nodelist *stations = NULL;
@@ -1164,7 +1164,7 @@ static int free_station(x2r_station *station, int status) {
 
 
 /* Read an x2r_network value from the current node. */
-static int parse_network(evalresp_log_t *log, mxml_node_t *node, x2r_network *network) {
+static int parse_network(evalresp_logger *log, mxml_node_t *node, x2r_network *network) {
 
     int status = X2R_OK, i;
     nodelist *stations = NULL;
@@ -1205,7 +1205,7 @@ static int free_network(x2r_network *network, int status) {
 
 
 /* Read an x2r_fdsn_station_xml value from the current node. */
-int x2r_parse_fdsn_station_xml(evalresp_log_t *log, mxml_node_t *doc, x2r_fdsn_station_xml **root) {
+int x2r_parse_fdsn_station_xml(evalresp_logger *log, mxml_node_t *doc, x2r_fdsn_station_xml **root) {
 
     int status = X2R_OK, i;
     mxml_node_t *fdsn = NULL;
@@ -1255,7 +1255,7 @@ int x2r_free_fdsn_station_xml(x2r_fdsn_station_xml *root, int status) {
  * The equivalent of StationService.load() in IRIS-WS, constructing an in-memory
  * representation of the station.xml file read from the given stream.
  */
-int x2r_station_service_load(evalresp_log_t *log, FILE *in, x2r_fdsn_station_xml **root) {
+int x2r_station_service_load(evalresp_logger *log, FILE *in, x2r_fdsn_station_xml **root) {
 
     int status = X2R_OK;
     mxml_node_t *doc = NULL;

@@ -1082,7 +1082,7 @@ void bc_val ( int n, double t, double xcon[], double ycon[], double *xval,
 }
 /******************************************************************************/
 
-double bez_val ( int n, double x, double a, double b, double y[], evalresp_log_t *log )
+double bez_val ( int n, double x, double a, double b, double y[], evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -1179,7 +1179,7 @@ double bez_val ( int n, double x, double a, double b, double y[], evalresp_log_t
 }
 /******************************************************************************/
 
-double bpab_approx ( int n, double a, double b, double ydata[], double xval, evalresp_log_t *log )
+double bpab_approx ( int n, double a, double b, double ydata[], double xval, evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -1381,7 +1381,7 @@ double *bp01 ( int n, double x )
 }
 /******************************************************************************/
 
-double *bpab ( int n, double a, double b, double x, evalresp_log_t *log )
+double *bpab ( int n, double a, double b, double x, evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -1490,7 +1490,7 @@ double *bpab ( int n, double a, double b, double x, evalresp_log_t *log )
 /******************************************************************************/
 
 int chfev ( double x1, double x2, double f1, double f2, double d1, double d2,
-  int ne, double xe[], double fe[], int next[], evalresp_log_t *log )
+  int ne, double xe[], double fe[], int next[], evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -1977,7 +1977,7 @@ void d3_print_some ( int n, double a[], int ilo, int jlo, int ihi, int jhi )
 }
 /******************************************************************************/
 
-double *d3_uniform ( int n, int *seed, evalresp_log_t *log )
+double *d3_uniform ( int n, int *seed, evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -2056,7 +2056,7 @@ double *d3_uniform ( int n, int *seed, evalresp_log_t *log )
 }
 /******************************************************************************/
 
-void data_to_dif ( int ntab, double xtab[], double ytab[], double diftab[], evalresp_log_t *log )
+void data_to_dif ( int ntab, double xtab[], double ytab[], double diftab[], evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -2273,7 +2273,7 @@ int i4_min ( int i1, int i2 )
 /******************************************************************************/
 
 void least_set ( int point_num, double x[], double f[], double w[],
-  int nterms, double b[], double c[], double d[], evalresp_log_t *log )
+  int nterms, double b[], double c[], double d[], evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -2652,7 +2652,7 @@ void least_val2 ( int nterms, double b[], double c[], double d[], double x,
 /******************************************************************************/
 
 void least_set_old ( int ntab, double xtab[], double ytab[], int ndeg,
-  double ptab[], double b[], double c[], double d[], double *eps, int *ierror, evalresp_log_t *log )
+  double ptab[], double b[], double c[], double d[], double *eps, int *ierror, evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -3008,7 +3008,7 @@ double least_val_old ( double x, int ndeg, double b[], double c[], double d[] )
 /******************************************************************************/
 
 void parabola_val2 ( int ndim, int ndata, double tdata[], double ydata[],
-  int left, double tval, double *yval, evalresp_log_t *log )
+  int left, double tval, double *yval, evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -3430,7 +3430,7 @@ double r8_uniform_01 ( int *seed )
 }
 /******************************************************************************/
 
-double *r8ge_fs_new ( int n, double a[], double b[], evalresp_log_t *log )
+double *r8ge_fs_new ( int n, double a[], double b[], evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -3646,7 +3646,7 @@ void r8vec_bracket ( int n, double x[], double xval, int *left,
 }
 /******************************************************************************/
 
-void r8vec_bracket3 ( int n, double t[], double tval, int *left, evalresp_log_t *log )
+void r8vec_bracket3 ( int n, double t[], double tval, int *left, evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -4172,7 +4172,7 @@ void r8vec_sort_bubble_a ( int n, double a[] )
 }
 /******************************************************************************/
 
-double *r8vec_uniform_new ( int n, double b, double c, int *seed, evalresp_log_t *log )
+double *r8vec_uniform_new ( int n, double b, double c, int *seed, evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -4698,7 +4698,7 @@ double spline_constant_val ( int ndata, double tdata[], double ydata[],
 /******************************************************************************/
 
 double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
-  double ybcbeg, int ibcend, double ybcend, evalresp_log_t *log )
+  double ybcbeg, int ibcend, double ybcend, evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -5166,7 +5166,7 @@ double spline_cubic_val ( int n, double t[], double y[], double ypp[],
 /******************************************************************************/
 
 void spline_cubic_val2 ( int n, double t[], double tval, int *left, double y[],
-  double ypp[], double *yval, double *ypval, double *yppval, evalresp_log_t *log )
+  double ypp[], double *yval, double *ypval, double *yppval, evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -5773,7 +5773,7 @@ void spline_linear_val ( int ndata, double tdata[], double ydata[],
 /******************************************************************************/
 
 double spline_overhauser_nonuni_val ( int ndata, double tdata[],
-  double ydata[], double tval, evalresp_log_t *log )
+  double ydata[], double tval, evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -5906,7 +5906,7 @@ double spline_overhauser_nonuni_val ( int ndata, double tdata[],
 /******************************************************************************/
 
 double spline_overhauser_uni_val ( int ndata, double tdata[], double ydata[],
-  double tval, evalresp_log_t *log )
+  double tval, evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -5992,7 +5992,7 @@ double spline_overhauser_uni_val ( int ndata, double tdata[], double ydata[],
 /******************************************************************************/
 
 void spline_overhauser_val ( int ndim, int ndata, double tdata[],
-  double ydata[], double tval, double yval[], evalresp_log_t *log )
+  double ydata[], double tval, double yval[], evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -6145,7 +6145,7 @@ void spline_overhauser_val ( int ndim, int ndata, double tdata[],
 }
 /******************************************************************************/
 
-void spline_pchip_set ( int n, double x[], double f[], double d[], evalresp_log_t *log )
+void spline_pchip_set ( int n, double x[], double f[], double d[], evalresp_logger *log )
 
 /******************************************************************************/
 /*
@@ -6382,7 +6382,7 @@ void spline_pchip_set ( int n, double x[], double f[], double d[], evalresp_log_
 /******************************************************************************/
 
 void spline_pchip_val ( int n, double x[], double f[], double d[],
-  int ne, double xe[], double fe[] , evalresp_log_t *log)
+  int ne, double xe[], double fe[] , evalresp_logger *log)
 
 /******************************************************************************/
 /*
@@ -6653,7 +6653,7 @@ void spline_pchip_val ( int n, double x[], double f[], double d[],
 /******************************************************************************/
 
 void spline_quadratic_val ( int ndata, double tdata[], double ydata[],
-  double tval, double *yval, double *ypval, evalresp_log_t *log)
+  double tval, double *yval, double *ypval, evalresp_logger *log)
 
 /******************************************************************************/
 /*

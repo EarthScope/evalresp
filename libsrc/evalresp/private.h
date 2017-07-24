@@ -281,7 +281,7 @@ struct matched_files
  * @returns 0 if false.
  * @returns >0 if true.
  */
-int is_int (const char *test, evalresp_log_t *log);
+int is_int (const char *test, evalresp_logger *log);
 
 /**
  * @private
@@ -293,7 +293,7 @@ int is_int (const char *test, evalresp_log_t *log);
  * @returns 0 if false.
  * @returns >0 if true.
 */
-int is_real (const char *test, evalresp_log_t *log);
+int is_real (const char *test, evalresp_logger *log);
 
 /**
  * @private
@@ -319,7 +319,7 @@ int is_real (const char *test, evalresp_log_t *log);
  *       information to be reread.
  */
 int get_resp (FILE *fptr, evalresp_sncl *scn, char *datime,
-              evalresp_channel *this_channel, evalresp_log_t *log);
+              evalresp_channel *this_channel, evalresp_logger *log);
 
 /**
  * @private
@@ -336,7 +336,7 @@ int get_resp (FILE *fptr, evalresp_sncl *scn, char *datime,
  * @returns 1 on success.
  * @returns 0 on failure.
  */
-int get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log);
+int get_channel (FILE *fptr, evalresp_channel *chan, evalresp_logger *log);
 
 /**
  * @private
@@ -353,7 +353,7 @@ int get_channel (FILE *fptr, evalresp_channel *chan, evalresp_log_t *log);
  * @returns 1 on success.
  * @returns 0 on failure.
  */
-int next_resp (FILE *fptr, evalresp_log_t *log);
+int next_resp (FILE *fptr, evalresp_logger *log);
 
 /* routines used to create a list of files matching the users request */
 
@@ -398,7 +398,7 @@ int next_resp (FILE *fptr, evalresp_log_t *log);
  * @returns @c NULL if no files were found that match request.
  */
 struct matched_files *find_files (char *file, evalresp_sncls *scn_lst,
-                                  int *mode, evalresp_log_t *log);
+                                  int *mode, evalresp_logger *log);
 
 /**
  * @private
@@ -409,7 +409,7 @@ struct matched_files *find_files (char *file, evalresp_sncls *scn_lst,
  * @param[in] log Logging structure.
  * @returns Number of files found matching the expression.
  */
-int get_names (char *in_file, struct matched_files *file, evalresp_log_t *log);
+int get_names (char *in_file, struct matched_files *file, evalresp_logger *log);
 
 /* routines used to allocate vectors of the basic data types used in the
  filter stages */
@@ -424,7 +424,7 @@ int get_names (char *in_file, struct matched_files *file, evalresp_log_t *log);
  * @returns @c NULL if @p npts is zero.
  * @warning Exits with error if allocation fails.
  */
-evalresp_complex *alloc_complex (int npts, evalresp_log_t *log);
+evalresp_complex *alloc_complex (int npts, evalresp_logger *log);
 
 /**
  * @private
@@ -439,7 +439,7 @@ evalresp_complex *alloc_complex (int npts, evalresp_log_t *log);
  * @returns @c NULL if @p npts is zero.
  * @warning Exits with error if allocation fails.
  */
-evalresp_response *alloc_response (int npts, evalresp_log_t *log);
+evalresp_response *alloc_response (int npts, evalresp_logger *log);
 
 /**
  * @private
@@ -452,7 +452,7 @@ evalresp_response *alloc_response (int npts, evalresp_log_t *log);
  * @returns @c NULL if @p nstrings is zero.
  * @warning Exits with error if allocation fails.
  */
-struct string_array *alloc_string_array (int nstrings, evalresp_log_t *log);
+struct string_array *alloc_string_array (int nstrings, evalresp_logger *log);
 
 /**
  * @private
@@ -462,7 +462,7 @@ struct string_array *alloc_string_array (int nstrings, evalresp_log_t *log);
  * @param[in] log Logging structure.
  * @warning Exits with error if allocation fails.
  */
-evalresp_sncl *alloc_scn (evalresp_log_t *log);
+evalresp_sncl *alloc_scn (evalresp_logger *log);
 
 /**
  * @private
@@ -474,7 +474,7 @@ evalresp_sncl *alloc_scn (evalresp_log_t *log);
  * @returns @c NULL if @p nscn is zero.
  * @warning Exits with error if allocation fails.
  */
-evalresp_sncls *alloc_scn_list (int nscn, evalresp_log_t *log);
+evalresp_sncls *alloc_scn_list (int nscn, evalresp_logger *log);
 
 /**
  * @private
@@ -484,7 +484,7 @@ evalresp_sncls *alloc_scn_list (int nscn, evalresp_log_t *log);
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-struct file_list *alloc_file_list (evalresp_log_t *log);
+struct file_list *alloc_file_list (evalresp_logger *log);
 
 /**
  * @private
@@ -494,7 +494,7 @@ struct file_list *alloc_file_list (evalresp_log_t *log);
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-struct matched_files *alloc_matched_files (evalresp_log_t *log);
+struct matched_files *alloc_matched_files (evalresp_logger *log);
 
 /**
  * @private
@@ -506,7 +506,7 @@ struct matched_files *alloc_matched_files (evalresp_log_t *log);
  * @returns @c NULL if @p npts is zero.
  * @warning Exits with error if allocation fails.
  */
-double *alloc_double (int npts, evalresp_log_t *log);
+double *alloc_double (int npts, evalresp_logger *log);
 
 /**
  * @private
@@ -518,7 +518,7 @@ double *alloc_double (int npts, evalresp_log_t *log);
  * @returns @c NULL if @p len is zero.
  * @warning Exits with error if allocation fails.
  */
-char *alloc_char (int len, evalresp_log_t *log);
+char *alloc_char (int len, evalresp_logger *log);
 
 /**
  * @private
@@ -530,7 +530,7 @@ char *alloc_char (int len, evalresp_log_t *log);
  * @returns @c NULL if @p len is zero.
  * @warning Exits with error if allocation fails.
  */
-char **alloc_char_ptr (int len, evalresp_log_t *log);
+char **alloc_char_ptr (int len, evalresp_logger *log);
 
 /* allocation routines for the various types of filters */
 
@@ -546,7 +546,7 @@ char **alloc_char_ptr (int len, evalresp_log_t *log);
  *       parsed.
  * @warning Exits with error if allocation fails.
  */
-evalresp_blkt *alloc_pz (evalresp_log_t *log);
+evalresp_blkt *alloc_pz (evalresp_logger *log);
 
 /**
  * @private
@@ -559,7 +559,7 @@ evalresp_blkt *alloc_pz (evalresp_log_t *log);
  *       parse_fir()).
  * @warning Exits with error if allocation fails.
  */
-evalresp_blkt *alloc_coeff (evalresp_log_t *log);
+evalresp_blkt *alloc_coeff (evalresp_logger *log);
 
 /**
  * @private
@@ -572,7 +572,7 @@ evalresp_blkt *alloc_coeff (evalresp_log_t *log);
  *       parse_fir()).
  * @warning Exits with error if allocation fails.
  */
-evalresp_blkt *alloc_fir (evalresp_log_t *log);
+evalresp_blkt *alloc_fir (evalresp_logger *log);
 
 /**
  * @private
@@ -582,7 +582,7 @@ evalresp_blkt *alloc_fir (evalresp_log_t *log);
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-evalresp_blkt *alloc_ref (evalresp_log_t *log);
+evalresp_blkt *alloc_ref (evalresp_logger *log);
 
 /**
  * @private
@@ -596,7 +596,7 @@ evalresp_blkt *alloc_ref (evalresp_log_t *log);
  *       partially parsed.
  * @warning Exits with error if allocation fails.
  */
-evalresp_blkt *alloc_gain (evalresp_log_t *log);
+evalresp_blkt *alloc_gain (evalresp_logger *log);
 
 /**
  * @private
@@ -609,7 +609,7 @@ evalresp_blkt *alloc_gain (evalresp_log_t *log);
  *       the number of frequencies is known.
  * @warning Exits with error if allocation fails.
  */
-evalresp_blkt *alloc_list (evalresp_log_t *log);
+evalresp_blkt *alloc_list (evalresp_logger *log);
 
 /**
  * @private
@@ -622,7 +622,7 @@ evalresp_blkt *alloc_list (evalresp_log_t *log);
  *       the number of frequencies is known.
  * @warning Exits with error if allocation fails.
  */
-evalresp_blkt *alloc_generic (evalresp_log_t *log);
+evalresp_blkt *alloc_generic (evalresp_logger *log);
 
 /**
  * @private
@@ -632,7 +632,7 @@ evalresp_blkt *alloc_generic (evalresp_log_t *log);
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-evalresp_blkt *alloc_deci (evalresp_log_t *log);
+evalresp_blkt *alloc_deci (evalresp_logger *log);
 
 /**
  * @private
@@ -643,7 +643,7 @@ evalresp_blkt *alloc_deci (evalresp_log_t *log);
  * @warning Exits with error if allocation fails.
  * @author 05/31/2013: IGD.
  */
-evalresp_blkt *alloc_polynomial (evalresp_log_t *log);
+evalresp_blkt *alloc_polynomial (evalresp_logger *log);
 
 /**
  * @private
@@ -653,7 +653,7 @@ evalresp_blkt *alloc_polynomial (evalresp_log_t *log);
  * @returns Pointer to allocated structure.
  * @warning Exits with error if allocation fails.
  */
-evalresp_stage *alloc_stage (evalresp_log_t *log);
+evalresp_stage *alloc_stage (evalresp_logger *log);
 
 /* routines to free up space associated with dynamically allocated
  structure members */
@@ -802,7 +802,7 @@ void free_channel (evalresp_channel *chan_ptr);
  * @param[in,out] stage_ptr Stage structure.
  * @param[in] log Logging structure.
  */
-void parse_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log);
+void parse_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_logger *log);
 
 /**
  * @private
@@ -820,7 +820,7 @@ void parse_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr
  * @param[in] log Logging structure.
  * @author 06/27/00: I.Dricker (i.dricker@isti.com) for 2.3.17 iir.
  */
-void parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log);
+void parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_logger *log);
 
 /**
  * @private
@@ -840,7 +840,7 @@ void parse_iir_coeff (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage
  *         Since currently the blockette 55 is not supported, we do not
  *         anticipate problems caused by this change.
  */
-void parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log);
+void parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_logger *log);
 
 /**
  * @private
@@ -856,7 +856,7 @@ void parse_list (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr,
  * @param[in,out] stage_ptr Stage structure.
  * @param[in] log Logging structure.
  */
-void parse_generic (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log);
+void parse_generic (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_logger *log);
 
 /**
  * @private
@@ -872,7 +872,7 @@ void parse_generic (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_p
  * @param[in] log Logging structure.
  * @returns Sequence number of the stage for verification.
  */
-int parse_deci (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_log_t *log);
+int parse_deci (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_logger *log);
 
 /**
  * @private
@@ -888,7 +888,7 @@ int parse_deci (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_log_t *log);
  * @param[in] log Logging structure.
  * @returns Sequence number of the stage for verification.
  */
-int parse_gain (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_log_t *log);
+int parse_gain (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_logger *log);
 
 /**
  * @private
@@ -904,7 +904,7 @@ int parse_gain (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_log_t *log);
  * @param[in,out] stage_ptr Stage structure.
  * @param[in] log Logging structure.
  */
-void parse_fir (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_log_t *log);
+void parse_fir (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, evalresp_logger *log);
 
 /**
  * @private
@@ -937,7 +937,7 @@ void parse_fir (FILE *fptr, evalresp_blkt *blkt_ptr, evalresp_stage *stage_ptr, 
  * @author 05/31/2013: IGD.
  */
 void parse_polynomial (FILE *fptr, evalresp_blkt *blkt_ptr,
-                       evalresp_stage *stage_ptr, evalresp_log_t *log);
+                       evalresp_stage *stage_ptr, evalresp_logger *log);
 
 /**
  * @private
@@ -1029,7 +1029,7 @@ int add_null (char *s, int len, char where);
  * @param[in] chan Channel structure.
  * @retval EVALRESP_OK on success
  */
-int check_channel (evalresp_log_t *log, evalresp_channel *chan);
+int check_channel (evalresp_logger *log, evalresp_channel *chan);
 
 /**
  * @private
@@ -1041,7 +1041,7 @@ int check_channel (evalresp_log_t *log, evalresp_channel *chan);
  * @param[in] chan Channel structure.
  * @param[in] log Logging structure.
  */
-void check_sym (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log);
+void check_sym (evalresp_blkt *f, evalresp_channel *chan, evalresp_logger *log);
 
 /* routines used to calculate the instrument responses */
 /**
@@ -1054,7 +1054,7 @@ void check_sym (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log);
  * @param[in] nfreqs Number if numbers in @p freq.
  * @param[in] output Output.
  */
-int calculate_response (evalresp_log_t *log, evalresp_options *options, evalresp_channel *chan, double *freq, int nfreqs, evalresp_complex *output);
+int calculate_response (evalresp_logger *log, evalresp_options *options, evalresp_channel *chan, double *freq, int nfreqs, evalresp_complex *output);
 
 /**
  * @private
@@ -1064,7 +1064,7 @@ int calculate_response (evalresp_log_t *log, evalresp_options *options, evalresp
  * @param[in] options object to control the flow of the conversion to responses
  * @param[in,out] chan Channel structure.
  */
-int normalize_response (evalresp_log_t *log, evalresp_options const *const options, evalresp_channel *chan);
+int normalize_response (evalresp_logger *log, evalresp_options const *const options, evalresp_channel *chan);
 
 /**
  * @private
@@ -1078,7 +1078,7 @@ int normalize_response (evalresp_log_t *log, evalresp_options const *const optio
  * @returns 0 if false.
  * @returns >0 if true.
  */
-int is_time (const char *test, evalresp_log_t *log);
+int is_time (const char *test, evalresp_logger *log);
 
 /**
  * @private
@@ -1112,7 +1112,7 @@ int timecmp (evalresp_datetime *dt1, evalresp_datetime *dt2);
 int interpolate_list_blockette (double **frequency_ptr,
                                 double **amplitude_ptr, double **phase_ptr,
                                 int *p_number_points, double *req_freq_arr,
-                                int req_num_freqs, evalresp_log_t *log);
+                                int req_num_freqs, evalresp_logger *log);
 
 /**
  * @private
@@ -1153,7 +1153,7 @@ double wrap_phase (double phase, double range, double *added_value);
  * @retval EVALRESP_OK on success
  */
 int
-parse_int (evalresp_log_t *log, const char *name, const char *str, int *value);
+parse_int (evalresp_logger *log, const char *name, const char *str, int *value);
 
 /**
  * @private
@@ -1166,7 +1166,7 @@ parse_int (evalresp_log_t *log, const char *name, const char *str, int *value);
  * @retval EVALRESP_OK on success
  */
 int
-parse_double (evalresp_log_t *log, const char *name, const char *str, double *value);
+parse_double (evalresp_logger *log, const char *name, const char *str, double *value);
 
 /**
  * @private
@@ -1179,7 +1179,7 @@ parse_double (evalresp_log_t *log, const char *name, const char *str, double *va
  * @retval EVALRESP_OK on success
  */
 int
-calloc_doubles (evalresp_log_t *log, const char *name, int n, double **array);
+calloc_doubles (evalresp_logger *log, const char *name, int n, double **array);
 
 /**
  * @private
@@ -1191,7 +1191,7 @@ calloc_doubles (evalresp_log_t *log, const char *name, int n, double **array);
  * @brief take information from file and converthem into responses
  * @retval EVALRESP_OK on success
  */
-int process_cwd (evalresp_log_t *log, evalresp_options *options,
+int process_cwd (evalresp_logger *log, evalresp_options *options,
                  evalresp_filter *filter, evalresp_responses **responses);
 
 /**
@@ -1204,7 +1204,7 @@ int process_cwd (evalresp_log_t *log, evalresp_options *options,
  * @brief take information form stdin and convert them to responses
  * @retval EVALRESP_OK on success
  */
-int process_stdio (evalresp_log_t *log, evalresp_options *options,
+int process_stdio (evalresp_logger *log, evalresp_options *options,
                    evalresp_filter *filter, evalresp_responses **responses);
 
 /**
@@ -1218,6 +1218,6 @@ int process_stdio (evalresp_log_t *log, evalresp_options *options,
  * @post files created in the current working directory
  * @retval EVALRESP_OK on success
  */
-int responses_to_cwd (evalresp_log_t *log, const evalresp_responses *responses,
+int responses_to_cwd (evalresp_logger *log, const evalresp_responses *responses,
                       evalresp_output_format format, int use_stdio);
 #endif

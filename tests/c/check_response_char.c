@@ -86,7 +86,7 @@ START_TEST (test_response_char_amp)
   char *test_string = NULL;
   double err;
   evalresp_response *response = NULL;
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
 
   ck_assert (NULL != getcwd (cwd, 1000));
 
@@ -106,7 +106,7 @@ START_TEST (test_response_char_phase)
   char *test_string = NULL;
   double err;
   evalresp_response *response = NULL;
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
 
   ck_assert (NULL != getcwd (cwd, 1000));
 

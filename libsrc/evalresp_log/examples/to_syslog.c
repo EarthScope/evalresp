@@ -4,7 +4,7 @@
 #include <syslog.h>
 
 int
-evalresp_log_intialize_log_for_syslog (evalresp_log_t *log, evalresp_syslog_data_t *data)
+evalresp_log_intialize_log_for_syslog (evalresp_logger *log, evalresp_syslog_data *data)
 {
   if (!log)
   {
@@ -14,10 +14,10 @@ evalresp_log_intialize_log_for_syslog (evalresp_log_t *log, evalresp_syslog_data
   log->func_data = (void *)data;
   return EXIT_SUCCESS;
 }
-evalresp_syslog_data_t *
+evalresp_syslog_data *
 evalresp_log_syslog_data_alloc (char *ident, int option, int facility)
 {
-  evalresp_syslog_data_t *log_opt = (evalresp_syslog_data_t *)calloc (1, sizeof (evalresp_syslog_data_t));
+  evalresp_syslog_data *log_opt = (evalresp_syslog_data *)calloc (1, sizeof (evalresp_syslog_data));
 
   if (!log_opt)
   {
@@ -29,7 +29,7 @@ evalresp_log_syslog_data_alloc (char *ident, int option, int facility)
   return log_opt;
 }
 void
-evalresp_log_syslog_data_free (evalresp_syslog_data_t *log_opt)
+evalresp_log_syslog_data_free (evalresp_syslog_data *log_opt)
 {
   if (!log_opt)
   {
@@ -39,9 +39,9 @@ evalresp_log_syslog_data_free (evalresp_syslog_data_t *log_opt)
 }
 
 int
-evalresp_log_to_syslog (evalresp_log_msg_t *msg, void *data)
+evalresp_log_to_syslog (evalresp_log_msg *msg, void *data)
 {
-  evalresp_syslog_data_t *log_opt = data;
+  evalresp_syslog_data *log_opt = data;
   int option, facility, level;
   char *ident;
   if (!msg)

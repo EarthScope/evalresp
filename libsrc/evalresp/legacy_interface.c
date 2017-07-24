@@ -126,7 +126,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
             double listinterp_tension, int useTotalSensitivityFlag,
             double x_for_b62, int xml_flag)
 {
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
   evalresp_options *options = NULL;
   evalresp_filter *filter = NULL;
   evalresp_responses *responses = NULL;
@@ -258,7 +258,7 @@ print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
             int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
             int useTotalSensitivityFlag)
 {
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
   evalresp_options *options = NULL;
   if (EVALRESP_OK != evalresp_new_options (log, &options))
   {
@@ -282,7 +282,7 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
                 char *rtype, int stdio_flag, int listinterp_out_flag,
                 double listinterp_tension, int unwrap_flag)
 {
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
   evalresp_responses responses[1];
   evalresp_response *ptr;
   evalresp_options *options = NULL;
@@ -333,7 +333,7 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
            evalresp_complex *output, const char *out_units, int start_stage,
            int stop_stage, int useTotalSensitivityFlag, double x_for_b62)
 {
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
   evalresp_options *options = NULL;
   if (EVALRESP_OK != evalresp_new_options (log, &options))
   {
@@ -370,7 +370,7 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
 void
 norm_resp (evalresp_channel *chan, int start_stage, int stop_stage)
 {
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
   evalresp_options *options = NULL;
   if (EVALRESP_OK != evalresp_new_options (log, &options))
   {

@@ -46,7 +46,7 @@
 // TODO - change mode to enum
 struct matched_files *
 find_files (char *file, evalresp_sncls *scn_lst,
-            int *mode, evalresp_log_t *log)
+            int *mode, evalresp_logger *log)
 {
   char *basedir, testdir[MAXLINELEN];
   char comp_name[MAXLINELEN], new_name[MAXLINELEN];
@@ -191,7 +191,7 @@ find_files (char *file, evalresp_sncls *scn_lst,
  expression in 'in_file'. */
 
 int
-get_names (char *in_file, struct matched_files *files, evalresp_log_t *log)
+get_names (char *in_file, struct matched_files *files, evalresp_logger *log)
 {
   struct file_list *lst_ptr, *tmp_ptr;
   glob_t globs;
@@ -268,7 +268,7 @@ get_names (char *in_file, struct matched_files *files, evalresp_log_t *log)
  matching the expression in 'in_file'. */
 
 int
-get_names (char *in_file, struct matched_files *files, evalresp_log_t *log)
+get_names (char *in_file, struct matched_files *files, evalresp_logger *log)
 {
   struct file_list *lst_ptr, *tmp_ptr;
   struct _finddata_t fblk; /* define block for 'findfirst()' fn */

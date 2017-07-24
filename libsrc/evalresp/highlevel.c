@@ -15,7 +15,7 @@ static char *prefixes[] = {"FAP", "AMP", "PHASE", "SPECTRA", "AMP/PHS"};
 #define FILENAME_TEMPLATE "%s.%s.%s.%s.%s"
 
 static int
-print_file (evalresp_log_t *log, evalresp_file_format format,
+print_file (evalresp_logger *log, evalresp_file_format format,
             int use_stdio, const evalresp_response *response)
 {
   int status = EVALRESP_OK, length;
@@ -50,7 +50,7 @@ print_file (evalresp_log_t *log, evalresp_file_format format,
 }
 
 int
-responses_to_cwd (evalresp_log_t *log, const evalresp_responses *responses,
+responses_to_cwd (evalresp_logger *log, const evalresp_responses *responses,
                   evalresp_output_format format, int use_stdio)
 {
   int status = EVALRESP_OK, i;
@@ -78,7 +78,7 @@ responses_to_cwd (evalresp_log_t *log, const evalresp_responses *responses,
 }
 
 int
-process_stdio (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter, evalresp_responses **responses)
+process_stdio (evalresp_logger *log, evalresp_options *options, evalresp_filter *filter, evalresp_responses **responses)
 {
   int status = EVALRESP_OK;
   evalresp_channels *channels;
@@ -98,7 +98,7 @@ process_stdio (evalresp_log_t *log, evalresp_options *options, evalresp_filter *
 
 // process a single named file
 static int
-process_file (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter, const char *filename, evalresp_responses **responses)
+process_file (evalresp_logger *log, evalresp_options *options, evalresp_filter *filter, const char *filename, evalresp_responses **responses)
 {
   int status = EVALRESP_OK;
   evalresp_channels *channels = NULL;
@@ -112,7 +112,7 @@ process_file (evalresp_log_t *log, evalresp_options *options, evalresp_filter *f
 }
 
 static int
-process_cwd_files (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter, struct matched_files *files, evalresp_responses **responses)
+process_cwd_files (evalresp_logger *log, evalresp_options *options, evalresp_filter *filter, struct matched_files *files, evalresp_responses **responses)
 {
   int status = EVALRESP_OK, i;
   struct matched_files *files_for_sncls;
@@ -146,7 +146,7 @@ process_cwd_files (evalresp_log_t *log, evalresp_options *options, evalresp_filt
 }
 
 int
-process_cwd (evalresp_log_t *log, evalresp_options *options,
+process_cwd (evalresp_logger *log, evalresp_options *options,
              evalresp_filter *filter, evalresp_responses **responses)
 {
   int status = EVALRESP_OK, mode;
@@ -168,7 +168,7 @@ process_cwd (evalresp_log_t *log, evalresp_options *options,
 }
 
 int
-evalresp_cwd_to_cwd (evalresp_log_t *log, evalresp_options *options, evalresp_filter *filter)
+evalresp_cwd_to_cwd (evalresp_logger *log, evalresp_options *options, evalresp_filter *filter)
 {
   int status;
   evalresp_responses *responses = NULL;

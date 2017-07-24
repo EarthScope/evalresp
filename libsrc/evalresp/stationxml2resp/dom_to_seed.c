@@ -14,7 +14,7 @@
 
 
 /* printf-style output with linefeed. */
-static int line(evalresp_log_t *log, FILE *out, const char *template, ...) {
+static int line(evalresp_logger *log, FILE *out, const char *template, ...) {
 
     int status = X2R_OK;
     va_list argp;
@@ -41,7 +41,7 @@ static int line(evalresp_log_t *log, FILE *out, const char *template, ...) {
 
 
 /* Print multiple lines, NULL terminated. */
-static int lines(evalresp_log_t *log, FILE *out, ...) {
+static int lines(evalresp_logger *log, FILE *out, ...) {
 
     int status = X2R_OK;
     va_list argp;
@@ -58,7 +58,7 @@ static int lines(evalresp_log_t *log, FILE *out, ...) {
 
 
 /* Format epoch as given. */
-static int format_date(evalresp_log_t *log, const time_t epoch, int n, char *template, char **date) {
+static int format_date(evalresp_logger *log, const time_t epoch, int n, char *template, char **date) {
 
     int status = X2R_OK;
     struct tm *tm;
@@ -83,13 +83,13 @@ static int format_date(evalresp_log_t *log, const time_t epoch, int n, char *tem
 
 
 /* Format epoch julian days. */
-static int format_date_yjhms(evalresp_log_t *log, const time_t epoch, char **date) {
+static int format_date_yjhms(evalresp_logger *log, const time_t epoch, char **date) {
     return format_date(log, epoch, strlen("YYYY,jjj,HH:MM:SS") + 1, "%Y,%j,%H:%M:%S", date);
 }
 
 
 /* Format epoch in American date style. */
-static int format_date_mdy(evalresp_log_t *log, time_t epoch, char **date) {
+static int format_date_mdy(evalresp_logger *log, time_t epoch, char **date) {
     return format_date(log, epoch, strlen("mm/dd/YYYY") + 1, "%m/%d/%Y", date);
 }
 
@@ -108,7 +108,7 @@ static void chrncpy(char *destn, const char *source, int len) {
 
 
 /* Pad the given text to the centre of the given width. */
-static int centre(evalresp_log_t *log, const char *text, int width, char **result) {
+static int centre(evalresp_logger *log, const char *text, int width, char **result) {
 
     int status = X2R_OK, margin, len;
 
@@ -130,7 +130,7 @@ static int centre(evalresp_log_t *log, const char *text, int width, char **resul
 
 
 /* Format a SNCL (without dots), centred as above. */
-static int centre_sncl(evalresp_log_t *log, const char *net, const char *stn, const x2r_channel *channel,
+static int centre_sncl(evalresp_logger *log, const char *net, const char *stn, const x2r_channel *channel,
         int width, char **result) {
 
     int status = X2R_OK, len;
@@ -188,7 +188,7 @@ static char *convert_symmetry(const char *symmetry) {
 
 
 /* Display a pretty comment box. */
-static int box(evalresp_log_t *log, FILE *out, const char *title, const char UNUSED *net, const char UNUSED *stn,
+static int box(evalresp_logger *log, FILE *out, const char *title, const char UNUSED *net, const char UNUSED *stn,
         const x2r_channel UNUSED *channel) {
 
     int status = X2R_OK;
@@ -229,7 +229,7 @@ static int box(evalresp_log_t *log, FILE *out, const char *title, const char UNU
 
 
 /* Print x2r_pole_zero. */
-static int print_pole_zero(evalresp_log_t *log, FILE *out, const char *tag, const char *name,
+static int print_pole_zero(evalresp_logger *log, FILE *out, const char *tag, const char *name,
         int n, x2r_pole_zero *pole_zero) {
 
     int status = X2R_OK, i;
@@ -251,7 +251,7 @@ static int print_pole_zero(evalresp_log_t *log, FILE *out, const char *tag, cons
 
 
 /* Print x2r_poles_zeros. */
-static int print_poles_zeros(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_poles_zeros(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_poles_zeros *poles_zeros) {
 
     int status = X2R_OK;
@@ -296,7 +296,7 @@ static int print_poles_zeros(evalresp_log_t *log, FILE *out, const char *net, co
 
 
 /* Print x2r_float as coefficients. */
-static int print_coefficient(evalresp_log_t *log, FILE *out, const char *tag, const char *name,
+static int print_coefficient(evalresp_logger *log, FILE *out, const char *tag, const char *name,
         int n, x2r_float *coefficient) {
 
     int status = X2R_OK, i;
@@ -318,7 +318,7 @@ static int print_coefficient(evalresp_log_t *log, FILE *out, const char *tag, co
 
 
 /* Print x2r_coefficients. */
-static int print_coefficients(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_coefficients(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_coefficients *coefficients) {
 
     int status = X2R_OK;
@@ -356,7 +356,7 @@ static int print_coefficients(evalresp_log_t *log, FILE *out, const char *net, c
 
 
 /* Print x2r_response_list. */
-static int print_response_list(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_response_list(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_response_list *response_list) {
 
     int status = X2R_OK, i;
@@ -390,7 +390,7 @@ static int print_response_list(evalresp_log_t *log, FILE *out, const char *net, 
 
 
 /* Print x2r_fir. */
-static int print_fir(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_fir(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_fir *fir) {
 
     int status = X2R_OK, i;
@@ -428,7 +428,7 @@ static int print_fir(evalresp_log_t *log, FILE *out, const char *net, const char
 
 
 /* Print x2r_polynomial. */
-static int print_polynomial(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_polynomial(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_polynomial *polynomial) {
 
     int status = X2R_OK, i;
@@ -488,7 +488,7 @@ static int print_polynomial(evalresp_log_t *log, FILE *out, const char *net, con
 
 
 /* Print x2r_decimation. */
-static int print_decimation(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_decimation(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_decimation *decimation) {
 
     int status = X2R_OK;
@@ -528,7 +528,7 @@ static int print_decimation(evalresp_log_t *log, FILE *out, const char *net, con
 
 
 /* Print x2r_gain. */
-static int print_stage_gain(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_stage_gain(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_gain *gain) {
 
     int status = X2R_OK;
@@ -553,7 +553,7 @@ static int print_stage_gain(evalresp_log_t *log, FILE *out, const char *net, con
 
 
 /* Print x2r_stage. */
-static int print_stage(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_stage(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, const x2r_stage *stage) {
 
     int status = X2R_OK;
@@ -598,7 +598,7 @@ static int print_stage(evalresp_log_t *log, FILE *out, const char *net, const ch
 
 
 /* Print x2r_response. */
-static int print_response(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_response(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, const x2r_response *response) {
 
     int status = X2R_OK, i;
@@ -624,7 +624,7 @@ static int print_response(evalresp_log_t *log, FILE *out, const char *net, const
 
 
 /* Print x2r_channel. */
-static int print_channel(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_channel(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel) {
 
     int status = X2R_OK;
@@ -668,7 +668,7 @@ static int print_channel(evalresp_log_t *log, FILE *out, const char *net, const 
 /*
  * Print the entire response document, given the in-memory model.
  */
-int x2r_resp_util_write(evalresp_log_t *log, FILE *out, const x2r_fdsn_station_xml *root) {
+int x2r_resp_util_write(evalresp_logger *log, FILE *out, const x2r_fdsn_station_xml *root) {
 
     int status = X2R_OK, i, j, k;
     x2r_network network;

@@ -66,7 +66,7 @@ zmul (evalresp_complex *val1, evalresp_complex *val2)
  * Convert response to velocity first, then to specified units
  *=================================================================*/
 static int
-convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, double w, evalresp_log_t *log)
+convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, double w, evalresp_logger *log)
 {
   int out = 0;
   evalresp_complex scale_val;
@@ -216,7 +216,7 @@ iir_trans (evalresp_blkt *blkt_ptr, double wint, evalresp_complex *out)
  *===============================================================*/
 static int
 calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
-                 double x_for_b62, evalresp_log_t *log)
+                 double x_for_b62, evalresp_logger *log)
 {
   double amp = 0, phase = 0;
   int j;
@@ -475,7 +475,7 @@ calc_time_shift (double delta, double w, evalresp_complex *out)
  *                   Normalize response
  *=================================================================*/
 int
-normalize_response (evalresp_log_t *log, evalresp_options const *const options, evalresp_channel *chan)
+normalize_response (evalresp_logger *log, evalresp_options const *const options, evalresp_channel *chan)
 {
   evalresp_stage *stage_ptr;
   evalresp_blkt *fil, *last_fil = NULL, *main_filt = NULL;
@@ -819,7 +819,7 @@ wrap_phase (double phase, double range, double *added_value)
 }
 
 int
-calculate_response (evalresp_log_t *log, evalresp_options *options,
+calculate_response (evalresp_logger *log, evalresp_options *options,
                     evalresp_channel *chan, double *freq, int nfreqs,
                     evalresp_complex *output)
 {

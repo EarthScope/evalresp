@@ -40,7 +40,7 @@ void evr_regsub (prog, source, dest, log)
     regexp *prog;
 char *source;
 char *dest;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register char *src;
   register char *dst;

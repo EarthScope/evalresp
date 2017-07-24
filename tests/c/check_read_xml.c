@@ -12,7 +12,7 @@ START_TEST (test_read_xml)
   FILE *in;
   fail_if (!(in = fopen ("./data/station-1.xml", "r")));
   /*XXX x2r_log *log; */
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
   /*XXX fail_if(x2r_alloc_log(X2R_DEBUG, stderr, &log)); */
   /*XXX fail_if(x2r_alloc_log(X2R_DEBUG, stderr, log)); */
   x2r_fdsn_station_xml *root = NULL;

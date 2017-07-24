@@ -16,7 +16,7 @@
 #include "evalresp_log/log.h"
 
 evalresp_complex *
-alloc_complex (int npts, evalresp_log_t *log)
+alloc_complex (int npts, evalresp_logger *log)
 {
   evalresp_complex *cptr;
 
@@ -36,7 +36,7 @@ alloc_complex (int npts, evalresp_log_t *log)
 }
 
 struct string_array *
-alloc_string_array (int nstrings, evalresp_log_t *log)
+alloc_string_array (int nstrings, evalresp_logger *log)
 {
   struct string_array *sl_ptr;
   int i;
@@ -67,7 +67,7 @@ alloc_string_array (int nstrings, evalresp_log_t *log)
 }
 
 evalresp_sncl *
-alloc_scn (evalresp_log_t *log)
+alloc_scn (evalresp_logger *log)
 {
   evalresp_sncl *scn_ptr;
 
@@ -117,7 +117,7 @@ alloc_scn (evalresp_log_t *log)
 }
 
 evalresp_response *
-alloc_response (int npts, evalresp_log_t *log)
+alloc_response (int npts, evalresp_logger *log)
 {
   evalresp_response *rptr;
   evalresp_complex *cvec;
@@ -154,7 +154,7 @@ alloc_response (int npts, evalresp_log_t *log)
 }
 
 evalresp_sncls *
-alloc_scn_list (int nscn, evalresp_log_t *log)
+alloc_scn_list (int nscn, evalresp_logger *log)
 {
   evalresp_sncls *sc_ptr;
   int i;
@@ -190,7 +190,7 @@ alloc_scn_list (int nscn, evalresp_log_t *log)
 }
 
 struct file_list *
-alloc_file_list (evalresp_log_t *log)
+alloc_file_list (evalresp_logger *log)
 {
   struct file_list *flst_ptr;
 
@@ -207,7 +207,7 @@ alloc_file_list (evalresp_log_t *log)
 }
 
 struct matched_files *
-alloc_matched_files (evalresp_log_t *log)
+alloc_matched_files (evalresp_logger *log)
 {
   struct matched_files *flst_ptr;
 
@@ -226,7 +226,7 @@ alloc_matched_files (evalresp_log_t *log)
 
 // TODO - replace with calloc_doubles below?
 double *
-alloc_double (int npts, evalresp_log_t *log)
+alloc_double (int npts, evalresp_logger *log)
 {
   double *dptr;
 
@@ -246,7 +246,7 @@ alloc_double (int npts, evalresp_log_t *log)
 }
 
 char *
-alloc_char (int len, evalresp_log_t *log)
+alloc_char (int len, evalresp_logger *log)
 {
   char *cptr;
 
@@ -266,7 +266,7 @@ alloc_char (int len, evalresp_log_t *log)
 }
 
 char **
-alloc_char_ptr (int len, evalresp_log_t *log)
+alloc_char_ptr (int len, evalresp_logger *log)
 {
   char **cptr;
 
@@ -286,7 +286,7 @@ alloc_char_ptr (int len, evalresp_log_t *log)
 }
 
 evalresp_blkt *
-alloc_pz (evalresp_log_t *log)
+alloc_pz (evalresp_logger *log)
 {
   evalresp_blkt *blkt_ptr;
 
@@ -308,7 +308,7 @@ alloc_pz (evalresp_log_t *log)
 }
 
 evalresp_blkt *
-alloc_coeff (evalresp_log_t *log)
+alloc_coeff (evalresp_logger *log)
 {
   evalresp_blkt *blkt_ptr;
 
@@ -331,7 +331,7 @@ alloc_coeff (evalresp_log_t *log)
 }
 
 evalresp_blkt *
-alloc_polynomial (evalresp_log_t *log)
+alloc_polynomial (evalresp_logger *log)
 {
   evalresp_blkt *blkt_ptr;
 
@@ -346,7 +346,7 @@ alloc_polynomial (evalresp_log_t *log)
 }
 
 evalresp_blkt *
-alloc_fir (evalresp_log_t *log)
+alloc_fir (evalresp_logger *log)
 {
   evalresp_blkt *blkt_ptr;
 
@@ -367,7 +367,7 @@ alloc_fir (evalresp_log_t *log)
 }
 
 evalresp_blkt *
-alloc_ref (evalresp_log_t *log)
+alloc_ref (evalresp_logger *log)
 {
   evalresp_blkt *blkt_ptr;
 
@@ -388,7 +388,7 @@ alloc_ref (evalresp_log_t *log)
 }
 
 evalresp_blkt *
-alloc_gain (evalresp_log_t *log)
+alloc_gain (evalresp_logger *log)
 {
   evalresp_blkt *blkt_ptr;
 
@@ -408,7 +408,7 @@ alloc_gain (evalresp_log_t *log)
 }
 
 evalresp_blkt *
-alloc_list (evalresp_log_t *log)
+alloc_list (evalresp_logger *log)
 {
   evalresp_blkt *blkt_ptr;
 
@@ -430,7 +430,7 @@ alloc_list (evalresp_log_t *log)
 }
 
 evalresp_blkt *
-alloc_generic (evalresp_log_t *log)
+alloc_generic (evalresp_logger *log)
 {
   evalresp_blkt *blkt_ptr;
 
@@ -451,7 +451,7 @@ alloc_generic (evalresp_log_t *log)
 }
 
 evalresp_blkt *
-alloc_deci (evalresp_log_t *log)
+alloc_deci (evalresp_logger *log)
 {
   evalresp_blkt *blkt_ptr;
 
@@ -474,7 +474,7 @@ alloc_deci (evalresp_log_t *log)
 }
 
 evalresp_stage *
-alloc_stage (evalresp_log_t *log)
+alloc_stage (evalresp_logger *log)
 {
   evalresp_stage *stage_ptr;
 
@@ -803,7 +803,7 @@ evalresp_free_responses (evalresp_responses *responses)
 }
 
 int
-evalresp_alloc_channels (evalresp_log_t *log, evalresp_channels **channels)
+evalresp_alloc_channels (evalresp_logger *log, evalresp_channels **channels)
 {
   int status = EVALRESP_OK;
   if (!(*channels = calloc (1, sizeof (**channels))))
@@ -833,7 +833,7 @@ evalresp_free_channels (evalresp_channels **channels)
 }
 
 int
-calloc_doubles (evalresp_log_t *log, const char *name, int n, double **array)
+calloc_doubles (evalresp_logger *log, const char *name, int n, double **array)
 {
   int status = EVALRESP_OK;
   if (!(*array = calloc (n, sizeof (**array))))

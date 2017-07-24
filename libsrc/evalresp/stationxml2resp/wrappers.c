@@ -20,7 +20,7 @@
  * @brief convert mxml generated structure to a response file storred as char *
  */
 static int
-save_mxml_service_to_char (evalresp_log_t *log, x2r_fdsn_station_xml *root, char **resp_out)
+save_mxml_service_to_char (evalresp_logger *log, x2r_fdsn_station_xml *root, char **resp_out)
 {
   FILE *tmp_fd = NULL;
   //int length = 0;
@@ -71,7 +71,7 @@ save_mxml_service_to_char (evalresp_log_t *log, x2r_fdsn_station_xml *root, char
  * @brief load the xml string into a mxml generated structure
  */
 static int
-load_mxml_service (evalresp_log_t *log, char *xml_in, x2r_fdsn_station_xml **root)
+load_mxml_service (evalresp_logger *log, char *xml_in, x2r_fdsn_station_xml **root)
 {
   int status;
   mxml_node_t *doc = NULL;
@@ -111,7 +111,7 @@ load_mxml_service (evalresp_log_t *log, char *xml_in, x2r_fdsn_station_xml **roo
  * @brief house keeping function to initiate xml -> resp files but stored as char *
  */
 static int
-convert_xml_to_char (evalresp_log_t *log, char *xml_in, char **resp_out)
+convert_xml_to_char (evalresp_logger *log, char *xml_in, char **resp_out)
 {
   int status;
   x2r_fdsn_station_xml *root = NULL;
@@ -128,7 +128,7 @@ convert_xml_to_char (evalresp_log_t *log, char *xml_in, char **resp_out)
 }
 
 int
-evalresp_xml_to_char (evalresp_log_t *log, int xml_flag, char *xml_in, char **resp_out)
+evalresp_xml_to_char (evalresp_logger *log, int xml_flag, char *xml_in, char **resp_out)
 {
   /* check to make sure we want this */
   if (!xml_flag)
@@ -140,7 +140,7 @@ evalresp_xml_to_char (evalresp_log_t *log, int xml_flag, char *xml_in, char **re
 }
 
 int
-evalresp_xml_stream_to_resp_file(evalresp_log_t *log, int xml_flag, FILE *xml_fd, const char * resp_filename, FILE **resp_fd)
+evalresp_xml_stream_to_resp_file(evalresp_logger *log, int xml_flag, FILE *xml_fd, const char * resp_filename, FILE **resp_fd)
 {
     int status;
     x2r_fdsn_station_xml *root = NULL;
@@ -193,7 +193,7 @@ evalresp_xml_stream_to_resp_file(evalresp_log_t *log, int xml_flag, FILE *xml_fd
 }
 
 int
-evalresp_xml_stream_to_resp_stream_auto(evalresp_log_t *log, FILE *xml_fd, const char * resp_filename, FILE **resp_fd)
+evalresp_xml_stream_to_resp_stream_auto(evalresp_logger *log, FILE *xml_fd, const char * resp_filename, FILE **resp_fd)
 {
   int xml_flag = 0;
   int status;

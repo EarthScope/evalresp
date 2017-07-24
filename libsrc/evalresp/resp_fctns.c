@@ -15,7 +15,7 @@
 #include "evalresp_log/log.h"
 
 static int
-merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log)
+merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_logger *log)
 {
   int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;
   double *amp1, *amp2, *phase1, *phase2, *freq1, *freq2;
@@ -100,7 +100,7 @@ merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_lo
 }
 
 static int
-merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log)
+merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_logger *log)
 {
   int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;
   double *coeffs1, *coeffs2;
@@ -164,7 +164,7 @@ merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_l
 }
 
 static void
-check_symmetry (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log)
+check_symmetry (evalresp_blkt *f, evalresp_channel *chan, evalresp_logger *log)
 {
   int nc, n0, k;
   double sum = 0.0;
@@ -216,7 +216,7 @@ check_symmetry (evalresp_blkt *f, evalresp_channel *chan, evalresp_log_t *log)
 }
 
 int
-check_channel (evalresp_log_t *log, evalresp_channel *chan)
+check_channel (evalresp_logger *log, evalresp_channel *chan)
 {
   evalresp_stage *stage_ptr, *next_stage, *prev_stage;
   evalresp_blkt *blkt_ptr, *next_blkt;
@@ -631,7 +631,7 @@ int
 interpolate_list_blockette (double **frequency_ptr,
                             double **amplitude_ptr, double **phase_ptr,
                             int *p_number_points, double *req_freq_arr,
-                            int req_num_freqs, evalresp_log_t *log)
+                            int req_num_freqs, evalresp_logger *log)
 {
   int i, num, status = EVALRESP_OK;
   double first_freq, last_freq, val, min_ampval;

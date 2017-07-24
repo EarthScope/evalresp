@@ -26,7 +26,7 @@ run_xml_to_char_test (const char *xml_path, const char *resp_path)
 {
   FILE *in_fd = NULL, *check_fd = NULL;
   char cwd[1000], *test_char = NULL, *test_xml = NULL, *check_char = NULL;
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
 
   ck_assert (NULL != getcwd (cwd, 1000));
   in_fd = open_path (cwd, xml_path);
@@ -63,7 +63,7 @@ END_TEST
 START_TEST (test_xml_to_char_0_flag)
 {
   char *test_xml = NULL, *test_char = NULL;
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
   ck_assert (EVALRESP_OK == evalresp_xml_to_char (log, 0, test_xml, &test_char));
 }
 END_TEST

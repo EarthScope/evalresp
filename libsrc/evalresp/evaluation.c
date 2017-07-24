@@ -15,7 +15,7 @@
 // new code as a clean wrapper for calc_resp etc.
 
 int
-evalresp_new_options (evalresp_log_t *log, evalresp_options **options)
+evalresp_new_options (evalresp_logger *log, evalresp_options **options)
 {
   int status = EVALRESP_OK;
   if (!(*options = calloc (1, sizeof (**options))))
@@ -46,14 +46,14 @@ evalresp_free_options (evalresp_options **options)
 }
 
 int
-evalresp_set_filename (evalresp_log_t *log, evalresp_options *options, const char *filename)
+evalresp_set_filename (evalresp_logger *log, evalresp_options *options, const char *filename)
 {
   options->filename = strdup (filename);
   return EVALRESP_OK;
 }
 
 int
-evalresp_set_frequency (evalresp_log_t *log, evalresp_options *options,
+evalresp_set_frequency (evalresp_logger *log, evalresp_options *options,
                         const char *min_freq, const char *max_freq, const char *nfreq)
 {
   int status = EVALRESP_OK;
@@ -74,7 +74,7 @@ typedef struct
 } option_pair;
 
 static int
-parse_option (evalresp_log_t *log, const char *name, int noptions, option_pair *options,
+parse_option (evalresp_logger *log, const char *name, int noptions, option_pair *options,
               const char *str, int *value)
 {
   int status = EVALRESP_OK, i, found = 0;
@@ -108,7 +108,7 @@ static option_pair formats[] = {
     {evalresp_complex_output_format, "CS"}};
 
 int
-evalresp_set_format (evalresp_log_t *log, evalresp_options *options,
+evalresp_set_format (evalresp_logger *log, evalresp_options *options,
                      const char *format)
 {
   int status = EVALRESP_OK, value;
@@ -127,7 +127,7 @@ static option_pair units[] = {
     {evalresp_acceleration_unit, "ACC"}};
 
 int
-evalresp_set_unit (evalresp_log_t *log, evalresp_options *options,
+evalresp_set_unit (evalresp_logger *log, evalresp_options *options,
                    const char *unit)
 {
   int status = EVALRESP_OK, value;
@@ -144,7 +144,7 @@ static option_pair spacings[] = {
     {1, "LIN"}};
 
 int
-evalresp_set_spacing (evalresp_log_t *log, evalresp_options *options,
+evalresp_set_spacing (evalresp_logger *log, evalresp_options *options,
                       const char *spacing)
 {
   int status = EVALRESP_OK, value;
@@ -157,21 +157,21 @@ evalresp_set_spacing (evalresp_log_t *log, evalresp_options *options,
 }
 
 int
-evalresp_set_start_stage (evalresp_log_t *log, evalresp_options *options,
+evalresp_set_start_stage (evalresp_logger *log, evalresp_options *options,
                           const char *stage)
 {
   return parse_int (log, "start stage", stage, &options->start_stage);
 }
 
 int
-evalresp_set_stop_stage (evalresp_log_t *log, evalresp_options *options,
+evalresp_set_stop_stage (evalresp_logger *log, evalresp_options *options,
                          const char *stage)
 {
   return parse_int (log, "stop stage", stage, &options->stop_stage);
 }
 
 int
-evalresp_set_b62_x (evalresp_log_t *log, evalresp_options *options,
+evalresp_set_b62_x (evalresp_logger *log, evalresp_options *options,
                     const char *b62_x)
 {
   return parse_double (log, "block 62 x value", b62_x, &options->b62_x);
@@ -179,7 +179,7 @@ evalresp_set_b62_x (evalresp_log_t *log, evalresp_options *options,
 
 // don't use alloc_response because it does too much
 static int
-local_alloc_response (evalresp_log_t *log, evalresp_response **response)
+local_alloc_response (evalresp_logger *log, evalresp_response **response)
 {
   int status = EVALRESP_OK;
   if (!(*response = calloc (1, sizeof (**response))))
@@ -197,7 +197,7 @@ is_block_55 (const evalresp_channel *channel)
 }
 
 static int
-validate_freqs (evalresp_log_t *log, evalresp_options *options)
+validate_freqs (evalresp_logger *log, evalresp_options *options)
 {
   int status = EVALRESP_OK;
 
@@ -224,7 +224,7 @@ validate_freqs (evalresp_log_t *log, evalresp_options *options)
 }
 
 static int
-calculate_default_freqs (evalresp_log_t *log, evalresp_options *options,
+calculate_default_freqs (evalresp_logger *log, evalresp_options *options,
                          evalresp_response *response)
 {
   int status = EVALRESP_OK, i;
@@ -270,7 +270,7 @@ calculate_default_freqs (evalresp_log_t *log, evalresp_options *options,
 }
 
 static int
-save_doubles (evalresp_log_t *log, const char *name, int n, double **dest, double *src)
+save_doubles (evalresp_logger *log, const char *name, int n, double **dest, double *src)
 {
   int status = EVALRESP_OK, i;
   if (!(status = calloc_doubles (log, name, n, dest)))
@@ -284,7 +284,7 @@ save_doubles (evalresp_log_t *log, const char *name, int n, double **dest, doubl
 }
 
 static int
-save_b55 (evalresp_log_t *log, evalresp_channel *channel,
+save_b55 (evalresp_logger *log, evalresp_channel *channel,
           evalresp_blkt **b55_save)
 {
   int status = EVALRESP_OK;
@@ -316,7 +316,7 @@ save_b55 (evalresp_log_t *log, evalresp_channel *channel,
 }
 
 static int
-restrict_frequency_range (evalresp_log_t *log, double lo, double hi, int *nfreqs, double *freqs)
+restrict_frequency_range (evalresp_logger *log, double lo, double hi, int *nfreqs, double *freqs)
 {
   int status = EVALRESP_OK, nbefore = 0, nafter = 0, i;
   while (*nfreqs && freqs[0] < lo)
@@ -355,7 +355,7 @@ restrict_frequency_range (evalresp_log_t *log, double lo, double hi, int *nfreqs
 }
 
 static int
-interpolate_b55 (evalresp_log_t *log, evalresp_channel *channel,
+interpolate_b55 (evalresp_logger *log, evalresp_channel *channel,
                  evalresp_response *response, evalresp_blkt **b55_save)
 {
   int status = EVALRESP_OK;
@@ -374,7 +374,7 @@ interpolate_b55 (evalresp_log_t *log, evalresp_channel *channel,
 }
 
 static int
-use_b55_freqs (evalresp_log_t *log, evalresp_channel *channel,
+use_b55_freqs (evalresp_logger *log, evalresp_channel *channel,
                evalresp_response *response)
 {
   int status = EVALRESP_OK;
@@ -414,7 +414,7 @@ restore_b55 (evalresp_channel *channel, evalresp_blkt *b55_save)
 }
 
 int
-evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
+evalresp_channel_to_response (evalresp_logger *log, evalresp_channel *channel,
                               evalresp_options *options, evalresp_response **response)
 {
   int status = EVALRESP_OK, free_options = 0;
@@ -487,7 +487,7 @@ evalresp_channel_to_response (evalresp_log_t *log, evalresp_channel *channel,
 }
 
 int
-evalresp_channels_to_responses (evalresp_log_t *log, evalresp_channels *channels,
+evalresp_channels_to_responses (evalresp_logger *log, evalresp_channels *channels,
                                 evalresp_options *options, evalresp_responses **responses)
 {
   int status = EVALRESP_OK, i;
@@ -518,4 +518,3 @@ evalresp_channels_to_responses (evalresp_log_t *log, evalresp_channels *channels
   }
   return status;
 }
-

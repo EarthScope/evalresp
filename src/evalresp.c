@@ -80,7 +80,7 @@ usage (char *program)
 }
 
 int
-parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *filter, evalresp_log_t **log)
+parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *filter, evalresp_logger **log)
 {
   int status = EVALRESP_OK, i;
   int first_switch = 0, flags_argc, option, index;
@@ -265,7 +265,7 @@ int
 main (int argc, char *argv[])
 {
   int status = EVALRESP_OK;
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
   evalresp_options *options = NULL;
   evalresp_filter *filter = NULL;
 

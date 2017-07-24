@@ -9,7 +9,7 @@
 
 START_TEST (test_parse_datetime)
 {
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
   time_t epoch, target = 946684800;
   fail_if (x2r_parse_iso_datetime (log, "2000-01-01T00:00:00", &epoch));
   fail_if (epoch != target, "Bad epoch: %ld (error %d)", epoch, epoch - target);
@@ -18,7 +18,7 @@ END_TEST
 
 START_TEST (test_32bit_bug)
 {
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
   time_t epoch, target = 4102444800;
   fail_if (x2r_parse_iso_datetime (log, "2100-01-01T00:00:00", &epoch));
   fail_if (epoch != target, "Bad epoch: %ld (error %d)", epoch, epoch - target);

@@ -174,16 +174,16 @@ static int regsize; /* Code size. */
 #ifndef STATIC
 #define STATIC static
 #endif
-STATIC char *reg (int, int *, evalresp_log_t *);
-STATIC char *regbranch (int *, evalresp_log_t *);
-STATIC char *regpiece (int *, evalresp_log_t *);
-STATIC char *regatom (int *, evalresp_log_t *);
+STATIC char *reg (int, int *, evalresp_logger *);
+STATIC char *regbranch (int *, evalresp_logger *);
+STATIC char *regpiece (int *, evalresp_logger *);
+STATIC char *regatom (int *, evalresp_logger *);
 STATIC char *regnode (char);
 STATIC char *regnext (register char *);
 STATIC void regc (char);
 STATIC void reginsert (char, char *);
 STATIC void regtail (char *, char *);
-STATIC void regoptail (char *, char *, evalresp_log_t *);
+STATIC void regoptail (char *, char *, evalresp_logger *);
 #ifdef STRCSPN
 STATIC int strcspn (char *, char *);
 #endif
@@ -204,7 +204,7 @@ STATIC int strcspn (char *, char *);
  * of the structure of the compiled regexp.
  */
 regexp *evr_regcomp (exp, log) char *exp;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register regexp *r;
   register char *scan;
@@ -295,7 +295,7 @@ evalresp_log_t *log;
  */
 static char *reg (paren, flagp, log) int paren; /* Parenthesized? */
 int *flagp;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register char *ret;
   register char *br;
@@ -373,7 +373,7 @@ evalresp_log_t *log;
  * Implements the concatenation operator.
  */
 static char *regbranch (flagp, log) int *flagp;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register char *ret;
   register char *chain;
@@ -412,7 +412,7 @@ evalresp_log_t *log;
  * endmarker role is not redundant.
  */
 static char *regpiece (flagp, log) int *flagp;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register char *ret;
   register char op;
@@ -481,7 +481,7 @@ evalresp_log_t *log;
  * separate node; the code is simpler that way and it's not worth fixing.
  */
 static char *regatom (flagp, log) int *flagp;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register char *ret;
   int flags;
@@ -697,7 +697,7 @@ char *val;
  */
 static void regoptail (p, val, log) char *p;
 char *val;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   /* "Operandless" and "op != BRANCH" are synonymous in practice. */
   if (p == NULL || p == &regdummy || OP (p) != BRANCH)
@@ -720,9 +720,9 @@ static char **regendp; /* Ditto for endp. */
 /*
  * Forwards.
  */
-STATIC int regtry (regexp *, char *, evalresp_log_t *);
-STATIC int regmatch (char *, evalresp_log_t *);
-STATIC int regrepeat (char *, evalresp_log_t *);
+STATIC int regtry (regexp *, char *, evalresp_logger *);
+STATIC int regmatch (char *, evalresp_logger *);
+STATIC int regrepeat (char *, evalresp_logger *);
 
 #ifdef DEBUG
 int regnarrate = 0;
@@ -735,7 +735,7 @@ STATIC char *regprop (char *);
  */
 int evr_regexec (prog, string, log) register regexp *prog;
 register char *string;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register char *s;
 
@@ -803,7 +803,7 @@ static int /* 0 failure, 1 success */
     regtry (prog, string, log)
         regexp *prog;
 char *string;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register int i;
   register char **sp;
@@ -842,7 +842,7 @@ evalresp_log_t *log;
  */
 static int /* 0 failure, 1 success */
     regmatch (prog, log) char *prog;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register char *scan; /* Current node. */
   char *next; /* Next node. */
@@ -1046,7 +1046,7 @@ evalresp_log_t *log;
  - regrepeat - repeatedly match something simple, report how many
  */
 static int regrepeat (p, log) char *p;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register int count = 0;
   register char *scan;

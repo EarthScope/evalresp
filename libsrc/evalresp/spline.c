@@ -14,7 +14,7 @@
 int
 spline_interpolate (int num_points, double *t, double *y,
                     double *xvals_arr, int num_xvals,
-                    double **p_retvals_arr, int *p_num_retvals, evalresp_log_t *log)
+                    double **p_retvals_arr, int *p_num_retvals, evalresp_logger *log)
 {
   int i, status = EVALRESP_OK;
   const int ibcbeg = 2;

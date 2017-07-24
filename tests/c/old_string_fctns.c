@@ -43,7 +43,7 @@
 char myLabel[20];
 
 struct string_array *
-ev_parse_line (char *line, evalresp_log_t *log)
+ev_parse_line (char *line, evalresp_logger *log)
 {
   char *lcl_line, field[MAXFLDLEN];
   int nfields, fld_len, i = 0;
@@ -106,7 +106,7 @@ ev_parse_line (char *line, evalresp_log_t *log)
 }
 
 struct string_array *
-parse_delim_line (char *line, char *delim, evalresp_log_t *log)
+parse_delim_line (char *line, char *delim, evalresp_logger *log)
 {
   char *lcl_line, field[MAXFLDLEN];
   int nfields, fld_len, i = 0;
@@ -171,7 +171,7 @@ parse_delim_line (char *line, char *delim, evalresp_log_t *log)
 
 int
 get_field (FILE *fptr, char *return_field, int blkt_no, int fld_no,
-           char *sep, int fld_wanted, evalresp_log_t *log)
+           char *sep, int fld_wanted, evalresp_logger *log)
 {
   char line[MAXLINELEN];
 
@@ -186,7 +186,7 @@ get_field (FILE *fptr, char *return_field, int blkt_no, int fld_no,
 
 int
 test_field (FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
-            char *sep, int fld_wanted, evalresp_log_t *log)
+            char *sep, int fld_wanted, evalresp_logger *log)
 {
   char line[MAXLINELEN];
 
@@ -203,7 +203,7 @@ test_field (FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
 }
 
 int
-get_line (FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, evalresp_log_t *log)
+get_line (FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, evalresp_logger *log)
 {
   char *lcl_ptr, line[MAXLINELEN];
   int lcl_blkt, lcl_fld, test;
@@ -319,7 +319,7 @@ get_line (FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, eva
 
 int
 next_line (FILE *fptr, char *return_line, int *blkt_no, int *fld_no,
-           char *sep, evalresp_log_t *log)
+           char *sep, evalresp_logger *log)
 {
   char *lcl_ptr, line[MAXLINELEN];
   int test;
@@ -430,7 +430,7 @@ count_delim_fields (char *line, char *delim)
 }
 
 int
-parse_field (char *line, int fld_no, char *return_field, evalresp_log_t *log)
+parse_field (char *line, int fld_no, char *return_field, evalresp_logger *log)
 {
   char *lcl_ptr, *new_ptr;
   char lcl_field[MAXFLDLEN];
@@ -468,7 +468,7 @@ parse_field (char *line, int fld_no, char *return_field, evalresp_log_t *log)
 }
 
 int
-parse_delim_field (char *line, int fld_no, char *delim, char *return_field, evalresp_log_t *log)
+parse_delim_field (char *line, int fld_no, char *delim, char *return_field, evalresp_logger *log)
 {
 
   char *lcl_ptr, *tmp_ptr = NULL;
@@ -510,7 +510,7 @@ parse_delim_field (char *line, int fld_no, char *delim, char *return_field, eval
 }
 
 int
-check_line (FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_log_t *log)
+check_line (FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_logger *log)
 {
   char line[MAXLINELEN];
   int test;
@@ -567,7 +567,7 @@ check_line (FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_log_t
 }
 
 int
-get_int (char *in_line, evalresp_log_t *log)
+get_int (char *in_line, evalresp_logger *log)
 {
   int value;
 
@@ -581,7 +581,7 @@ get_int (char *in_line, evalresp_log_t *log)
 }
 
 double
-get_double (char *in_line, evalresp_log_t *log)
+get_double (char *in_line, evalresp_logger *log)
 {
   double lcl_val;
 
@@ -595,7 +595,7 @@ get_double (char *in_line, evalresp_log_t *log)
 }
 
 int
-check_units (evalresp_channel *channel, char *line, evalresp_log_t *log)
+check_units (evalresp_channel *channel, char *line, evalresp_logger *log)
 {
   int i, first_flag = 0;
 
@@ -679,7 +679,7 @@ check_units (evalresp_channel *channel, char *line, evalresp_log_t *log)
 }
 
 int
-string_match (const char *string, char *expr, char *type_flag, evalresp_log_t *log)
+string_match (const char *string, char *expr, char *type_flag, evalresp_logger *log)
 {
   char lcl_string[MAXLINELEN], regexp_pattern[MAXLINELEN];
   int i = 0, glob_type, test;
@@ -732,7 +732,7 @@ string_match (const char *string, char *expr, char *type_flag, evalresp_log_t *l
 }
 
 int
-is_time (const char *test, evalresp_log_t *log)
+is_time (const char *test, evalresp_logger *log)
 {
   char fpattern[MAXLINELEN];
 

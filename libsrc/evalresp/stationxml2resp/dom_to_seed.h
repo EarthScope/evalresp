@@ -37,14 +37,14 @@
  * @ingroup evalresp_private_x2r_ws
  * @brief Print the entire response document, given the in-memory model.
  */
-int x2r_resp_util_write(evalresp_log_t *log, FILE *out, const x2r_fdsn_station_xml *root);
+int x2r_resp_util_write(evalresp_logger *log, FILE *out, const x2r_fdsn_station_xml *root);
 
 /**
  * @private
  * @ingroup evalresp_private_x2r_ws
  * @brief parse a mxml root node to datastructure
  */
-int x2r_parse_fdsn_station_xml(evalresp_log_t *log, mxml_node_t *doc, x2r_fdsn_station_xml **root);
+int x2r_parse_fdsn_station_xml(evalresp_logger *log, mxml_node_t *doc, x2r_fdsn_station_xml **root);
 
 /**
  * @private

@@ -12,7 +12,7 @@ void
 run_test (char *input, char *response)
 {
   FILE *in = NULL, *out = NULL;
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
   ck_assert (NULL != (in = fopen (input, "r")));
   //fail_if (x2r_xml2resp_auto (&in, log));
   ck_assert (EVALRESP_OK == evalresp_xml_stream_to_resp_stream_auto (log, in, NULL, &out));

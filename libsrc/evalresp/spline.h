@@ -49,5 +49,5 @@
  */
 int spline_interpolate (int num_points, double *t, double *y,
                         double *xvals_arr, int num_xvals,
-                        double **p_retvals_arr, int *p_num_retvals, evalresp_log_t *log);
+                        double **p_retvals_arr, int *p_num_retvals, evalresp_logger *log);
 #endif /* __EVALRESP_EVR_SPLINE_H__ */

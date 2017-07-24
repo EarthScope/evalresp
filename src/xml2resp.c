@@ -20,7 +20,7 @@
  * Handle command-line options.
  */
 static int
-parse_opts (int argc, char *argv[], evalresp_log_t **log, FILE **in, FILE **out)
+parse_opts (int argc, char *argv[], evalresp_logger **log, FILE **in, FILE **out)
 {
 
   int status = X2R_OK, level = 0;
@@ -158,7 +158,7 @@ main (int argc, char *argv[])
 {
 
   int status = X2R_OK;
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
   x2r_fdsn_station_xml *root = NULL;
   FILE *in = stdin, *out = stdout;
 
