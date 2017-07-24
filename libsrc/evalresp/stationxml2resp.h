@@ -12,15 +12,15 @@
  */
 
 /**
- * @defgroup evalresp_private_x2r evalresp Private X2R Interface
+ * @defgroup evalresp_private_x2r evalresp Private XML-to-RSEED Interface
  * @ingroup evalresp_private
- * @brief Private X2R interface for evalresp.
+ * @brief Private XML-to-RSEED interface for evalresp.
  */
 
 /**
  * @file
  * @brief This file contains declarations and global structures for evalresp
- *        X2R.
+ *        XML-to-RSEED.
  */
 
 #ifndef X2R_H

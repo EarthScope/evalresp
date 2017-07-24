@@ -3,7 +3,7 @@
  *
  * @section purpose Purpose
  *
- * Implements a private X2R formatted data interface for evalresp.
+ * Implements a private XML-to-RSEED formatted data interface for evalresp.
  *
  * @section history History
  *
@@ -12,15 +12,15 @@
  */
 
 /**
- * @defgroup evalresp_private_x2r_ws evalresp Private X2R Formatted Data Interface
+ * @defgroup evalresp_private_x2r_ws evalresp Private XML-to-RSEED Formatted Data Interface
  * @ingroup evalresp_private_x2r
- * @brief Private X2R formatted data interface for evalresp.
+ * @brief Private XML-to-RSEED formatted data interface for evalresp.
  */
 
 /**
  * @file
  * @brief This file contains declarations and global structures for evalresp
- *        X2R formatted data.
+ *        XML-to-RSEED formatted data.
  */
 
 #ifndef X2R_WS_H

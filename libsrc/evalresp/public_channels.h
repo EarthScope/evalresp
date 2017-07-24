@@ -5,13 +5,11 @@
 #include "evalresp/constants.h"
 #include "evalresp_log/log.h"
 
-// TODO - all comments about private need to be changed (and group)
-
 /* define structures for the various types of filters defined in seed */
 
 /**
  * @public
- * @ingroup evalresp_public
+ * @ingroup evalresp_public_channel
  * @brief Complex data type.
  */
 typedef struct evalresp_complex_s
@@ -22,7 +20,7 @@ typedef struct evalresp_complex_s
 
 /**
  * @public
- * @ingroup evalresp_public
+ * @ingroup evalresp_public_channel
  * @brief A Response (Poles & Zeros) blockette.
  */
 typedef struct evalresp_pole_zero_s
@@ -37,7 +35,7 @@ typedef struct evalresp_pole_zero_s
 
 /**
  * @public
- * @ingroup evalresp_public
+ * @ingroup evalresp_public_channel
  * @brief A Response (Coefficients) blockette.
  */
 typedef struct evalresp_coeff_s
@@ -51,7 +49,7 @@ typedef struct evalresp_coeff_s
 
 /**
  * @public
- * @ingroup evalresp_public
+ * @ingroup evalresp_public_channel
  * @brief A Response (Coefficients) blockette.
  */
 typedef struct evalresp_polynomial_s
@@ -70,7 +68,7 @@ typedef struct evalresp_polynomial_s
 
 /**
  * @public
- * @ingroup evalresp_public
+ * @ingroup evalresp_public_channel
  * @brief A FIR Response blockette.
  */
 typedef struct evalresp_fir_s
@@ -82,7 +80,7 @@ typedef struct evalresp_fir_s
 
 /**
  * @public
- * @ingroup evalresp_public
+ * @ingroup evalresp_public_channel
  * @brief A Response (List) blockette.
  */
 typedef struct evalresp_list_s
@@ -95,7 +93,7 @@ typedef struct evalresp_list_s
 
 /**
  * @public
- * @ingroup evalresp_public
+ * @ingroup evalresp_public_channel
  * @brief A Generic Response blockette.
  */
 typedef struct evalresp_generic_s
@@ -107,7 +105,7 @@ typedef struct evalresp_generic_s
 
 /**
  * @public
- * @ingroup evalresp_public
+ * @ingroup evalresp_public_channel
  * @brief A Decimation blockette.
  */
 typedef struct evalresp_decimation_s
@@ -121,7 +119,7 @@ typedef struct evalresp_decimation_s
 
 /**
  * @public
- * @ingroup evalresp_public
+ * @ingroup evalresp_public_channel
  * @brief A Channel Sensitivity/Gain blockette.
  */
 typedef struct evalresp_gain_s
@@ -132,7 +130,7 @@ typedef struct evalresp_gain_s
 
 /**
  * @public
- * @ingroup evalresp_public
+ * @ingroup evalresp_public_channel
  * @brief A Response Reference blockette.
  */
 typedef struct evalresp_refer_s
@@ -144,7 +142,7 @@ typedef struct evalresp_refer_s
 
 /**
  * @public
- * @ingroup evalresp_public
+ * @ingroup evalresp_public_channel
  * @brief Define a blkt as a structure containing the blockette type, a union
  *        (blkt_info) containing the blockette info, and a pointer to the
  *        next blockette in the filter sequence.
@@ -172,7 +170,7 @@ typedef struct evalresp_blkt_s
 
 /**
  * @public
- * @ingroup evalresp_public
+ * @ingroup evalresp_public_channel
  * @brief Define a stage as a structure that contains the sequence number, the
  *        input and output units, a pointer to the first blockette of the
  *        filter, and a pointer to the next stage in the response.
@@ -190,8 +188,8 @@ typedef struct evalresp_stage_s
 
 /**
  * @public
- * @ingroup evalresp_public
- * @brief And define a channel as a structure containing a pointer to the head
+ * @ingroup evalresp_public_channel
+ * @brief Define a channel as a structure containing a pointer to the head
  *        of a linked list of stages.
  * @details Will access the pieces one stages at a time in the same order that
  *          they were read from the input file, so a linked list is the
@@ -240,7 +238,7 @@ typedef struct evalresp_channel_s
 
 /**
  * @public
- * @ingroup evalresp_public
+ * @ingroup evalresp_public_channel
  * @brief A collection of channel structures.
 */
 typedef struct evalresp_channels_s
@@ -251,7 +249,7 @@ typedef struct evalresp_channels_s
 
 /**
  * @public
- * @ingroup evalresp_public
+ * @ingroup evalresp_public_channel
  * @brief A function allocating memory for evalresp_channels object
 TODO IGD: finish the description
 */
@@ -261,7 +259,7 @@ evalresp_alloc_channels (evalresp_logger *log, evalresp_channels **channels);
 
 /**
  * @public
- * @ingroup evalresp_public
+ * @ingroup evalresp_public_channel
  * @brief A function freeing memory after evalresp_channels object
 TODO IGD: finish the description
 */
@@ -270,7 +268,7 @@ evalresp_free_channels (evalresp_channels **channels);
 
 /**
  * @public
- * @ingroup evalresp_public
+ * @ingroup evalresp_public_channel
  * @brief A function freeing memory after evalresp_channels object
 TODO IGD: finish the description
 */

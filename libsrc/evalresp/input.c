@@ -2364,6 +2364,7 @@ parse_datetime (const char *str, evalresp_datetime *datetime)
   }
 }
 
+// non-static only for tests
 int
 timecmp (evalresp_datetime *dt1, evalresp_datetime *dt2)
 {
@@ -2681,12 +2682,6 @@ evalresp_add_sncl_text (evalresp_logger *log, evalresp_filter *filter,
     }
   }
   return status;
-}
-
-int
-evalresp_add_sncl (evalresp_logger *log, evalresp_filter *filter, evalresp_sncl *sncl)
-{
-  return evalresp_add_sncl_text (log, filter, sncl->network, sncl->station, sncl->locid, sncl->channel);
 }
 
 static void

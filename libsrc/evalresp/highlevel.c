@@ -112,6 +112,12 @@ process_file (evalresp_logger *log, evalresp_options *options, evalresp_filter *
 }
 
 static int
+add_sncl (evalresp_logger *log, evalresp_filter *filter, evalresp_sncl *sncl)
+{
+  return evalresp_add_sncl_text (log, filter, sncl->network, sncl->station, sncl->locid, sncl->channel);
+}
+
+static int
 process_cwd_files (evalresp_logger *log, evalresp_options *options, evalresp_filter *filter, struct matched_files *files, evalresp_responses **responses)
 {
   int status = EVALRESP_OK, i;
@@ -129,7 +135,7 @@ process_cwd_files (evalresp_logger *log, evalresp_options *options, evalresp_fil
     if (!(status = evalresp_new_filter (log, &sncl_filter)))
     {
       sncl_filter->datetime = filter->datetime; // shared
-      if (!(status = evalresp_add_sncl (log, sncl_filter, sncl)))
+      if (!(status = add_sncl (log, sncl_filter, sncl)))
       {
         file = files->first_list;
         while (!status && file)
