@@ -35,4 +35,4 @@ endif
 install: $(BUILD_DIR)/$(TARGET)
 	cp $(BUILD_DIR)/$(TARGET) $(LIB_DIR)/$(TARGET)
 	mkdir -p $(INCLUDE_DIR)/evalresp
-	cp $(EVALRESP_LOG_HEADERS) $(INCLUDE_DIR)/evalresp/
+	cp $(EVALRESP_HEADERS) $(INCLUDE_DIR)/evalresp/
