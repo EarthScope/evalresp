@@ -8,6 +8,7 @@
 #include "evalresp/public_responses.h"
 #include "evalresp_log/log.h"
 
+
 /**
  * @public
  * @ingroup evalresp_public
@@ -32,30 +33,116 @@ enum evalresp_status_enum
   EVALRESP_VAL /**< Validation error. */
 };
 
-/**
- * @public
- * @ingroup evalresp_public_options
- * @brief Structure used for time comparisons.
- */
-typedef struct
-{
-  int year; /**< Year. */
-  int jday; /**< Day of year. */
-  int hour; /**< Hour. */
-  int min; /**< Minutes. */
-  float sec; /**< Seconds. */
-} evalresp_datetime;
+
+
+// --- filters
+
 
 /**
  * @public
  * @ingroup evalresp_public_options
- * @brief Structure used for filtering input data by response DNCL and date/time.
+ * @brief Structure used for filtering input data by SNCL and date/time.
  */
 typedef struct
 {
   struct evalresp_sncls_s *sncls;
-  evalresp_datetime *datetime;
+  struct evalresp_datetime_s *datetime;
 } evalresp_filter;
+
+/**
+ * @public
+ * @ingroup evalresp_public_options
+ * @param[in] log logging structure
+ * @param[out] filter pointer to be allocated and initialized
+ * @brief Allocate and initialize an evalresp_filter.
+ * @retval EVALRESP_OK on success
+ */
+int evalresp_new_filter (evalresp_logger *log, evalresp_filter **filter);
+
+/**
+ * @public
+ * @ingroup evalresp_public_options
+ * @param[in] log logging structure
+ * @param[in] filter evalresp_filter pointer to set the year
+ * @param[in] year 
+ * @brief Set the year in an evalresp_filter.  Input channels will only be read and
+ * evaluated for the year given.
+ * @retval EVALRESP_OK on success
+ */
+int evalresp_set_year (evalresp_logger *log, evalresp_filter *filter, const char *year);
+
+/**
+ * @public
+ * @ingroup evalresp_public_options
+ * @param[in] log logging structure
+ * @param[in] filter evalresp_filter pointer to set the day of theyear
+ * @param[in] julian_day the day of the year
+ * @brief Set the Julian day in an evalresp_filter.  Input channels will only be read and
+ * evaluated for the day given.
+ * @retval EVALRESP_OK on success
+ */
+int evalresp_set_julian_day (evalresp_logger *log, evalresp_filter *filter, const char *julian_day);
+
+/**
+ * @public
+ * @ingroup evalresp_public_options
+ * @param[in] log logging structure
+ * @param[in] filter evalresp_filter pointer to set the time
+ * @param[in] time
+ * @brief set the time in an evalresp_filter (HH:MM:SS format).  Input channels will only be
+ * read and evaluated for the time given.
+ * @retval EVALRESP_OK on success
+ */
+int evalresp_set_time (evalresp_logger *log, evalresp_filter *filter, const char *time);
+
+/**
+ * @public
+ * @ingroup evalresp_public_options
+ * @param[in] log logging structure
+ * @param[in] filter evalresp_filter pointer to set 
+ * @param[in] sta the station code
+ * @param[in] net the network code
+ * @param[in] chan the channel code
+ * @param[in] locid the location id
+ * @brief Add a SNCL to an evalresp_filter.  If any SNCLs are given then input channels will
+ * only be read and evaluated if they match a SNCL.
+ * @retval EVALRESP_OK on success
+ */
+int evalresp_add_sncl_text (evalresp_logger *log, evalresp_filter *filter,
+                            const char *sta, const char *net, const char *chan, const char *locid);
+
+/**
+ * Splits comma-separated values in input and adds all combinations.
+ */
+/**
+ * @public
+ * @ingroup evalresp_public_options
+ * @param[in] log logging structure
+ * @param[in] filter evalresp_filter pointer to set 
+ * @param[in] sta the station code list
+ * @param[in] net the network code list
+ * @param[in] chan the channel code list
+ * @param[in] locid the location id list
+ * @brief Add SNCL(s) to an evalresp_filter, accepting S, C and L as lists.
+ * If any SNCLs are given then input channels will only be read and evaluated if they match a SNCL.
+ * @retval EVALRESP_OK on success
+ */
+int evalresp_add_sncl_all (evalresp_logger *log, evalresp_filter *filter,
+                           const char *sta, const char *net, const char *chan, const char *locid);
+
+/**
+ * @public
+ * @ingroup evalresp_public_options
+ * @param[in] filter
+ * @brief Free an evalresp_filter.
+ * @retval EVALRESP_OK on success
+ */
+void evalresp_free_filter (evalresp_filter **filter);
+
+
+
+// --- options
+
 
 /**
  * @public
@@ -74,10 +161,10 @@ typedef enum {
  * @brief Enumeration of response units (acceleration, velocity or displacement).
  */
 typedef enum {
-  evalresp_default_unit, /**< Despite the name, this is not the default. */
-  evalresp_displacement_unit,
-  evalresp_velocity_unit,
-  evalresp_acceleration_unit
+  evalresp_default_unit, /**< Use the units in the input file (not the default option). */
+  evalresp_displacement_unit, /**< Displacement units (the default). */
+  evalresp_velocity_unit, /**< Velocity units. */
+  evalresp_acceleration_unit /**< Acceleration units. */
 } evalresp_unit;
 
 #define EVALRESP_ALL_STAGES -1 /**< Default for start and stop stage. */
@@ -91,155 +178,26 @@ typedef enum {
  */
 typedef struct
 {
-  char *filename;
-  double b62_x;
-  double min_freq;
-  double max_freq;
-  int nfreq;
-  int lin_freq;
-  int start_stage;
-  int stop_stage;
-  int use_estimated_delay;
-  int unwrap_phase;
-  int b55_interpolate;
-  int use_total_sensitivity;
-  int use_stdio;
-  int station_xml;
-  evalresp_output_format format;
-  evalresp_unit unit;
+  char *filename; /**< Input file (if omitted, some routines will scan the current directory for files). */
+  double b62_x; /**< X value for evaluating blockette 62. */
+  double min_freq; /**< Minimum frequency to evaluate. */
+  double max_freq; /** Maximum frequency to evaluate. */
+  int nfreq; /**< Number of frequencies (ie "bins") to evaluate. */
+  int lin_freq; /**< Linear frequency steps (logarithmic by default)? */
+  int start_stage; /**< First stage to evaluate (all be default). */
+  int stop_stage; /**< Last stage to evaluate (all by default). */
+  int use_estimated_delay; /**< Use the estimated delay (ignore by default)? */
+  int unwrap_phase; /**< Unwrap phase (leave unwrapped by default)? */
+  int b55_interpolate; /**< Interpolate blockette 55 to match min_freq, max_freq, etc (use frequencies given in the blockette, overriding options here, by default)? */
+  int use_total_sensitivity; /**< Use the total sensitivity (ignore by default)? */
+  int use_stdio; /**< Read from stdin / write to stdout (use files by default)? */
+  int station_xml; /**< Expect station.xml formatted input (RSEED by default)? */
+  evalresp_output_format format; /**< Output format (AMP and PHA by default). */
+  evalresp_unit unit; /**< Output unit (displacement by default). */
   char format_set;
-  int verbose;
+  int verbose; /**< Vebose output? */
   char unit_set;
 } evalresp_options;
-
-/**
- * @public
- * @ingroup evalresp_public_options
- * @param[in] log logging structure
- * @param[out] filter pointer to be allocated and initialized
- * @brief allocate and intialize a evalresp_filter
- * @retval EVALRESP_OK on success
- */
-int evalresp_new_filter (evalresp_logger *log, evalresp_filter **filter);
-
-/**
- * @public
- * @ingroup evalresp_public_options
- * @param[in] log logging structure
- * @param[in] filter evalresp_filter pointer to set the year
- * @param[in] year 
- * @brief set the year in an evalresp_filter object
- * @retval EVALRESP_OK on success
- */
-int evalresp_set_year (evalresp_logger *log, evalresp_filter *filter, const char *year);
-
-/**
- * @public
- * @ingroup evalresp_public_options
- * @param[in] log logging structure
- * @param[in] filter evalresp_filter pointer to set the day of theyear
- * @param[in] julian_day the day of the year
- * @brief set the jday in an evalresp_filter object
- * @retval EVALRESP_OK on success
- */
-int evalresp_set_julian_day (evalresp_logger *log, evalresp_filter *filter, const char *julian_day);
-
-/**
- * @public
- * @ingroup evalresp_public_options
- * @param[in] log logging structure
- * @param[in] filter evalresp_filter pointer to set the time
- * @param[in] time
- * @brief set the time in an evalresp_filter object
- * @retval EVALRESP_OK on success
- */
-int evalresp_set_time (evalresp_logger *log, evalresp_filter *filter, const char *time);
-
-/**
- * @public
- * @ingroup evalresp_public_options
- * @param[in] log logging structure
- * @param[in] filter evalresp_filter pointer to set 
- * @param[in] sta the station code
- * @param[in] net the network code
- * @param[in] chan the channel code
- * @param[in] locid the location id
- * @brief set the sncl in an evalresp_filter object from the text string, expects single station
- * @retval EVALRESP_OK on success
- */
-int evalresp_add_sncl_text (evalresp_logger *log, evalresp_filter *filter,
-                            const char *sta, const char *net, const char *chan, const char *locid);
-
-/**
- * Splits comma-separated values in input and adds all combinations.
- */
-/**
- * @public
- * @ingroup evalresp_public_options
- * @param[in] log logging structure
- * @param[in] filter evalresp_filter pointer to set 
- * @param[in] sta the station code list
- * @param[in] net the network code list
- * @param[in] chan the channel code list
- * @param[in] locid the location id list
- * @brief Splits comma-separated values in input and adds all combinations to evalresp_filter object.
- * @retval EVALRESP_OK on success
- */
-int evalresp_add_sncl_all (evalresp_logger *log, evalresp_filter *filter,
-                           const char *sta, const char *net, const char *chan, const char *locid);
-
-/**
- * @public
- * @ingroup evalresp_public_options
- * @param[in] filter
- * @brief properly free filter object
- * @retval EVALRESP_OK on success
- */
-void evalresp_free_filter (evalresp_filter **filter);
-
-/**
- * @public
- * @ingroup evalresp_public_low_level_input
- * @param[in] log logging structure
- * @param[in] seed_or_xml char * read from a file or stdio
- * @param[in] options evalresp_options to determine wether or not to convert xml or not
- * @param[in] filter evalresp filter to use when getting the channels
- * @param[out] channels evalresp_channel object that gets allocated and returned
- * @brief Take a char string and parse it into evalresp_channel object
- * @retval EVALRESP_OK on success
- */
-int evalresp_char_to_channels (evalresp_logger *log, const char *seed_or_xml,
-                               evalresp_options const *const options,
-                               const evalresp_filter *filter, evalresp_channels **channels);
-
-/**
- * @public
- * @ingroup evalresp_public_low_level_input
- * @param[in] log logging structure
- * @param[in] file stream pointer that contains the seed/xml data to convert
- * @param[in] options evalresp_options to determine wether or not to convert xml or not
- * @param[in] filter evalresp filter to use when getting the channels
- * @param[out] channels evalresp_channel object that gets allocated and returned
- * @brief take a stream and parse it into evalresp_channel object
- * @retval EVALRESP_OK on success
- */
-int evalresp_file_to_channels (evalresp_logger *log, FILE *file,
-                               evalresp_options const *const options,
-                               const evalresp_filter *filter, evalresp_channels **channels);
-
-/**
- * @public
- * @ingroup evalresp_public_low_level_input
- * @param[in] log logging structure
- * @param[in] filename name of the file that contains the seed/xml data to convert
- * @param[in] options evalresp_options to determine wether or not to convert xml or not
- * @param[in] filter evalresp filter to use when getting the channels
- * @param[out] channels evalresp_channel object that gets allocated and returned
- * @brief take a filename, open it, and parse it into evalresp_channel object
- * @retval EVALRESP_OK on success
- */
-int evalresp_filename_to_channels (evalresp_logger *log, const char *filename, evalresp_options const *const options,
-                                   const evalresp_filter *filter, evalresp_channels **channels);
 
 /**
  * @public
@@ -250,14 +208,6 @@ int evalresp_filename_to_channels (evalresp_logger *log, const char *filename, e
  * @retval EVALRESP_OK on success
  */
 int evalresp_new_options (evalresp_logger *log, evalresp_options **options);
-
-/**
- * @public
- * @ingroup evalresp_public_options
- * @param[in] options the options that need to be deallocated
- * @brief guarentee memory allocated for evalresp_options is deallocated
- */
-void evalresp_free_options (evalresp_options **options);
 
 /**
  * @public
@@ -320,7 +270,7 @@ int evalresp_set_unit (evalresp_logger *log, evalresp_options *options,
 int evalresp_set_spacing (evalresp_logger *log, evalresp_options *options,
                           const char *spacing);
 
-// these are separate because it simplifies calling from main routine
+// start and stop are separate because it simplifies calling from main routine
 
 /**
  * @public
@@ -360,6 +310,68 @@ int evalresp_set_b62_x (evalresp_logger *log, evalresp_options *options,
 
 /**
  * @public
+ * @ingroup evalresp_public_options
+ * @param[in] options the options that need to be deallocated
+ * @brief guarentee memory allocated for evalresp_options is deallocated
+ */
+void evalresp_free_options (evalresp_options **options);
+
+
+
+// --- low level input
+
+
+/**
+ * @public
+ * @ingroup evalresp_public_low_level_input
+ * @param[in] log logging structure
+ * @param[in] seed_or_xml char * read from a file or stdio
+ * @param[in] options evalresp_options to determine wether or not to convert xml or not
+ * @param[in] filter evalresp filter to use when getting the channels
+ * @param[out] channels evalresp_channel object that gets allocated and returned
+ * @brief Take a char string and parse it into evalresp_channel object
+ * @retval EVALRESP_OK on success
+ */
+int evalresp_char_to_channels (evalresp_logger *log, const char *seed_or_xml,
+                               evalresp_options const *const options,
+                               const evalresp_filter *filter, evalresp_channels **channels);
+
+/**
+ * @public
+ * @ingroup evalresp_public_low_level_input
+ * @param[in] log logging structure
+ * @param[in] file stream pointer that contains the seed/xml data to convert
+ * @param[in] options evalresp_options to determine wether or not to convert xml or not
+ * @param[in] filter evalresp filter to use when getting the channels
+ * @param[out] channels evalresp_channel object that gets allocated and returned
+ * @brief take a stream and parse it into evalresp_channel object
+ * @retval EVALRESP_OK on success
+ */
+int evalresp_file_to_channels (evalresp_logger *log, FILE *file,
+                               evalresp_options const *const options,
+                               const evalresp_filter *filter, evalresp_channels **channels);
+
+/**
+ * @public
+ * @ingroup evalresp_public_low_level_input
+ * @param[in] log logging structure
+ * @param[in] filename name of the file that contains the seed/xml data to convert
+ * @param[in] options evalresp_options to determine wether or not to convert xml or not
+ * @param[in] filter evalresp filter to use when getting the channels
+ * @param[out] channels evalresp_channel object that gets allocated and returned
+ * @brief take a filename, open it, and parse it into evalresp_channel object
+ * @retval EVALRESP_OK on success
+ */
+int evalresp_filename_to_channels (evalresp_logger *log, const char *filename, evalresp_options const *const options,
+                                   const evalresp_filter *filter, evalresp_channels **channels);
+
+
+
+// --- low level evaluation
+
+
+/**
+ * @public
  * @ingroup evalresp_public_low_level_evaluation
  * @param[in] log logging structure
  * @param[in] channel Evalresp_channel object to be converted into a response
@@ -383,6 +395,11 @@ int evalresp_channel_to_response (evalresp_logger *log, evalresp_channel *channe
  */
 int evalresp_channels_to_responses (evalresp_logger *log, evalresp_channels *channels,
                                     evalresp_options *options, evalresp_responses **responses);
+
+
+
+// --- low level output
+
 
 /**
  * @public
@@ -435,6 +452,11 @@ int evalresp_response_to_stream (evalresp_logger *log, const evalresp_response *
  */
 int evalresp_response_to_file (evalresp_logger *log, const evalresp_response *response,
                                evalresp_file_format format, const char *filename);
+
+
+
+// --- high level
+
 
 /**
  * @public
