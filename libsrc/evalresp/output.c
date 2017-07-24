@@ -21,6 +21,7 @@ get_SEEDUNITS (int idx)
   }
   return SEEDUNITS[idx];
 }
+
 int
 evalresp_response_to_char (evalresp_logger *log, const evalresp_response *response,
                            evalresp_file_format format, char **output)

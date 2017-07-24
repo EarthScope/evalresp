@@ -194,8 +194,7 @@ typedef struct
   int station_xml; /**< Expect station.xml formatted input (RSEED by default)? */
   evalresp_output_format format; /**< Output format (AMP and PHA by default). */
   evalresp_unit unit; /**< Output unit (displacement by default). */
-  char format_set;
-  int verbose; /**< Vebose output? */
+  int verbose; /**< Verbose output? */
   char unit_set;
 } evalresp_options;
 

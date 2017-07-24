@@ -19,7 +19,7 @@ print_file (evalresp_logger *log, evalresp_file_format format,
             int use_stdio, const evalresp_response *response)
 {
   int status = EVALRESP_OK, length;
-  char *filename = NULL, *prefix = prefixes[use_stdio && evalresp_fap_output_format ? 4 : format];
+  char *filename = NULL, *prefix = prefixes[use_stdio ? 4 : format];
   length = snprintf (filename, 0, FILENAME_TEMPLATE, prefix,
                      response->network, response->station, response->locid, response->channel);
   if (!(filename = calloc (length + 1, sizeof (*filename))))

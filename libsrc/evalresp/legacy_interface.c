@@ -160,7 +160,6 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
       evalresp_free_options (&options);
       return NULL;
     }
-    options->format_set = 1;
   }
   if (units)
   {
@@ -305,7 +304,6 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
       evalresp_free_options (&options);
       return;
     }
-    options->format_set = 1;
   }
 
   for (responses->nresponses = 0, ptr = first; ptr != NULL; responses->nresponses++, ptr = ptr->next)

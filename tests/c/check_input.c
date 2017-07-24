@@ -7,6 +7,7 @@
 #include "evalresp/constants.h"
 #include "evalresp/input.h"
 #include "evalresp/public_api.h"
+#include "evalresp/private.h"
 
 START_TEST (test_slurp_line)
 {

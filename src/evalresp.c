@@ -83,7 +83,7 @@ int
 parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *filter, evalresp_logger **log)
 {
   int status = EVALRESP_OK, i;
-  int first_switch = 0, flags_argc, option, index;
+  int first_switch = 0, flags_argc, option, index, format_set = 0;
   char *program = argv[0], **flags_argv;
   char *minfreq, *location = NULL, *network = NULL;
 
@@ -184,7 +184,7 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
 
       case 'r':
         status = evalresp_set_format (*log, options, optarg);
-        options->format_set = 1;
+        format_set = 1;
         break;
 
       case 'S':
@@ -233,7 +233,9 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
       }
     }
   }
-  if (!options->format_set && options->use_stdio)
+
+  // default appears to be different for stdio (see commit 974d6764)
+  if (!format_set && options->use_stdio)
   {
     options->format = evalresp_fap_output_format;
   }

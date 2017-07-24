@@ -1,4 +1,6 @@
-#include <evalresp/public_api.h>
+#include "evalresp/public_api.h"
+#include "evalresp/private.h"
+
 /**
  * @private
  * @ingroup evalresp_private
