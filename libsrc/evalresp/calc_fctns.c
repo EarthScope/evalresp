@@ -55,7 +55,6 @@
 int
 convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, double w, evalresp_log_t *log)
 {
-  // TODO - 0 assignment below made blindly to fix compiler warning.  bug?
   int out = 0;
   evalresp_complex scale_val;
 
@@ -479,7 +478,6 @@ int
 normalize_response (evalresp_log_t *log, evalresp_options const *const options, evalresp_channel *chan)
 {
   evalresp_stage *stage_ptr;
-  // TODO - NULL assignments below made blindly to fix compiler warning.  bug?
   evalresp_blkt *fil, *last_fil = NULL, *main_filt = NULL;
   int i, main_type, reset_gain, skipped_stages = 0;
   double w, f;
