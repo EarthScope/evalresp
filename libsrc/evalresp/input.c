@@ -555,7 +555,6 @@ read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
   {
     if ((status = find_field (log, seed, ":", 50, 3, 0, field)))
     {
-      // TODO - log reason
       return status;
     }
   }
@@ -563,7 +562,6 @@ read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
   {
     if ((status = get_field_to_parse (log, first_line, 0, field)))
     {
-      // TODO - log reason
       return status;
     }
   }
@@ -574,7 +572,6 @@ read_channel_header (evalresp_log_t *log, const char **seed, char *first_line,
 
   if ((status = find_field (log, seed, ":", 50, 16, 0, field)))
   {
-    // TODO - log reason
     return status;
   }
   if (!strncmp (field, "??", 2))
