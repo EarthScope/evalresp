@@ -22,9 +22,122 @@
  * @defgroup evalresp_public evalresp Public Interface
  * @ingroup evalresp
  * @brief The evalresp Public Interface is the main API for people using this package as
- * a library.  It contains sub-APIs that describe channel data, options that influence
+ * a library.
+ *
+ * It contains sub-APIs that describe channel data, options that influence
  * how responses are evaluated, the responses themselves, and both low and high-level
  * routines for processing data.
+ *
+ * #### Example Using High Level Routine
+ *
+ * In this example we prepare the options and filter and then invoke the high level
+ * interface.  Note that some error returns are ignored (with `(void)` casts) to keep
+ * the example compact.  Also, we are using a `NULL` log (see @ref evalresp_log).
+@verbatim
+	int status;
+	evalresp_options *options = NULL;
+	evalresp_filter *filter = NULL;
+
+	if (!(status = evalresp_new_options(NULL, &options)))
+	{
+		printf("Failed to create options");
+	}
+
+	if (!status) // If we have no error, set options
+	{
+		// Log spaced from 0.1 to 10 Hz, 20 bins
+		options->min_freq = 0.1;
+		options->max_freq = 10;
+		options->nfreq = 20;
+
+		// Reading station.xml formatted data.
+		options->station_xml = 1;
+		(void)evalresp_set_filename(NULL, options, "mydata.xml");
+
+		// Set date
+		(void)evalresp_set_year(NULL, filter, 2017);
+		(void)evalresp_set_julian_day(NULL, filter, 123);
+
+		// Set SNCL to extract
+		(void)evalresp_add_sncl_text(NULL, filter, "NET", "STA", "LOC", "CHN");
+	}
+
+	if (!status) // If we have no error, process data
+	{
+		// This will read mydata.xml from the current directory, extract the
+		// SNCL NET.STA.LOC.CHN, evaluate the response at the give date, and
+		// write AMP... and PHA... files in velocity units (the defaults).
+		if (!(status = evalresp_cwd_to_cwd(NULL, options, filter)))
+		{
+			printf("Failed to process data");
+		}
+	}
+
+	evalresp_free_options(&options);
+	evalresp_free_filter(&filter);
+
+	return status;
+@endverbatim
+ * #### Example Using Low Level Routines
+ *
+ * This example is similar to the above, but we implement all the steps ourselves in
+ * the lower level interface.
+@verbatim
+	int status;
+	evalresp_options *options = NULL;
+	evalresp_filter *filter = NULL;
+	evalresp_channels *channels = NULL;
+	evalresp_response *response = NULL;
+
+	if (!(status = evalresp_new_options(NULL, &options)))
+	{
+		printf("Failed to create options");
+	}
+
+	if (!status) // If we have no error, set options
+	{
+		// Log spaced from 0.1 to 10 Hz, 20 bins
+		options->min_freq = 0.1;
+		options->max_freq = 10;
+		options->nfreq = 20;
+
+		// Reading station.xml formatted data.
+		options->station_xml = 1;
+		// Filename is given in call to evalresp_filename_to_channels
+
+		// Set date
+		(void)evalresp_set_year(NULL, filter, 2017);
+		(void)evalresp_set_julian_day(NULL, filter, 123);
+
+		// Set SNCL to extract
+		(void)evalresp_add_sncl_text(NULL, filter, "NET", "STA", "LOC", "CHN");
+	}
+
+	if (!status) // If we have no error, process data
+	{
+		// Read in the channel
+		(void)evalresp_filename_to_channels(NULL, "mydata.xml", options, filter, &channels);
+		if (channels->nchannels != 1)
+		{
+			printf("Failed to read single channel");
+		}
+		else
+		{
+			// Evaluate the response
+			(void)evalresp_channel_to_response(NULL, options, channels->channels[0], &response);
+			// Write the AMP and PHA files
+			(void)evalresp_response_to_file(NULL, response, evalresp_amplitude_file_format, "AMP.NET.STA.LOC.CHN");
+			(void)evalresp_response_to_file(NULL, response, evalresp_phase_file_format, "PHA.NET.STA.LOC.CHN");
+		}
+	}
+
+	evalresp_free_response(response);
+	evalresp_free_channels(&channels);
+	evalresp_free_options(&options);
+	evalresp_free_filter(&filter);
+
+	return status;
+@endverbatim
  */
 
 /**
