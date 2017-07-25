@@ -121,7 +121,7 @@ evalresp_set_format (evalresp_logger *log, evalresp_options *options,
 }
 
 static option_pair units[] = {
-    {evalresp_default_unit, "DEF"},
+    {evalresp_file_unit, "DEF"},
     {evalresp_displacement_unit, "DIS"},
     {evalresp_velocity_unit, "VEL"},
     {evalresp_acceleration_unit, "ACC"}};

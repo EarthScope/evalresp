@@ -22,7 +22,7 @@
  * @defgroup evalresp_public evalresp Public Interface
  * @ingroup evalresp
  * @brief The evalresp Public Interface is the main API for people using this package as
- * a library.  It contains subsections that describe channel data, options that influence
+ * a library.  It contains sub-APIs that describe channel data, options that influence
  * how responses are evaluated, the responses themselves, and both low and high-level
  * routines for processing data.
  */
@@ -59,8 +59,9 @@
  * then pass the instance to the appropriate routine(s).  Once no longer needed
  * instances should be freed.
  *
- * Simple numerical values can be set directly, but for setting other values, and for
- * creating and freeing instances, evalresp provides a set of utility functions.
+ * Simple numerical values can be set directly, but for other values, for parsing
+ * strings, and for creating and freeing instances, evalresp provides a set of
+ * utility functions.
  */
 
 /**

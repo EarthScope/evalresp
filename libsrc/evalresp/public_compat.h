@@ -268,4 +268,5 @@ void print_resp (double *freqs, int nfreqs, evalresp_response *first, char *rtyp
 void print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
                      char *rtype, int stdio_flag, int listinterp_out_flag,
                      double listinterp_tension, int unwrap_flag);
+
 #endif

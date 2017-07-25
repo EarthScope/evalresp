@@ -416,7 +416,7 @@ parse_units (evalresp_logger *log, evalresp_options const *const options, char *
     strncpy (channel->last_units, line, MAXLINELEN);
   }
 
-  if (options && options->unit == evalresp_default_unit)
+  if (options && options->unit == evalresp_file_unit)
   {
     *units = DEFAULT;
     return status;

@@ -171,7 +171,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   }
   else if (def_units_flag)
   {
-    options->unit = evalresp_default_unit;
+    options->unit = evalresp_file_unit;
   }
 
   if (verbose)
@@ -354,7 +354,7 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
   }
   else if (def_units_flag)
   {
-    options->unit = evalresp_default_unit;
+    options->unit = evalresp_file_unit;
   }
 
   calculate_response (log, options, chan, freq, nfreqs, output);

@@ -8,7 +8,6 @@
 #include "evalresp/public_responses.h"
 #include "evalresp_log/log.h"
 
-
 /**
  * @public
  * @ingroup evalresp_public
@@ -33,10 +32,7 @@ enum evalresp_status_enum
   EVALRESP_VAL /**< Validation error. */
 };
 
-
-
 // --- filters
-
 
 /**
  * @public
@@ -45,8 +41,8 @@ enum evalresp_status_enum
  */
 typedef struct
 {
-  struct evalresp_sncls_s *sncls;
-  struct evalresp_datetime_s *datetime;
+  struct evalresp_sncls_s *sncls; /**< The SNCLs to match (if set, one must match). */
+  struct evalresp_datetime_s *datetime; /**< The datetime to use (if set). */
 } evalresp_filter;
 
 /**
@@ -54,7 +50,7 @@ typedef struct
  * @ingroup evalresp_public_options
  * @param[in] log logging structure
  * @param[out] filter pointer to be allocated and initialized
- * @brief Allocate and initialize an evalresp_filter.
+ * @brief Allocate and initialize an evalresp_filter with no date or SNCLs.
  * @retval EVALRESP_OK on success
  */
 int evalresp_new_filter (evalresp_logger *log, evalresp_filter **filter);
@@ -65,7 +61,7 @@ int evalresp_new_filter (evalresp_logger *log, evalresp_filter **filter);
  * @param[in] log logging structure
  * @param[in] filter evalresp_filter pointer to set the year
  * @param[in] year 
- * @brief Set the year in an evalresp_filter.  Input channels will only be read and
+ * @brief Set the year in an evalresp_filter from a string.  Input channels will only be read and
  * evaluated for the year given.
  * @retval EVALRESP_OK on success
  */
@@ -77,8 +73,8 @@ int evalresp_set_year (evalresp_logger *log, evalresp_filter *filter, const char
  * @param[in] log logging structure
  * @param[in] filter evalresp_filter pointer to set the day of theyear
  * @param[in] julian_day the day of the year
- * @brief Set the Julian day in an evalresp_filter.  Input channels will only be read and
- * evaluated for the day given.
+ * @brief Set the Julian day in an evalresp_filter from a string.  Input channels will only be
+ * read and evaluated for the day given.
  * @retval EVALRESP_OK on success
  */
 int evalresp_set_julian_day (evalresp_logger *log, evalresp_filter *filter, const char *julian_day);
@@ -89,7 +85,7 @@ int evalresp_set_julian_day (evalresp_logger *log, evalresp_filter *filter, cons
  * @param[in] log logging structure
  * @param[in] filter evalresp_filter pointer to set the time
  * @param[in] time
- * @brief set the time in an evalresp_filter (HH:MM:SS format).  Input channels will only be
+ * @brief Set the time in an evalresp_filter (HH:MM:SS format).  Input channels will only be
  * read and evaluated for the time given.
  * @retval EVALRESP_OK on success
  */
@@ -139,10 +135,7 @@ int evalresp_add_sncl_all (evalresp_logger *log, evalresp_filter *filter,
  */
 void evalresp_free_filter (evalresp_filter **filter);
 
-
-
 // --- options
-
 
 /**
  * @public
@@ -161,9 +154,9 @@ typedef enum {
  * @brief Enumeration of response units (acceleration, velocity or displacement).
  */
 typedef enum {
-  evalresp_default_unit, /**< Use the units in the input file (not the default option). */
-  evalresp_displacement_unit, /**< Displacement units (the default). */
-  evalresp_velocity_unit, /**< Velocity units. */
+  evalresp_file_unit, /**< Use the units in the input file. */
+  evalresp_displacement_unit, /**< Displacement units. */
+  evalresp_velocity_unit, /**< Velocity units (the default). */
   evalresp_acceleration_unit /**< Acceleration units. */
 } evalresp_unit;
 
@@ -174,14 +167,14 @@ typedef enum {
  * @public
  * @ingroup evalresp_public_options
  * @brief Structure containing the options that affect how responses are evaluated and
- * generated.
+ * printed.
  */
 typedef struct
 {
   char *filename; /**< Input file (if omitted, some routines will scan the current directory for files). */
   double b62_x; /**< X value for evaluating blockette 62. */
   double min_freq; /**< Minimum frequency to evaluate. */
-  double max_freq; /** Maximum frequency to evaluate. */
+  double max_freq; /**< Maximum frequency to evaluate. */
   int nfreq; /**< Number of frequencies (ie "bins") to evaluate. */
   int lin_freq; /**< Linear frequency steps (logarithmic by default)? */
   int start_stage; /**< First stage to evaluate (all be default). */
@@ -202,7 +195,7 @@ typedef struct
  * @ingroup evalresp_public_options
  * @param[in] log logging structure
  * @param[out] options pointer to options that is allocated
- * @brief allocate and initialize an evalresp_options.
+ * @brief Allocate and initialize an evalresp_options with default values.
  * @retval EVALRESP_OK on success
  */
 int evalresp_new_options (evalresp_logger *log, evalresp_options **options);
@@ -213,7 +206,7 @@ int evalresp_new_options (evalresp_logger *log, evalresp_options **options);
  * @param[in] log logging structure
  * @param[in] options evalresp_option in which the value is to be added
  * @param[in[ filename filename to set in options
- * @brief parse filename into options
+ * @brief Add a filename to the options.  Data will be read from this file.
  * @retval EVALRESP_OK on success
  */
 int evalresp_set_filename (evalresp_logger *log, evalresp_options *options, const char *filename);
@@ -226,7 +219,8 @@ int evalresp_set_filename (evalresp_logger *log, evalresp_options *options, cons
  * @param[in] min_freq minimum frequency as a string to parse into evalresp_option
  * @param[in] max_freq Maximum frequency as a string to parse into evalresp_option
  * @param[in] nfreq number of frequencies as a string to parse into evalresp_option
- * @brief parse the frequency string inputs into options
+ * @brief Set the minimum and maximum frequency, and the number of bins, from strings.
+ * Alternatively the numerical values can be set directly.
  * @retval EVALRESP_OK on success
  */
 int evalresp_set_frequency (evalresp_logger *log, evalresp_options *options,
@@ -238,7 +232,8 @@ int evalresp_set_frequency (evalresp_logger *log, evalresp_options *options,
  * @param[in] log logging structure
  * @param[in] options evalresp_option in which the value is to be added
  * @param[in] format the format string, valid strings are "AP", "FAP", and "CS"
- * @brief parse the format string into options
+ * @brief Set the output format from a string.  Alternatively the format can be set directly
+ * from @ref evalresp_output_format.
  * @retval EVALRESP_OK on success
  */
 int evalresp_set_format (evalresp_logger *log, evalresp_options *options,
@@ -250,7 +245,8 @@ int evalresp_set_format (evalresp_logger *log, evalresp_options *options,
  * @param[in] log logging structure
  * @param[in] options evalresp_option in which the value is to be added
  * @param[in] unit sting that contains the unit type, valid strings are "DIS", "VEL", "ACC", or "DEF"
- * @brief[in] parse unit string into options
+ * @brief Set the output units from a string.  Alternatively the units can be set directly
+ * from @ref evalresp_unit.
  * @retval EVALRESP_OK on success
  */
 int evalresp_set_unit (evalresp_logger *log, evalresp_options *options,
@@ -262,7 +258,8 @@ int evalresp_set_unit (evalresp_logger *log, evalresp_options *options,
  * @param[in] log logging structure
  * @param[in] options evalresp_option in which the value is to be added
  * @param[in] spacing string stating if the delta in the frequencies is "LIN" for linear or "LOG" for logaritmic step size
- * @brief parse the spaceing string into options
+ * @brief Set the frequency spacing option from a string.  Alternatively the value can be set
+ * directly (1 for linear, 0 for log).
  * @retval EVALRESP_OK on success
  */
 int evalresp_set_spacing (evalresp_logger *log, evalresp_options *options,
@@ -275,8 +272,9 @@ int evalresp_set_spacing (evalresp_logger *log, evalresp_options *options,
  * @ingroup evalresp_public_options
  * @param[in] log logging structure
  * @param[in] options evalresp_option in which the value is to be added
- * @param[in] stage starting stage as a string, "-1" means start at first availible stage
- * @brief parse stage into starting_stage of options
+ * @param[in] stage starting stage as a string, "-1" means start at first available stage
+ * @brief Set the starting stage option from a string.  Alternatively the numerical value can
+ * be set directly.
  * @retval EVALRESP_OK on success
  */
 int evalresp_set_start_stage (evalresp_logger *log, evalresp_options *options,
@@ -288,7 +286,8 @@ int evalresp_set_start_stage (evalresp_logger *log, evalresp_options *options,
  * @param[in] log logging structure
  * @param[in] options evalresp_option in which the value is to be added
  * @param[in] stage stopping stage as a string
- * @brief parse stage into starting_stage of options
+ * @brief Set the stopping stage option from a string.  Alternatively the numerical value can
+ * be set directly.
  * @retval EVALRESP_OK on success
  */
 int evalresp_set_stop_stage (evalresp_logger *log, evalresp_options *options,
@@ -300,7 +299,8 @@ int evalresp_set_stop_stage (evalresp_logger *log, evalresp_options *options,
  * @param[in] log logging structure
  * @param[in] options evalresp_option in which the value is to be added
  * @param[in] b62_x counts/volts as a string
- * @brief parse counts or volts from b62_x to options
+ * @brief Set the x value option to be used for blockette 62 from a string.  Alternatively the
+ * numerical value can be set directly.
  * @retval EVALRESP_OK on success
  */
 int evalresp_set_b62_x (evalresp_logger *log, evalresp_options *options,
@@ -310,14 +310,11 @@ int evalresp_set_b62_x (evalresp_logger *log, evalresp_options *options,
  * @public
  * @ingroup evalresp_public_options
  * @param[in] options the options that need to be deallocated
- * @brief guarentee memory allocated for evalresp_options is deallocated
+ * @brief Free an evalresp_options.
  */
 void evalresp_free_options (evalresp_options **options);
 
-
-
 // --- low level input
-
 
 /**
  * @public
@@ -363,10 +360,7 @@ int evalresp_file_to_channels (evalresp_logger *log, FILE *file,
 int evalresp_filename_to_channels (evalresp_logger *log, const char *filename, evalresp_options const *const options,
                                    const evalresp_filter *filter, evalresp_channels **channels);
 
-
-
 // --- low level evaluation
-
 
 /**
  * @public
@@ -394,10 +388,7 @@ int evalresp_channel_to_response (evalresp_logger *log, evalresp_channel *channe
 int evalresp_channels_to_responses (evalresp_logger *log, evalresp_channels *channels,
                                     evalresp_options *options, evalresp_responses **responses);
 
-
-
 // --- low level output
-
 
 /**
  * @public
@@ -451,10 +442,7 @@ int evalresp_response_to_stream (evalresp_logger *log, const evalresp_response *
 int evalresp_response_to_file (evalresp_logger *log, const evalresp_response *response,
                                evalresp_file_format format, const char *filename);
 
-
-
 // --- high level
-
 
 /**
  * @public

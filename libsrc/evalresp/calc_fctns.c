@@ -84,7 +84,7 @@ convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, do
   case evalresp_acceleration_unit:
     out = ACC;
     break;
-  case evalresp_default_unit:
+  case evalresp_file_unit:
     return EVALRESP_OK;
   default:
     evalresp_log (log, EV_ERROR, 0, "convert_to_units: bad output units");

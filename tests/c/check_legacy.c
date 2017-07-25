@@ -4,12 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "evalresp/private.h"
 #include "evalresp/public.h"
 #include "evalresp/public_api.h"
 #include "evalresp/stationxml2resp/wrappers.h"
 #include "evalresp_log/log.h"
 #include "old_fctns.h"
-#include "evalresp/private.h"
 #include <setjmp.h>
 
 extern int in_epoch (const char *datime, const char *beg_t, const char *end_t);
