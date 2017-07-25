@@ -1,3 +1,4 @@
+#include <config.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -14,13 +15,33 @@ static char *prefixes[] = {"FAP", "AMP", "PHASE", "SPECTRA", "AMP/PHS"};
 
 #define FILENAME_TEMPLATE "%s.%s.%s.%s.%s"
 
+/* IGD This function is needed for MS Windows VS2013 and below */
+
+
+int					/* O - Number of bytes formatted */
+_evalresp_snprintf(char       *buffer,	/* I - Output buffer */
+               size_t     bufsize,	/* I - Size of output buffer */
+	       const char *format,	/* I - Printf-style format string */
+	       ...)			/* I - Additional arguments as needed */
+{
+  va_list	ap;			/* Argument list */
+  int		bytes;			/* Number of bytes formatted */
+
+
+  va_start(ap, format);
+  bytes = vsnprintf(buffer, bufsize, format, ap);
+  va_end(ap);
+
+  return (bytes);
+}
+
 static int
 print_file (evalresp_logger *log, evalresp_file_format format,
             int use_stdio, const evalresp_response *response)
 {
   int status = EVALRESP_OK, length;
   char *filename = NULL, *prefix = prefixes[use_stdio ? 4 : format];
-  length = snprintf (filename, 0, FILENAME_TEMPLATE, prefix,
+  length = _evalresp_snprintf (filename, 0, FILENAME_TEMPLATE, prefix,
                      response->network, response->station, response->locid, response->channel);
   if (!(filename = calloc (length + 1, sizeof (*filename))))
   {
@@ -29,7 +50,7 @@ print_file (evalresp_logger *log, evalresp_file_format format,
   }
   else
   {
-    (void)snprintf (filename, length + 1, FILENAME_TEMPLATE, prefix,
+    (void)_evalresp_snprintf (filename, length + 1, FILENAME_TEMPLATE, prefix,
                     response->network, response->station, response->locid, response->channel);
     if (use_stdio)
     {

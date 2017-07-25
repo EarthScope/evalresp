@@ -1339,4 +1339,12 @@ int process_stdio (evalresp_logger *log, evalresp_options *options,
  */
 int responses_to_cwd (evalresp_logger *log, const evalresp_responses *responses,
                       evalresp_output_format format, int use_stdio);
+
+
+int                                     /* O - Number of bytes formatted */
+_evalresp_snprintf(char       *buffer,  /* I - Output buffer */
+               size_t     bufsize,      /* I - Size of output buffer */
+               const char *format,      /* I - Printf-style format string */
+               ...);                    /* I - Additional arguments as needed */
+
 #endif
