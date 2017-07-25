@@ -17,20 +17,18 @@ static char *prefixes[] = {"FAP", "AMP", "PHASE", "SPECTRA", "AMP/PHS"};
 
 /* IGD This function is needed for MS Windows VS2013 and below */
 
-
-int					/* O - Number of bytes formatted */
-_evalresp_snprintf(char       *buffer,	/* I - Output buffer */
-               size_t     bufsize,	/* I - Size of output buffer */
-	       const char *format,	/* I - Printf-style format string */
-	       ...)			/* I - Additional arguments as needed */
+int /* O - Number of bytes formatted */
+_evalresp_snprintf (char *buffer, /* I - Output buffer */
+                    size_t bufsize, /* I - Size of output buffer */
+                    const char *format, /* I - Printf-style format string */
+                    ...) /* I - Additional arguments as needed */
 {
-  va_list	ap;			/* Argument list */
-  int		bytes;			/* Number of bytes formatted */
+  va_list ap; /* Argument list */
+  int bytes; /* Number of bytes formatted */
 
-
-  va_start(ap, format);
-  bytes = vsnprintf(buffer, bufsize, format, ap);
-  va_end(ap);
+  va_start (ap, format);
+  bytes = vsnprintf (buffer, bufsize, format, ap);
+  va_end (ap);
 
   return (bytes);
 }
@@ -42,7 +40,7 @@ print_file (evalresp_logger *log, evalresp_file_format format,
   int status = EVALRESP_OK, length;
   char *filename = NULL, *prefix = prefixes[use_stdio ? 4 : format];
   length = _evalresp_snprintf (filename, 0, FILENAME_TEMPLATE, prefix,
-                     response->network, response->station, response->locid, response->channel);
+                               response->network, response->station, response->locid, response->channel);
   if (!(filename = calloc (length + 1, sizeof (*filename))))
   {
     evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate filename");
@@ -51,7 +49,7 @@ print_file (evalresp_logger *log, evalresp_file_format format,
   else
   {
     (void)_evalresp_snprintf (filename, length + 1, FILENAME_TEMPLATE, prefix,
-                    response->network, response->station, response->locid, response->channel);
+                              response->network, response->station, response->locid, response->channel);
     if (use_stdio)
     {
       fprintf (stdout, " --------------------------------------------------\n");

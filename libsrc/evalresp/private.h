@@ -34,109 +34,129 @@
  * interface.  Note that some error returns are ignored (with `(void)` casts) to keep
  * the example compact.  Also, we are using a `NULL` log (see @ref evalresp_log).
 @verbatim
-	int status;
-	evalresp_options *options = NULL;
-	evalresp_filter *filter = NULL;
+#include <evalresp/public_api.h>
 
-	if (!(status = evalresp_new_options(NULL, &options)))
-	{
-		printf("Failed to create options");
-	}
+int
+highlevel ()
+{
+  int status;
+  evalresp_options *options = NULL;
+  evalresp_filter *filter = NULL;
 
-	if (!status) // If we have no error, set options
-	{
-		// Log spaced from 0.1 to 10 Hz, 20 bins
-		options->min_freq = 0.1;
-		options->max_freq = 10;
-		options->nfreq = 20;
+  if (!(status = evalresp_new_options (NULL, &options)))
+  {
+    printf ("Failed to create options");
+  }
+  else if (!(status = evalresp_new_filter (NULL, &filter)))
+  {
+    printf ("Failed to create filter");
+  }
 
-		// Reading station.xml formatted data.
-		options->station_xml = 1;
-		(void)evalresp_set_filename(NULL, options, "mydata.xml");
+  if (!status) // If we have no error, set options
+  {
+    // Log spaced from 0.1 to 10 Hz, 20 bins
+    options->min_freq = 0.1;
+    options->max_freq = 10;
+    options->nfreq = 20;
 
-		// Set date
-		(void)evalresp_set_year(NULL, filter, 2017);
-		(void)evalresp_set_julian_day(NULL, filter, 123);
+    // Reading station.xml formatted data.
+    options->station_xml = 1;
+    (void)evalresp_set_filename (NULL, options, "mydata.xml");
 
-		// Set SNCL to extract
-		(void)evalresp_add_sncl_text(NULL, filter, "NET", "STA", "LOC", "CHN");
-	}
+    // Set date
+    filter->datetime->year = 2017;
+    filter->datetime->jday = 123;
 
-	if (!status) // If we have no error, process data
-	{
-		// This will read mydata.xml from the current directory, extract the
-		// SNCL NET.STA.LOC.CHN, evaluate the response at the give date, and
-		// write AMP... and PHA... files in velocity units (the defaults).
-		if (!(status = evalresp_cwd_to_cwd(NULL, options, filter)))
-		{
-			printf("Failed to process data");
-		}
-	}
+    // Set SNCL to extract
+    (void)evalresp_add_sncl_text (NULL, filter, "NET", "STA", "LOC", "CHN");
+  }
 
-	evalresp_free_options(&options);
-	evalresp_free_filter(&filter);
+  if (!status) // If we have no error, process data
+  {
+    // This will read mydata.xml from the current directory, extract the
+    // SNCL NET.STA.LOC.CHN, evaluate the response at the give date, and
+    // write AMP... and PHA... files in velocity units (the defaults).
+    if (!(status = evalresp_cwd_to_cwd (NULL, options, filter)))
+    {
+      printf ("Failed to process data");
+    }
+  }
 
-	return status;
+  evalresp_free_options (&options);
+  evalresp_free_filter (&filter);
+
+  return status;
+}
 @endverbatim
  * #### Example Using Low Level Routines
  *
  * This example is similar to the above, but we implement all the steps ourselves in
  * the lower level interface.
 @verbatim
-	int status;
-	evalresp_options *options = NULL;
-	evalresp_filter *filter = NULL;
-	evalresp_channels *channels = NULL;
-	evalresp_response *response = NULL;
+#include <evalresp/public_api.h>
 
-	if (!(status = evalresp_new_options(NULL, &options)))
-	{
-		printf("Failed to create options");
-	}
+int
+lowlevel ()
+{
+  int status;
+  evalresp_options *options = NULL;
+  evalresp_filter *filter = NULL;
+  evalresp_channels *channels = NULL;
+  evalresp_response *response = NULL;
 
-	if (!status) // If we have no error, set options
-	{
-		// Log spaced from 0.1 to 10 Hz, 20 bins
-		options->min_freq = 0.1;
-		options->max_freq = 10;
-		options->nfreq = 20;
+  if (!(status = evalresp_new_options (NULL, &options)))
+  {
+    printf ("Failed to create options");
+  }
+  else if (!(status = evalresp_new_filter (NULL, &filter)))
+  {
+    printf ("Failed to create filter");
+  }
 
-		// Reading station.xml formatted data.
-		options->station_xml = 1;
-		// Filename is given in call to evalresp_filename_to_channels
+  if (!status) // If we have no error, set options
+  {
+    // Log spaced from 0.1 to 10 Hz, 20 bins
+    options->min_freq = 0.1;
+    options->max_freq = 10;
+    options->nfreq = 20;
 
-		// Set date
-		(void)evalresp_set_year(NULL, filter, 2017);
-		(void)evalresp_set_julian_day(NULL, filter, 123);
+    // Reading station.xml formatted data.
+    options->station_xml = 1;
+    // Filename is given in call to evalresp_filename_to_channels
 
-		// Set SNCL to extract
-		(void)evalresp_add_sncl_text(NULL, filter, "NET", "STA", "LOC", "CHN");
-	}
+    // Set date
+    filter->datetime->year = 2017;
+    filter->datetime->jday = 123;
 
-	if (!status) // If we have no error, process data
-	{
-		// Read in the channel
-		(void)evalresp_filename_to_channels(NULL, "mydata.xml", options, filter, &channels);
-		if (channels->nchannels != 1)
-		{
-			printf("Failed to read single channel");
-		}
-		else
-		{
-			// Evaluate the response
-			(void)evalresp_channel_to_response(NULL, options, channels->channels[0], &response);
-			// Write the AMP and PHA files
-			(void)evalresp_response_to_file(NULL, response, evalresp_amplitude_file_format, "AMP.NET.STA.LOC.CHN");
-			(void)evalresp_response_to_file(NULL, response, evalresp_phase_file_format, "PHA.NET.STA.LOC.CHN");
-		}
-	}
+    // Set SNCL to extract
+    (void)evalresp_add_sncl_text (NULL, filter, "NET", "STA", "LOC", "CHN");
+  }
 
-	evalresp_free_response(response);
-	evalresp_free_channels(&channels);
-	evalresp_free_options(&options);
-	evalresp_free_filter(&filter);
+  if (!status) // If we have no error, process data
+  {
+    // Read in the channel
+    (void)evalresp_filename_to_channels (NULL, "mydata.xml", options, filter, &channels);
+    if (channels->nchannels != 1)
+    {
+      printf ("Failed to read single channel");
+    }
+    else
+    {
+      // Evaluate the response
+      (void)evalresp_channel_to_response (NULL, channels->channels[0], options, &response);
+      // Write the AMP and PHA files
+      (void)evalresp_response_to_file (NULL, response, evalresp_amplitude_file_format, "AMP.NET.STA.LOC.CHN");
+      (void)evalresp_response_to_file (NULL, response, evalresp_phase_file_format, "PHA.NET.STA.LOC.CHN");
+    }
+  }
 
-	return status;
+  evalresp_free_response (&response);
+  evalresp_free_channels (&channels);
+  evalresp_free_options (&options);
+  evalresp_free_filter (&filter);
+
+  return status;
+}
 @endverbatim
  */
 
@@ -1451,11 +1471,10 @@ int process_stdio (evalresp_logger *log, evalresp_options *options,
 int responses_to_cwd (evalresp_logger *log, const evalresp_responses *responses,
                       evalresp_output_format format, int use_stdio);
 
-
-int                                     /* O - Number of bytes formatted */
-_evalresp_snprintf(char       *buffer,  /* I - Output buffer */
-               size_t     bufsize,      /* I - Size of output buffer */
-               const char *format,      /* I - Printf-style format string */
-               ...);                    /* I - Additional arguments as needed */
+int /* O - Number of bytes formatted */
+_evalresp_snprintf (char *buffer, /* I - Output buffer */
+                    size_t bufsize, /* I - Size of output buffer */
+                    const char *format, /* I - Printf-style format string */
+                    ...); /* I - Additional arguments as needed */
 
 #endif
