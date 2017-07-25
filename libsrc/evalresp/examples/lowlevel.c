@@ -8,7 +8,7 @@
 #include <evalresp/public_api.h>
 
 int
-main()
+lowlevel()
 {
 	int status;
 	evalresp_options *options = NULL;
@@ -19,6 +19,10 @@ main()
 	if (!(status = evalresp_new_options(NULL, &options)))
 	{
 		printf("Failed to create options");
+	}
+	else if (!(status = evalresp_new_filter(NULL, &filter)))
+	{
+		printf("Failed to create filter");
 	}
 
 	if (!status) // If we have no error, set options
@@ -33,8 +37,8 @@ main()
 		// Filename is given in call to evalresp_filename_to_channels
 
 		// Set date
-		(void)evalresp_set_year(NULL, filter, 2017);
-		(void)evalresp_set_julian_day(NULL, filter, 123);
+		filter->datetime->year = 2017;
+		filter->datetime->jday = 123;
 
 		// Set SNCL to extract
 		(void)evalresp_add_sncl_text(NULL, filter, "NET", "STA", "LOC", "CHN");
@@ -51,14 +55,14 @@ main()
 		else
 		{
 			// Evaluate the response
-			(void)evalresp_channel_to_response(NULL, options, channels->channels[0], &response);
+			(void)evalresp_channel_to_response(NULL, channels->channels[0], options, &response);
 			// Write the AMP and PHA files
 			(void)evalresp_response_to_file(NULL, response, evalresp_amplitude_file_format, "AMP.NET.STA.LOC.CHN");
 			(void)evalresp_response_to_file(NULL, response, evalresp_phase_file_format, "PHA.NET.STA.LOC.CHN");
 		}
 	}
 
-	evalresp_free_response(response);
+	evalresp_free_response(&response);
 	evalresp_free_channels(&channels);
 	evalresp_free_options(&options);
 	evalresp_free_filter(&filter);

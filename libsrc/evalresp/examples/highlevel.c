@@ -8,7 +8,7 @@
 #include <evalresp/public_api.h>
 
 int
-main()
+highlevel()
 {
 	int status;
 	evalresp_options *options = NULL;
@@ -17,6 +17,10 @@ main()
 	if (!(status = evalresp_new_options(NULL, &options)))
 	{
 		printf("Failed to create options");
+	}
+	else if (!(status = evalresp_new_filter(NULL, &filter)))
+	{
+		printf("Failed to create filter");
 	}
 
 	if (!status) // If we have no error, set options
@@ -31,8 +35,8 @@ main()
 		(void)evalresp_set_filename(NULL, options, "mydata.xml");
 
 		// Set date
-		(void)evalresp_set_year(NULL, filter, 2017);
-		(void)evalresp_set_julian_day(NULL, filter, 123);
+		filter->datetime->year = 2017;
+		filter->datetime->jday = 123;
 
 		// Set SNCL to extract
 		(void)evalresp_add_sncl_text(NULL, filter, "NET", "STA", "LOC", "CHN");

@@ -470,7 +470,7 @@ evalresp_channel_to_response (evalresp_logger *log, evalresp_channel *channel,
   }
   if (status && *response)
   {
-    evalresp_free_response (*response);
+    evalresp_free_response (response);
   }
 
   if (b55_save)

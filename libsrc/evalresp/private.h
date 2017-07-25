@@ -465,20 +465,6 @@ typedef struct evalresp_sncls_s
  */
 void evalresp_free_sncls (evalresp_sncls *sncls);
 
-/**
- * @private
- * @ingroup evalresp_private
- * @brief Structure used for time comparisons.
- */
-typedef struct evalresp_datetime_s
-{
-  int year; /**< Year. */
-  int jday; /**< Day of year. */
-  int hour; /**< Hour. */
-  int min; /**< Minutes. */
-  float sec; /**< Seconds. */
-} evalresp_datetime;
-
 /* define structures for the compound data types used in evalesp */
 
 /**

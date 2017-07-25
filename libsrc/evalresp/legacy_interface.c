@@ -41,7 +41,7 @@ evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
   }
   else if (first->next != (evalresp_response *)NULL)
   {
-    evalresp_free_response (first);
+    evalresp_free_response (&first);
     return (-1);
   }
 
@@ -56,7 +56,7 @@ evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
 
   /* free up dynamically allocated space */
 
-  evalresp_free_response (first);
+  evalresp_free_response (&first);
 
   /* and return to FORTRAN program */
 

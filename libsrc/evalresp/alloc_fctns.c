@@ -771,35 +771,40 @@ evalresp_free_channel (evalresp_channel *chan_ptr)
 }
 
 void
-evalresp_free_response (evalresp_response *resp_ptr)
+evalresp_free_response (evalresp_response **response)
 {
-  evalresp_response *this_resp, *next_resp;
-
-  this_resp = resp_ptr;
-  while (this_resp)
+  if (*response)
   {
-    next_resp = this_resp->next;
-    free (this_resp->rvec);
-    free (this_resp->freqs); /*IGD for v 3.2.17 */
-    free (this_resp);
-    this_resp = next_resp;
+    evalresp_response *this_resp, *next_resp;
+
+    this_resp = *response;
+    while (this_resp)
+    {
+      next_resp = this_resp->next;
+      free (this_resp->rvec);
+      free (this_resp->freqs); /*IGD for v 3.2.17 */
+      free (this_resp);
+      this_resp = next_resp;
+    }
   }
+  *response = NULL;
 }
 
 void
-evalresp_free_responses (evalresp_responses *responses)
+evalresp_free_responses (evalresp_responses **responses)
 {
   int i;
-  if (responses)
+  if (*responses)
   {
-    for (i = 0; i < responses->nresponses; ++i)
+    for (i = 0; i < (*responses)->nresponses; ++i)
     {
-      evalresp_free_response (responses->responses[i]);
+      evalresp_free_response (&(*responses)->responses[i]);
     }
-    free (responses->responses);
-    responses->responses = NULL;
-    free (responses);
+    free ((*responses)->responses);
+    (*responses)->responses = NULL;
+    free (*responses);
   }
+  *responses = NULL;
 }
 
 int

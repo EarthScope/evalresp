@@ -35,6 +35,20 @@ enum evalresp_status_enum
 // --- filters
 
 /**
+ * @private
+ * @ingroup evalresp_private
+ * @brief Structure used for time comparisons.
+ */
+typedef struct
+{
+  int year; /**< Year. */
+  int jday; /**< Day of year. */
+  int hour; /**< Hour. */
+  int min; /**< Minutes. */
+  float sec; /**< Seconds. */
+} evalresp_datetime;
+
+/**
  * @public
  * @ingroup evalresp_public_options
  * @brief Structure used for filtering input data by SNCL and date/time.
@@ -42,7 +56,7 @@ enum evalresp_status_enum
 typedef struct
 {
   struct evalresp_sncls_s *sncls; /**< The SNCLs to match (if set, one must match). */
-  struct evalresp_datetime_s *datetime; /**< The datetime to use (if set). */
+  evalresp_datetime *datetime; /**< The datetime to use (if set). */
 } evalresp_filter;
 
 /**

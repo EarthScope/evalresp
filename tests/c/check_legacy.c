@@ -628,7 +628,7 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
 
       /* allocated one too many responses */
 
-      evalresp_free_response (resp);
+      evalresp_free_response (&resp);
       if (prev_ptr != (evalresp_response *)NULL)
         prev_ptr->next = (evalresp_response *)NULL;
       break;
@@ -965,7 +965,7 @@ old_evresp_itp (char *stalst, char *chalst, char *net_code,
 
       /* allocated one too many responses */
 
-      evalresp_free_response (resp);
+      evalresp_free_response (&resp);
       if (prev_ptr != (evalresp_response *)NULL)
         prev_ptr->next = (evalresp_response *)NULL;
 

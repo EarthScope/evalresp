@@ -9,7 +9,8 @@ libevalresp_la_SOURCES = input.c evaluation.c output.c highlevel.c\
     spline.c legacy_interface.c\
     stationxml2resp/dom_to_seed.c\
     stationxml2resp/xml_to_dom.c\
-    stationxml2resp/wrappers.c
+    stationxml2resp/wrappers.c\
+    examples/lowlevel.c examples/highlevel.c
 
 libevalresp_la_CFLAGS = -I../
 

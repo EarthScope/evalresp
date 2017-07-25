@@ -23,7 +23,7 @@ START_TEST (test_no_options)
   //fail_if (fabs (response->rvec[0].real - -998127849.638739) > 1e-3, "Real: %f", response->rvec[0].real);
   //fail_if (fabs (response->rvec[0].imag - 63588947.373697) > 1e-3, "Imag: %f", response->rvec[0].imag);
   evalresp_free_channels (&channels);
-  evalresp_free_response (response);
+  evalresp_free_response (&response);
 }
 END_TEST
 
@@ -43,7 +43,7 @@ START_TEST (test_start)
   fail_if (fabs (response->rvec[0].real - 419430.000000) > 1e-3, "Real: %f", response->rvec[0].real);
   fail_if (fabs (response->rvec[0].imag - 0.000000) > 1e-3, "Imag: %f", response->rvec[0].imag);
   evalresp_free_channels (&channels);
-  evalresp_free_response (response);
+  evalresp_free_response (&response);
   evalresp_free_options (&options);
 }
 END_TEST
@@ -65,7 +65,7 @@ START_TEST (test_freqs)
   fail_if (fabs (response->freqs[0] - 2) > 1e-4, "Freq 0: %f", response->freqs[0]);
   fail_if (fabs (response->freqs[1] - 2.828427) > 1e-4, "Freq 1: %f", response->freqs[1]);
   fail_if (fabs (response->freqs[2] - 4) > 1e-4, "Freq 2: %f", response->freqs[2]);
-  evalresp_free_response (response);
+  evalresp_free_response (&response);
 
   options->lin_freq = 1;
   fail_if (evalresp_channel_to_response (NULL, channels->channels[0], options, &response));
@@ -73,7 +73,7 @@ START_TEST (test_freqs)
   fail_if (fabs (response->freqs[0] - 2) > 1e-4, "Freq 0: %f", response->freqs[0]);
   fail_if (fabs (response->freqs[1] - 3) > 1e-4, "Freq 1: %f", response->freqs[1]);
   fail_if (fabs (response->freqs[2] - 4) > 1e-4, "Freq 2: %f", response->freqs[2]);
-  evalresp_free_response (response);
+  evalresp_free_response (&response);
 
   evalresp_free_channels (&channels);
   evalresp_free_options (&options);

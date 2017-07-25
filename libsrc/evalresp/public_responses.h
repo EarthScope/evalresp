@@ -40,7 +40,7 @@ typedef struct
  * structure.
  * @param[in,out] resp_ptr Response structure.
  */
-void evalresp_free_response (evalresp_response *response);
+void evalresp_free_response (evalresp_response **response);
 
 /**
  * @public
@@ -49,6 +49,6 @@ void evalresp_free_response (evalresp_response *response);
  *        responses.
  * @param[in,out] resp_ptr Response structure.
  */
-void evalresp_free_responses (evalresp_responses *responses);
+void evalresp_free_responses (evalresp_responses **responses);
 
 #endif
