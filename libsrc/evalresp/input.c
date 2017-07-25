@@ -2463,7 +2463,7 @@ evalresp_char_to_channels (evalresp_logger *log, const char *seed_or_xml,
   evalresp_channel *channel;
   int status = EVALRESP_OK;
   // TODO - first_line and first_field are lookaheads that can be eliminated since
-  // we are reading from char and can easily backstep (indeed, was possible even before...)
+  // we are reading from char and can easily backstep
   char first_line[MAXLINELEN] = "";
 
   *channels = NULL;
