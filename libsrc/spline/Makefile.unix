@@ -31,5 +31,5 @@ endif
 install: $(BUILD_DIR)/$(TARGET)
 	cp $(BUILD_DIR)/$(TARGET) $(LIB_DIR)/$(TARGET)
 	mkdir -p $(INCLUDE_DIR)/spline
-	cp $(EVALRESP_LOG_HEADERS) $(INCLUDE_DIR)/spline/
+	cp spline.h $(INCLUDE_DIR)/spline/
 

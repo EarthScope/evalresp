@@ -3,7 +3,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = libsrc src doc tests
 
-EXTRA_DIST = INSTALL.unix INSTALL.ms README.old MKDIST
+EXTRA_DIST = INSTALL.unix INSTALL.ms README.old MKDIST ChangeLog LICENSE Makefile.ms Makefile.unix Build.config
 
 distclean-local:
 	rm -fr configure Makefile.in build-aux config.h.in autom4te.cache \

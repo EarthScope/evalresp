@@ -5,7 +5,7 @@ AM_LDFLAGS = -L../../libsrc/evalresp -levalresp\
 			 -L../../libsrc/mxml -lmxmlev
 AM_CFLAGS=-I../../libsrc 
 
-EXTRA_DIST = data
+EXTRA_DIST = data old_fctns.h
 
 if USE_CHECK
 TESTS = check_read_xml check_convert check_parse_datetime check_response \
