@@ -394,7 +394,7 @@ int evalresp_add_sncl_all (evalresp_logger *log, evalresp_filter *filter,
 /**
  * @public
  * @ingroup evalresp_public_options
- * @param[in] filter
+ * @param[in] filter the filter to free
  * @brief Free an evalresp_filter.
  * @retval EVALRESP_OK on success
  */
