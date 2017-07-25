@@ -8,11 +8,11 @@
 */
 
 #include <evalresp/private.h>
-#include <spline.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "evalresp_log/log.h"
+#include "spline.h"
 
 static int
 merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_logger *log)
