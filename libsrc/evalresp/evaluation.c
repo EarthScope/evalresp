@@ -491,7 +491,7 @@ evalresp_channels_to_responses (evalresp_logger *log, evalresp_channels *channel
                                 evalresp_options *options, evalresp_responses **responses)
 {
   int status = EVALRESP_OK, i;
-  if (NULL == *responses && !(*responses = calloc (1, sizeof (**responses))))
+  if (!*responses && !(*responses = calloc (1, sizeof (**responses))))
   {
     evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate responses");
     status = EVALRESP_MEM;

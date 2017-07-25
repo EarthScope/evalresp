@@ -320,11 +320,13 @@ void evalresp_free_options (evalresp_options **options);
  * @public
  * @ingroup evalresp_public_low_level_input
  * @param[in] log logging structure
- * @param[in] seed_or_xml char * read from a file or stdio
- * @param[in] options evalresp_options to determine wether or not to convert xml or not
- * @param[in] filter evalresp filter to use when getting the channels
- * @param[out] channels evalresp_channel object that gets allocated and returned
- * @brief Take a char string and parse it into evalresp_channel object
+ * @param[in] seed_or_xml input string
+ * @param[in] options file format and unit options are used
+ * @param[in] filter filter to use when getting the channels
+ * @param[out] channels collection of channels that gets allocated and returned
+ * @brief Read channels (@ref evalresp_public_channel) from a string.  Options (including
+ * RSEED or station.xml format) are set via @ref evalresp_options and the channels
+ * read are selected via @ref evalresp_filter.
  * @retval EVALRESP_OK on success
  */
 int evalresp_char_to_channels (evalresp_logger *log, const char *seed_or_xml,
@@ -335,11 +337,13 @@ int evalresp_char_to_channels (evalresp_logger *log, const char *seed_or_xml,
  * @public
  * @ingroup evalresp_public_low_level_input
  * @param[in] log logging structure
- * @param[in] file stream pointer that contains the seed/xml data to convert
- * @param[in] options evalresp_options to determine wether or not to convert xml or not
- * @param[in] filter evalresp filter to use when getting the channels
- * @param[out] channels evalresp_channel object that gets allocated and returned
- * @brief take a stream and parse it into evalresp_channel object
+ * @param[in] file input stream
+ * @param[in] options file format and unit options are used
+ * @param[in] filter filter to use when getting the channels
+ * @param[out] channels collection of channels that gets allocated and returned
+ * @brief Read channels (@ref evalresp_public_channel) from a file (stream).  Options (including
+ * RSEED or station.xml format) are set via @ref evalresp_options and the channels
+ * read are selected via @ref evalresp_filter.
  * @retval EVALRESP_OK on success
  */
 int evalresp_file_to_channels (evalresp_logger *log, FILE *file,
@@ -350,11 +354,13 @@ int evalresp_file_to_channels (evalresp_logger *log, FILE *file,
  * @public
  * @ingroup evalresp_public_low_level_input
  * @param[in] log logging structure
- * @param[in] filename name of the file that contains the seed/xml data to convert
- * @param[in] options evalresp_options to determine wether or not to convert xml or not
- * @param[in] filter evalresp filter to use when getting the channels
- * @param[out] channels evalresp_channel object that gets allocated and returned
- * @brief take a filename, open it, and parse it into evalresp_channel object
+ * @param[in] filename input filename
+ * @param[in] options file format and unit options are used
+ * @param[in] filter filter to use when getting the channels
+ * @param[out] channels collection of channels that gets allocated and returned
+ * @brief Read channels (@ref evalresp_public_channel) from a (named) file.  Options (including
+ * RSEED or station.xml format) are set via @ref evalresp_options and the channels
+ * read are selected via @ref evalresp_filter.
  * @retval EVALRESP_OK on success
  */
 int evalresp_filename_to_channels (evalresp_logger *log, const char *filename, evalresp_options const *const options,
@@ -366,10 +372,11 @@ int evalresp_filename_to_channels (evalresp_logger *log, const char *filename, e
  * @public
  * @ingroup evalresp_public_low_level_evaluation
  * @param[in] log logging structure
- * @param[in] channel Evalresp_channel object to be converted into a response
- * @param[in] options evalresp_options that have values to control the way responses are calculated
+ * @param[in] channel channel object to be converted into a response
+ * @param[in] options options control how responses are evaluated
  * @param[out] response an allocated response created from channel
- * @brief convert an evalresp_channel to and evalresp_response and allocate it
+ * @brief Evaluate a channel (@ref evalresp_public_channel) to a response
+ * (@ref evalresp_public_response).
  * @retval EVALRESP_OK on success
  */
 int evalresp_channel_to_response (evalresp_logger *log, evalresp_channel *channel,
@@ -379,10 +386,11 @@ int evalresp_channel_to_response (evalresp_logger *log, evalresp_channel *channe
  * @public
  * @ingroup evalresp_public_low_level_evaluation
  * @param[in] log logging structure
- * @param[in] channels evalresp_channels to be converted into responses
- * @param[in] options evalresp_options to control the  way responses are calculated
- * @param[in,out] responses a pointer to evalresp_responses object, if *responses == NULL then it will be allocated
- * @brief go through the channels in evalresp_channels and converthem into a evalresp_responses object
+ * @param[in] channels channels to be converted into responses
+ * @param[in] options options control how responses are evaluated
+ * @param[in,out] responses a pointer to an @ref evalresp_responses object (a collection of responses);
+ * if *responses == NULL then it will be allocated
+ * @brief All the channels are evaluated and the responses added to the collection.
  * @retval EVALRESP_OK on success
  */
 int evalresp_channels_to_responses (evalresp_logger *log, evalresp_channels *channels,
@@ -396,10 +404,10 @@ int evalresp_channels_to_responses (evalresp_logger *log, evalresp_channels *cha
  * @brief Enumeration of output file formats (for a single file).
  */
 typedef enum {
-  evalresp_fap_file_format,
-  evalresp_amplitude_file_format,
-  evalresp_phase_file_format,
-  evalresp_complex_file_format
+  evalresp_fap_file_format, /**< A file containing frequency, amplitude and phase columns. */
+  evalresp_amplitude_file_format, /**< A file containing frequency and amplitude columns. */
+  evalresp_phase_file_format, /**< A file containing frequency and phase columns. */
+  evalresp_complex_file_format /**< A file containing frequency and complex response columns. */
 } evalresp_file_format;
 
 /**
@@ -407,9 +415,9 @@ typedef enum {
  * @ingroup evalresp_public_low_level_output
  * @param[in] log logging structure
  * @param[in] response the response object created by evalresp
- * @param[in] format enum value of what char format to put the string into
+ * @param[in] format the output format to generate
  * @param[out] output pointer to the char * that the response will be printed into
- * @brief take an evalresp response and put it in an evalresp formated string
+ * @brief Format an @ref evalresp_response to a string.
  * @retval EVALRESP_OK on success
  * @post output will be allocated on success and must be free'd by other functions
  */
@@ -421,9 +429,9 @@ int evalresp_response_to_char (evalresp_logger *log, const evalresp_response *re
  * @ingroup evalresp_public_low_level_output
  * @param[in] log logging structure
  * @param[in] response the response object created by evalresp
- * @param[in] format enum value of what char format to put the string into
- * @param[out] file stream to print the formated response into
- * @brief take an evalresp response and put it in an evalresp formated stream
+ * @param[in] format the output format to generate
+ * @param[out] file stream that the response will be printed into
+ * @brief Format an @ref evalresp_response to a file stream.
  * @retval EVALRESP_OK on success
  */
 int evalresp_response_to_stream (evalresp_logger *log, const evalresp_response *response,
@@ -434,13 +442,25 @@ int evalresp_response_to_stream (evalresp_logger *log, const evalresp_response *
  * @ingroup evalresp_public_low_level_output
  * @param[in] log logging structure
  * @param[in] response the response object created by evalresp
- * @param[in] format enum value of what char format to put the string into
- * @param[out] filename filename to print the formated response into
- * @brief take an evalresp response and put it in an evalresp formated file
+ * @param[in] format the output format to generate
+ * @param[out] filename name of the file that the response will be printed into
+ * @brief Format an @ref evalresp_response to a named file.
  * @retval EVALRESP_OK on success
  */
 int evalresp_response_to_file (evalresp_logger *log, const evalresp_response *response,
                                evalresp_file_format format, const char *filename);
+
+/**
+ * @public
+ * @ingroup evalresp_public_low_level_output
+ * @param[in] log logging structure
+ * @param[in] options units, start and stop stages are used; some other options are logged
+ * @param[in] channel the channel to print into the log
+ * @brief Display information on the channel be processed
+ * @retval EVALRESP_OK on success
+ */
+int evalresp_channel_to_log (evalresp_logger *log, evalresp_options const *const options,
+                             evalresp_channel *const channel);
 
 // --- high level
 
@@ -448,24 +468,15 @@ int evalresp_response_to_file (evalresp_logger *log, const evalresp_response *re
  * @public
  * @ingroup evalresp_public_high_level
  * @param[in] log logging structure
- * @param[in] options object to control the flow of the conversion to responses
- * @param[in] filter object on how to filter the inputed files
- * @brief take files from cwd and output them into the cwd based on the options and filters
- * @post response files created in current working directory or stdio
+ * @param[in] options controls input, evaluation and output details (see @ref evalresp_public_options)
+ * @param[in] filter selects files and channels based on SNCLs and datetime (see @ref evalresp_public_options)
+ * @brief Reads files from the current directory (although stdin or a named file can be specified
+ * in the options); extracts the channels and evaluates the responses; writes the responses to files
+ * in the current directory using names inferred from the output options (although stdout can also
+ * be used if specified in the options).
  * @retval EVALRESP_OK on success
  */
 int evalresp_cwd_to_cwd (evalresp_logger *log,
                          evalresp_options *options, evalresp_filter *filter);
-
-/**
- * @public
- * @ingroup evalresp_public_low_level
- * @param[in] log logging structure
- * @param[in] options object to control flow of program
- * @param[in] channel the channel to print into the log
- * @brief print the channel information of the channel be processed
- * @retval EVALRESP_OK on success
- */
-int evalresp_channel_to_log (evalresp_logger *log, evalresp_options const *const options, evalresp_channel *const channel);
 
 #endif

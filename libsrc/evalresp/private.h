@@ -67,31 +67,43 @@
 /**
  * @defgroup evalresp_public_low_level evalresp Public Low-Level Interface
  * @ingroup evalresp_public
- * @brief Public evalresp low-level interface.
+ * @brief The evalresp Public Low-Level Interface provides library access to the basic
+ * functionality provided by the library.  Sub-APIs allow the user user to read channels
+ * (@ref evalresp_public_low_level_input), evaluate responses
+ * (@ref evalresp_public_low_level_evaluation), and write results
+ * (@ref evalresp_public_low_level_output).
  */
 
 /**
  * @defgroup evalresp_public_low_level_input evalresp Public Low-Level Input Interface
  * @ingroup evalresp_public_low_level
- * @brief Public evalresp low-level input interface.
+ * @brief The evalresp Public Low-Level Input Interface reads channels
+ * (@ref evalresp_public_channel) from RSEED and station.xml data.
  */
 
 /**
  * @defgroup evalresp_public_low_level_evaluation evalresp Public Low-Level Evaluation Interface
  * @ingroup evalresp_public_low_level
- * @brief Public evalresp low-level evaluation interface.
+ * @brief The evalresp Public Low-Level Evaluation Interface calculates responses
+ * (@ref evalresp_public_response) from channels (@ref evalresp_public_channel).
  */
 
 /**
  * @defgroup evalresp_public_low_level_output evalresp Public Low-Level Output Interface
  * @ingroup evalresp_public_low_level
- * @brief Public evalresp low-level output interface.
+ * @brief The evalresp Public Low-Level Output Interface writes responses
+ * (@ref evalresp_public_response) to strings and files.  It also includes a utility
+ * routine that displays a channel (@ref evalresp_public_channel) to a log file.
+ * For routines that output multiple files, infer file names, etc, see
+ * @ref evalresp_public_high_level.
  */
 
 /**
  * @defgroup evalresp_public_high_level evalresp Public High-Level Interface
  * @ingroup evalresp_public
- * @brief Public evalresp high-level interface.
+ * @brief The evalresp Public High-Level Interface implements the entire functionality
+ * of the command line tool.  It combines the routines in @ref evalresp_public_low_level
+ * to read channels, evaluate their responses, and print the results.
  */
 
 /**
