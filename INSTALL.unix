@@ -6,10 +6,6 @@ steps:
 
    * The standard C development tools
 
-   * The libxml2 library and headers.  Typically, these are installed
-     via a package manager.  The package may be called libxml2-devel
-     or similar.
-
    * To run tests, you also need the check library for C unit tests.
      Again, this is usually available via a package manager.  You will
      also need to add --enable-check when running configure (see
@@ -22,62 +18,46 @@ steps:
    This will create a directory "evalresp" that contains the full
    evalresp distribution.
 
-2. Run './configure' to construct a 'Makefile' appropriate for your
-   site.  Use the following procedure:
-
    Go into the "evalresp" directory 
  
         cd evalresp
- 
-   and run the auto-configuration script "./configure"
- 
-        ./configure 
- 
-   * If you want to use acc (or any other compiler), simply set
-     the CC environment variable as follows:
- 
-        setenv CC acc
-        ./configure
 
-     The following ./configure options can be used during this stage:
-    
-     --enable-phase-unwrap     Unwrap phase
-     --enable-lib-mode         Functions of evalresp return, not exit
-     --enable-log-label        Add NSLC as a label to log messages
-     --enable-debug            Enable debug
-     --enable-optimization     Enable optimization
-     --enable-unsafe           Remove compiler checks
-     --enable-check            Enable check (unit tests)
+2. Open the file Build.config in your favorite editor and modify the value:
 
-     --disable-static          Disable static library generation
-     --disable-dynamic         Disable dynamic library generation
-     
-     --prefix                  Change install location from /usr/local
-     --help                    Show even more options!
+     INSTALL_DIR
+
+   to reflect the installation directory of your choice. To install in standard location"
+
+     INSTALL_DIR=/usr
+
+   Currently, the defaul location is 
+
+     INSTALL_DIR=$(HOME)
+
 
 3. Compile the program "evalresp".
  
-        make
+        make -f Makefile.unix
         
 4. Optionally, install, as root:
 
-        sudo make install
+        make -f Makefile.unix install 
 
-   this will also construct libraries (libevresp.a, libx2r.a) that can
-   be linked into other external programs in order to allow them to
-   evaluate responses the same way that evalresp does.  To add the
-   'evresp' function to your own program, just add the call to evresp
+5. This will also construct libraries (libevalresp.a  libevalresp_log.a  
+   libmxmlev.a  libspline.a) that can be linked into other external programs 
+   in order to allow them to evaluate responses the same way that evalresp does.  
+   To add the 'evalresp' function to your own program, just add the call to evalresp
    in your code and link with the 'libevresp.a' library when compiling
    and linking your executable.
 
-   An example of this process is the compile statement for the
+6.  An example of this process is the compile statement for the
    'evtest.f' FORTRAN program, which is included in this distribution
    as an example of how to call evresp from your own code.  Although
    the 'evtest' program is not compiled by default, it can be compiled
    and run using the following commands:
 
         cd tests/fortran
-        gfortran evtest.f -o evtest -levresp -lx2r -lxml2
+        gfortran evtest.f -g -o evtest   -levalresp  -levalresp_log  -lmxmlev  -lspline
         LD_LIBRARY_PATH=/usr/local/lib ./evtest
         cat evtest.out
   

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # compile
-gfortran evtest.f -g -o evtest -levresp -lx2r -lxml2
+gfortran evtest.f -g -o evtest   -levalresp  -levalresp_log  -lmxmlev  -lspline
 
 # run (puts output in evtest.out)
 LD_LIBRARY_PATH=/usr/local/lib ./evtest
