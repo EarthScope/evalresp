@@ -174,18 +174,18 @@ static int regsize; /* Code size. */
 #ifndef STATIC
 #define STATIC static
 #endif
-STATIC char *reg (int, int *, evalresp_logger *);
-STATIC char *regbranch (int *, evalresp_logger *);
-STATIC char *regpiece (int *, evalresp_logger *);
+STATIC char *reg (int a, int *b, evalresp_logger *c);
+STATIC char *regbranch (int *a, evalresp_logger *b);
+STATIC char *regpiece (int *a, evalresp_logger *b);
 STATIC char *regatom (int *, evalresp_logger *);
-STATIC char *regnode (char);
-STATIC char *regnext (register char *);
-STATIC void regc (char);
-STATIC void reginsert (char, char *);
-STATIC void regtail (char *, char *);
-STATIC void regoptail (char *, char *, evalresp_logger *);
+STATIC char *regnode (char a);
+STATIC char *regnext (register char *a);
+STATIC void regc (char a);
+STATIC void reginsert (char a, char *b);
+STATIC void regtail (char *a, char *b);
+STATIC void regoptail (char *a, char *b, evalresp_logger *c);
 #ifdef STRCSPN
-STATIC int strcspn (char *, char *);
+STATIC int strcspn (char *a, char *b);
 #endif
 
 /*

@@ -872,8 +872,8 @@ is_iir_coeffs (const char **seed)
   {
 
     /* Parsing (B054F10     Number of denominators:                0) */
-    sscanf (substr, "%s %s %s %s %s", words[1], words[2], words[3], words[4], words[5]);
-    denoms = atoi (words[5]);
+    sscanf (substr, "%s %s %s %s %s", words[0], words[1], words[2], words[3], words[4]);
+    denoms = atoi (words[4]);
   }
   if (0 == denoms)
     return 0;
