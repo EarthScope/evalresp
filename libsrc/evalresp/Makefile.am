@@ -23,7 +23,7 @@ nobase_evalresp_include_HEADERS = public.h \
 				  stationxml2resp.h \
 				  evresp.h
 
-EXTRA_DIST = evr_spline.h input.h private.h constants.h regexp.h regmagic.h stationxml2resp.h \
+EXTRA_DIST =  spline.h input.h private.h constants.h regexp.h regmagic.h stationxml2resp.h \
              stationxml2resp/xml_to_dom.h stationxml2resp/wrappers.h stationxml2resp/dom_to_seed.h \
              Makefile.unix Makefile.ms
 
