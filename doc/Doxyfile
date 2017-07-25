@@ -24,7 +24,7 @@ INPUT = intro_dox.h \
         ../libsrc
 FILE_PATTERNS = *.h *.c
 RECURSIVE = YES
-EXCLUDE_PATTERNS = 
+EXCLUDE_PATTERNS = */mxml/* vcs_getopt.h
 EXAMPLE_PATH = 
 IMAGE_PATH = ./
 
