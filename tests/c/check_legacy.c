@@ -9,6 +9,7 @@
 #include "evalresp/public_api.h"
 #include "evalresp/stationxml2resp/wrappers.h"
 #include "evalresp_log/log.h"
+#include "legacy.h"
 #include "old_fctns.h"
 #include <setjmp.h>
 

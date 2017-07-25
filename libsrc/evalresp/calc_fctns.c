@@ -970,7 +970,7 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
                     "calc_resp: %s start_stage=%d, highest stage found=%d)",
                     "No Matching Stages Found (requested", options->start_stage,
                     chan->nstages);
-      return NO_STAGE_MATCHED;
+      return EVALRESP_PAR;
     }
     else if (!matching_stages)
     {
@@ -978,7 +978,7 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
                     "calc_resp: %s start_stage=%d, highest stage found=%d)",
                     "No Matching Stages Found (requested", options->start_stage,
                     chan->nstages - 1);
-      return NO_STAGE_MATCHED;
+      return EVALRESP_PAR;
     }
 
     /*  Write output for freq[i] in output[i] (note: unit_scale_fact is set by the

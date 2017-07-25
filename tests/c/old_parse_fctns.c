@@ -19,6 +19,7 @@
 #include <string.h>
 
 #include "evalresp/public_channels.h"
+#include "legacy.h"
 #include "old_fctns.h"
 #include <evalresp/private.h>
 

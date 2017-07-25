@@ -34,6 +34,7 @@
 
 #include <string.h>
 
+#include "./legacy.h"
 #include "./old_fctns.h"
 #include <evalresp/evresp.h>
 #include <evalresp/private.h>
