@@ -1,13 +1,13 @@
 
-#ifndef EVALRESP_PUBLIC_RESPONSE_H
-#define EVALRESP_PUBLIC_RESPONSE_H
+#ifndef evalresp_public_low_level_response_H
+#define evalresp_public_low_level_response_H
 
 #include "evalresp/constants.h"
 #include "evalresp/public_channels.h" // TODO - needed for complex?  needs separate public common?
 
 /**
  * @public
- * @ingroup evalresp_public_response
+ * @ingroup evalresp_public_low_level_response
  * @brief Response object.
  */
 typedef struct evalresp_response_s
@@ -24,7 +24,7 @@ typedef struct evalresp_response_s
 
 /**
  * @public
- * @ingroup evalresp_public_response
+ * @ingroup evalresp_public_low_level_response
  * @brief A collection of response objects.
  */
 typedef struct
@@ -35,7 +35,7 @@ typedef struct
 
 /**
  * @public
- * @ingroup evalresp_public_response
+ * @ingroup evalresp_public_low_level_response
  * @brief A routine that frees up the space associated with a single response
  * structure.
  * @param[in,out] resp_ptr Response structure.
@@ -44,7 +44,7 @@ void evalresp_free_response (evalresp_response **response);
 
 /**
  * @public
- * @ingroup evalresp_public_response
+ * @ingroup evalresp_public_low_level_response
  * @brief A routine that frees up the space associated with a collection of
  *        responses.
  * @param[in,out] resp_ptr Response structure.
