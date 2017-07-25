@@ -996,7 +996,7 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
       output[i].imag = val.imag * chan->sensit * chan->unit_scale_fact;
     }
 
-    if ((status = convert_to_units (units_code, options->unit_set ? options->unit : evalresp_velocity_unit, &output[i], w, log)))
+    if ((status = convert_to_units (units_code, options->unit, &output[i], w, log)))
     {
       return status;
     }

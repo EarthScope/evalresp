@@ -195,7 +195,6 @@ typedef struct
   evalresp_output_format format; /**< Output format (AMP and PHA by default). */
   evalresp_unit unit; /**< Output unit (displacement by default). */
   int verbose; /**< Verbose output? */
-  char unit_set;
 } evalresp_options;
 
 /**

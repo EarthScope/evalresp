@@ -168,11 +168,9 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
       evalresp_free_options (&options);
       return NULL;
     }
-    options->unit_set = 1;
   }
   else if (def_units_flag)
   {
-    options->unit_set = 1;
     options->unit = evalresp_default_unit;
   }
 
@@ -353,11 +351,9 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
       evalresp_free_options (&options);
       return;
     }
-    options->unit_set = 1;
   }
   else if (def_units_flag)
   {
-    options->unit_set = 1;
     options->unit = evalresp_default_unit;
   }
 
