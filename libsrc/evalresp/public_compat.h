@@ -8,6 +8,12 @@
  * include evresp.h instead */
 
 /**
+ * @defgroup evalresp_public_compat evalresp Legacy Public Interface (Compatibility Layer)
+ * @ingroup evalresp
+ * @brief Legacy public evalresp interface (predating version 5.0) is included for comatibility purpose.
+ */
+
+/**
  * @private
  * @ingroup evalresp_private
  * @brief Define a global flag to use if using "default" units.
