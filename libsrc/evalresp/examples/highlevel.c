@@ -14,11 +14,11 @@ highlevel ()
   evalresp_options *options = NULL;
   evalresp_filter *filter = NULL;
 
-  if (!(status = evalresp_new_options (NULL, &options)))
+  if ((status = evalresp_new_options (NULL, &options)))
   {
     printf ("Failed to create options");
   }
-  else if (!(status = evalresp_new_filter (NULL, &filter)))
+  else if ((status = evalresp_new_filter (NULL, &filter)))
   {
     printf ("Failed to create filter");
   }
@@ -47,7 +47,7 @@ highlevel ()
     // This will read mydata.xml from the current directory, extract the
     // SNCL NET.STA.LOC.CHN, evaluate the response at the give date, and
     // write AMP... and PHA... files in velocity units (the defaults).
-    if (!(status = evalresp_cwd_to_cwd (NULL, options, filter)))
+    if ((status = evalresp_cwd_to_cwd (NULL, options, filter)))
     {
       printf ("Failed to process data");
     }

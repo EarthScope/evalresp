@@ -16,11 +16,11 @@ lowlevel ()
   evalresp_channels *channels = NULL;
   evalresp_response *response = NULL;
 
-  if (!(status = evalresp_new_options (NULL, &options)))
+  if ((status = evalresp_new_options (NULL, &options)))
   {
     printf ("Failed to create options");
   }
-  else if (!(status = evalresp_new_filter (NULL, &filter)))
+  else if ((status = evalresp_new_filter (NULL, &filter)))
   {
     printf ("Failed to create filter");
   }
