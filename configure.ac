@@ -1,8 +1,8 @@
 
-AC_INIT([evalresp], [4.0.7], [andrewcooke@isti.com])
+AC_INIT([evalresp], [5.0.a1], [andrewcooke@isti.com])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([build-aux])
-AC_CONFIG_FILES([Makefile libsrc/Makefile src/Makefile tests/Makefile tests/c/Makefile tests/java/Makefile tests/fortran/Makefile tests/robot/Makefile doc/Makefile libsrc/mxml/Makefile libsrc/evalresp_log/Makefile libsrc/spline/Makefile libsrc/evalresp/Makefile])
+AC_CONFIG_FILES([Makefile libsrc/Makefile src/Makefile tests/Makefile tests/c/Makefile tests/java/Makefile tests/fortran/Makefile tests/robot/Makefile tests/jenkins/Makefile doc/Makefile libsrc/mxml/Makefile libsrc/evalresp_log/Makefile libsrc/spline/Makefile libsrc/evalresp/Makefile])
 AM_CONFIG_HEADER([config.h libsrc/mxml/config.h])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 

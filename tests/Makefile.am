@@ -1,3 +1,3 @@
 
-SUBDIRS = c java fortran robot
+SUBDIRS = c java fortran robot jenkins
 

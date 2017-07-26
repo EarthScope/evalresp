@@ -40,7 +40,7 @@ void evr_regsub (prog, source, dest, log)
     regexp *prog;
 char *source;
 char *dest;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register char *src;
   register char *dst;
@@ -51,13 +51,11 @@ evalresp_log_t *log;
   if (prog == NULL || source == NULL || dest == NULL)
   {
     evalresp_log (log, EV_ERROR, 0, "NULL parm to evr_regsub");
-    /*XXX evr_regerror("NULL parm to evr_regsub"); */
     return;
   }
   if (UCHARAT (prog->program) != MAGIC)
   {
     evalresp_log (log, EV_ERROR, 0, "damaged regexp fed to evr_regsub");
-    /*XXX evr_regerror("damaged regexp fed to evr_regsub"); */
     return;
   }
 
@@ -82,7 +80,6 @@ evalresp_log_t *log;
       if (*(dst - 1) == '\0')
       { /* strncpy hit NUL. */
         evalresp_log (log, EV_ERROR, 0, "damaged match string");
-        /*XXX evr_regerror("damaged match string"); */
         return;
       }
     }

@@ -6,7 +6,7 @@
 #include <evalresp_log/log.h>
 
 int
-evalresp_log_intialize_log_for_file (evalresp_log_t *log, FILE *fd)
+evalresp_log_intialize_log_for_file (evalresp_logger *log, FILE *fd)
 {
   if (!fd || !log)
   {
@@ -18,7 +18,7 @@ evalresp_log_intialize_log_for_file (evalresp_log_t *log, FILE *fd)
 }
 
 int
-evalresp_log_to_file (evalresp_log_msg_t *msg, void *data)
+evalresp_log_to_file (evalresp_log_msg *msg, void *data)
 {
   FILE *fd = data;
   char date_str[256]; /*TODO this is tomany bytes*/

@@ -31,27 +31,28 @@
 #include <sys/param.h> /* include header files */
 #include <sys/time.h>
 #include <unistd.h>
-#else             /* if Windows compiler then */
+#else /* if Windows compiler then */
 #include <time.h> /* 'time.h' is not in 'sys/' */
 #endif
-#include <evalresp/evalresp.h>
+#include <evalresp/private.h>
 #include <string.h>
 
 #ifdef _WIN32
 #include <direct.h> /* define macro used below: */
-#include <io.h>     /* include header files for directory functions */
+#include <io.h> /* include header files for directory functions */
 #define S_ISDIR(m) ((m)&S_IFDIR)
 #endif
 
+// TODO - change mode to enum
 struct matched_files *
-find_files (char *file, struct scn_list *scn_lst,
-            int *mode, evalresp_log_t *log)
+find_files (char *file, evalresp_sncls *scn_lst,
+            int *mode, evalresp_logger *log)
 {
   char *basedir, testdir[MAXLINELEN];
   char comp_name[MAXLINELEN], new_name[MAXLINELEN];
   int i, nscn, nfiles, loc_wild;
   struct matched_files *flst_head, *flst_ptr, *tmp_ptr;
-  struct scn *scn_ptr;
+  evalresp_sncl *scn_ptr;
   struct stat buf;
 
   /* first determine the number of station-channel-networks to look at */
@@ -91,11 +92,8 @@ find_files (char *file, struct scn_list *scn_lst,
         nfiles = get_names (comp_name, flst_ptr, log);
         if (!nfiles && !loc_wild)
         {
-          evalresp_log (log, EV_WARN, 0, "evresp_; no files match '%s'",
+          evalresp_log (log, EV_WARN, EV_WARN, "no files match '%s'",
                         comp_name);
-          /*XXX fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
-                            comp_name);
-                    fflush(stderr); */
         }
         else if (!nfiles && loc_wild)
         {
@@ -106,13 +104,9 @@ find_files (char *file, struct scn_list *scn_lst,
           nfiles = get_names (comp_name, flst_ptr, log);
           if (!nfiles)
           {
-            evalresp_log (log, EV_WARN, 0,
-                          "evresp_; no files match '%s' (or globbed location)",
+            evalresp_log (log, EV_WARN, EV_WARN,
+                          "no files match '%s' (or globbed location)",
                           comp_name);
-            /*XXX fprintf(stderr,
-                                "WARNING: evresp_; no files match '%s' (or globbed location)\n",
-                                comp_name);
-                        fflush(stderr); */
           }
         }
         tmp_ptr = alloc_matched_files (log);
@@ -151,11 +145,8 @@ find_files (char *file, struct scn_list *scn_lst,
       nfiles = get_names (comp_name, flst_ptr, log);
       if (!nfiles && strcmp (scn_ptr->locid, "*"))
       {
-        evalresp_log (log, EV_WARN, 0, "evresp_; no files match '%s'",
+        evalresp_log (log, EV_WARN, EV_WARN, "no files match '%s'",
                       comp_name);
-        /*XXX fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
-                        comp_name);
-                fflush(stderr); */
       }
       else if (!nfiles && !strcmp (scn_ptr->locid, "*"))
       {
@@ -178,11 +169,8 @@ find_files (char *file, struct scn_list *scn_lst,
         nfiles = get_names (comp_name, flst_ptr, log);
         if (!nfiles)
         {
-          evalresp_log (log, EV_WARN, 0, "evresp_; no files match '%s'",
+          evalresp_log (log, EV_WARN, EV_WARN, "no files match '%s'",
                         comp_name);
-          /*fprintf(stderr, "WARNING: evresp_; no files match '%s'\n",
-                            comp_name);
-                    fflush(stderr); */
         }
       }
       tmp_ptr = alloc_matched_files (log);
@@ -203,7 +191,7 @@ find_files (char *file, struct scn_list *scn_lst,
  expression in 'in_file'. */
 
 int
-get_names (char *in_file, struct matched_files *files, evalresp_log_t *log)
+get_names (char *in_file, struct matched_files *files, evalresp_logger *log)
 {
   struct file_list *lst_ptr, *tmp_ptr;
   glob_t globs;
@@ -280,7 +268,7 @@ get_names (char *in_file, struct matched_files *files, evalresp_log_t *log)
  matching the expression in 'in_file'. */
 
 int
-get_names (char *in_file, struct matched_files *files, evalresp_log_t* log)
+get_names (char *in_file, struct matched_files *files, evalresp_logger *log)
 {
   struct file_list *lst_ptr, *tmp_ptr;
   struct _finddata_t fblk; /* define block for 'findfirst()' fn */
@@ -292,7 +280,7 @@ get_names (char *in_file, struct matched_files *files, evalresp_log_t* log)
 #define findclose() _findclose (fhandval)
 
   if (findfirst (in_file, &fblk, 0) < 0)
-  {               /* no matching files found */
+  { /* no matching files found */
     findclose (); /* release resources for findfirst/findnext */
     return 0;
   }

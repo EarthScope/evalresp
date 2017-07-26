@@ -15,7 +15,7 @@ xml2resp_SOURCE = xml2resp.c
 xml2resp_LDADD =  $(commonLDADD)
 
 EXTRA_DIST = \
-	Makefile.ms
+	Makefile.ms Makefile.unix vcs_getopt.h
 
 distclean-local:
 	-rm -f Makefile.in *~

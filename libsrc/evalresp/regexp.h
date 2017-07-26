@@ -51,12 +51,12 @@
 typedef struct regexp
 {
   char *startp[NSUBEXP]; /**< Start pointers for subexpressions. */
-  char *endp[NSUBEXP];   /**< End pointers for subexpressions. */
-  char regstart;         /**< Internal use only. */
-  char reganch;          /**< Internal use only. */
-  char *regmust;         /**< Internal use only. */
-  int regmlen;           /**<  Internal use only. */
-  char program[1];       /**< Unwarranted chumminess with compiler. */
+  char *endp[NSUBEXP]; /**< End pointers for subexpressions. */
+  char regstart; /**< Internal use only. */
+  char reganch; /**< Internal use only. */
+  char *regmust; /**< Internal use only. */
+  int regmlen; /**<  Internal use only. */
+  char program[1]; /**< Unwarranted chumminess with compiler. */
 } regexp;
 
 /**
@@ -78,7 +78,7 @@ typedef struct regexp
  * @warning Beware that the optimization-preparation code in here knows about
  *          some of the structure of the compiled regexp.
  */
-regexp *evr_regcomp (char *exp, evalresp_log_t *log);
+regexp *evr_regcomp (char *exp, evalresp_logger *log);
 
 /**
  * @private
@@ -90,7 +90,7 @@ regexp *evr_regcomp (char *exp, evalresp_log_t *log);
  * @returns @c 0 on error or no match.
  * @returns Pointer to position in string if match.
  */
-int evr_regexec (regexp *prog, char *string, evalresp_log_t *log);
+int evr_regexec (regexp *prog, char *string, evalresp_logger *log);
 
 /**
  * @private
@@ -101,7 +101,7 @@ int evr_regexec (regexp *prog, char *string, evalresp_log_t *log);
  * @param[out] dest Destination string.
  * @param[in] log Logging structure.
  */
-void evr_regsub (regexp *prog, char *source, char *dest, evalresp_log_t *log);
+void evr_regsub (regexp *prog, char *source, char *dest, evalresp_logger *log);
 
 /**
  * @private

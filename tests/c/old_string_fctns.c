@@ -34,11 +34,17 @@
 
 #include <string.h>
 
-#include "./regexp.h"
-#include <evalresp/evalresp.h>
+#include "./legacy.h"
+#include "./old_fctns.h"
+#include <evalresp/evresp.h>
+#include <evalresp/private.h>
+#include <evalresp/public_channels.h>
+#include <evalresp/regexp.h>
+
+char myLabel[20];
 
 struct string_array *
-ev_parse_line (char *line, evalresp_log_t *log)
+ev_parse_line (char *line, evalresp_logger *log)
 {
   char *lcl_line, field[MAXFLDLEN];
   int nfields, fld_len, i = 0;
@@ -65,8 +71,6 @@ ev_parse_line (char *line, evalresp_log_t *log)
         evalresp_log (log, EV_ERROR, 0,
                       "ev_parse_line; malloc() failed for (char) vector");
         break;
-        /*XXX error_exit(OUT_OF_MEMORY,
-                        "ev_parse_line; malloc() failed for (char) vector"); */
       }
       strncpy (lcl_strings->strings[i], "", fld_len);
       strncpy (lcl_strings->strings[i], field, fld_len - 1);
@@ -96,8 +100,6 @@ ev_parse_line (char *line, evalresp_log_t *log)
       free (lcl_strings->strings);
       free (lcl_strings);
       return NULL;
-      /*XXX error_exit(OUT_OF_MEMORY,
-                    "ev_parse_line; malloc() failed for (char) vector"); */
     }
     strncpy (lcl_strings->strings[0], "", 1);
   }
@@ -105,7 +107,7 @@ ev_parse_line (char *line, evalresp_log_t *log)
 }
 
 struct string_array *
-parse_delim_line (char *line, char *delim, evalresp_log_t *log)
+parse_delim_line (char *line, char *delim, evalresp_logger *log)
 {
   char *lcl_line, field[MAXFLDLEN];
   int nfields, fld_len, i = 0;
@@ -133,8 +135,6 @@ parse_delim_line (char *line, char *delim, evalresp_log_t *log)
         evalresp_log (log, EV_ERROR, 0,
                       "parse_delim_line; malloc() failed for (char) vector");
         break;
-        /*XXX error_exit(OUT_OF_MEMORY,
-                        "parse_delim_line; malloc() failed for (char) vector"); */
       }
       strncpy (lcl_strings->strings[i], "", fld_len);
       strncpy (lcl_strings->strings[i], field, fld_len - 1);
@@ -164,8 +164,6 @@ parse_delim_line (char *line, char *delim, evalresp_log_t *log)
       free (lcl_strings->strings);
       free (lcl_strings);
       return NULL;
-      /*XXX error_exit(OUT_OF_MEMORY,
-                    "parse_delim_line; malloc() failed for (char) vector"); */
     }
     strncpy (lcl_strings->strings[0], "", 1);
   }
@@ -174,7 +172,7 @@ parse_delim_line (char *line, char *delim, evalresp_log_t *log)
 
 int
 get_field (FILE *fptr, char *return_field, int blkt_no, int fld_no,
-           char *sep, int fld_wanted, evalresp_log_t *log)
+           char *sep, int fld_wanted, evalresp_logger *log)
 {
   char line[MAXLINELEN];
 
@@ -182,19 +180,14 @@ get_field (FILE *fptr, char *return_field, int blkt_no, int fld_no,
 
   get_line (fptr, line, blkt_no, fld_no, sep, log);
 
-  /* then parse the field that the user wanted from the line get_line returned */
-
+  /* then parse the field that the user wanted from the line get_line returned
+   * and return the length of the field */
   return (parse_field (line, fld_wanted, return_field, log));
-
-  /* and return the length of the field */
-
-  /*XXX this is the same as what parse_field returns
-    return (strlen(return_field)); */
 }
 
 int
 test_field (FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
-            char *sep, int fld_wanted, evalresp_log_t *log)
+            char *sep, int fld_wanted, evalresp_logger *log)
 {
   char line[MAXLINELEN];
 
@@ -202,20 +195,16 @@ test_field (FILE *fptr, char *return_field, int *blkt_no, int *fld_no,
 
   if (0 >= next_line (fptr, line, blkt_no, fld_no, sep, log))
   {
-    return 0; /*TODO carry retval */
+    return 0;
   }
 
-  /* then parse the field that the user wanted from the line get_line returned */
-
+  /* then parse the field that the user wanted from the line get_line returned
+   * and return the length of the field */
   return (parse_field (line, fld_wanted, return_field, log));
-  /* and return the length of the field */
-
-  /*XXX this is the same as what parse_field returns
-    return (strlen(return_field)); */
 }
 
 int
-get_line (FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, evalresp_log_t *log)
+get_line (FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, evalresp_logger *log)
 {
   char *lcl_ptr, line[MAXLINELEN];
   int lcl_blkt, lcl_fld, test;
@@ -270,9 +259,6 @@ get_line (FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, eva
                   "get_line; unrecogn. prefix on the following line:\n\t  '%s'",
                   line);
     return UNDEF_PREFIX;
-    /*XXX error_return(UNDEF_PREFIX,
-                "get_line; unrecogn. prefix on the following line:\n\t  '%s'",
-                line); */
   }
 
   /* check the blockette and field numbers found on the line versus the expected values */
@@ -307,15 +293,12 @@ get_line (FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, eva
   {
     evalresp_log (log, EV_ERROR, 0, "get_line; seperator string not found");
     return UNDEF_SEPSTR;
-    /*XXX error_return(UNDEF_SEPSTR, "get_line; seperator string not found"); */
   }
   else if ((lcl_ptr - line) > (int)(strlen (line) - 1))
   {
     evalresp_log (log, EV_ERROR, 0,
                   "get_line; nothing to parse after seperator string");
     return UNDEF_SEPSTR;
-    /*XXX error_return(UNDEF_SEPSTR,
-                "get_line; nothing to parse after seperator string"); */
   }
 
   lcl_ptr++;
@@ -329,8 +312,6 @@ get_line (FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, eva
     evalresp_log (log, EV_ERROR, 0,
                   "get_line; no non-white space after seperator string");
     return UNDEF_SEPSTR;
-    /*XXX error_return(UNDEF_SEPSTR,
-                "get_line; no non-white space after seperator string"); */
   }
 
   strncpy (return_line, lcl_ptr, MAXLINELEN);
@@ -339,7 +320,7 @@ get_line (FILE *fptr, char *return_line, int blkt_no, int fld_no, char *sep, eva
 
 int
 next_line (FILE *fptr, char *return_line, int *blkt_no, int *fld_no,
-           char *sep, evalresp_log_t *log)
+           char *sep, evalresp_logger *log)
 {
   char *lcl_ptr, line[MAXLINELEN];
   int test;
@@ -382,25 +363,19 @@ next_line (FILE *fptr, char *return_line, int *blkt_no, int *fld_no,
     evalresp_log (log, EV_ERROR, 0,
                   "get_field; unrecogn. prefix on the following line:\n\t  '%s'",
                   line);
-    return 0 /*TODO UNDEF_PREFIX */;
-    /*XXX error_return(UNDEF_PREFIX,
-                "get_field; unrecogn. prefix on the following line:\n\t  '%s'",
-                line); */
+    return 0;
   }
 
   if ((lcl_ptr = strstr (line, sep)) == (char *)NULL)
   {
     evalresp_log (log, EV_ERROR, 0, "get_field; seperator string not found");
-    return 0 /*TODO UNDER_SEPSTR */;
-    /*XXX error_return(UNDEF_SEPSTR, "get_field; seperator string not found"); */
+    return 0;
   }
   else if ((lcl_ptr - line) > (int)(strlen (line) - 1))
   {
     evalresp_log (log, EV_ERROR, 0,
                   "get_field; nothing to parse after seperator string");
-    return 0 /*TODO UNDER_SEPSTR */;
-    /*XXX error_return(UNDEF_SEPSTR,
-                "get_field; nothing to parse after seperator string"); */
+    return 0;
   }
 
   lcl_ptr++;
@@ -456,7 +431,7 @@ count_delim_fields (char *line, char *delim)
 }
 
 int
-parse_field (char *line, int fld_no, char *return_field, evalresp_log_t *log)
+parse_field (char *line, int fld_no, char *return_field, evalresp_logger *log)
 {
   char *lcl_ptr, *new_ptr;
   char lcl_field[MAXFLDLEN];
@@ -470,18 +445,13 @@ parse_field (char *line, int fld_no, char *return_field, evalresp_log_t *log)
       evalresp_log (log, EV_ERROR, 0, "%s%d%s%d%s",
                     "parse_field; Input field number (", fld_no,
                     ") exceeds number of fields on line(", nfields, ")");
-      /*XXX error_return(PARSE_ERROR, "%s%d%s%d%s",
-                    "parse_field; Input field number (", fld_no,
-                    ") exceeds number of fields on line(", nfields, ")"); */
     }
     else
     {
       evalresp_log (log, EV_ERROR, 0, "%s",
                     "parse_field; Data fields not found on line");
-      /*XXX error_return(PARSE_ERROR, "%s",
-                    "parse_field; Data fields not found on line"); */
     }
-    return PARSE_ERROR;
+    return EVALRESP_PAR;
   }
 
   lcl_ptr = line;
@@ -495,14 +465,13 @@ parse_field (char *line, int fld_no, char *return_field, evalresp_log_t *log)
   }
 
   sscanf (lcl_ptr, "%s", return_field);
-  return (strlen (return_field));
+  return EVALRESP_OK;
 }
 
 int
-parse_delim_field (char *line, int fld_no, char *delim, char *return_field, evalresp_log_t *log)
+parse_delim_field (char *line, int fld_no, char *delim, char *return_field, evalresp_logger *log)
 {
 
-  // TODO - tmp_prt assignment below made blindly to fix compiler warning.  bug?
   char *lcl_ptr, *tmp_ptr = NULL;
   int nfields, i;
 
@@ -515,17 +484,12 @@ parse_delim_field (char *line, int fld_no, char *delim, char *return_field, eval
                     "parse_delim_field; Input field number (", fld_no,
                     ") exceeds number of fields on line(", nfields, ")");
       return PARSE_ERROR;
-      /*XXX error_return(PARSE_ERROR, "%s%d%s%d%s",
-                    "parse_delim_field; Input field number (", fld_no,
-                    ") exceeds number of fields on line(", nfields, ")"); */
     }
     else
     {
       evalresp_log (log, EV_ERROR, 0, "%s",
                     "parse_delim_field; Data fields not found on line");
       return PARSE_ERROR;
-      /*XXX error_return(PARSE_ERROR, "%s",
-                    "parse_delim_field; Data fields not found on line"); */
     }
   }
 
@@ -547,7 +511,7 @@ parse_delim_field (char *line, int fld_no, char *delim, char *return_field, eval
 }
 
 int
-check_line (FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_log_t *log)
+check_line (FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_logger *log)
 {
   char line[MAXLINELEN];
   int test;
@@ -596,10 +560,7 @@ check_line (FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_log_t
     evalresp_log (log, EV_ERROR, 0,
                   "check_line; unrecogn. prefix on the following line:\n\t  '%s'",
                   line);
-    return 0 /*TODO UNDEF_PREFIX */;
-    /*XXX error_return(UNDEF_PREFIX,
-                "check_line; unrecogn. prefix on the following line:\n\t  '%s'",
-                line); */
+    return 0;
   }
 
   strncpy (in_line, line, MAXLINELEN);
@@ -607,7 +568,7 @@ check_line (FILE *fptr, int *blkt_no, int *fld_no, char *in_line, evalresp_log_t
 }
 
 int
-get_int (char *in_line, evalresp_log_t *log)
+get_int (char *in_line, evalresp_logger *log)
 {
   int value;
 
@@ -615,15 +576,13 @@ get_int (char *in_line, evalresp_log_t *log)
   {
     evalresp_log (log, EV_ERROR, 0, "get_int; '%s' is not an integer",
                   in_line);
-    /*XXX error_return(IMPROP_DATA_TYPE, "get_int; '%s' is not an integer",
-                in_line); */
   }
   value = atoi (in_line);
   return (value);
 }
 
 double
-get_double (char *in_line, evalresp_log_t *log)
+get_double (char *in_line, evalresp_logger *log)
 {
   double lcl_val;
 
@@ -631,30 +590,30 @@ get_double (char *in_line, evalresp_log_t *log)
   {
     evalresp_log (log, EV_ERROR, 0, "get_double; '%s' is not a real number",
                   in_line);
-    /*XXX error_return(IMPROP_DATA_TYPE, "get_double; '%s' is not a real number",
-                in_line); */
   }
   lcl_val = atof (in_line);
   return (lcl_val);
 }
 
 int
-check_units (char *line, evalresp_log_t *log)
+check_units (evalresp_channel *channel, char *line, evalresp_logger *log)
 {
   int i, first_flag = 0;
 
-  if (!strlen (GblChanPtr->first_units))
+  if (!strlen (channel->first_units))
   {
     first_flag = 1;
-    strncpy (GblChanPtr->first_units, line, MAXLINELEN);
-    unitScaleFact = 1.0; /* global variable used to change to MKS units */
+    strncpy (channel->first_units, line, MAXLINELEN);
+    channel->unit_scale_fact = 1.0;
   }
   else
-    strncpy (GblChanPtr->last_units, line, MAXLINELEN);
+  {
+    strncpy (channel->last_units, line, MAXLINELEN);
+  }
 
   if (def_units_flag)
   {
-    return (DEFAULT);
+    return DEFAULT;
   }
 
   for (i = 0; i < (int)strlen (line); i++)
@@ -662,73 +621,66 @@ check_units (char *line, evalresp_log_t *log)
     line[i] = toupper (line[i]);
   }
 
-  /* IGD 02/03/01 a restricted case of pessure data is added
+  /* IGD 02/03/01 a restricted case of pressure data is added
      * We will play with string_match ater if more requests show
      * up for pressure data.
      ********************************************/
   if (strncasecmp (line, "PA", 2) == 0)
-    return (PRESSURE);
+    return PRESSURE;
 
   /* IGD 08/21/06 Added support for TESLA */
   if (strncasecmp (line, "T -", 3) == 0)
-    return (TESLA);
+    return TESLA;
 
   /* IHD 10/03/13 Adding DEGREES CENTIGRADE */
   if (strncasecmp (line, "C -", 3) == 0)
-    return (CENTIGRADE);
+    return CENTIGRADE;
 
   if (string_match (line, "^[CNM]?M/S\\*\\*2|^[CNM]?M/SEC\\*\\*2", "-r", log))
   {
     if (first_flag && !strncmp ("NM", line, (size_t)2))
-      unitScaleFact = 1.0e9;
+      channel->unit_scale_fact = 1.0e9;
     else if (first_flag && !strncmp ("MM", line, (size_t)2))
-      unitScaleFact = 1.0e3;
+      channel->unit_scale_fact = 1.0e3;
     else if (first_flag && !strncmp ("CM", line, (size_t)2))
-      unitScaleFact = 1.0e2;
-    return (ACC);
+      channel->unit_scale_fact = 1.0e2;
+    return ACC;
   }
   else if (string_match (line, "^[CNM]?M/S|^[CNM]?M/SEC", "-r", log))
   {
     if (first_flag && !strncmp (line, "NM", 2))
-      unitScaleFact = 1.0e9;
+      channel->unit_scale_fact = 1.0e9;
     else if (first_flag && !strncmp (line, "MM", 2))
-      unitScaleFact = 1.0e3;
+      channel->unit_scale_fact = 1.0e3;
     else if (first_flag && !strncmp (line, "CM", 2))
-      unitScaleFact = 1.0e2;
-    return (VEL);
+      channel->unit_scale_fact = 1.0e2;
+    return VEL;
   }
   else if (string_match (line, "^[CNM]?M[^A-Z/]?", "-r", log))
   {
     if (first_flag && !strncmp (line, "NM", 2))
-      unitScaleFact = 1.0e9;
+      channel->unit_scale_fact = 1.0e9;
     else if (first_flag && !strncmp (line, "MM", 2))
-      unitScaleFact = 1.0e3;
+      channel->unit_scale_fact = 1.0e3;
     else if (first_flag && !strncmp (line, "CM", 2))
-      unitScaleFact = 1.0e2;
-    return (DIS);
+      channel->unit_scale_fact = 1.0e2;
+    return DIS;
   }
   else if (string_match (line, "^COUNTS?[^A-Z]?", "-r", log) || string_match (line, "^DIGITAL[^A-Z]?", "-r", log))
   {
-    return (COUNTS);
+    return COUNTS;
   }
   else if (string_match (line, "^V[^A-Z]?", "-r", log) || string_match (line, "^VOLTS[^A-Z]?", "-r", log))
   {
-    return (VOLTS);
+    return VOLTS;
   }
-#ifdef LIB_MODE
-  return (UNDEF_UNITS);
-#else
-  evalresp_log (log, EV_ERROR, 0,
+  evalresp_log (log, EV_WARN, EV_WARN,
                 "check_units; units found ('%s') are not supported", line);
-  return (UNDEF_UNITS);
-/*XXX error_return(UNRECOG_UNITS,
-            "check_units; units found ('%s') are not supported", line); */
-#endif
-  //XXX return (0); /*We should not reach to here */
+  return UNDEF_UNITS;
 }
 
 int
-string_match (const char *string, char *expr, char *type_flag, evalresp_log_t *log)
+string_match (const char *string, char *expr, char *type_flag, evalresp_logger *log)
 {
   char lcl_string[MAXLINELEN], regexp_pattern[MAXLINELEN];
   int i = 0, glob_type, test;
@@ -747,11 +699,7 @@ string_match (const char *string, char *expr, char *type_flag, evalresp_log_t *l
   {
     evalresp_log (log, EV_ERROR, 0, "%s string_match; improper pattern type (%s)\n",
                   myLabel, type_flag);
-    return 0; /*TODO better error */
-              /*XXX fprintf(stderr, "%s string_match; improper pattern type (%s)\n",
-                myLabel, type_flag);
-        fflush(stderr);
-        exit(2); */
+    return 0;
   }
   while (*lcl_ptr && i < (MAXLINELEN - 1))
   {
@@ -775,9 +723,7 @@ string_match (const char *string, char *expr, char *type_flag, evalresp_log_t *l
   {
     evalresp_log (log, EV_ERROR, 0,
                   "string_match; pattern '%s' didn't compile", regexp_pattern);
-    return 0; /*TODO RE_COMP_FAILED*/
-              /*XXX error_return(RE_COMP_FAILED,
-                "string_match; pattern '%s' didn't compile", regexp_pattern); */
+    return 0;
   }
   lcl_ptr = lcl_string;
   test = evr_regexec (prog, lcl_ptr, log);
@@ -787,30 +733,7 @@ string_match (const char *string, char *expr, char *type_flag, evalresp_log_t *l
 }
 
 int
-is_int (const char *test, evalresp_log_t *log)
-{
-  char ipattern[MAXLINELEN];
-
-  /* first check to see if is an integer prefixed by a plus or minus.  If not
-     then check to see if is simply an integer */
-
-  strncpy (ipattern, "^[-+]?[0-9]+$", MAXLINELEN);
-  return (string_match (test, ipattern, "-r", log));
-}
-
-int
-is_real (const char *test, evalresp_log_t *log)
-{
-  char fpattern[MAXLINELEN];
-  strncpy (fpattern, "^[-+]?[0-9]+\\.?[0-9]*[Ee][-+]?[0-9]+$", MAXLINELEN);
-  strcat (fpattern, "|^[-+]?[0-9]*\\.[0-9]+[Ee][-+]?[0-9]+$");
-  strcat (fpattern, "|^[-+]?[0-9]+\\.?[0-9]*$");
-  strcat (fpattern, "|^[-+]?[0-9]*\\.[0-9]+$");
-  return (string_match (test, fpattern, "-r", log));
-}
-
-int
-is_time (const char *test, evalresp_log_t *log)
+is_time (const char *test, evalresp_logger *log)
 {
   char fpattern[MAXLINELEN];
 

@@ -7,18 +7,19 @@
     11/2/2005 -- [ET]  Implemented 'interpolate_list_blockette()' function.
 */
 
-#include "evr_spline.h"
-#include <evalresp/evalresp.h>
-#include <evalresp_log/log.h>
+#include <evalresp/private.h>
 #include <stdlib.h>
 #include <string.h>
 
-void
-merge_lists (struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t *log)
+#include "evalresp_log/log.h"
+#include "spline.h"
+
+static int
+merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_logger *log)
 {
   int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;
   double *amp1, *amp2, *phase1, *phase2, *freq1, *freq2;
-  struct blkt *tmp_blkt;
+  evalresp_blkt *tmp_blkt;
 
   tmp_blkt = *second_blkt;
   switch (first_blkt->type)
@@ -27,17 +28,14 @@ merge_lists (struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t 
     break;
   default:
     evalresp_log (log, EV_ERROR, 0, "merge_lists; filter types must be LIST");
-    return; /*TODO MERGE_ERROR */
-            /*XXX error_return(MERGE_ERROR, "merge_lists; filter types must be LIST"); */
+    return EVALRESP_ERR;
   }
 
   if (first_blkt->type != tmp_blkt->type)
   {
     evalresp_log (log, EV_ERROR, 0,
                   "merge_lists; both filters must have the same type");
-    return; /*TODO MERGE_ERROR */
-            /*XXX error_return(MERGE_ERROR,
-                "merge_lists; both filters must have the same type"); */
+    return EVALRESP_ERR;
   }
 
   /* set up some local pointers and values */
@@ -61,27 +59,21 @@ merge_lists (struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t 
   {
     evalresp_log (log, EV_ERROR, 0,
                   "merge_lists; insufficient memory for combined amplitudes");
-    return; /*TODO OUT_OF_MEMORY */
-            /*XXX error_exit(OUT_OF_MEMORY,
-                "merge_lists; insufficient memory for combined amplitudes"); */
+    return EVALRESP_MEM; /* OUT_OF_MEMORY */
   }
 
   if ((phase1 = (double *)realloc (phase1, new_ncoeffs * sizeof (double))) == (double *)NULL)
   {
     evalresp_log (log, EV_ERROR, 0,
                   "merge_lists; insufficient memory for combined phases");
-    return; /*TODO OUT_OF_MEMORY */
-            /*XXX error_exit(OUT_OF_MEMORY,
-                "merge_lists; insufficient memory for combined phases"); */
+    return EVALRESP_MEM; /* OUT_OF_MEMORY */
   }
 
   if ((freq1 = (double *)realloc (freq1, new_ncoeffs * sizeof (double))) == (double *)NULL)
   {
     evalresp_log (log, EV_ERROR, 0,
                   "merge_lists; insufficient memory for combined frequencies");
-    return; /*TODO OUT_OF_MEMORY */
-            /*XXX error_exit(OUT_OF_MEMORY,
-                "merge_lists; insufficient memory for combined frequencies"); */
+    return EVALRESP_MEM; /* OUT_OF_MEMORY */
   };
 
   /* copy the coeff values to the new space */
@@ -103,14 +95,16 @@ merge_lists (struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t 
   first_blkt->next_blkt = tmp_blkt->next_blkt;
   free_fir (tmp_blkt);
   *second_blkt = first_blkt->next_blkt;
+
+  return EVALRESP_OK;
 }
 
-void
-merge_coeffs (struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t *log)
+static int
+merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_logger *log)
 {
   int new_ncoeffs, ncoeffs1, ncoeffs2, i, j;
   double *coeffs1, *coeffs2;
-  struct blkt *tmp_blkt;
+  evalresp_blkt *tmp_blkt;
 
   tmp_blkt = *second_blkt;
   switch (first_blkt->type)
@@ -121,17 +115,14 @@ merge_coeffs (struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t
     break;
   default:
     evalresp_log (log, EV_ERROR, 0, "merge_coeffs; filter types must be FIR");
-    return; /*TODO MERGE_ERROR */
-            /*XXX error_return(MERGE_ERROR, "merge_coeffs; filter types must be FIR");*/
+    return EVALRESP_ERR; /* MERGE_ERROR */
   }
 
   if (first_blkt->type != tmp_blkt->type)
   {
     evalresp_log (log, EV_ERROR, 0,
                   "merge_coeffs; both filters must have the same type");
-    return; /*TODO MERGE_ERROR */
-            /*XXX error_return(MERGE_ERROR,
-                "merge_coeffs; both filters must have the same type"); */
+    return EVALRESP_ERR; /* MERGE_ERROR */
   }
 
   /* set up some local pointers and values */
@@ -150,9 +141,7 @@ merge_coeffs (struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t
   {
     evalresp_log (log, EV_ERROR, 0,
                   "merge_coeffs; insufficient memory for combined coeffs");
-    return; /*TODO OUT_OF_MEMORY */
-            /*XXX error_exit(OUT_OF_MEMORY,
-                "merge_coeffs; insufficient memory for combined coeffs"); */
+    return EVALRESP_MEM;
   }
 
   /* copy the coeff values to the new space */
@@ -170,373 +159,12 @@ merge_coeffs (struct blkt *first_blkt, struct blkt **second_blkt, evalresp_log_t
   first_blkt->next_blkt = tmp_blkt->next_blkt;
   free_fir (tmp_blkt);
   *second_blkt = first_blkt->next_blkt;
+
+  return EVALRESP_OK;
 }
 
-void
-check_channel (struct channel *chan, evalresp_log_t *log)
-{
-  // TODO - assignments below (0 + NULL) made blindly to fix compiler warning.  bug?
-  struct stage *stage_ptr, *next_stage, *prev_stage;
-  struct blkt *blkt_ptr, *next_blkt;
-  struct blkt *filt_blkt = NULL, *deci_blkt = NULL, *gain_blkt = NULL, *ref_blkt = NULL;
-  int stage_type;
-  int gain_flag, deci_flag, ref_flag;
-  int i, j, nc = 0;
-
-  /* first run a 'sanity-check' of the filter sequence, making sure
-     that the units match and that the proper blockettes are found
-     where they are 'expected'.  At the same time, continuation filters
-     from the FIR filters are merged and out of order filters are
-     moved to ensure that the order for blockettes in a stage will be
-
-     FILT_TYPE   ( ->  DECIMATION  )->  GAIN
-
-     where FILT_TYPE is one of ANALOG_PZ, LAPLACE_PZ (which are both called
-     PZ_TYPE here), IIR_PZ (called IIR_TYPE here), FIR_ASYM, FIR_SYM1 or
-     FIR_SYM2 (which are all called FIR_TYPE in this routine).
-     This sequence will order will be established, regardless of the order
-     in which the blockettes appeared in the RESP file.  One other 'type' of
-     stage is allowed (in addition to the PZ_TYPE and FIR_TYPE):  A 'gain only'
-     stage.  This stage type consists of a gain blockette only (with no other
-     blockettes).  Use of this type of filter is discouraged, since there is no
-     information about units into and out of the stage in a gain blockette, but
-     evalresp will allow this type of stage to be used by assuming that the
-     units into and out of this stage are identical (i.e. that the units are
-     continous between the stage preceeding the 'GAIN_TYPE' stage and the stage
-     following it (essentially, this means that 'Units Checking' is skipped
-     when this type of stage is encountered).
-
-     Note:  The Decimation stages in any 'type' of filter are optional, except
-            for FIR filters, where they are required if there are a non-zero
-            number of FIR coefficients of filter or IIR filters with a non-zero
-            number of poles or zeros */
-
-  stage_ptr = chan->first_stage;
-  prev_stage = (struct stage *)NULL;
-  for (i = 0; i < chan->nstages; i++)
-  {
-    j = 0;
-    next_stage = stage_ptr->next_stage;
-    stage_type = gain_flag = deci_flag = ref_flag = 0;
-    blkt_ptr = stage_ptr->first_blkt;
-    curr_seq_no = stage_ptr->sequence_no;
-    while (blkt_ptr)
-    {
-      j++;
-      next_blkt = blkt_ptr->next_blkt;
-      switch (blkt_ptr->type)
-      {
-      case POLYNOMIAL: /* IGS 06/01/2013 */
-                       /* FIXME: Add checks for the stage */
-        stage_type = POLYNOMIAL_TYPE;
-        filt_blkt = blkt_ptr;
-        break;
-      case ANALOG_PZ:
-      case LAPLACE_PZ:
-        if (stage_type && stage_type != GAIN_TYPE)
-        {
-          evalresp_log (log, EV_ERROR, 0, "check_channel; %s in stage %d",
-                        "more than one filter type", i);
-          return; /*TODO ILLEGAL_RESP_FORMAT */
-          /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
-                       "more than one filter type",i); */
-        }
-        stage_type = PZ_TYPE;
-        filt_blkt = blkt_ptr;
-        break;
-      case IIR_PZ:
-        if (stage_type && stage_type != GAIN_TYPE)
-        {
-          evalresp_log (log, EV_ERROR, 0, "check_channel; %s in stage %d",
-                        "more than one filter type", i);
-          return; /*TODO ILLEGAL_RESP_FORMAT */
-          /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
-                       "more than one filter type",i); */
-        }
-        stage_type = IIR_TYPE;
-        filt_blkt = blkt_ptr;
-        break;
-      case FIR_COEFFS:
-        evalresp_log (log, EV_ERROR, 0, "check_channel; unsupported filter type");
-        return; /*TODO UNSUPPORT_FILTYPE */
-        /*XXX error_return(UNSUPPORT_FILTYPE, "check_channel; unsupported filter type"); */
-        break;
-      case LIST:
-        /* IGD         error_return(UNSUPPORT_FILTYPE, "check_channel; unsupported filter type"); */
-        /* We are going to support this blockette starting with version 3.2.17 IGD */
-        /* Nevertheless, this support is limited . Clearly, if we allow to mix the blockette 55 with */
-        /* only selected number of known frequencies with the other blockettes with arbitrary frequency */
-        /* sampling, there will be a mess */
-        /* In this version of evalresp (2.3.17), we allow to get a response for the blockette 55 if it is */
-        /* the only one filter blockette in the response file . To simplify , we allow the program to process */
-        /* the LIST response if and only if the blkt_ptr->next_blkt == NULL; */
-
-        /* First we merge blocketes if the list spans for more than a single blockette */
-
-        while (next_blkt != (struct blkt *)NULL && next_blkt->type == blkt_ptr->type)
-        {
-          merge_lists (blkt_ptr, &next_blkt, log);
-        }
-        if (stage_ptr->next_stage != NULL || prev_stage != NULL)
-        {
-          if (!stage_ptr->next_stage && 0 != chan->first_stage->next_stage->sequence_no)
-          {
-            evalresp_log (log, EV_ERROR, 0,
-                          "blockette 55 cannot be mixed with other filter blockettes\n");
-            return; /*TODO UNSUPPORT_FILTYPE */
-                    /*XXX error_return(UNSUPPORT_FILTYPE,
-                    "blockette 55 cannot be mixed with other filter blockettes\n"); */
-          }
-        }
-        else
-        {
-          /* There are still situations which we want to avoid */
-          /* In particular, the next stage can be hidden in */
-          /* chan->first_stage->next_stage->first_blkt->type */
-          /* If it is GAIN, we will continue. If it is not gain, we generate error */
-
-          if (chan->first_stage->next_stage != NULL)
-          {
-            if (chan->first_stage->next_stage->first_blkt != NULL)
-            {
-              /* If the next stage is overall sesitivity, it's OK */
-              if (chan->first_stage->next_stage->first_blkt->type != GAIN)
-              {
-                evalresp_log (log, EV_ERROR, 0,
-                              "blockette 55 cannot be mixed with other filter blockettes\n");
-                return; /*TODO UNSUPPORT_FILTYPE */
-                        /*XXX error_return(UNSUPPORT_FILTYPE,
-                       "blockette 55 cannot be mixed with other filter blockettes\n"); */
-              }
-            }
-          }
-        }
-        stage_type = LIST_TYPE;
-        filt_blkt = blkt_ptr;
-        break;
-      case GENERIC:
-        /*        error_return(UNSUPPORT_FILTYPE, "check_channel; unsupported filter type"); */
-        /* IGD 05/16/02 Added support for Generic type */
-        if (stage_type && stage_type != GAIN_TYPE)
-        {
-          evalresp_log (log, EV_ERROR, 0, "check_channel; %s in stage %d",
-                        "more than one filter type", i + 1);
-          return; /*TODO ILLEGAL_RESP_FORMAT */
-                  /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
-                              "more than one filter type",i+1); */
-        }
-        /* check to see if next blockette(s) is(are) a continuation of this one.
-        If so, merge them into one blockette */
-        if (next_blkt != (struct blkt *)NULL && next_blkt->type == blkt_ptr->type)
-        {
-          evalresp_log (log, EV_ERROR, 0,
-                        "check_channel; multiple 55 blockettes in GENERIC stages are not supported yet");
-          return; /*TODO ILLEGAL_RESP_FORMAT */
-                  /*XXX error_return(ILLEGAL_RESP_FORMAT,
-                        "check_channel; multiple 55 blockettes in GENERIC stages are not supported yet"); */
-        }
-        stage_type = GENERIC_TYPE;
-        /*    nc = 1; */ /*for calc_delay to be 0 in decimation blockette */
-        evalresp_log (log, EV_WARN, 0, "%s WARNING: Generic blockette is detected in stage %d; content is ignored\n", myLabel, i + 1);
-        /*XXX fprintf(stdout, "%s WARNING: Generic blockette is detected in stage %d; content is ignored\n", myLabel, i+1);
-    fflush(stdout); */
-        filt_blkt = blkt_ptr;
-        break;
-
-      case FIR_SYM_1:
-      case FIR_SYM_2:
-      case FIR_ASYM:
-        if (stage_type && stage_type != GAIN_TYPE)
-        {
-          evalresp_log (log, EV_ERROR, 0, "check_channel; %s in stage %d",
-                        "more than one filter type", i);
-          return; /*TODO ILLEGAL_RESP_FORMAT */
-          /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
-                       "more than one filter type",i); */
-        }
-
-        /* check to see if next blockette(s) is(are) a continuation of this one.
-           If so, merge them into one blockette */
-        while (next_blkt != (struct blkt *)NULL && next_blkt->type == blkt_ptr->type)
-          merge_coeffs (blkt_ptr, &next_blkt, log);
-
-        /* set the stage type to be FIR_TYPE */
-        stage_type = FIR_TYPE;
-
-        /* make FIR filters symmetric if possible */
-        if (blkt_ptr->type == FIR_ASYM)
-          check_sym (blkt_ptr, chan, log);
-
-        /* increment the channel delay for this stage using the number of coefficients
-           and the filter type */
-        if (blkt_ptr->type == FIR_SYM_1)
-          nc = (double)blkt_ptr->blkt_info.fir.ncoeffs * 2 - 1;
-        else if (blkt_ptr->type == FIR_SYM_2)
-          nc = (double)blkt_ptr->blkt_info.fir.ncoeffs * 2;
-        else if (blkt_ptr->type == FIR_ASYM)
-          nc = (double)blkt_ptr->blkt_info.fir.ncoeffs;
-        filt_blkt = blkt_ptr;
-        break;
-      case IIR_COEFFS: /* IGD New type evalresp supports in 3.2.17 */
-        if (stage_type && stage_type != GAIN_TYPE)
-        {
-          evalresp_log (log, EV_ERROR, 0, "check_channel; %s in stage %d",
-                        "more than one filter type", i);
-          return; /*TODO ILLEGAL_RESP_FORMAT */
-                  /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; %s in stage %d",
-                              "more than one filter type",i); */
-        }
-        /* check to see if next blockette(s) is(are) a continuation of this one.
-        If so, merge them into one blockette */
-        if (next_blkt != (struct blkt *)NULL && next_blkt->type == blkt_ptr->type)
-        {
-          evalresp_log (log, EV_ERROR, 0,
-                        "check_channel; multiple 55 blockettes in IIR stages are not supported yet");
-          return; /*TODO ILLEGAL_RESP_FORMAT */
-                  /*XXX error_return(ILLEGAL_RESP_FORMAT,
-                        "check_channel; multiple 55 blockettes in IIR stages are not supported yet"); */
-        }
-        /* merge_coeffs(blkt_ptr,&next_blkt);  */ /* Leave it alone for now ! */
-        /* set the stage type to be FIR_TYPE */
-        stage_type = IIR_COEFFS_TYPE;
-        nc = 1; /*for calc_delay to be 0 in decimation blockette */
-        filt_blkt = blkt_ptr;
-        break;
-      case GAIN:
-        if (!stage_ptr->sequence_no)
-        {
-          chan->sensit = blkt_ptr->blkt_info.gain.gain;
-          chan->sensfreq = blkt_ptr->blkt_info.gain.gain_freq;
-        }
-        if (!stage_type)
-          stage_type = GAIN_TYPE;
-        gain_flag = j;
-        gain_blkt = blkt_ptr;
-        break;
-      case DECIMATION:
-        /* if stage is a FIR filter, increment the estimated delay and applied
-           correction for the channel */
-        if (stage_type)
-        {
-          if (stage_type == FIR_TYPE && nc > 0)
-            chan->calc_delay += ((nc - 1) / 2.0) * blkt_ptr->blkt_info.decimation.sample_int;
-          chan->estim_delay += (double)blkt_ptr->blkt_info.decimation.estim_delay;
-          chan->applied_corr += (double)blkt_ptr->blkt_info.decimation.applied_corr;
-          chan->sint = blkt_ptr->blkt_info.decimation.sample_int *
-                       (double)blkt_ptr->blkt_info.decimation.deci_fact; /* channel's sint is the last stage's */
-        }
-        else
-        {
-          evalresp_log (log, EV_ERROR, 0,
-                        "check_channel; decimation blockette with no associated filter");
-          return; /*TODO ILLEGAL_RESP_FORMAT */
-          /*XXX error_return(ILLEGAL_RESP_FORMAT,
-                     "check_channel; decimation blockette with no associated filter"); */
-        }
-        deci_blkt = blkt_ptr;
-        deci_flag = j;
-        break;
-      case REFERENCE:
-        ref_flag = j;
-        ref_blkt = blkt_ptr;
-        break;
-      default:
-        error_return (UNSUPPORT_FILTYPE, "check_channel; unrecognized blkt type (type=%d)",
-                      blkt_ptr->type);
-      }
-      blkt_ptr = next_blkt;
-    }
-
-    /* If not a 'gain-only' stage, run a 'sanity check' for this stage's filter
-       sequence.  Do this by reorganizing the filters (regardless of input
-       order) so that they point to each other in the following manner within
-       a particular stage:
-
-        STAGE_FIRST_BLKT -> (REF_BLKT) -> FILT_BLKT -> (DECI_BLKT) -> GAIN_BLKT
-
-       where the blockette types are defined above (blockettes given in
-       parentheses are optional), the STAGE_FIRST_BLKT indicates the pointer
-       to the first blockette for this stage and the REF_BLKT indicates the
-       pointer to the REFERENCE blockette, if there is one */
-    if (stage_type != GAIN_TYPE)
-    {
-      if (ref_flag && deci_flag)
-      {
-        stage_ptr->first_blkt = ref_blkt;
-        ref_blkt->next_blkt = filt_blkt;
-        filt_blkt->next_blkt = deci_blkt;
-        deci_blkt->next_blkt = gain_blkt;
-        gain_blkt->next_blkt = (struct blkt *)NULL;
-      }
-      else if (deci_flag)
-      {
-        stage_ptr->first_blkt = filt_blkt;
-        filt_blkt->next_blkt = deci_blkt;
-        deci_blkt->next_blkt = gain_blkt;
-        gain_blkt->next_blkt = (struct blkt *)NULL;
-      }
-      else if (ref_flag)
-      {
-        stage_ptr->first_blkt = ref_blkt;
-        ref_blkt->next_blkt = filt_blkt;
-        filt_blkt->next_blkt = gain_blkt;
-        gain_blkt->next_blkt = (struct blkt *)NULL;
-      }
-      else if (gain_flag)
-      {
-        stage_ptr->first_blkt = filt_blkt;
-        filt_blkt->next_blkt = gain_blkt;
-        gain_blkt->next_blkt = (struct blkt *)NULL;
-      }
-    }
-
-    /* check for mismatch in units between this stage and the previous one
-       (or in the case where this is a gain-only stage, between the next stage
-       and the previous stage).  If it is a gain-only stage, this check will be
-       skipped and the 'prev_stage' pointer will be left in it's existing
-       position (essentially, this 'disables' the units check for 'gain-only'
-       stages */
-    /* IGD in version 3.2.17, there are two new stage types are in the next check */
-    if (stage_type == PZ_TYPE || stage_type == FIR_TYPE ||
-        stage_type == IIR_TYPE || stage_type == IIR_COEFFS_TYPE || stage_type == LIST_TYPE)
-    {
-      if (prev_stage != (struct stage *)NULL && prev_stage->output_units != stage_ptr->input_units)
-      {
-        evalresp_log (log, EV_ERROR, 0, "check_channel; units mismatch between stages");
-        exit (1); /*IGD 06/06/2017  TODO ILLEGAL_RESP_FORMAT */
-        return;   /*TODO ILLEGAL_RESP_FORMAT */
-        /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; units mismatch between stages"); */
-      }
-    }
-
-    /* if the main filter type is either FIR with a non-zero number of coefficients
-       or IIR with a non-zero number of poles or zeros, then it is a fatal error
-       if the following blockette for this stage is not a decimation blockette
-       (i.e. if the deci_flag has not been set) */
-
-    /* IGD : new stage type IIR_COEFFS_TYPE is processed in v 3.2.17 */
-    if ((stage_type == IIR_TYPE || stage_type == FIR_TYPE || stage_type == IIR_COEFFS_TYPE) && !deci_flag)
-    {
-      evalresp_log (log, EV_ERROR, 0, "check_channel; required decimation blockette for IIR or FIR filter missing");
-      exit (1);     /* IGD 06/06/2017 To satisfy failure of RESP.BK.BDM..UCD; need return error and process it */
-      /* return; */ /*TODO ILLEGAL_RESP_FORMAT */
-                    /*XXX error_return(ILLEGAL_RESP_FORMAT, "check_channel; required decimation blockette for IIR or FIR filter missing"); */
-    }
-
-    /* if this wasn't a gain-only stage, save it for comparison of units between
-       stages.  Otherwise, keep the previous stage from this iteration and move
-       on to the next stage */
-    if (stage_type != GAIN_TYPE)
-    {
-      if (stage_ptr->sequence_no)
-        prev_stage = stage_ptr;
-    }
-    stage_ptr = next_stage;
-  }
-}
-
-void
-check_sym (struct blkt *f, struct channel *chan, evalresp_log_t *log)
+static void
+check_symmetry (evalresp_blkt *f, evalresp_channel *chan, evalresp_logger *log)
 {
   int nc, n0, k;
   double sum = 0.0;
@@ -549,11 +177,8 @@ check_sym (struct blkt *f, struct channel *chan, evalresp_log_t *log)
     sum += f->blkt_info.fir.coeffs[k];
   if (nc && (sum < (1.0 - FIR_NORM_TOL) || sum > (1.0 + FIR_NORM_TOL)))
   {
-    evalresp_log (log, EV_WARN, 0, "%s WARNING: FIR normalized: sum[coef]=%E; ", myLabel, sum);
-    evalresp_log (log, EV_WARN, 0, "%s %s %s %s %s\n", myLabel, chan->network, chan->staname, chan->locid, chan->chaname);
-    /*XXX fprintf(stderr,"%s WARNING: FIR normalized: sum[coef]=%E; ", myLabel, sum);
-    fprintf(stderr,"%s %s %s %s %s\n", myLabel, chan->network, chan->staname, chan->locid, chan->chaname);
-    fflush(stderr); */
+    evalresp_log (log, EV_WARN, 0, " WARNING: FIR normalized: sum[coef]=%E; ", sum);
+    evalresp_log (log, EV_WARN, 0, " %s %s %s %s\n", chan->network, chan->staname, chan->locid, chan->chaname);
     for (k = 0; k < nc; k++)
       f->blkt_info.fir.coeffs[k] /= sum;
   }
@@ -590,32 +215,431 @@ check_sym (struct blkt *f, struct channel *chan, evalresp_log_t *log)
   }
 }
 
-/*********** function free for freeing of double arrays *******************************************/
-/*
-void sscdns_free_double (double *array)
+int
+check_channel (evalresp_logger *log, evalresp_channel *chan)
 {
-  if (array != NULL)
-  {
-    free (array);
-    array = NULL;
-  }
-}
-*/
+  evalresp_stage *stage_ptr, *next_stage, *prev_stage;
+  evalresp_blkt *blkt_ptr, *next_blkt;
+  evalresp_blkt *filt_blkt = NULL, *deci_blkt = NULL, *gain_blkt = NULL, *ref_blkt = NULL;
+  int stage_type;
+  int gain_flag, deci_flag, ref_flag;
+  int i_stage, i_blkt, nc = 0;
 
-void
+  /* first run a 'sanity-check' of the filter sequence, making sure
+     that the units match and that the proper blockettes are found
+     where they are 'expected'.  At the same time, continuation filters
+     from the FIR filters are merged and out of order filters are
+     moved to ensure that the order for blockettes in a stage will be
+
+     FILT_TYPE   ( ->  DECIMATION  )->  GAIN
+
+     where FILT_TYPE is one of ANALOG_PZ, LAPLACE_PZ (which are both called
+     PZ_TYPE here), IIR_PZ (called IIR_TYPE here), FIR_ASYM, FIR_SYM1 or
+     FIR_SYM2 (which are all called FIR_TYPE in this routine).
+     This sequence will order will be established, regardless of the order
+     in which the blockettes appeared in the RESP file.  One other 'type' of
+     stage is allowed (in addition to the PZ_TYPE and FIR_TYPE):  A 'gain only'
+     stage.  This stage type consists of a gain blockette only (with no other
+     blockettes).  Use of this type of filter is discouraged, since there is no
+     information about units into and out of the stage in a gain blockette, but
+     evalresp will allow this type of stage to be used by assuming that the
+     units into and out of this stage are identical (i.e. that the units are
+     continous between the stage preceeding the 'GAIN_TYPE' stage and the stage
+     following it (essentially, this means that 'Units Checking' is skipped
+     when this type of stage is encountered).
+
+     Note:  The Decimation stages in any 'type' of filter are optional, except
+            for FIR filters, where they are required if there are a non-zero
+            number of FIR coefficients of filter or IIR filters with a non-zero
+            number of poles or zeros */
+
+  stage_ptr = chan->first_stage;
+  prev_stage = NULL;
+
+  for (i_stage = 0; i_stage < chan->nstages; i_stage++)
+  {
+    i_blkt = 0;
+    next_stage = stage_ptr->next_stage;
+    stage_type = gain_flag = deci_flag = ref_flag = 0;
+    blkt_ptr = stage_ptr->first_blkt;
+    //curr_seq_no = stage_ptr->sequence_no;
+
+    while (blkt_ptr)
+    {
+
+      i_blkt++;
+      next_blkt = blkt_ptr->next_blkt;
+
+      switch (blkt_ptr->type)
+      {
+
+      case POLYNOMIAL:
+
+        /* FIXME: Add checks for the stage */
+        stage_type = POLYNOMIAL_TYPE;
+        filt_blkt = blkt_ptr;
+        break;
+
+      case ANALOG_PZ:
+      case LAPLACE_PZ:
+      case IIR_PZ:
+
+        if (stage_type && stage_type != GAIN_TYPE)
+        {
+          evalresp_log (log, EV_ERROR, EV_ERROR,
+                        "%s.%s.%s.%s: more than one filter type at stage %d",
+                        chan->network, chan->staname, chan->locid, chan->chaname,
+                        i_stage + 1);
+          return EVALRESP_VAL;
+        }
+        stage_type = blkt_ptr->type == IIR_PZ ? IIR_TYPE : PZ_TYPE;
+        filt_blkt = blkt_ptr;
+        break;
+
+      case FIR_COEFFS: /* AFAICT this type is never even parsed?! */
+
+        evalresp_log (log, EV_ERROR, EV_ERROR,
+                      "%s.%s.%s.%s: unsupported filter type (FIR_COEFFS)",
+                      chan->network, chan->staname, chan->locid, chan->chaname);
+        return EVALRESP_VAL;
+        break;
+
+      case LIST:
+
+        /* We are going to support this blockette starting with version 3.2.17 IGD */
+
+        /* Nevertheless, this support is limited . Clearly, if we allow to mix the
+         * blockette 55 with only selected number of known frequencies with the other
+         * blockettes with arbitrary frequency sampling, there will be a mess.
+         * In this version of evalresp (2.3.17), we allow to get a response for
+         * the blockette 55 if it is the only one filter blockette in the response file.
+         * To simplify , we allow the program to process the LIST response if and only
+         * if the blkt_ptr->next_blkt == NULL; */
+
+        /* First we merge blocketes if the list spans for more than a single blockette */
+
+        while (next_blkt && next_blkt->type == blkt_ptr->type)
+        {
+          int status = merge_lists (blkt_ptr, &next_blkt, log);
+          if (status)
+          {
+            return status;
+          }
+        }
+        if (stage_ptr->next_stage || prev_stage)
+        {
+          if (!stage_ptr->next_stage && 0 != chan->first_stage->next_stage->sequence_no)
+          {
+            evalresp_log (log, EV_ERROR, EV_ERROR,
+                          "%s.%s.%s.%s: blockette 55 cannot be mixed with other filter blockettes",
+                          chan->network, chan->staname, chan->locid, chan->chaname);
+            return EVALRESP_VAL;
+          }
+        }
+        else
+        {
+          /* There are still situations which we want to avoid */
+          /* In particular, the next stage can be hidden in */
+          /* chan->first_stage->next_stage->first_blkt->type */
+          /* If it is GAIN, we will continue. If it is not gain, we generate error */
+
+          if (chan->first_stage->next_stage)
+          {
+            if (chan->first_stage->next_stage->first_blkt)
+            {
+              /* If the next stage is overall sesitivity, it's OK */
+              if (chan->first_stage->next_stage->first_blkt->type != GAIN)
+              {
+                evalresp_log (log, EV_ERROR, EV_ERROR,
+                              "%s.%s.%s.%s: blockette 55 cannot be mixed with other filter blockettes",
+                              chan->network, chan->staname, chan->locid, chan->chaname);
+                return EVALRESP_VAL;
+              }
+            }
+          }
+        }
+        stage_type = LIST_TYPE;
+        filt_blkt = blkt_ptr;
+        break;
+
+      case GENERIC:
+
+        /* IGD 05/16/02 Added support for Generic type */
+        if (stage_type && stage_type != GAIN_TYPE)
+        {
+          evalresp_log (log, EV_ERROR, EV_ERROR,
+                        "%s.%s.%s.%s: more than one filter type at stage %d",
+                        chan->network, chan->staname, chan->locid, chan->chaname,
+                        i_stage + 1);
+          return EVALRESP_VAL;
+        }
+        /* check to see if next blockette(s) is(are) a continuation of this one.
+        If so, merge them into one blockette */
+        if (next_blkt && next_blkt->type == blkt_ptr->type)
+        {
+          evalresp_log (log, EV_ERROR, EV_ERROR,
+                        "%s.%s.%s.%s: multiple 55 blockettes in GENERIC stages are not supported",
+                        chan->network, chan->staname, chan->locid, chan->chaname);
+          return EVALRESP_VAL;
+        }
+        stage_type = GENERIC_TYPE;
+        /*    nc = 1; */ /*for calc_delay to be 0 in decimation blockette */
+        evalresp_log (log, EV_WARN, EV_WARN,
+                      "%s.%s.%s.%s: GENERIC blockette is detected in stage %d; content is ignored",
+                      chan->network, chan->staname, chan->locid, chan->chaname, i_stage + 1);
+        filt_blkt = blkt_ptr;
+        break;
+
+      case FIR_SYM_1:
+      case FIR_SYM_2:
+      case FIR_ASYM:
+
+        if (stage_type && stage_type != GAIN_TYPE)
+        {
+          evalresp_log (log, EV_ERROR, EV_ERROR,
+                        "%s.%s.%s.%s: more than one filter type at stage %d",
+                        chan->network, chan->staname, chan->locid, chan->chaname,
+                        i_stage + 1);
+          return EVALRESP_VAL;
+        }
+
+        /* check to see if next blockette(s) is(are) a continuation of this one.
+           If so, merge them into one blockette */
+        while (next_blkt && next_blkt->type == blkt_ptr->type)
+        {
+          int status = merge_coeffs (blkt_ptr, &next_blkt, log);
+          if (status)
+          {
+            return status;
+          }
+        }
+
+        /* set the stage type to be FIR_TYPE */
+        stage_type = FIR_TYPE;
+
+        /* make FIR filters symmetric if possible */
+        if (blkt_ptr->type == FIR_ASYM)
+          check_symmetry (blkt_ptr, chan, log);
+
+        /* increment the channel delay for this stage using the number of coefficients
+           and the filter type */
+        if (blkt_ptr->type == FIR_SYM_1)
+        {
+          nc = (double)blkt_ptr->blkt_info.fir.ncoeffs * 2 - 1;
+        }
+        else if (blkt_ptr->type == FIR_SYM_2)
+        {
+          nc = (double)blkt_ptr->blkt_info.fir.ncoeffs * 2;
+        }
+        else if (blkt_ptr->type == FIR_ASYM)
+        {
+          nc = (double)blkt_ptr->blkt_info.fir.ncoeffs;
+        }
+        filt_blkt = blkt_ptr;
+        break;
+
+      case IIR_COEFFS: /* IGD New type evalresp supports in 3.2.17 */
+
+        if (stage_type && stage_type != GAIN_TYPE)
+        {
+          evalresp_log (log, EV_ERROR, EV_ERROR,
+                        "%s.%s.%s.%s: more than one filter type at stage %d",
+                        chan->network, chan->staname, chan->locid, chan->chaname,
+                        i_stage + 1);
+          return EVALRESP_VAL;
+        }
+        /* check to see if next blockette(s) is(are) a continuation of this one.
+        If so, merge them into one blockette */
+        if (next_blkt && next_blkt->type == blkt_ptr->type)
+        {
+          evalresp_log (log, EV_ERROR, EV_ERROR,
+                        "%s.%s.%s.%s: multiple 55 blockettes in IIR stages are not supported",
+                        chan->network, chan->staname, chan->locid, chan->chaname);
+          return EVALRESP_VAL;
+        }
+        /* merge_coeffs(blkt_ptr,&next_blkt);  */ /* Leave it alone for now ! */
+        /* set the stage type to be FIR_TYPE */
+        stage_type = IIR_COEFFS_TYPE;
+        nc = 1; /* for calc_delay to be 0 in decimation blockette */
+        filt_blkt = blkt_ptr;
+        break;
+
+      case GAIN:
+
+        if (!stage_ptr->sequence_no)
+        {
+          chan->sensit = blkt_ptr->blkt_info.gain.gain;
+          chan->sensfreq = blkt_ptr->blkt_info.gain.gain_freq;
+        }
+        if (!stage_type)
+        {
+          stage_type = GAIN_TYPE;
+        }
+        gain_flag = i_blkt;
+        gain_blkt = blkt_ptr;
+        break;
+
+      case DECIMATION:
+
+        /* if stage is a FIR filter, increment the estimated delay and applied
+           correction for the channel */
+        if (stage_type)
+        {
+          if (stage_type == FIR_TYPE && nc > 0)
+          {
+            chan->calc_delay += ((nc - 1) / 2.0) * blkt_ptr->blkt_info.decimation.sample_int;
+          }
+          chan->estim_delay += (double)blkt_ptr->blkt_info.decimation.estim_delay;
+          chan->applied_corr += (double)blkt_ptr->blkt_info.decimation.applied_corr;
+          chan->sint = blkt_ptr->blkt_info.decimation.sample_int *
+                       (double)blkt_ptr->blkt_info.decimation.deci_fact; /* channel's sint is the last stage's */
+        }
+        else
+        {
+          evalresp_log (log, EV_ERROR, EV_ERROR,
+                        "%s.%s.%s.%s: DECIMATION blockette with no associated filter at stage %d",
+                        chan->network, chan->staname, chan->locid, chan->chaname,
+                        i_stage + 1);
+          return EVALRESP_VAL;
+        }
+        deci_blkt = blkt_ptr;
+        deci_flag = i_blkt;
+        break;
+
+      case REFERENCE:
+
+        ref_flag = i_blkt;
+        ref_blkt = blkt_ptr;
+        break;
+
+      default:
+
+        evalresp_log (log, EV_ERROR, EV_ERROR,
+                      "%s.%s.%s.%s: unrecognized blockette type (%d)",
+                      chan->network, chan->staname, chan->locid, chan->chaname,
+                      blkt_ptr->type);
+        return EVALRESP_VAL;
+      }
+
+      blkt_ptr = next_blkt;
+    }
+
+    /* If not a 'gain-only' stage, run a 'sanity check' for this stage's filter
+       sequence.  Do this by reorganizing the filters (regardless of input
+       order) so that they point to each other in the following manner within
+       a particular stage:
+
+        STAGE_FIRST_BLKT -> (REF_BLKT) -> FILT_BLKT -> (DECI_BLKT) -> GAIN_BLKT
+
+       where the blockette types are defined above (blockettes given in
+       parentheses are optional), the STAGE_FIRST_BLKT indicates the pointer
+       to the first blockette for this stage and the REF_BLKT indicates the
+       pointer to the REFERENCE blockette, if there is one */
+
+    if (stage_type != GAIN_TYPE)
+    {
+
+      /* check units here now - used to have a messy error during parse
+       * (that still prints a warning, which has the unit text). */
+      if (stage_ptr->input_units == UNDEF_UNITS || stage_ptr->output_units == UNDEF_UNITS)
+      {
+        evalresp_log (log, EV_ERROR, EV_ERROR,
+                      "%s.%s.%s.%s: undefined units",
+                      chan->network, chan->staname, chan->locid, chan->chaname);
+        return EVALRESP_VAL;
+      }
+
+      if (ref_flag && deci_flag)
+      {
+        stage_ptr->first_blkt = ref_blkt;
+        ref_blkt->next_blkt = filt_blkt;
+        filt_blkt->next_blkt = deci_blkt;
+        deci_blkt->next_blkt = gain_blkt;
+        gain_blkt->next_blkt = NULL;
+      }
+      else if (deci_flag)
+      {
+        stage_ptr->first_blkt = filt_blkt;
+        filt_blkt->next_blkt = deci_blkt;
+        deci_blkt->next_blkt = gain_blkt;
+        gain_blkt->next_blkt = NULL;
+      }
+      else if (ref_flag)
+      {
+        stage_ptr->first_blkt = ref_blkt;
+        ref_blkt->next_blkt = filt_blkt;
+        filt_blkt->next_blkt = gain_blkt;
+        gain_blkt->next_blkt = NULL;
+      }
+      else if (gain_flag)
+      {
+        stage_ptr->first_blkt = filt_blkt;
+        filt_blkt->next_blkt = gain_blkt;
+        gain_blkt->next_blkt = NULL;
+      }
+    }
+
+    /* check for mismatch in units between this stage and the previous one
+       (or in the case where this is a gain-only stage, between the next stage
+       and the previous stage).  If it is a gain-only stage, this check will be
+       skipped and the 'prev_stage' pointer will be left in it's existing
+       position (essentially, this 'disables' the units check for 'gain-only'
+       stages */
+
+    if (stage_type == PZ_TYPE || stage_type == FIR_TYPE ||
+        stage_type == IIR_TYPE || stage_type == IIR_COEFFS_TYPE ||
+        stage_type == LIST_TYPE)
+    {
+      if (prev_stage && prev_stage->output_units != stage_ptr->input_units)
+      {
+        evalresp_log (log, EV_ERROR, EV_ERROR,
+                      "%s.%s.%s.%s: units mismatch between stages",
+                      chan->network, chan->staname, chan->locid, chan->chaname);
+        return EVALRESP_VAL;
+      }
+    }
+
+    /* if the main filter type is either FIR with a non-zero number of coefficients
+       or IIR with a non-zero number of poles or zeros, then it is a fatal error
+       if the following blockette for this stage is not a decimation blockette
+       (i.e. if the deci_flag has not been set) */
+
+    /* IGD : new stage type IIR_COEFFS_TYPE is processed in v 3.2.17 */
+    if ((stage_type == IIR_TYPE || stage_type == FIR_TYPE || stage_type == IIR_COEFFS_TYPE) && !deci_flag)
+    {
+      evalresp_log (log, EV_ERROR, EV_ERROR,
+                    "%s.%s.%s.%s: required decimation blockette for IIR or FIR filter missing",
+                    chan->network, chan->staname, chan->locid, chan->chaname);
+      return EVALRESP_VAL;
+    }
+
+    /* if this wasn't a gain-only stage, save it for comparison of units between
+       stages.  Otherwise, keep the previous stage from this iteration and move
+       on to the next stage */
+    if (stage_type != GAIN_TYPE)
+    {
+      if (stage_ptr->sequence_no)
+        prev_stage = stage_ptr;
+    }
+    stage_ptr = next_stage;
+  }
+
+  return EVALRESP_OK;
+}
+
+int
 interpolate_list_blockette (double **frequency_ptr,
                             double **amplitude_ptr, double **phase_ptr,
                             int *p_number_points, double *req_freq_arr,
-                            int req_num_freqs, double tension, evalresp_log_t *log)
+                            int req_num_freqs, evalresp_logger *log)
 {
-  int i, num;
+  int i, num, status = EVALRESP_OK;
   double first_freq, last_freq, val, min_ampval;
   int fix_first_flag, fix_last_flag, unwrapped_flag;
   double *used_req_freq_arr;
   int used_req_num_freqs;
   double *retvals_arr, *retamps_arr;
   int num_retvals;
-  char *retstr;
   double old_pha, new_pha, added_value, prev_phase;
   double *local_pha_arr;
 
@@ -639,7 +663,7 @@ interpolate_list_blockette (double **frequency_ptr,
             then setup to replace it with first List frequency value: */
   if (i > 0 && fabs (first_freq - req_freq_arr[i - 1]) < first_freq * 1e-6)
   {
-    --i;                /* restore clipped value */
+    --i; /* restore clipped value */
     fix_first_flag = 1; /* indicate value should be "fixed" */
   }
   else
@@ -650,16 +674,11 @@ interpolate_list_blockette (double **frequency_ptr,
     { /* all requested frequency values were clipped */
       evalresp_log (log, EV_ERROR, 0, "Error interpolating amp/phase values:  %s",
                     "All requested freqencies out of range\n");
-      /*XXX error_exit(IMPROP_DATA_TYPE,"Error interpolating amp/phase values:  %s",
-                                  "All requested freqencies out of range\n"); */
-      return; /*TODO return error */
+      return EVALRESP_VAL;
     }
     evalresp_log (log, EV_INFO, 0,
-                  "%s Note:  %d frequenc%s clipped from beginning of requested range\n",
-                  myLabel, i, ((i == 1) ? "y" : "ies"));
-    /*XXX fprintf(stderr,
-         "%s Note:  %d frequenc%s clipped from beginning of requested range\n",
-                                               myLabel, i, ((i == 1) ? "y" : "ies"));*/
+                  " Note:  %d frequenc%s clipped from beginning of requested range\n",
+                  i, ((i == 1) ? "y" : "ies"));
   }
   used_req_num_freqs = req_num_freqs;
   while (used_req_num_freqs > 0 &&
@@ -675,7 +694,7 @@ interpolate_list_blockette (double **frequency_ptr,
       fabs (req_freq_arr[used_req_num_freqs] - last_freq) < last_freq * 1e-6)
   {
     used_req_num_freqs++; /* restore clipped value */
-    fix_last_flag = 1;    /* indicate value should be "fixed" */
+    fix_last_flag = 1; /* indicate value should be "fixed" */
   }
   else
     fix_last_flag = 0;
@@ -683,13 +702,12 @@ interpolate_list_blockette (double **frequency_ptr,
   { /* some requested frequency values were clipped; show message */
     req_num_freqs = used_req_num_freqs;
     evalresp_log (log, EV_INFO, 0,
-                  /*XXX fprintf(stderr, */
-                  "%s Note:  %d frequenc%s clipped from end of requested range\n",
-                  myLabel, num, ((num == 1) ? "y" : "ies"));
+                  " Note:  %d frequenc%s clipped from end of requested range\n",
+                  num, ((num == 1) ? "y" : "ies"));
   }
-  if (i > 0)            /* if freq entries were skipped then */
+  if (i > 0) /* if freq entries were skipped then */
     req_num_freqs -= i; /* subtract # of freqs clipped from beg */
-                        /* allocate new array for requested frequency values */
+  /* allocate new array for requested frequency values */
   used_req_freq_arr = (double *)calloc (req_num_freqs, sizeof (double));
   /* copy over freq values (excluding out-of-bounds values) */
   memcpy (used_req_freq_arr, &req_freq_arr[i], req_num_freqs * sizeof (double));
@@ -700,21 +718,17 @@ interpolate_list_blockette (double **frequency_ptr,
     req_freq_arr[req_num_freqs - 1] = last_freq;
 
   /* interpolate amplitude values */
-  if ((retstr = evr_spline (*p_number_points, *frequency_ptr, *amplitude_ptr,
-                            tension, 1.0, req_freq_arr, req_num_freqs,
-                            &retvals_arr, &num_retvals, log)) != NULL)
+  if ((status = spline_interpolate (*p_number_points, *frequency_ptr, *amplitude_ptr,
+                                    req_freq_arr, req_num_freqs,
+                                    &retvals_arr, &num_retvals, log)))
   {
-    evalresp_log (log, EV_ERROR, 0, "Error interpolating amplitudes:  %s", retstr);
-    /*XXX error_exit(IMPROP_DATA_TYPE,"Error interpolating amplitudes:  %s",retstr); */
-    return; /*TODO This should return somethin */
+    return status;
   }
   if (num_retvals != req_num_freqs)
   { /* # of generated values != # requested (shouldn't happen) */
     evalresp_log (log, EV_ERROR, 0, "Error interpolating amplitudes:  %s",
                   "Bad # of values");
-    /*XXX error_exit(IMPROP_DATA_TYPE,"Error interpolating amplitudes:  %s",
-                                "Bad # of values"); */
-    return; /*TODO This should return somethin */
+    return EVALRESP_VAL;
   }
   retamps_arr = retvals_arr; /* save ptr to interpolated amplitudes */
 
@@ -727,12 +741,12 @@ interpolate_list_blockette (double **frequency_ptr,
       min_ampval = val; /* if new mininum then save value */
   }
   if (min_ampval > 0.0)
-  {                     /* all "source" amplitude values are positive */
+  { /* all "source" amplitude values are positive */
     min_ampval /= 10.0; /* bring minimum a bit closer to zero */
-                        /* substitude minimum for any non-positive values */
+    /* substitude minimum for any non-positive values */
     for (i = 0; i < num_retvals; ++i)
-    {                                /* for each interpolated amplitude value */
-      if (retamps_arr[i] <= 0.0)     /* if value not positive then */
+    { /* for each interpolated amplitude value */
+      if (retamps_arr[i] <= 0.0) /* if value not positive then */
         retamps_arr[i] = min_ampval; /* use minimum value */
     }
   }
@@ -745,34 +759,31 @@ interpolate_list_blockette (double **frequency_ptr,
   { /* for each phase value; unwrap if necessary */
     old_pha = (*phase_ptr)[i];
     new_pha = unwrap_phase (old_pha, prev_phase, 360.0, &added_value);
-    if (added_value == 0.0)       /* if phase value not unwrapped */
+    if (added_value == 0.0) /* if phase value not unwrapped */
       local_pha_arr[i] = old_pha; /* then copy original value */
     else
-    {                             /* phase value was unwrapped */
+    { /* phase value was unwrapped */
       local_pha_arr[i] = new_pha; /* enter new phase value */
-      unwrapped_flag = 1;         /* indicate unwrapping */
+      unwrapped_flag = 1; /* indicate unwrapping */
     }
     prev_phase = new_pha;
   }
 
   /* interpolate phase values */
-  retstr = evr_spline (*p_number_points, *frequency_ptr, local_pha_arr,
-                       tension, 1.0, req_freq_arr, req_num_freqs,
-                       &retvals_arr, &num_retvals, log);
+  status = spline_interpolate (*p_number_points, *frequency_ptr, local_pha_arr,
+                               req_freq_arr, req_num_freqs,
+                               &retvals_arr, &num_retvals, log);
   free (local_pha_arr);
-  if (retstr != NULL)
+  if (status)
   {
-    evalresp_log (log, EV_ERROR, 0, "Error interpolating phases:  %s", retstr);
-    /*XXX error_exit(IMPROP_DATA_TYPE,"Error interpolating phases:  %s",retstr); */
-    return; /*TODO this should return something */
+    return status;
   }
-  if (num_retvals != req_num_freqs)
+  else if (num_retvals != req_num_freqs)
   { /* # of generated values != # requested (shouldn't happen) */
     evalresp_log (log, EV_ERROR, 0, "Error interpolating phases:  %s",
                   "Bad # of values");
-    /*XXX error_exit(IMPROP_DATA_TYPE,"Error interpolating phases:  %s",
-                                "Bad # of values"); */
-    return; /*TODO this should return something */
+    status = EVALRESP_ERR;
+    return status;
   }
 
   if (unwrapped_flag)
@@ -780,13 +791,13 @@ interpolate_list_blockette (double **frequency_ptr,
     added_value = 0.0;
     new_pha = retvals_arr[0]; /* check first phase value */
     if (new_pha > 180.0)
-    {    /* first phase value is too high */
+    { /* first phase value is too high */
       do /* set offset to put values in range */
         added_value -= 360.0;
       while (new_pha + added_value > 180.0);
     }
     else if (new_pha < -180.0)
-    {    /* first phase value is too low */
+    { /* first phase value is too low */
       do /* set offset to put values in range */
         added_value += 360.0;
       while (new_pha + added_value < -180.0);
@@ -794,7 +805,7 @@ interpolate_list_blockette (double **frequency_ptr,
     for (i = 0; i < num_retvals; i++)
     { /* for each phase value; wrap if out of range */
       new_pha = wrap_phase (retvals_arr[i], 360.0, &added_value);
-      if (added_value != 0.0)     /* if phase value wrapped then */
+      if (added_value != 0.0) /* if phase value wrapped then */
         retvals_arr[i] = new_pha; /* enter new phase value */
     }
   }
@@ -809,4 +820,6 @@ interpolate_list_blockette (double **frequency_ptr,
   *amplitude_ptr = retamps_arr;
   *phase_ptr = retvals_arr;
   *p_number_points = num_retvals;
+
+  return status;
 }

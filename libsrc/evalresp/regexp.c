@@ -78,19 +78,19 @@
  */
 
 /* definition    number    opnd?    meaning */
-#define END 0     /* no    End of program. */
-#define BOL 1     /* no    Match "" at beginning of line. */
-#define EOL 2     /* no    Match "" at end of line. */
-#define ANY 3     /* no    Match any one character. */
-#define ANYOF 4   /* str    Match any character in this string. */
-#define ANYBUT 5  /* str    Match any character not in this string. */
-#define BRANCH 6  /* node    Match this alternative, or the next... */
-#define BACK 7    /* no    Match "", "next" ptr points backward. */
+#define END 0 /* no    End of program. */
+#define BOL 1 /* no    Match "" at beginning of line. */
+#define EOL 2 /* no    Match "" at end of line. */
+#define ANY 3 /* no    Match any one character. */
+#define ANYOF 4 /* str    Match any character in this string. */
+#define ANYBUT 5 /* str    Match any character not in this string. */
+#define BRANCH 6 /* node    Match this alternative, or the next... */
+#define BACK 7 /* no    Match "", "next" ptr points backward. */
 #define EXACTLY 8 /* str    Match this string. */
 #define NOTHING 9 /* no    Match empty string. */
-#define STAR 10   /* node    Match this (simple) thing 0 or more times. */
-#define PLUS 11   /* node    Match this (simple) thing 1 or more times. */
-#define OPEN 20   /* no    Mark this point in input as start of #n. */
+#define STAR 10 /* node    Match this (simple) thing 0 or more times. */
+#define PLUS 11 /* node    Match this (simple) thing 1 or more times. */
+#define OPEN 20 /* no    Mark this point in input as start of #n. */
 /*    OPEN+1 is number 1, etc. */
 #define CLOSE 30 /* no    Analogous to OPEN. */
 
@@ -143,12 +143,11 @@
 #define UCHARAT(p) ((int)*(p)&CHARBITS)
 #endif
 
-#define FAIL(m, log)                 \
-  {                                  \
+#define FAIL(m, log)                    \
+  {                                     \
     evalresp_log (log, EV_ERROR, 0, m); \
-    return (NULL);                   \
+    return (NULL);                      \
   }
-/*XXX #define    FAIL(m)    { evr_regerror(m); return(NULL); } */
 #define ISMULT(c) ((c) == '*' || (c) == '+' || (c) == '?')
 #define META "^$.[()|?+*\\"
 
@@ -156,18 +155,18 @@
  * Flags to be passed up and down.
  */
 #define HASWIDTH 01 /* Known never to match null string. */
-#define SIMPLE 02   /* Simple enough to be STAR/PLUS operand. */
-#define SPSTART 04  /* Starts with * or +. */
-#define WORST 0     /* Worst case. */
+#define SIMPLE 02 /* Simple enough to be STAR/PLUS operand. */
+#define SPSTART 04 /* Starts with * or +. */
+#define WORST 0 /* Worst case. */
 
 /*
  * Global work variables for evr_regcomp().
  */
 static char *regparse; /* Input-scan pointer. */
-static int regnpar;    /* () count. */
+static int regnpar; /* () count. */
 static char regdummy;
 static char *regcode; /* Code-emit pointer; &regdummy = don't. */
-static int regsize;   /* Code size. */
+static int regsize; /* Code size. */
 
 /*
  * Forward declarations for evr_regcomp()'s friends.
@@ -175,16 +174,16 @@ static int regsize;   /* Code size. */
 #ifndef STATIC
 #define STATIC static
 #endif
-STATIC char *reg (int, int*, evalresp_log_t *);
-STATIC char *regbranch (int *, evalresp_log_t *);
-STATIC char *regpiece (int *, evalresp_log_t *);
-STATIC char *regatom (int *, evalresp_log_t *);
+STATIC char *reg (int a, int *, evalresp_logger *);
+STATIC char *regbranch (int *, evalresp_logger *);
+STATIC char *regpiece (int *, evalresp_logger *);
+STATIC char *regatom (int *, evalresp_logger *);
 STATIC char *regnode (char);
 STATIC char *regnext (register char *);
 STATIC void regc (char);
 STATIC void reginsert (char, char *);
 STATIC void regtail (char *, char *);
-STATIC void regoptail (char *, char *, evalresp_log_t *);
+STATIC void regoptail (char *, char *, evalresp_logger *);
 #ifdef STRCSPN
 STATIC int strcspn (char *, char *);
 #endif
@@ -205,7 +204,7 @@ STATIC int strcspn (char *, char *);
  * of the structure of the compiled regexp.
  */
 regexp *evr_regcomp (exp, log) char *exp;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register regexp *r;
   register char *scan;
@@ -296,7 +295,7 @@ evalresp_log_t *log;
  */
 static char *reg (paren, flagp, log) int paren; /* Parenthesized? */
 int *flagp;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register char *ret;
   register char *br;
@@ -362,7 +361,7 @@ evalresp_log_t *log;
     }
     else
       FAIL ("junk on end", log); /* "Can't happen". */
-                                 /* NOTREACHED */
+    /* NOTREACHED */
   }
 
   return (ret);
@@ -374,7 +373,7 @@ evalresp_log_t *log;
  * Implements the concatenation operator.
  */
 static char *regbranch (flagp, log) int *flagp;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register char *ret;
   register char *chain;
@@ -413,7 +412,7 @@ evalresp_log_t *log;
  * endmarker role is not redundant.
  */
 static char *regpiece (flagp, log) int *flagp;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register char *ret;
   register char op;
@@ -440,11 +439,11 @@ evalresp_log_t *log;
   else if (op == '*')
   {
     /* Emit x* as (x&|), where & means "self". */
-    reginsert (BRANCH, ret);              /* Either x */
+    reginsert (BRANCH, ret); /* Either x */
     regoptail (ret, regnode (BACK), log); /* and loop */
-    regoptail (ret, ret, log);            /* back */
-    regtail (ret, regnode (BRANCH));      /* or */
-    regtail (ret, regnode (NOTHING));     /* null. */
+    regoptail (ret, ret, log); /* back */
+    regtail (ret, regnode (BRANCH)); /* or */
+    regtail (ret, regnode (NOTHING)); /* null. */
   }
   else if (op == '+' && (flags & SIMPLE))
     reginsert (PLUS, ret);
@@ -453,16 +452,16 @@ evalresp_log_t *log;
     /* Emit x+ as x(&|), where & means "self". */
     next = regnode (BRANCH); /* Either */
     regtail (ret, next);
-    regtail (regnode (BACK), ret);    /* loop back */
+    regtail (regnode (BACK), ret); /* loop back */
     regtail (next, regnode (BRANCH)); /* or */
     regtail (ret, regnode (NOTHING)); /* null. */
   }
   else if (op == '?')
   {
     /* Emit x? as (x|) */
-    reginsert (BRANCH, ret);         /* Either x */
+    reginsert (BRANCH, ret); /* Either x */
     regtail (ret, regnode (BRANCH)); /* or */
-    next = regnode (NOTHING);        /* null. */
+    next = regnode (NOTHING); /* null. */
     regtail (ret, next);
     regoptail (ret, next, log);
   }
@@ -482,7 +481,7 @@ evalresp_log_t *log;
  * separate node; the code is simpler that way and it's not worth fixing.
  */
 static char *regatom (flagp, log) int *flagp;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register char *ret;
   int flags;
@@ -600,7 +599,7 @@ evalresp_log_t *log;
  - regnode - emit a node
  */
 static char * /* Location. */
-    regnode (op) char op;
+regnode (char op)
 {
   register char *ret;
   register char *ptr;
@@ -624,7 +623,8 @@ static char * /* Location. */
 /*
  - regc - emit (if appropriate) a byte of code
  */
-static void regc (b) char b;
+static void
+regc (char b)
 {
   if (regcode != &regdummy)
     *regcode++ = b;
@@ -637,8 +637,8 @@ static void regc (b) char b;
  *
  * Means relocating the operand.
  */
-static void reginsert (op, opnd) char op;
-char *opnd;
+static void
+reginsert (char op, char *opnd)
 {
   register char *src;
   register char *dst;
@@ -698,7 +698,7 @@ char *val;
  */
 static void regoptail (p, val, log) char *p;
 char *val;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   /* "Operandless" and "op != BRANCH" are synonymous in practice. */
   if (p == NULL || p == &regdummy || OP (p) != BRANCH)
@@ -713,17 +713,17 @@ evalresp_log_t *log;
 /*
  * Global work variables for evr_regexec().
  */
-static char *reginput;   /* String-input pointer. */
-static char *regbol;     /* Beginning of input, for ^ check. */
+static char *reginput; /* String-input pointer. */
+static char *regbol; /* Beginning of input, for ^ check. */
 static char **regstartp; /* Pointer to startp array. */
-static char **regendp;   /* Ditto for endp. */
+static char **regendp; /* Ditto for endp. */
 
 /*
  * Forwards.
  */
-STATIC int regtry (regexp *, char *, evalresp_log_t *);
-STATIC int regmatch (char *, evalresp_log_t *);
-STATIC int regrepeat (char *, evalresp_log_t *);
+STATIC int regtry (regexp *, char *, evalresp_logger *);
+STATIC int regmatch (char *, evalresp_logger *);
+STATIC int regrepeat (char *, evalresp_logger *);
 
 #ifdef DEBUG
 int regnarrate = 0;
@@ -736,7 +736,7 @@ STATIC char *regprop (char *);
  */
 int evr_regexec (prog, string, log) register regexp *prog;
 register char *string;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register char *s;
 
@@ -744,7 +744,6 @@ evalresp_log_t *log;
   if (prog == NULL || string == NULL)
   {
     evalresp_log (log, EV_ERROR, 0, "NULL parameter");
-    /*XXX evr_regerror("NULL parameter"); */
     return (0);
   }
 
@@ -752,7 +751,6 @@ evalresp_log_t *log;
   if (UCHARAT (prog->program) != MAGIC)
   {
     evalresp_log (log, EV_ERROR, 0, "NULL parameter");
-    /*XXX evr_regerror("corrupted program"); */
     return (0);
   }
 
@@ -806,7 +804,7 @@ static int /* 0 failure, 1 success */
     regtry (prog, string, log)
         regexp *prog;
 char *string;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register int i;
   register char **sp;
@@ -845,10 +843,10 @@ evalresp_log_t *log;
  */
 static int /* 0 failure, 1 success */
     regmatch (prog, log) char *prog;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register char *scan; /* Current node. */
-  char *next;          /* Next node. */
+  char *next; /* Next node. */
 
   scan = prog;
 #ifdef DEBUG
@@ -856,7 +854,6 @@ evalresp_log_t *log;
   {
     evalresp_log (log, EV_DEBUG, 0, "%s(", regprop (scan));
   }
-/*XXX fprintf(stderr, "%s(\n", regprop(scan)); */
 #endif
   while (scan != NULL)
   {
@@ -864,7 +861,6 @@ evalresp_log_t *log;
     if (regnarrate)
     {
       evalresp_log (log, EV_DEBUG, 0, "%s...", regprop (scan));
-      /*XXX fprintf(stderr, "%s...\n", regprop(scan)); */ /
     }
 #endif
     next = regnext (scan);
@@ -1032,7 +1028,6 @@ evalresp_log_t *log;
       break;
     default:
       evalresp_log (log, EV_ERROR, 0, "memory corruption");
-      /*XXX evr_regerror("memory corruption"); */
       return (0);
       break;
     }
@@ -1045,7 +1040,6 @@ evalresp_log_t *log;
      * the terminating point.
      */
   evalresp_log (log, EV_ERROR, 0, "corrupted pointers");
-  /*XXX evr_regerror("corrupted pointers"); */
   return (0);
 }
 
@@ -1053,7 +1047,7 @@ evalresp_log_t *log;
  - regrepeat - repeatedly match something simple, report how many
  */
 static int regrepeat (p, log) char *p;
-evalresp_log_t *log;
+evalresp_logger *log;
 {
   register int count = 0;
   register char *scan;
@@ -1090,7 +1084,6 @@ evalresp_log_t *log;
     break;
   default: /* Oh dear.  Called inappropriately. */
     evalresp_log (log, EV_ERROR, 0, "internal foulup");
-    /*XXX evr_regerror("internal foulup"); */
     count = 0; /* Best compromise. */
     break;
   }
@@ -1243,7 +1236,6 @@ static char *
     break;
   default:
     evalresp_log (log, EV_ERROR, 0, "corrupted opcode");
-    /*XXX evr_regerror("corrupted opcode"); */
     break;
   }
   if (p != NULL)

@@ -1,18 +1,19 @@
 #include <evalresp_log/log.h>
 #include <stdlib.h>
 
-evalresp_log_t *
-evalresp_log_t_alloc (evalresp_log_func_t log_func, void *func_data)
+evalresp_logger *
+evalresp_logger_alloc (evalresp_log_func log_func, void *func_data)
 {
-  evalresp_log_t *log = (evalresp_log_t *)calloc (1, sizeof (evalresp_log_t));
-  if (evalresp_log_t_init (log, log_func, func_data))
+  evalresp_logger *log = (evalresp_logger *)calloc (1, sizeof (evalresp_logger));
+  if (evalresp_logger_init (log, log_func, func_data))
   {
     return NULL;
   }
   return log;
 }
+
 void
-evalresp_log_t_free (evalresp_log_t *log)
+evalresp_logger_free (evalresp_logger *log)
 {
   if (!log)
   {
@@ -20,8 +21,9 @@ evalresp_log_t_free (evalresp_log_t *log)
   }
   free (log);
 }
+
 int
-evalresp_log_t_init (evalresp_log_t *log, evalresp_log_func_t log_func, void *func_data)
+evalresp_logger_init (evalresp_logger *log, evalresp_log_func log_func, void *func_data)
 {
   if (!log)
   {

@@ -5,9 +5,8 @@
 #include <string.h>
 
 #include <evalresp/stationxml2resp.h>
-#include <evalresp/stationxml2resp/log.h>
-#include <evalresp/stationxml2resp/ws.h>
-#include <evalresp/stationxml2resp/xml.h>
+#include <evalresp/stationxml2resp/dom_to_seed.h>
+#include <evalresp/stationxml2resp/xml_to_dom.h>
 
 #include <config.h>
 #ifdef HAVE_GETOPT_H
@@ -19,11 +18,9 @@
 
 /**
  * Handle command-line options.
- *
- * We don't use getopt because Windows.
  */
 static int
-parse_opts (int argc, char *argv[], evalresp_log_t **log, FILE **in, FILE **out)
+parse_opts (int argc, char *argv[], evalresp_logger **log, FILE **in, FILE **out)
 {
 
   int status = X2R_OK, level = 0;
@@ -99,20 +96,7 @@ parse_opts (int argc, char *argv[], evalresp_log_t **log, FILE **in, FILE **out)
     input = strdup (argv[optind]);
   }
 
-  /*XXX if ((status = x2r_alloc_log(level, stderr, log)))
-    {
-        if (output)
-        {
-            free(output);
-        }
-        if (input)
-        {
-            free(input);
-        }
-        return status;
-    } */
   evalresp_log (*log, EV_INFO, 0, "Logging to stderr");
-  /*XXX x2r_info(*log, "Logging to stderr"); */
 
   if (input)
   {
@@ -120,7 +104,6 @@ parse_opts (int argc, char *argv[], evalresp_log_t **log, FILE **in, FILE **out)
     {
       evalresp_log (*log, EV_ERROR, 0, "Cannot open %s to read", input);
       status = X2R_ERR_IO;
-      /*XXX status = x2r_error(*log, X2R_ERR_IO, "Cannot open %s to read", input); */
       if (output)
       {
         free (output);
@@ -129,12 +112,10 @@ parse_opts (int argc, char *argv[], evalresp_log_t **log, FILE **in, FILE **out)
       return status;
     }
     evalresp_log (*log, EV_INFO, 0, "Input from %s", input);
-    /*XXX x2r_info(*log, "Input from %s", input); */
   }
   else
   {
     evalresp_log (*log, EV_INFO, 0, "Input from stdin");
-    /*XXX x2r_info(*log, "Input from stdin"); */
   }
 
   if (output)
@@ -143,7 +124,6 @@ parse_opts (int argc, char *argv[], evalresp_log_t **log, FILE **in, FILE **out)
     {
       evalresp_log (*log, EV_ERROR, 0, "Cannot open %s to write", output);
       status = X2R_ERR_IO;
-      /*XXX status = x2r_error(*log, X2R_ERR_IO, "Cannot open %s to write", output); */
       if (input)
       {
         free (input);
@@ -152,12 +132,10 @@ parse_opts (int argc, char *argv[], evalresp_log_t **log, FILE **in, FILE **out)
       return status;
     }
     evalresp_log (*log, EV_INFO, 0, "Output to %s", output);
-    /*XXX x2r_info(*log, "Output to %s", output); */
   }
   else
   {
     evalresp_log (*log, EV_INFO, 0, "Output to stdout");
-    /*XXX x2r_info(*log, "Output to stdout"); */
   }
 
   if (output)
@@ -180,8 +158,7 @@ main (int argc, char *argv[])
 {
 
   int status = X2R_OK;
-  /*XXX x2r_log *log = NULL; */
-  evalresp_log_t *log = NULL;
+  evalresp_logger *log = NULL;
   x2r_fdsn_station_xml *root = NULL;
   FILE *in = stdin, *out = stdout;
 
@@ -214,6 +191,5 @@ main (int argc, char *argv[])
     fclose (out);
   }
   status = x2r_free_fdsn_station_xml (root, status);
-  /*XXX status = x2r_free_log(log, status); */
   return status;
 }

@@ -14,6 +14,8 @@ Makefile
 *.pdf
 *.obj
 *.lib
+*.so
+*.so.*
 
 configure
 config.*
@@ -21,6 +23,10 @@ libtool
 stamp*
 build-aux
 doc/latex
+.autotools
+.cproject
+.project
+.settings
 
 .vs/
 

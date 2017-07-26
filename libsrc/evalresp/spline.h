@@ -15,12 +15,6 @@
  */
 
 /**
- * @defgroup evalresp_private_spline evalresp Private Spline Interpolation Interface
- * @ingroup evalresp_private
- * @brief Private cubic spline interpolation interface for evalresp.
- */
-
-/**
  * @file
  * @brief This file contains declarations and global structures for evalresp
  *        cubic spline interpolation.
@@ -51,11 +45,9 @@
  *                           @p p_retvals_arr (will be less than @p num_xvals
  *                           if any new abscissa values are out of range).
  * @param[in] log Logging structure.
- * @return @c NULL if successful; an error message string if not.
+ * @return EVALRESP_OK if successful, or error code if not.
  */
-char *evr_spline (int num_points, double *t, double *y,
-                  double tension, /* Not used anymore */
-                  double k,       /* Not used anymore */
-                  double *xvals_arr, int num_xvals,
-                  double **p_retvals_arr, int *p_num_retvals, evalresp_log_t *log);
+int spline_interpolate (int num_points, double *t, double *y,
+                        double *xvals_arr, int num_xvals,
+                        double **p_retvals_arr, int *p_num_retvals, evalresp_logger *log);
 #endif /* __EVALRESP_EVR_SPLINE_H__ */

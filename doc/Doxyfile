@@ -19,12 +19,14 @@ SORT_GROUP_NAMES = NO
 SHOW_USED_FILES = NO
 SHOW_FILES = NO
 INPUT = intro_dox.h \
-        ../libsrc/evalresp/evalresp.h \
+        ../libsrc/evalresp/public_api.h \
+        ../libsrc/evalresp/public_compat.h \
+        ../libsrc/evalresp/private.h \
         ../src \
         ../libsrc
 FILE_PATTERNS = *.h *.c
 RECURSIVE = YES
-EXCLUDE_PATTERNS = 
+EXCLUDE_PATTERNS = */mxml/* vcs_getopt.h
 EXAMPLE_PATH = 
 IMAGE_PATH = ./
 

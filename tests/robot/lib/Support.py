@@ -10,7 +10,7 @@ TARGET = join(WORKSPACE, 'tests/robot/target')
 DATA = join(WORKSPACE, 'tests/robot/data')
 RUN = join(WORKSPACE, 'tests/robot/run')
 
-TINY = 1e-8
+TINY = 1e-5
 
 
 class Support:
@@ -57,7 +57,7 @@ class Support:
             data = map(float, line.split())
         except ValueError:
             raise Exception('Bad data in %s at line %d' % (path, index))
-        if len(data) != n:
+        if len(data) != int(n):
             raise Exception('Missing data in %s at line %d' % (path, index))
         return data
 

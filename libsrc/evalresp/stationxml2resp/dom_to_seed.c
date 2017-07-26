@@ -4,9 +4,8 @@
 #include <string.h>
 
 #include <evalresp/stationxml2resp.h>
-#include <evalresp/stationxml2resp/log.h>
-#include <evalresp/stationxml2resp/xml.h>
-#include <evalresp/stationxml2resp/ws.h>
+#include <evalresp/stationxml2resp/xml_to_dom.h>
+#include <evalresp/stationxml2resp/dom_to_seed.h>
 #include <evalresp_log/log.h>
 
 
@@ -15,7 +14,7 @@
 
 
 /* printf-style output with linefeed. */
-static int line(evalresp_log_t *log, FILE *out, const char *template, ...) {
+static int line(evalresp_logger *log, FILE *out, const char *template, ...) {
 
     int status = X2R_OK;
     va_list argp;
@@ -26,13 +25,11 @@ static int line(evalresp_log_t *log, FILE *out, const char *template, ...) {
     if (!(with_lf = calloc(strlen(template) + 2, sizeof(*with_lf)))) {
         evalresp_log(log, EV_ERROR, 0, "Cannot allocate buffer");
         status = X2R_ERR_MEMORY;
-        /*XXX status = x2r_error(log, X2R_ERR_MEMORY, "Cannot allocate buffer"); */
     } else {
         sprintf(with_lf, "%s\n", template);
         if (vfprintf(out, with_lf, argp) < 0) {
             evalresp_log(log, EV_ERROR, 0, "Error printing %s", template);
             status = X2R_ERR_IO;
-            /*XXX status = x2r_error(log, X2R_ERR_IO, "Error printing %s", template); */
         }
     }
 
@@ -44,7 +41,7 @@ static int line(evalresp_log_t *log, FILE *out, const char *template, ...) {
 
 
 /* Print multiple lines, NULL terminated. */
-static int lines(evalresp_log_t *log, FILE *out, ...) {
+static int lines(evalresp_logger *log, FILE *out, ...) {
 
     int status = X2R_OK;
     va_list argp;
@@ -61,7 +58,7 @@ static int lines(evalresp_log_t *log, FILE *out, ...) {
 
 
 /* Format epoch as given. */
-static int format_date(evalresp_log_t *log, const time_t epoch, int n, char *template, char **date) {
+static int format_date(evalresp_logger *log, const time_t epoch, int n, char *template, char **date) {
 
     int status = X2R_OK;
     struct tm *tm;
@@ -69,17 +66,14 @@ static int format_date(evalresp_log_t *log, const time_t epoch, int n, char *tem
     if (!(tm = gmtime(&epoch))) {
         evalresp_log(log, EV_ERROR, 0, "Cannot convert epoch to time");
         status = X2R_ERR_DATE;
-        /*XXX status = x2r_error(log, X2R_ERR_DATE, "Cannot convert epoch to time"); */
     } else {
         if (!(*date = calloc(n, sizeof(**date)))) {
             evalresp_log(log, EV_ERROR, 0, "Cannot alloc date");
             status = X2R_ERR_MEMORY;
-            /*XXX status = x2r_error(log, X2R_ERR_MEMORY, "Cannot alloc date"); */
         } else {
             if (!(strftime(*date, n, template, tm))) {
                 evalresp_log(log, EV_ERROR, 0, "Cannot format date in %d char", n);
                 status = X2R_ERR_BUFFER;
-                /*XXX status = x2r_error(log, X2R_ERR_BUFFER, "Cannot format date in %d char", n); */
             }
         }
     }
@@ -89,13 +83,13 @@ static int format_date(evalresp_log_t *log, const time_t epoch, int n, char *tem
 
 
 /* Format epoch julian days. */
-static int format_date_yjhms(evalresp_log_t *log, const time_t epoch, char **date) {
+static int format_date_yjhms(evalresp_logger *log, const time_t epoch, char **date) {
     return format_date(log, epoch, strlen("YYYY,jjj,HH:MM:SS") + 1, "%Y,%j,%H:%M:%S", date);
 }
 
 
 /* Format epoch in American date style. */
-static int format_date_mdy(evalresp_log_t *log, time_t epoch, char **date) {
+static int format_date_mdy(evalresp_logger *log, time_t epoch, char **date) {
     return format_date(log, epoch, strlen("mm/dd/YYYY") + 1, "%m/%d/%Y", date);
 }
 
@@ -114,14 +108,13 @@ static void chrncpy(char *destn, const char *source, int len) {
 
 
 /* Pad the given text to the centre of the given width. */
-static int centre(evalresp_log_t *log, const char *text, int width, char **result) {
+static int centre(evalresp_logger *log, const char *text, int width, char **result) {
 
     int status = X2R_OK, margin, len;
 
     if (!(*result = calloc(width + 1, sizeof(**result)))) {
         evalresp_log(log, EV_ERROR, 0, "Cannot alloc centre");
         status = X2R_ERR_MEMORY;
-        /*XXX status = x2r_error(log, X2R_ERR_MEMORY, "Cannot alloc centre"); */
     } else {
 
         len = strlen(text);
@@ -137,7 +130,7 @@ static int centre(evalresp_log_t *log, const char *text, int width, char **resul
 
 
 /* Format a SNCL (without dots), centred as above. */
-static int centre_sncl(evalresp_log_t *log, const char *net, const char *stn, const x2r_channel *channel,
+static int centre_sncl(evalresp_logger *log, const char *net, const char *stn, const x2r_channel *channel,
         int width, char **result) {
 
     int status = X2R_OK, len;
@@ -148,7 +141,6 @@ static int centre_sncl(evalresp_log_t *log, const char *net, const char *stn, co
     if (!(sncl = calloc(len + 1, sizeof(*sncl)))) {
         evalresp_log(log, EV_ERROR, 0, "Cannot alloc sncl");
         status = X2R_ERR_MEMORY;
-        /*XXX status = x2r_error(log, X2R_ERR_MEMORY, "Cannot alloc sncl"); */
     } else {
 
         memset(sncl, ' ', len);
@@ -196,7 +188,7 @@ static char *convert_symmetry(const char *symmetry) {
 
 
 /* Display a pretty comment box. */
-static int box(evalresp_log_t *log, FILE *out, const char *title, const char UNUSED *net, const char UNUSED *stn,
+static int box(evalresp_logger *log, FILE *out, const char *title, const char UNUSED *net, const char UNUSED *stn,
         const x2r_channel UNUSED *channel) {
 
     int status = X2R_OK;
@@ -237,7 +229,7 @@ static int box(evalresp_log_t *log, FILE *out, const char *title, const char UNU
 
 
 /* Print x2r_pole_zero. */
-static int print_pole_zero(evalresp_log_t *log, FILE *out, const char *tag, const char *name,
+static int print_pole_zero(evalresp_logger *log, FILE *out, const char *tag, const char *name,
         int n, x2r_pole_zero *pole_zero) {
 
     int status = X2R_OK, i;
@@ -259,7 +251,7 @@ static int print_pole_zero(evalresp_log_t *log, FILE *out, const char *tag, cons
 
 
 /* Print x2r_poles_zeros. */
-static int print_poles_zeros(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_poles_zeros(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_poles_zeros *poles_zeros) {
 
     int status = X2R_OK;
@@ -304,7 +296,7 @@ static int print_poles_zeros(evalresp_log_t *log, FILE *out, const char *net, co
 
 
 /* Print x2r_float as coefficients. */
-static int print_coefficient(evalresp_log_t *log, FILE *out, const char *tag, const char *name,
+static int print_coefficient(evalresp_logger *log, FILE *out, const char *tag, const char *name,
         int n, x2r_float *coefficient) {
 
     int status = X2R_OK, i;
@@ -326,7 +318,7 @@ static int print_coefficient(evalresp_log_t *log, FILE *out, const char *tag, co
 
 
 /* Print x2r_coefficients. */
-static int print_coefficients(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_coefficients(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_coefficients *coefficients) {
 
     int status = X2R_OK;
@@ -364,7 +356,7 @@ static int print_coefficients(evalresp_log_t *log, FILE *out, const char *net, c
 
 
 /* Print x2r_response_list. */
-static int print_response_list(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_response_list(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_response_list *response_list) {
 
     int status = X2R_OK, i;
@@ -398,7 +390,7 @@ static int print_response_list(evalresp_log_t *log, FILE *out, const char *net, 
 
 
 /* Print x2r_fir. */
-static int print_fir(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_fir(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_fir *fir) {
 
     int status = X2R_OK, i;
@@ -436,7 +428,7 @@ static int print_fir(evalresp_log_t *log, FILE *out, const char *net, const char
 
 
 /* Print x2r_polynomial. */
-static int print_polynomial(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_polynomial(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_polynomial *polynomial) {
 
     int status = X2R_OK, i;
@@ -496,7 +488,7 @@ static int print_polynomial(evalresp_log_t *log, FILE *out, const char *net, con
 
 
 /* Print x2r_decimation. */
-static int print_decimation(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_decimation(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_decimation *decimation) {
 
     int status = X2R_OK;
@@ -536,7 +528,7 @@ static int print_decimation(evalresp_log_t *log, FILE *out, const char *net, con
 
 
 /* Print x2r_gain. */
-static int print_stage_gain(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_stage_gain(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, int stage, const x2r_gain *gain) {
 
     int status = X2R_OK;
@@ -561,7 +553,7 @@ static int print_stage_gain(evalresp_log_t *log, FILE *out, const char *net, con
 
 
 /* Print x2r_stage. */
-static int print_stage(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_stage(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, const x2r_stage *stage) {
 
     int status = X2R_OK;
@@ -588,7 +580,6 @@ static int print_stage(evalresp_log_t *log, FILE *out, const char *net, const ch
         break;
     default:
         evalresp_log(log, EV_WARN, 0, "No content in stage (during print)");
-        /*XXX x2r_warn(log, "No content in stage (during print)"); */
         break;
     }
 
@@ -607,7 +598,7 @@ static int print_stage(evalresp_log_t *log, FILE *out, const char *net, const ch
 
 
 /* Print x2r_response. */
-static int print_response(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_response(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel, const x2r_response *response) {
 
     int status = X2R_OK, i;
@@ -633,7 +624,7 @@ static int print_response(evalresp_log_t *log, FILE *out, const char *net, const
 
 
 /* Print x2r_channel. */
-static int print_channel(evalresp_log_t *log, FILE *out, const char *net, const char *stn,
+static int print_channel(evalresp_logger *log, FILE *out, const char *net, const char *stn,
         const x2r_channel *channel) {
 
     int status = X2R_OK;
@@ -677,7 +668,7 @@ static int print_channel(evalresp_log_t *log, FILE *out, const char *net, const 
 /*
  * Print the entire response document, given the in-memory model.
  */
-int x2r_resp_util_write(evalresp_log_t *log, FILE *out, const x2r_fdsn_station_xml *root) {
+int x2r_resp_util_write(evalresp_logger *log, FILE *out, const x2r_fdsn_station_xml *root) {
 
     int status = X2R_OK, i, j, k;
     x2r_network network;
@@ -697,56 +688,13 @@ int x2r_resp_util_write(evalresp_log_t *log, FILE *out, const x2r_fdsn_station_x
     return status;
 }
 
-
-static int convert_and_replace(FILE **in, int log_level, evalresp_log_t *log) {
-
-    int status = X2R_OK;
-    /*XXX x2r_log *log = NULL; */
-    x2r_fdsn_station_xml *root = NULL;
-    FILE *tmp;
-
-    /*XXX if (!(status = x2r_alloc_log(log_level, stderr, &log))) { */
-    if (!(tmp = tmpfile())) {
-        evalresp_log(log, EV_ERROR, 0, "Could not open temporary file");
-        status = X2R_ERR_IO;
-        /*XXX status = x2r_error(log, X2R_ERR_IO, "Could not open temporary file"); */
-    } else {
-        if (!(status = x2r_station_service_load(log, *in, &root))) {
-            if (!(status = x2r_resp_util_write(log, tmp, root))) {
-                rewind(tmp);
-                if (*in != stdin) fclose(*in);
-                *in = tmp;
-            }
-        }
-    }
-    /*XXX } */
-
-    status = x2r_free_fdsn_station_xml(root, status);
-    /*XXX status = x2r_free_log(log, status); */
-    return status;
-}
-
-
-/*
- * If xml_flag is set, convert the file and replace *in.
- * Otherwise, do nothing.
- */
-int x2r_xml2resp_on_flag(FILE **in, int xml_flag, int log_level, evalresp_log_t *log) {
-    if (xml_flag) {
-        return convert_and_replace(in, log_level, log);
-    } else {
-        return X2R_OK;
-    }
-}
-
-
-static int detect_xml(FILE **in, int *xml_flag) {
+int x2r_detect_xml(FILE *in, int *xml_flag) {
 
     int status = X2R_OK;
     int character = 0;
 
     while (character > -1) {
-        character = fgetc(*in);
+        character = fgetc(in);
         if (character > -1) {
             switch ((char)character) {
             // on space or newline, keep reading
@@ -770,23 +718,6 @@ static int detect_xml(FILE **in, int *xml_flag) {
 
 // doesn't work well on OSX?
 //  rewind(*in);
-    fseek(*in, 0, SEEK_SET);
+    fseek(in, 0, SEEK_SET);
     return status;
-}
-
-
-/*
- * Check the given file, to see if the first character as <,
- * and if so, convert and replace *in.
- *
- * DO NOT USE - rewind / fseek does not appear to work on OSX and
- * anyway should not work on stdin (although it seems to on linux!)
- */
-int x2r_xml2resp_auto(FILE **in, int log_level, evalresp_log_t *log) {
-
-    int status = X2R_OK;
-    int xml_flag = 0;
-
-    if ((status = detect_xml(in, &xml_flag))) return status;
-    return x2r_xml2resp_on_flag(in, xml_flag, log_level, log);
 }

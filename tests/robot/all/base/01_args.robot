@@ -100,7 +100,7 @@ Stage 3 - 5
 Stdio
     Prepare  base/args/stdio  base  RESP.Z.CGV..HYZ
     Run process  evalresp CGV HYZ 2010 1 0.001 10 100 -stdio < RESP.Z.CGV..HYZ  shell=True  stdout=stdout  stderr=stderr
-    Count and compare target files two float cols
+    Count and compare target files n float cols  3
 
 Estimated delay
     Prepare  base/args/delay  base  RESP.Z.CGV..HYZ
@@ -155,6 +155,6 @@ XML
 B55 interpolation
     Prepare  base/args/b55  base  RESP.IM.ATTU..BHE
     Run process  evalresp  ATTU  BHE  1998  57  0.001  10  100  -f  RESP.IM.ATTU..BHE  -il
-    # 50% difference is high, but leave this in as it check sthe file count
+    # 50% difference is high, but leave this in as it checks the file count
     Count and compare target files two float cols  base/args/b55  0.5
-    Compare target files two float cols average  base/args/b55  0.01
+    Compare target files two float cols average  base/args/b55  0.015

@@ -1,255 +1,243 @@
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-/*===================================================================
-Name:   evresp_1
-Purpose:
-        FORTRAN callable interface to the evresp routine (below)
-Reference:
-        SEED. Standard for the Exchange of Earthquake Data
-        Reference Manual
-        SEED Format Version 2.3 or later
-        ??? 1995
-Author:    Thomas J. McSweeney, Andrew Cooke
-
-Usage (from FORTRAN):
-        See tests/fortran/evresp.f
-
-Notes:
-        This routine was updated in release 4.0.0 to support Fortran
-        95.  Previous versions were clearly broken (parameters had
-        been added with no respect to the implicit lengths from
-        Fortran character arrays), so backwards compatibility is not
-        provided.
-
-        Given the cleaner interface supported by Fortran 95, this
-        routine can also be called from C.
-
-        Whereas the other function returns a linked list of responses
-        (one for each response that matched the user's request), this
-        routine returns the response for one (1)
-        station-channel-network for one (1) effective time.  If more
-        than one match is found for a given
-        station-channel-network-time, an error condition is raised
-        (and a value of -1 is returned to the calling routine to
-        indicate failure).  Likewise, a value of 1 is returned if no
-        match is found for the given station-channel-network-time.  If
-        a unique match is found, a value of 0 is returned to the
-        calling routine
-
- *=================================================================*/
-/*
-    8/28/2001 -- [ET]  Moved several variable definitions from 'evresp.h'
-                       into this file.
-   10/19/2005 -- [ET]  Added 'evresp_itp()' function with support for
-                       List blockette interpolation; made 'evresp()'
-                       call 'evresp_itp()' function with default
-                       values for List blockette interpolation parameters.
-    2/13/2006 -- [ET]  Moved 'use_delay()' function from 'evalresp.c'
-                       to 'evresp.c'; modified to close input file
-                       when a single response file is specified.
-    3/28/2006 -- [ET]  Added "free(freqs_orig)" at end of 'evresp_itp()'
-                       function; added "free_matched_files(output_files)"
-                       in 'evresp_itp()' function.
-    8/21/2006 -- [IGD] Version 3.2.36: Added support for TESLA units.
-    8/23/2006 -- [ET]  Improved detection of pressure ("PA") input units
-                       for in/out units check.
-   10/16/2006 -- [ET]  Modified to free array allocated in 'evresp_itp()'
-                       function.
-   02/27/2007 -- [IGD] Added return (#ifdef LIB_MODE) if the input file is not
-                       found
-   2015-05-04 -- [AC]  Simplifed / fixed for fortran 95
-*/
-
-#include <evalresp/evalresp.h>
-#include <evalresp/stationxml2resp/ws.h>
-#include <evalresp_log/log.h>
+#include <check.h>
+#include <fcntl.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-/* define a global flag to use if using "default" units */
-int def_units_flag;
+#include "evalresp/private.h"
+#include "evalresp/public.h"
+#include "evalresp/public_api.h"
+#include "evalresp/stationxml2resp/wrappers.h"
+#include "evalresp_log/log.h"
+#include "legacy.h"
+#include "old_fctns.h"
+#include <setjmp.h>
 
-/* define a pointer to a channel structure to use in determining the input and
- output units if using "default" units and for use in error output*/
-struct channel *GblChanPtr;
-float unitScaleFact;
-
-/* define global variables for use in printing error messages */
-char *curr_file;
-int curr_seq_no;
-
-/* and set a global variable to contain the environment for the setjmp/longjmp
- combination for error handling */
-jmp_buf jump_buffer;
-
-char myLabel[20];
-
-int
-evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
-          char *units, char *file, double *freqs, int nfreqs, double *resp,
-          char *rtype, char *verbose, int start_stage, int stop_stage,
-          int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
-          int xml_flag)
-{
-  struct response *first = (struct response *)NULL;
-  int i, j;
-  evalresp_log_t *log = NULL;
-
-  // some eyeball checks to make sure fortran is passing things ok
-  // printf("freqs: %f-%f\n", freqs[0], freqs[nfreqs-1]);
-  // printf("x_for_b62: %f\n", x_for_b62);
-
-  first = evresp (sta, cha, net, locid, datime, units, file, freqs, nfreqs,
-                  rtype, verbose, start_stage, stop_stage, stdio_flag, useTotalSensitivityFlag,
-                  x_for_b62, xml_flag, log);
-
-  /* check the output.  If no response found, return 1, else if more than one response
-     found, return -1 */
-
-  if (first == (struct response *)NULL)
-  {
-    return (1);
-  }
-  else if (first->next != (struct response *)NULL)
-  {
-    free_response (first);
-    return (-1);
-  }
-
-  /* if only one response found, convert from complex output vector into multiplexed
-     real output for FORTRAN (real1, imag1, real2, imag2, ..., realN, imagN) */
-
-  for (i = 0, j = 0; i < nfreqs; i++)
-  {
-    resp[j++] = (float)first->rvec[i].real;
-    resp[j++] = (float)first->rvec[i].imag;
-  }
-
-  /* free up dynamically allocated space */
-
-  free_response (first);
-
-  /* and return to FORTRAN program */
-
-  return (0);
-}
-
-/* 2/6/2006 -- [ET]  Moved from 'evalresp.c' to 'evresp.c' */
-int
-use_estimated_delay (int flag)
-{
-  /* WE USE THOSE WEIRD magic numbers here because
-     * there is a chance that use_delay_flag is not
-     * defined: in user program which uses evresp()
-     * when use_estimated_delay() is not used before evresp().
-     */
-  int magic_use_delay = 35443647;
-  int magic_dont_use_delay = -90934324;
-  static int use_delay_flag = FALSE;
-  if (TRUE == flag)
-    use_delay_flag = magic_use_delay;
-  if (FALSE == flag)
-    use_delay_flag = magic_dont_use_delay;
-
-  if (use_delay_flag == magic_use_delay)
-    return TRUE;
-  return FALSE;
-}
-
-/*===================================================================
-
- Name:      evresp
-
- Purpose:
-        Extract channel response parameters from either ASCII files
-        produced by rdseed -r ("response" file) or rdseed -d
-        ("sta-cha" files) and calculate the complex response.
-
- Reference:
-        SEED. Standard for the Exchange of Earthquake Data Reference
-        Manual SEED Format Version 2.3 or later ??? 1995
-
- Author:
-        Thomas J. McSweeney
-
- Modifications:
-        Ilya Dricker (i.dricker@isti.com) IGD for versions of evalresp 3.2.17
-
- Notes:
-
-         ???. Version 3.0
-
-        - modified to parse "new" rdseed RESP file output (includes a
-        new field that contains the blockette and field numbers for
-        each of the items in the RESP file)
-
-        - is a very substantial change over the previous releases of
-        evresp.  The code has been completely rewritten from the
-        original form authored by Jean-Francios Fels to support
-        several new features.  among them are:
-
-        (a) a "new" RESP file format that contains the blockette and
-        field numbers as prefixes to each line.  This allows for quick
-        determination of whether or not the program is parsing the
-        correct information without relying on searching for
-        non-standardized character strings in the RESP file
-
-        (b) support for the blockette [61] responses
-
-        (c) support for the response-reference style responses (i.e.
-        a blockette [60] followed by a series of blockette [41] or
-        blockette [43] through blockette [48] responses)
-
-        - the code has been rewritten so that the calculations are all
-        confined to this function and the functions that it calls.
-        All the user has to do us supply the appropriate control
-        parameters to this function
-
-        - the parsing has been entirely reworked so that each
-        blockette style is parsed in a seperate.  This should make the
-        code easier to maintain and allow for changes in the output
-        from RDSEED (either in number of fields on a line or in which
-        fields are output from a given blockette)
-
-        - the code has been converted to ANSI standard C, rather than
-          K&R style C
-
- Thomas J. McSweeney:  tjm@iris.washington.edu
-
- *=================================================================*/
-
-double Pi;
-double twoPi;
-/* IGD 08/21/06 Added Tesla */
+extern int in_epoch (const char *datime, const char *beg_t, const char *end_t);
 char SEEDUNITS[][UNITS_STR_LEN] =
     {"Undef Units", "Displacement", "Velocity", "Acceleration", "Counts",
      "Volts", "", "Pascals", "Tesla", "Centigrade"};
 
 char FirstLine[MAXLINELEN];
 int FirstField;
+jmp_buf jump_buffer;
 
-/* This version of the function includes
- the 'listinterp...' parameters  */
-
-/* IGD 10/03/13 This version of the function includes x_for_b62 parameter. See comment to calc_resp() function
- for further explanation */
-
-/* IGD 09/30/13 reformatted the code */
-struct response *
-evresp_itp (char *stalst, char *chalst, char *net_code,
-            char *locidlst, char *date_time, char *units, char *file, double *freqs,
-            int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
-            int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
-            double listinterp_tension, int useTotalSensitivityFlag,
-            double x_for_b62, int xml_flag, evalresp_log_t *log)
+int
+next_resp (FILE *fptr, evalresp_logger *log)
 {
-  struct channel this_channel;
-  struct scn *scn;
+  int blkt_no, fld_no, test;
+  char tmp_line[MAXLINELEN];
+
+  while ((test = check_line (fptr, &blkt_no, &fld_no, tmp_line, log)) != 0 && blkt_no != 50)
+    ;
+
+  if (test && blkt_no == 50)
+  {
+    if (0 > parse_field (tmp_line, 2, FirstLine, log))
+    {
+      return 0;
+    }
+    return (1);
+  }
+  else
+    return (0);
+}
+
+int
+get_channel (FILE *fptr, evalresp_channel *chan, evalresp_logger *log)
+{
+  int blkt_no, fld_no;
+  char field[MAXFLDLEN], line[MAXLINELEN];
+
+  /* check to make sure a non-comment field exists and it is the sta/chan/date info.
+     Note:  If it is the first channel (and, as a result, FirstLine contains a null
+     string), then we have to get the next line.  Otherwise, the FirstLine argument
+     has been set by a previous call to 'next_line' in another routine (when parsing
+     a previous station-channel-network tuple's information) and this is the
+     line that should be parsed to get the station name */
+
+  chan->nstages = 0;
+  chan->sensfreq = 0.0;
+  chan->sensit = 0.0;
+  chan->calc_sensit = 0.0;
+  chan->calc_delay = 0.0;
+  chan->estim_delay = 0.0;
+  chan->applied_corr = 0.0;
+  chan->sint = 0.0;
+
+  if (!strlen (FirstLine))
+  {
+    if (0 > get_field (fptr, field, 50, 3, ":", 0, log))
+    {
+      return 0;
+    }
+  }
+  else
+  {
+    if (0 > parse_field (FirstLine, 0, field, log))
+    {
+      return 0;
+    }
+  }
+
+  strncpy (chan->staname, field, STALEN);
+
+  /* then (from the file) the Network ID */
+
+  if (0 > get_field (fptr, field, 50, 16, ":", 0, log))
+  {
+    return 0;
+  }
+  if (!strncmp (field, "??", 2))
+  {
+    strncpy (chan->network, "", NETLEN);
+  }
+  else
+  {
+    strncpy (chan->network, field, NETLEN);
+  }
+
+  /* then (from the file) the Location Identifier (if it exists ... it won't for
+     "old style" RESP files so assume old style RESP files contain a null location
+     identifier) and the channel name */
+
+  /* Modified to use 'next_line()' and 'parse_field()' directly
+     to handle case where file contains "B052F03 Location:" and
+     nothing afterward -- 10/19/2005 -- [ET] */
+  /*  test_field(fptr,field,&blkt_no,&fld_no,":",0); */
+
+  next_line (fptr, line, &blkt_no, &fld_no, ":", log);
+  if (strlen (line) > 0) /* if data after "Location:" then */
+  {
+    if (0 > parse_field (line, 0, field, log)) /* parse location data */
+    {
+      return 0;
+    }
+  }
+  else
+  {
+    /* if no data after "Location:" then */
+    field[0] = '\0'; /* clear 'field' string */
+  }
+
+  if (blkt_no == 52 && fld_no == 3)
+  {
+    if (strlen (field) <= 0 || !strncmp (field, "??", 2))
+    {
+      strncpy (chan->locid, "", LOCIDLEN);
+    }
+    else
+    {
+      strncpy (chan->locid, field, LOCIDLEN);
+    }
+    if (0 > get_field (fptr, field, 52, 4, ":", 0, log))
+    {
+      return 0;
+    }
+    strncpy (chan->chaname, field, CHALEN);
+  }
+  else if (blkt_no == 52 && fld_no == 4)
+  {
+    strncpy (chan->locid, "", LOCIDLEN);
+    strncpy (chan->chaname, field, CHALEN);
+  }
+  else
+  {
+#ifdef LIB_MODE
+    return 0;
+#else
+    evalresp_log (log, EV_ERROR, 0,
+                  "get_line; %s%s%3.3d%s%3.3d%s[%2.2d|%2.2d]%s%2.2d", "blkt",
+                  " and fld numbers do not match expected values\n\tblkt_xpt=B",
+                  52, ", blkt_found=B", blkt_no, "; fld_xpt=F", 3, 4,
+                  ", fld_found=F", fld_no);
+    return 0;
+#endif
+  }
+
+  /* get the Start Date */
+
+  if (0 > get_line (fptr, line, 52, 22, ":", log))
+  {
+    return 0;
+  }
+  strncpy (chan->beg_t, line, DATIMLEN);
+
+  /* get the End Date */
+
+  if (0 > get_line (fptr, line, 52, 23, ":", log))
+  {
+    return 0;
+  }
+  strncpy (chan->end_t, line, DATIMLEN);
+
+  return (1);
+}
+
+int
+find_resp (FILE *fptr, evalresp_sncls *scn_lst, char *datime,
+           evalresp_channel *this_channel, evalresp_logger *log)
+{
+  int test, i;
+  evalresp_sncl *scn = NULL;
+
+  while ((test = get_channel (fptr, this_channel, log)) != 0)
+  {
+    for (i = 0; i < scn_lst->nscn; i++)
+    {
+      scn = scn_lst->scn_vec[i];
+      if (string_match (this_channel->staname, scn->station, "-g", log) && ((!strlen (scn->network) && !strlen (this_channel->network)) || string_match (this_channel->network, scn->network, "-g", log)) && string_match (this_channel->locid, scn->locid, "-g", log) && string_match (this_channel->chaname, scn->channel, "-g", log) && in_epoch (datime, this_channel->beg_t, this_channel->end_t))
+      {
+        scn->found = 1;
+        return (i);
+      }
+    }
+    if (!(test = next_resp (fptr, log)))
+    {
+      return (-1);
+    }
+  }
+  return (-1);
+}
+
+int
+get_resp (FILE *fptr, evalresp_sncl *scn, char *datime,
+          evalresp_channel *this_channel, evalresp_logger *log)
+{
+  int test;
+
+  while ((test = get_channel (fptr, this_channel, log)) != 0)
+  {
+
+    if (string_match (this_channel->staname, scn->station, "-g", log) && ((!strlen (scn->network) && !strlen (this_channel->network)) || string_match (this_channel->network, scn->network, "-g", log)) &&
+        string_match (this_channel->locid, scn->locid, "-g", log) && string_match (this_channel->chaname, scn->channel, "-g", log) && in_epoch (datime, this_channel->beg_t, this_channel->end_t))
+    {
+      scn->found = 1;
+      return (1);
+    }
+    else
+    {
+      if (!(test = next_resp (fptr, log)))
+      {
+        return (-1);
+      }
+    }
+  }
+  return (-1);
+}
+
+evalresp_response *
+old_evresp_itp (char *stalst, char *chalst, char *net_code,
+                char *locidlst, char *date_time, char *units, char *file, double *freqs,
+                int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
+                int stdio_flag, int listinterp_out_flag, int listinterp_in_flag,
+                double listinterp_tension, int useTotalSensitivityFlag,
+                double x_for_b62, int xml_flag, evalresp_logger *log)
+{
+  evalresp_channel this_channel;
+  evalresp_sncl *scn;
   struct string_array *sta_list, *chan_list;
   struct string_array *locid_list;
-  // TODO - new_file assigned 0 blindly to fix compiler warning.  bug?
   int i, j, k, count = 0, which_matched, test = 1, mode, new_file = 0;
   int err_type;
   char out_name[MAXLINELEN], locid[LOCIDLEN + 1];
@@ -258,12 +246,13 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   struct matched_files *flst_ptr = NULL, *output_files = NULL;
   struct file_list *lst_ptr = NULL, *tmp_ptr = NULL, *out_file = NULL,
                    *tmp_file = NULL;
-  struct response *resp = NULL, *next_ptr = NULL;
-  struct response *prev_ptr = (struct response *)NULL;
-  struct response *first_resp = (struct response *)NULL;
-  struct evr_complex *output = NULL;
-  struct scn_list *scns = NULL;
+  evalresp_response *resp = NULL, *next_ptr = NULL;
+  evalresp_response *prev_ptr = (evalresp_response *)NULL;
+  evalresp_response *first_resp = (evalresp_response *)NULL;
+  evalresp_complex *output = NULL;
+  evalresp_sncls *scns = NULL;
   FILE *fptr = NULL;
+  FILE *in_fptr = NULL;
   double *freqs_orig = NULL; /* for saving the original frequencies */
   int nfreqs_orig;
 
@@ -287,15 +276,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   if (verbose && !strcmp (verbose, "-v"))
   {
     evalresp_log (log, EV_INFO, 0, "<< EVALRESP RESPONSE OUTPUT V%s >>", REVNUM);
-    /*XXX fprintf(stderr, "<< EVALRESP RESPONSE OUTPUT V%s >>\n", REVNUM);
-        fflush(stderr); */
   }
-
-  /* first, determine the values of Pi and twoPi for use in evaluating
-     the instrument responses later */
-
-  Pi = acos (-1.0);
-  twoPi = 2.0 * Pi;
 
   /* set the values of first_units and last_units to null strings */
 
@@ -310,7 +291,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 
   /* and initialize the linked list of pointers to filters */
 
-  this_channel.first_stage = (struct stage *)NULL;
+  this_channel.first_stage = (evalresp_stage *)NULL;
 
   /* parse the "stalst" string to form a list of stations */
 
@@ -321,7 +302,6 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   }
   if (!(sta_list = ev_parse_line (stalst, log)))
   {
-    /*TODO free things */
     return NULL;
   }
 
@@ -339,7 +319,6 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   /* parse the "locidlst" string to form a list of locations  */
   if (!(locid_list = parse_delim_line (locid, ",", log)))
   {
-    /*TODO free things */
     return NULL;
   }
 
@@ -352,7 +331,6 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 
   if (!(chan_list = ev_parse_line (chalst, log)))
   {
-    /*TODO free things */
     return NULL;
   }
 
@@ -397,7 +375,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   /* if input is from stdin, set fptr to stdin, else find whatever matching files there are */
   if (stdio_flag)
   {
-    fptr = stdin;
+    in_fptr = stdin;
     mode = 0;
   }
   else
@@ -411,18 +389,10 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   if (!mode && !stdio_flag)
   {
     curr_file = file;
-    if (!(fptr = fopen (file, "r")))
+    if (!(in_fptr = fopen (file, "r")))
     {
       evalresp_log (log, EV_ERROR, 0, "%s failed to open file %s\n", myLabel, file);
       return NULL;
-      /*XXX
-#ifdef LIB_MODE
-            fprintf(stderr, "%s failed to open file %s\n", myLabel, file);
-            return NULL;
-#else
-            error_exit(OPEN_FILE_ERROR, "failed to open file %s", file);
-#endif
-*/
     }
   }
 
@@ -447,8 +417,22 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
     {
 
       /* convert from xml format if necessary, logging error messages to stderr. */
-      if (x2r_xml2resp_on_flag (&fptr, xml_flag, X2R_ERROR, log))
+      evalresp_xml_stream_to_resp_file (log, xml_flag, in_fptr, NULL, &fptr);
+      if (in_fptr && in_fptr != stdin && xml_flag)
+      {
+        fclose (in_fptr);
+        in_fptr = NULL;
+      }
+      else
+      {
+        fptr = in_fptr;
+      }
+      if (!fptr && !xml_flag)
+      {
         return NULL;
+      }
+      //if (x2r_xml2resp_on_flag (&fptr, xml_flag, log))
+      //  return NULL;
       //if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
 
       which_matched = 0;
@@ -535,11 +519,11 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                   &(this_channel.first_stage->first_blkt->blkt_info.list.amp),
                   &(this_channel.first_stage->first_blkt->blkt_info.list.phase),
                   &(this_channel.first_stage->first_blkt->blkt_info.list.nresp),
-                  freqs, nfreqs, listinterp_tension, log);
+                  freqs, nfreqs, log);
             }
 
             /* check the filter sequence that was just read */
-            check_channel (&this_channel, log);
+            check_channel (log, &this_channel);
 
             /* If we process blockette 55, we should recompute resp->rvec */
             /* because the number of output responses is generally different from */
@@ -573,7 +557,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
             else
             {
               nfreqs = nfreqs_orig;
-              freqs = (double *)malloc (sizeof (double) * nfreqs);  /* malloc a new vector */
+              freqs = (double *)malloc (sizeof (double) * nfreqs); /* malloc a new vector */
               memcpy (freqs, freqs_orig, sizeof (double) * nfreqs); /*cp*/
               resp->rvec = alloc_complex (nfreqs, log);
               output = resp->rvec;
@@ -585,12 +569,12 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
             }
 
             /* normalize the response of the filter sequence */
-            norm_resp (&this_channel, start_stage, stop_stage, log);
+            norm_resp (&this_channel, start_stage, stop_stage);
 
             /* calculate the response at the requested frequencies */
             calc_resp (&this_channel, freqs, nfreqs, output, units,
                        start_stage, stop_stage,
-                       useTotalSensitivityFlag, x_for_b62, log);
+                       useTotalSensitivityFlag, x_for_b62);
 
             /* diagnostic output, if the user requested it */
 
@@ -599,7 +583,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
               print_chan (&this_channel, start_stage, stop_stage,
                           stdio_flag, listinterp_out_flag,
                           listinterp_in_flag,
-                          useTotalSensitivityFlag, log);
+                          useTotalSensitivityFlag);
             }
 
             free (freqs); /* free array that was allocated above */
@@ -608,7 +592,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                          list and continue searching for the next match */
 
             free_channel (&this_channel);
-            if (first_resp == (struct response *)NULL)
+            if (first_resp == (evalresp_response *)NULL)
             {
               first_resp = resp;
             }
@@ -645,9 +629,9 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 
       /* allocated one too many responses */
 
-      free_response (resp);
-      if (prev_ptr != (struct response *)NULL)
-        prev_ptr->next = (struct response *)NULL;
+      evalresp_free_response (&resp);
+      if (prev_ptr != (evalresp_response *)NULL)
+        prev_ptr->next = (evalresp_response *)NULL;
       break;
     }
     else if (mode)
@@ -659,14 +643,28 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
       {
         if (!stdio_flag)
         {
-          fptr = fopen (lst_ptr->name, "r");
+          in_fptr = fopen (lst_ptr->name, "r");
         }
-        if (fptr)
+        if (in_fptr)
         {
 
           /* convert from xml format if necessary, logging error messages to stderr. */
-          if (x2r_xml2resp_on_flag (&fptr, xml_flag, X2R_ERROR, log))
+          evalresp_xml_stream_to_resp_file (log, xml_flag, in_fptr, NULL, &fptr);
+          if (in_fptr && in_fptr != stdin && xml_flag)
+          {
+            fclose (in_fptr);
+            in_fptr = NULL;
+          }
+          else
+          {
+            fptr = in_fptr;
+          }
+          if (!fptr)
+          {
             return NULL;
+          }
+          //if (x2r_xml2resp_on_flag (&fptr, xml_flag, log))
+          //  return NULL;
           //if (x2r_xml2resp_auto(&fptr, X2R_ERROR)) return NULL;
 
           curr_file = lst_ptr->name;
@@ -753,16 +751,10 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                       evalresp_log (log, EV_WARN, 0,
                                     "%s: OUTPUT %s does not make sense if INPUT is PRESSURE\n",
                                     myLabel, units);
-                      /*XXX fprintf(stderr,
-                                                    "%s WARNING: OUTPUT %s does not make sense if INPUT is PRESSURE\n",
-                                                    myLabel, units); */
                       strcpy (units, "VEL");
                       evalresp_log (log, EV_WARN, 0,
                                     "%s      OUTPUT units are reset and interpreted as PRESSURE\n",
                                     myLabel);
-                      /*XXX fprintf(stderr,
-                                                    "%s      OUTPUT units are reset and interpreted as PRESSURE\n",
-                                                    myLabel); */
                     }
                   }
                 }
@@ -777,16 +769,10 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                       evalresp_log (log, EV_WARN, 0,
                                     "%s: OUTPUT %s does not make sense if INPUT is MAGNETIC FLUX\n",
                                     myLabel, units);
-                      /*XXX fprintf(stderr,
-                                                    "%s WARNING: OUTPUT %s does not make sense if INPUT is MAGNETIC FLUX\n",
-                                                    myLabel, units); */
                       strcpy (units, "VEL");
                       evalresp_log (log, EV_WARN, 0,
                                     "%s      OUTPUT units are reset and interpreted as TESLA\n",
                                     myLabel);
-                      /*XXX fprintf(stderr,
-                                                    "%s      OUTPUT units are reset and interpreted as TESLA\n",
-                                                    myLabel); */
                     }
                   }
                 }
@@ -802,16 +788,10 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                       evalresp_log (log, EV_WARN, 0,
                                     "%s: OUTPUT %s does not make sense if INPUT is TEMPERATURE\n",
                                     myLabel, units);
-                      /*XXX fprintf(stderr,
-                                                    "%s WARNING: OUTPUT %s does not make sense if INPUT is TEMPERATURE\n",
-                                                    myLabel, units); */
                       strcpy (units, "VEL");
                       evalresp_log (log, EV_WARN, 0,
                                     "%s      OUTPUT units are reset and interpreted as  DEGREES CENTIGRADE\n",
                                     myLabel);
-                      /*XXX fprintf(stderr,
-                                                    "%s      OUTPUT units are reset and interpreted as  DEGREES CENTIGRADE\n",
-                                                    myLabel); */
                     }
                   }
                 }
@@ -824,11 +804,11 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                       &(this_channel.first_stage->first_blkt->blkt_info.list.amp),
                       &(this_channel.first_stage->first_blkt->blkt_info.list.phase),
                       &(this_channel.first_stage->first_blkt->blkt_info.list.nresp),
-                      freqs, nfreqs, listinterp_tension, log);
+                      freqs, nfreqs, log);
                 }
 
                 /* check the filter sequence that was just read */
-                check_channel (&this_channel, log);
+                check_channel (log, &this_channel);
 
                 /* If we process blockette 55, we should recompute resp->rvec */
                 /* because the number of output responses is generally different from */
@@ -877,12 +857,12 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 
                 /* normalize the response of the filter sequence */
                 norm_resp (&this_channel, start_stage,
-                           stop_stage, log);
+                           stop_stage);
 
                 /* calculate the response at the requested frequencies */
                 calc_resp (&this_channel, freqs, nfreqs, output,
                            units, start_stage, stop_stage,
-                           useTotalSensitivityFlag, x_for_b62, log);
+                           useTotalSensitivityFlag, x_for_b62);
 
                 /* diagnostic output, if the user requested it */
 
@@ -892,7 +872,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                               stop_stage, stdio_flag,
                               listinterp_out_flag,
                               listinterp_in_flag,
-                              useTotalSensitivityFlag, log);
+                              useTotalSensitivityFlag);
                 }
 
                 free (freqs); /* free array that was allocated above */
@@ -902,7 +882,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                                  next match */
 
                 free_channel (&this_channel);
-                if (first_resp == (struct response *)NULL)
+                if (first_resp == (evalresp_response *)NULL)
                 {
                   first_resp = resp;
                 }
@@ -986,9 +966,9 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 
       /* allocated one too many responses */
 
-      free_response (resp);
-      if (prev_ptr != (struct response *)NULL)
-        prev_ptr->next = (struct response *)NULL;
+      evalresp_free_response (&resp);
+      if (prev_ptr != (evalresp_response *)NULL)
+        prev_ptr->next = (evalresp_response *)NULL;
 
     } /* end else if mode */
 
@@ -996,7 +976,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 
   /* added file close if single input file -- 2/13/2006 -- [ET]: */
   if (!mode && !stdio_flag) /* if single file was opened then */
-    fclose (fptr);          /* close input file */
+    fclose (fptr); /* close input file */
 
   /* and print a list of WARNINGS about the station-channel pairs that were not
        found in the input RESP files */
@@ -1010,14 +990,9 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
                     "%s: no response found for NET=%s,STA=%s,LOCID=%s,CHAN=%s,DATE=%s\n",
                     myLabel, scn->network, scn->station, scn->locid,
                     scn->channel, date_time);
-      /*XXX fprintf(stderr,
-                    "%s WARNING: no response found for NET=%s,STA=%s,LOCID=%s,CHAN=%s,DATE=%s\n",
-                    myLabel, scn->network, scn->station, scn->locid,
-                    scn->channel, date_time);
-            fflush(stderr); */
     }
   }
-  free_scn_list (scns);
+  evalresp_free_sncls (scns);
   if (flst_head != (struct matched_files *)NULL)
     free_matched_files (flst_head);
   free_string_array (chan_list);
@@ -1029,17 +1004,81 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   return (first_resp);
 }
 
-/* This version of the function does not include
- the 'listinterp...' parameters  */
-
-struct response *
-evresp (char *stalst, char *chalst, char *net_code,
-        char *locidlst, char *date_time, char *units, char *file, double *freqs,
-        int nfreqs, char *rtype, char *verbose, int start_stage, int stop_stage,
-        int stdio_flag, int useTotalSensitivityFlag, double x_for_b62,
-        int xml_flag, evalresp_log_t *log)
+START_TEST (test_legacy_1)
 {
-  return evresp_itp (stalst, chalst, net_code, locidlst, date_time, units,
-                     file, freqs, nfreqs, rtype, verbose, start_stage, stop_stage,
-                     stdio_flag, 0, 0, 0.0, 0, x_for_b62, xml_flag, log);
+  evalresp_response *old_first = NULL, *new_first = NULL, *old_ptr, *new_ptr, *ptr;
+  int oldcount = 0, newcount = 0, i;
+  double freqs[3];
+  freqs[0] = 2;
+  freqs[1] = 3;
+  freqs[2] = 4;
+
+  ck_assert_msg (NULL != (old_first = old_evresp_itp ("ANMO", "BH1", "IU", "00",
+                                                      "2015,1,00:00:00", "VEL",
+                                                      "./data/response-1",
+                                                      freqs, 3, "AP", NULL,
+                                                      -1, 0, 0, 0, 0.0, 0, 0, 0, 0, NULL)),
+                 "Failed to run old evresp_itp");
+  ck_assert_msg (NULL != (new_first = evresp_itp ("ANMO", "BH1", "IU", "00",
+                                                  "2015,1,00:00:00", "VEL",
+                                                  "./data/response-1",
+                                                  freqs, 3, "AP", NULL,
+                                                  -1, 0, 0, 0, 0.0, 0, 0, 0, 0)),
+                 "Failed to run evresp_itp");
+
+  for (oldcount = 0, old_ptr = old_first; old_ptr != NULL; oldcount++, old_ptr = old_ptr->next)
+    ;
+  for (newcount = 0, new_ptr = new_first; new_ptr != NULL; newcount++, new_ptr = new_ptr->next)
+    ;
+  ck_assert_msg (oldcount == newcount, "number of responses do not match (new)%d != (old)%d", newcount, oldcount);
+  old_ptr = old_first;
+  new_ptr = new_first;
+  while (old_ptr && new_ptr)
+  {
+    ck_assert (strcmp (old_ptr->station, new_ptr->station) == 0);
+    ck_assert (strcmp (old_ptr->network, new_ptr->network) == 0);
+    ck_assert (strcmp (old_ptr->locid, new_ptr->locid) == 0);
+    ck_assert (strcmp (old_ptr->channel, new_ptr->channel) == 0);
+    ck_assert (old_ptr->nfreqs == new_ptr->nfreqs);
+    for (i = 0; i < old_ptr->nfreqs; i++)
+    {
+      ck_assert (old_ptr->freqs[i] == new_ptr->freqs[i]);
+      ck_assert (old_ptr->rvec[i].real == new_ptr->rvec[i].real);
+      ck_assert (old_ptr->rvec[i].imag == new_ptr->rvec[i].imag);
+    }
+    old_ptr = old_ptr->next;
+    new_ptr = new_ptr->next;
+  }
+  old_ptr = old_first;
+  new_ptr = new_first;
+  while (old_ptr)
+  {
+    ptr = old_ptr->next;
+    free (old_ptr);
+    old_ptr = ptr;
+  }
+  while (new_ptr)
+  {
+    ptr = new_ptr->next;
+    free (new_ptr);
+    new_ptr = ptr;
+  }
+}
+END_TEST
+
+int
+main (void)
+{
+  int number_failed;
+  Suite *s = suite_create ("suite");
+  TCase *tc = tcase_create ("case");
+  tcase_add_test (tc, test_legacy_1);
+  //  tcase_add_test (tc, test_legacy_2);
+  suite_add_tcase (s, tc);
+  SRunner *sr = srunner_create (s);
+  srunner_set_xml (sr, "check-legacy.xml");
+  srunner_run_all (sr, CK_NORMAL);
+  number_failed = srunner_ntests_failed (sr);
+  srunner_free (sr);
+  return number_failed;
 }

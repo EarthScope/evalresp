@@ -3,7 +3,7 @@
  *
  * @section purpose Purpose
  *
- * Implements a private X2R in-memory model interface for evalresp.
+ * Implements a private XML-to-RSEED in-memory model interface for evalresp.
  *
  * @section history History
  *
@@ -12,15 +12,15 @@
  */
 
 /**
- * @defgroup evalresp_private_x2r_xml evalresp Private X2R In-Memory Model Interface
+ * @defgroup evalresp_private_x2r_xml evalresp Private XML-to-RSEED In-Memory Model Interface
  * @ingroup evalresp_private_x2r
- * @brief Private X2R in-memory model interface for evalresp.
+ * @brief Private XML-to-RSEED in-memory model interface for evalresp.
  */
 
 /**
  * @file
  * @brief This file contains declarations and global structures for evalresp
- *        X2R in-memory model.
+ *        XML-to-RSEED in-memory model.
  */
 
 #ifndef X2R_XML_H
@@ -29,7 +29,6 @@
 #include <time.h>
 #include <stdio.h>
 
-#include <evalresp/stationxml2resp/log.h>
 #include <evalresp_log/log.h>
 
 
@@ -304,7 +303,7 @@ typedef struct {
  *          implicit tests against the IRIS-WS code elsewhere). Originally
  *          used strptime, but that's not available on Windows.
  */
-int x2r_parse_iso_datetime(evalresp_log_t *log, const char *datetime, time_t *epoch);
+int x2r_parse_iso_datetime(evalresp_logger *log, const char *datetime, time_t *epoch);
 
 /**
  * @private
@@ -313,7 +312,7 @@ int x2r_parse_iso_datetime(evalresp_log_t *log, const char *datetime, time_t *ep
  *        in-memory representation of the station.xml file read from the given
  *        stream.
  */
-int x2r_station_service_load(evalresp_log_t *log, FILE *in, x2r_fdsn_station_xml **root);
+int x2r_station_service_load(evalresp_logger *log, FILE *in, x2r_fdsn_station_xml **root);
 
 /**
  * @private
