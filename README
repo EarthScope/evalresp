@@ -1,0 +1,47 @@
+- This README file is a part the evalresp distribution.
+
+- Repositary evalresp is hosted in iris-edu github: 
+  * https://github.com/iris-edu/evalresp
+
+- Additional information about this project can be found in iris-edu github wiki:
+  https://github.com/iris-edu/evalresp/wiki
+
+- IRIS maintains evalresp page here:
+   * https://ds.iris.edu/ds/nodes/dmc/software/downloads/evalresp/
+
+- Please read ChangeLog for modifications of evalresp 
+
+- Please refer to evalresp man pages (doc/evalresp.1) for general information
+  about evalresp and it's usage.
+
+- To build evalresp distribution from the github source
+   * Checkout the evalresp repo
+   * Run script: tests/jenkins/build-evalresp.sh
+
+- To create export tar:
+   * make dist
+
+- To run unit tests:
+   * tests/jenkins/run-c-tests.sh
+
+- To run base blackbox tests:
+   * tests/jenkins/run-robot-tests.sh
+
+- To run extended blackbox tests follow the link:
+   * https://github.com/iris-edu/evalresp/wiki/Testing-evalresp
+
+
+- To build evalresp from the export tarball on Unix platform:
+   * Follow instructions in INSTALL.unix
+
+- To build evalresp from the export tarball on Windows platform:
+   * Follow instructions in INSTALL.ms
+
+- To use evalresp Application programming Interface, review document evlaresp.pdf in doc directory.
+
+- To build evalresp.pdf from the source run (in doc directory):
+   * make pdf
+
+- To call evalresp library from FORTRAN:
+   * read tests/fortran/README
+
