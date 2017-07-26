@@ -13,6 +13,10 @@ To build and run these tests outside of Jenkins do something like:
   ./tests/jenkins/run-robot-tests.sh
 ```
 
+Note that for development everything is installed in `install` inside
+the `evalresp` directory.  This allows for developing multiple
+versions.
+
 Inside Jenkins, call the scripts in the required order during a build
 step.
 
@@ -26,4 +30,8 @@ will have failed):
 
 This will create zip files in the target directory.
 
+To create an export tarball (assuming `build-evalresp.sh` was run):
 
+```
+  make dist
+```
