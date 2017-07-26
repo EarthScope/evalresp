@@ -14,7 +14,7 @@ This README file is a part the evalresp distribution.
 - Please read ChangeLog for modifications of evalresp
 
 - Please refer to evalresp man pages (doc/evalresp.1) for general
-  information about evalresp and it's usage.
+  information about evalresp and its usage.
 
 - To build evalresp on Unix platform:
    * Follow instructions in INSTALL.unix
@@ -26,7 +26,7 @@ This README file is a part the evalresp distribution.
    * Follow instructions in tests/jenkins/README.md
    * https://github.com/iris-edu/evalresp/tree/master/tests/jenkins
 
-- To use evalresp Application programming Interface:
+- To use evalresp Application Programming Interface:
    * Build evalresp.pdf from the source run (in doc directory)
    * `cd doc; make pdf`
    * See the examples in the section "evalresp Public Interface".
