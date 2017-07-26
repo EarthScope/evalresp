@@ -1,7 +1,8 @@
 
 To build and run these tests outside of Jenkins do something like:
 
-  tar xvfz evalresp.tgz
+```
+  git clone https://github.com/iris-edu/evalresp.git
   cd evalresp
   ./tests/jenkins/build-evalresp.sh
   ./tests/jenkins/clean-test-dirs.sh
@@ -10,6 +11,7 @@ To build and run these tests outside of Jenkins do something like:
   # ./tests/jenkins/build-extended-robot-tests.sh 2010 365
   ./tests/jenkins/run-c-tests.sh
   ./tests/jenkins/run-robot-tests.sh
+```
 
 Inside Jenkins, call the scripts in the required order during a build
 step.
