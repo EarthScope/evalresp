@@ -20,6 +20,8 @@ step.
 To collect target data from an initial run (in which extended tests
 will have failed):
 
+::
+
   ./tests/jenkins/collect-extended-targets.sh 2017 1
   ./tests/jenkins/collect-extended-targets.sh 2010 365
 
