@@ -9,7 +9,7 @@ all: mxmlev.lib
 	$(CC) /Zi /c $*.c /I ..\ /Wall /DWIN32 /Fo$@
 
 mxmlev.lib: config.h $(OBJ)
-	link /DEBUG /lib $(OBJ) /OUT:mxmlev.lib
+	link /lib $(OBJ) /debug /OUT:mxmlev.lib
 
 config.h: config.h.in
 	copy config.h.in config.h
