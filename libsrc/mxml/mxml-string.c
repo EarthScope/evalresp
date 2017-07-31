@@ -410,7 +410,8 @@ _mxml_vsnprintf(char       *buffer,	/* O - Output buffer */
   * Nul-terminate the string and return the number of characters needed.
   */
 
-  *bufptr = '\0';
+  if (buffer)
+    *bufptr = '\0';
 
   return (bytes);
 }
