@@ -30,8 +30,8 @@ clean:
 	del xml2resp.exe $(XR_OBJS)
 
 install: evalresp.exe xml2resp.exe ..\install\bin
-	copy /B evalresp.exe ..\install\bin\
-	copy /B xml2resp.exe ..\install\bin\
+	xcopy evalresp.exe ..\install\bin\
+	xcopy xml2resp.exe ..\install\bin\
 
 ..\install\bin:
 	md ..\install\bin
