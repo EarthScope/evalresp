@@ -6,10 +6,10 @@ OBJ= mxml-attr.obj mxml-entity.obj mxml-file.obj mxml-get.obj \
 all: mxmlev.lib
 
 .c.obj:
-	$(CC) /Zi /c $*.c /I ..\ /Wall /DWIN32 /Fo$@
+	$(CC) /c $*.c /I ..\ /Wall /DWIN32 /Fo$@
 
 mxmlev.lib: config.h $(OBJ)
-	link /DEBUG /lib $(OBJ) /OUT:mxmlev.lib
+	link /lib $(OBJ) /OUT:mxmlev.lib
 
 config.h: config.h.in
 	copy config.h.in config.h

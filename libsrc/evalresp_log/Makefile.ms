@@ -4,10 +4,10 @@ OBJ=log.obj examples\to_file.obj
 all: evalresp_log.lib
 
 .c.obj:
-	$(CC) /Zi /c $*.c /I ..\ /Wall /Fo$@
+	$(CC) /c $*.c /I ..\ /Wall /Fo$@
 
 evalresp_log.lib: $(OBJ)
-	link /DEBUG /lib $(OBJ) /OUT:evalresp_log.lib
+	link /lib $(OBJ) /OUT:evalresp_log.lib
 
 clean:
 	del evalresp_log.lib
