@@ -13,7 +13,7 @@ clean:
 	del evalresp_log.lib
 	del $(OBJ)
 
-install:
+install: ..\..\install\lib
 	copy evalresp_log.lib ..\..\install\lib\
 
 ..\..\install\lib:
