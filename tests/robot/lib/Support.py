@@ -16,7 +16,10 @@ except Exception:
         if csl(link_name, source, flags) == 0:
             raise ctypes.WinError()
 
-WORKSPACE = environ['WORKSPACE']
+try:
+    WORKSPACE = environ['WORKSPACE']
+except Exception:
+    WORKSPACE = getcwd()
 TARGET = join(WORKSPACE, 'tests/robot/target')
 DATA = join(WORKSPACE, 'tests/robot/data')
 RUN = join(WORKSPACE, 'tests/robot/run')
