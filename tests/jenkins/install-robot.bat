@@ -6,10 +6,10 @@ REM Need to do everything in a sanitary environment
 
 IF NOT EXIST env (
 python -m virualenv env
-env\Scripts\activate
+CALL env\Scripts\activate.bat
 pip install --upgrade robotframework
 ) ELSE (
-env\Scripts\activate
+CALL env\Scripts\activate.bat
 )
 
 REM install this every time in case we change it
