@@ -17,6 +17,3 @@ clean:
     del evalresp.lib
     del $(OBJ)
 
-install:
-	md ..\..\install\lib\
-    copy evalresp.lib ..\..\install\lib\
