@@ -19,11 +19,14 @@ except Exception:
 
 try:
     WORKSPACE = environ['WORKSPACE']
+    TARGET = join(WORKSPACE, 'tests/robot/target')
+    DATA = join(WORKSPACE, 'tests/robot/data')
+    RUN = join(WORKSPACE, 'tests/robot/run')
 except Exception:
     WORKSPACE = getcwd()
-TARGET = join(WORKSPACE, 'tests/robot/target')
-DATA = join(WORKSPACE, 'tests/robot/data')
-RUN = join(WORKSPACE, 'tests/robot/run')
+    TARGET = join(WORKSPACE, 'target')
+    DATA = join(WORKSPACE, 'data')
+    RUN = join(WORKSPACE, 'run')
 
 TINY = 1e-5
 
