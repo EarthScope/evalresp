@@ -29,7 +29,7 @@ clean:
 	del evalresp.exe $(EV_OBJS)
 	del xml2resp.exe $(XR_OBJS)
 
-install: evalresp.exe xml2resp.exe ..\install\bin
+install: evalresp.exe xml2resp.exe
 	copy evalresp.exe ..\install\bin\
 	copy xml2resp.exe ..\install\bin\
 

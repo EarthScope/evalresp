@@ -13,7 +13,7 @@ clean:
 	del spline.lib
 	del $(OBJ)
 
-install: ..\..\install\lib
+install:
 	copy spline.lib ..\..\install\libu\
 
 ..\..\install\lib:
