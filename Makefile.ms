@@ -1,7 +1,3 @@
-clean all:
-	cd libsrc && $(MAKE) /F Makefile.ms $*
-	cd src && $(MAKE) /F Makefile.ms $*
-
-install-for-robot:
+clean all install:
 	cd libsrc && $(MAKE) /F Makefile.ms $*
 	cd src && $(MAKE) /F Makefile.ms $*

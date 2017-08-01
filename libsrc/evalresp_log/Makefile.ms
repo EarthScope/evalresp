@@ -14,7 +14,5 @@ clean:
 	del $(OBJ)
 
 install:
-	copy evalresp_log.lib ..\..\install\lib\
-
-..\..\install\lib:
 	md ..\..\install\lib\
+    copy evalresp_log.lib ..\..\install\lib\

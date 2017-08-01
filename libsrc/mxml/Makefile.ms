@@ -19,7 +19,5 @@ clean:
 	del $(OBJ)
 
 install:
-	copy mxmlev.lib ..\..\install\lib\
-
-..\..\install\lib:
 	md ..\..\install\lib\
+    copy mxmlev.lib ..\..\install\lib\
