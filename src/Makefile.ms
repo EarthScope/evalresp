@@ -31,6 +31,7 @@ clean:
 
 install: evalresp.exe xml2resp.exe ..\install\bin
 	copy /B evalresp.exe ..\install\bin\
+	echo "almost there"
 	copy /B xml2resp.exe ..\install\bin\
 
 ..\install\bin:
