@@ -271,3 +271,31 @@ class Support:
         target = join(TARGET, target_dir)
         files = ','.join(listdir(target))
         self.compare_n_float_cols_average(target_dir, 2, tol, files)
+
+    def cut_fields(self, source, destination, delim=',', fields='1-'):
+        """ this method is equivelent to cut -d delim -f fields source > destination."""
+        field_stop = fields.split('-')
+        if len(field_stop) > 2:
+            raise Exception('The fields \'%s\' has to many ranges' % (fields))
+        with open(source, 'r') as src_file:
+            with open(destination, 'w') as dest_file:
+                for src_line in src_file.readlines():
+                    split_src_line = src_line.split(delim)
+                    start = 0
+                    end = len(split_src_line) 
+                    if field_stop[0]:
+                        start = int(field_stop[0])-1
+                        if start >= len(split_src_line):
+                            start = len(split_src_line) - 1
+                    if len(field_stop) < 2:
+                        end = int(field_stop[0])-1
+                    elif field_stop[1]:
+                        end = int(field_stop[1])-1
+                        if end >= len(split_src_line):
+                            end = len(split_src_line)
+
+                    out_line = delim.join(split_src_line[start:end])
+                    dest_file.write("%s" % (out_line))
+            dest_file.close()
+        src_file.close()
+
