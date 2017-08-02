@@ -24,7 +24,7 @@ IF EXIST extended (
 md extended
 PUSHD extended
 echo "Extracting Data from %EXTENDED_INPUT%"
-powershell -Command "Expand-Archive -Path %EXTENDED_INPUTS% -DestinationPath ."
+powershell -Command "Expand-Archive -Path %EXTENDED_INPUT% -DestinationPath ."
 
 POPD
 POPD
@@ -34,7 +34,7 @@ IF NOT EXIST tests\robot\target\extended (
     md tests\robot\target\extended
 )
 PUSHD tests\robot\target\extended 
-powershell -Command "Expand-Archive -Path ..\%EXTENDED_INPUTS% -DestinationPath ."
+powershell -Command "Expand-Archive -Path ..\%EXTENDED_INPUT% -DestinationPath ."
 POPD
 
 ENDLOCAL
