@@ -46,7 +46,7 @@ SET URL=%3
 PUSHD %DIR%
 IF NOT EXIST %ZIP (
     echo "%ZIP% does not exist"
-    IF NOT DEFINED %ROBOT_ARCHIVE_CACHE% (
+    IF NOT DEFINED ROBOT_ARCHIVE_CACHE (
         echo "To avoid multiple downloads, place %ZIP% in a cache directory and set"
         echo "ROBOT_ARCHIVE_CACHE to the absolute file location."
 
