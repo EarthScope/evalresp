@@ -1,6 +1,7 @@
+@ECHO OFF
 IF NOT EXIST src (
-echo "Run this script in the top level directory"
-EXIT /B 1
+    echo "Run this script in the top level directory"
+    EXIT /B 1
 )
 
 REM Need to do everything in a sanitary environment
@@ -10,12 +11,11 @@ CALL tests\jenkins\install-robot.bat
 CALL env\Scripts\activate.bat
 
 IF NOT DEFINED WORKSPACE (
-set WORKSPACE=%cd%
-set DEFINED_WORKSPACE="yes"
+    set WORKSPACE=%cd%
 )
 
 IF NOT DEFINED TMP (
-set TMP="C:\TEMP\"
+    set TMP="C:\TEMP\"
 )
 
 set BUILD=%WORKSPACE%
@@ -25,7 +25,7 @@ set PATH=%BUILD%\install\bin;%PATH%
 PUSHD tests\robot
 
 IF NOT EXIST run (
-md run
+    md run
 )
 
 REM ( dir /b /a "run"|findstr . ) > nul && (
