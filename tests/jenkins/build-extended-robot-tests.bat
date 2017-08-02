@@ -1,4 +1,4 @@
-@ECHO OFF
+REM @ECHO OFF
 IF NOT EXIST src (
     echo "Run this script in the top level directory"
     EXIT /B 1
