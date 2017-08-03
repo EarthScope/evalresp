@@ -40,9 +40,9 @@ POPD
 ENDLOCAL
 :download
 SETLOCAL
-SET DIR=%1
-SET ZIP=%2
-SET URL=%3
+SET DIR=%~1
+SET ZIP=%~2
+SET URL=%~3
 PUSHD %DIR%
 IF NOT EXIST %ZIP (
     echo "%ZIP% does not exist"
