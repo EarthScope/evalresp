@@ -38,11 +38,12 @@ powershell -Command 'Expand-Archive -Path "..\%EXTENDED_TARGET%" -DestinationPat
 POPD
 
 ENDLOCAL
+goto:eof
 :download
 SETLOCAL
-SET DIR=%~t1
-SET ZIP=%~t2
-SET URL=%~t3
+SET DIR=%1
+SET ZIP=%2
+SET URL=%3
 PUSHD %DIR%
 IF NOT EXIST %ZIP (
     echo "%ZIP% does not exist"
