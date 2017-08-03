@@ -15,7 +15,7 @@ set DATE=%year%-%day%
 
 
 set EXTENDED_INPUT=RESP-testset.zip
-CALL:download "tests\robot\data" "%EXTENDED_INPUT%" "http://ds.iris.edu/files/staff/chad/%EXTENDED_INPUT%"
+CALL:download tests\robot\data %EXTENDED_INPUT% http://ds.iris.edu/files/staff/chad/%EXTENDED_INPUT%
 PUSHD tests\robot\data
 IF EXIST extended (
     echo "Wipping existing extended data"
