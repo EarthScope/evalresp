@@ -15,7 +15,7 @@ set DATE=%year%-%day%
 
 
 set EXTENDED_INPUT=RESP-testset.zip
-CALL:download tests\robot\data %EXTENDED_INPUT% http://ds.iris.edu/files/staff/chad/%EXTENDED_INPUT%
+CALL:download "tests\robot\data" "%EXTENDED_INPUT%" "http://ds.iris.edu/files/staff/chad/%EXTENDED_INPUT%"
 PUSHD tests\robot\data
 IF EXIST extended (
     echo "Wipping existing extended data"
@@ -28,13 +28,13 @@ powershell -Command "Expand-Archive -Path %EXTENDED_INPUT% -DestinationPath ."
 
 POPD
 POPD
-set EXTENDED_INPUT=RESP-targets-%DATE%.zip
-CALL:download tests\robot\target %EXTENDED_INPUT% http://isti.com/~andrew/%EXTENDED_INPUT%
+set EXTENDED_TARGET=RESP-targets-%DATE%.zip
+CALL:download "tests\robot\target" "%EXTENDED_TARGET%" "http://isti.com/~andrew/%EXTENDED_TARGET%"
 IF NOT EXIST tests\robot\target\extended (
     md tests\robot\target\extended
 )
 PUSHD tests\robot\target\extended 
-powershell -Command "Expand-Archive -Path ..\%EXTENDED_INPUT% -DestinationPath ."
+powershell -Command "Expand-Archive -Path \"..\%EXTENDED_TARGET%\" -DestinationPath ."
 POPD
 
 ENDLOCAL
