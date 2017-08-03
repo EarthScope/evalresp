@@ -24,17 +24,17 @@ IF EXIST extended (
 md extended
 PUSHD extended
 echo "Extracting Data from %EXTENDED_INPUT%"
-powershell -Command 'Expand-Archive -Path %EXTENDED_INPUT% -DestinationPath .'
+powershell -Command 'Expand-Archive -Path $Env:EXTENDED_INPUT -DestinationPath .'
 
 POPD
 POPD
 set EXTENDED_TARGET=RESP-targets-%DATE%.zip
-CALL:download "tests\robot\target" "%EXTENDED_TARGET%" "http://isti.com/~andrew/%EXTENDED_TARGET%"
+CALL:download tests\robot\target %EXTENDED_TARGET% http://isti.com/~andrew/%EXTENDED_TARGET%
 IF NOT EXIST tests\robot\target\extended (
     md tests\robot\target\extended
 )
 PUSHD tests\robot\target\extended 
-powershell -Command 'Expand-Archive -Path "..\%EXTENDED_TARGET%" -DestinationPath .'
+powershell -Command 'Expand-Archive -Path "..\$Env:EXTENDED_TARGET" -DestinationPath "."'
 POPD
 
 ENDLOCAL
