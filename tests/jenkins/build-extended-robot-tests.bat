@@ -50,7 +50,7 @@ IF NOT EXIST %ZIP (
         echo "To avoid multiple downloads, place %ZIP% in a cache directory and set"
         echo "ROBOT_ARCHIVE_CACHE to the absolute file location."
 
-        powershell -Command '(new-object System.Net.WebClient).DownloadFile("%URL%", "%ZIP%")'
+        powershell -Command '(new-object System.Net.WebClient).DownloadFile(%URL%, %ZIP%)'
     ) ELSE (
         IF NOT EXIST %ROBOT_ARCHIVE_CACHE%\%ZIP% (
             ECHO "WARNING: %ZIP% not found in %ROBOT_ARCHIVE_CACHE%"
