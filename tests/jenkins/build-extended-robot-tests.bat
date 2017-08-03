@@ -24,7 +24,8 @@ IF EXIST extended (
 md extended
 PUSHD extended
 echo "Extracting Data from %EXTENDED_INPUT%"
-powershell -Command 'Expand-Archive "..\$Env:EXTENDED_INPUT" "."'
+REM powershell -Command 'Expand-Archive "..\$Env:EXTENDED_INPUT" "."'
+powershell -Command '$shell=New-Object -ComObject shell.application; $zip=$shell.NameSpace("..\$Env:EXTENDED_INPUT"); foreach($item in $zip.items()){$shell.Namespace(".").CopyHere($item);};'
 
 POPD
 POPD
