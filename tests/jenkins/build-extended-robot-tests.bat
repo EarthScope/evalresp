@@ -25,7 +25,7 @@ md extended
 PUSHD extended
 echo "Extracting Data from %EXTENDED_INPUT%"
 REM powershell -Command 'Expand-Archive "..\$Env:EXTENDED_INPUT" "."'
-powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory("..\$Env:EXTENDED_INPUT", "."); }"
+powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory(\"..\$Env:EXTENDED_INPUT\",\".\"); }"
 
 POPD
 POPD
@@ -35,7 +35,8 @@ IF NOT EXIST tests\robot\target\extended (
     md tests\robot\target\extended
 )
 PUSHD tests\robot\target\extended 
-powershell -Command 'Expand-Archive "..\$Env:EXTENDED_TARGET" "."'
+REM powershell -Command 'Expand-Archive "..\$Env:EXTENDED_TARGET" "."'
+powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory(\"..\$Env:EXTENDED_TARGET\",\".\"); }"
 POPD
 
 ENDLOCAL
