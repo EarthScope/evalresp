@@ -24,7 +24,7 @@ IF EXIST extended (
 md extended
 PUSHD extended
 echo "Extracting Data from %EXTENDED_INPUT%"
-powershell -Command "Expand-Archive -Path %EXTENDED_INPUT% -DestinationPath ."
+powershell -Command 'Expand-Archive -Path %EXTENDED_INPUT% -DestinationPath .'
 
 POPD
 POPD
@@ -34,7 +34,7 @@ IF NOT EXIST tests\robot\target\extended (
     md tests\robot\target\extended
 )
 PUSHD tests\robot\target\extended 
-powershell -Command "Expand-Archive -Path \"..\%EXTENDED_TARGET%\" -DestinationPath ."
+powershell -Command 'Expand-Archive -Path "..\%EXTENDED_TARGET%" -DestinationPath .'
 POPD
 
 ENDLOCAL
@@ -50,7 +50,7 @@ IF NOT EXIST %ZIP (
         echo "To avoid multiple downloads, place %ZIP% in a cache directory and set"
         echo "ROBOT_ARCHIVE_CACHE to the absolute file location."
 
-        powershell -Command "(new-object System.Net.WebClient).DownloadFile(\"%URL%\", \"%ZIP%\")"
+        powershell -Command '(new-object System.Net.WebClient).DownloadFile("%URL%", "%ZIP%")'
     ) ELSE (
         IF NOT EXIST %ROBOT_ARCHIVE_CACHE%\%ZIP% (
             ECHO "WARNING: %ZIP% not found in %ROBOT_ARCHIVE_CACHE%"
