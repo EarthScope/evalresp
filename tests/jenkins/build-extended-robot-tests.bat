@@ -26,6 +26,7 @@ PUSHD extended
 echo "Extracting Data from %EXTENDED_INPUT%"
 REM powershell -Command 'Expand-Archive "..\$Env:EXTENDED_INPUT" "."'
 powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory(\"..\$Env:EXTENDED_INPUT\",\".\"); }"
+FOR /r %%f IN (*) DO copy  "%%f" .
 
 POPD
 POPD
