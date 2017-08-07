@@ -10,11 +10,11 @@ SETLOCAL
 
 set year=%1
 set day=%2
-if not "%3"==""(
+if not "%3"=="" (
     set pattern=%3
 ) ELSE (
     set pattern=*
-    )
+)
 
 set DATE=%year%-%day%
 
@@ -45,6 +45,7 @@ REM powershell -Command 'Expand-Archive "..\$Env:EXTENDED_TARGET" "."'
 powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory(\"..\$Env:EXTENDED_TARGET\",\".\"); }"
 POPD
 
+set rundir=test\robot\all\extended\%year%\%day%
 if not exist %run_dir% (
     md %run_dir%
     )
