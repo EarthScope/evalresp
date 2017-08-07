@@ -10,6 +10,11 @@ SETLOCAL
 
 set year=%1
 set day=%2
+if not "%3"==""(
+    set pattern=%3
+) ELSE (
+    set pattern=*
+    )
 
 set DATE=%year%-%day%
 
@@ -40,6 +45,29 @@ REM powershell -Command 'Expand-Archive "..\$Env:EXTENDED_TARGET" "."'
 powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory(\"..\$Env:EXTENDED_TARGET\",\".\"); }"
 POPD
 
+if not exist %run_dir% (
+    md %run_dir%
+    )
+pushd %run_dir%
+for %%file IN (..\..\..\..\data\extended\%pattern%) DO (
+(echo
+echo *** Settings ***
+echo
+echo Library  Process
+echo Library  Support
+echo
+echo
+echo *** Test Cases **
+echo
+echo
+echo Automated call to evalresp
+echo.   Prepare  extended/%year%/%day%/%%file  extended  %%file
+echo.   Run process  evalresp  *  *  %year%  %day%  0.001  10  100  -f  %%file
+echo.   Count and compare target files two float cols
+echo
+)> %%file.robot
+)
+popd
 ENDLOCAL
 goto:eof
 :download
