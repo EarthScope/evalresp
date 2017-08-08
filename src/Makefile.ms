@@ -17,21 +17,14 @@ LIBS = /libpath:..\libsrc\evalresp_log evalresp_log.lib\
 all: evalresp.exe xml2resp.exe
 
 evalresp.exe: $(EV_OBJS)
-	link $(LIBS) $(EV_OBJS) /debug /out:evalresp.exe
+	link $(LIBS) $(EV_OBJS) /out:evalresp.exe
 
 xml2resp.exe: $(XR_OBJS)
-	link $(LIBS) $(XR_OBJS) /debug /out:xml2resp.exe
+	link $(LIBS) $(XR_OBJS) /out:xml2resp.exe
 
 .c.obj:
-	cl /Zi /c /I ..\libsrc\mxml\ /I ..\libsrc\ /Wall $<
+	cl /c /I ..\libsrc\mxml\ /I ..\libsrc\ /Wall $<
 
 clean:
 	del evalresp.exe $(EV_OBJS)
 	del xml2resp.exe $(XR_OBJS)
-
-install: evalresp.exe xml2resp.exe ..\install\bin
-	copy /B evalresp.exe ..\install\bin
-	copy /B xml2resp.exe ..\install\bin
-
-..\install\bin:
-	md ..\install\bin

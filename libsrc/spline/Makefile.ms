@@ -12,9 +12,3 @@ spline.lib: $(OBJ)
 clean:
 	del spline.lib
 	del $(OBJ)
-
-install: ..\..\install\lib
-	copy spline.lib ..\..\install\libu\
-
-..\..\install\lib:
-	md ..\..\install\lib\
