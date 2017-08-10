@@ -51,21 +51,21 @@ if not exist %run_dir% (
     )
 pushd %run_dir%
 for %%f IN (..\..\..\..\data\extended\%pattern%) DO (
-(echo
+(echo.
 echo *** Settings ***
-echo
+echo.
 echo Library  Process
 echo Library  Support
-echo
-echo
+echo.
+echo.
 echo *** Test Cases **
-echo
-echo
+echo.
+echo.
 echo Automated call to evalresp
 echo.   Prepare  extended/%year%/%day%/%%~nxf  extended  %%~nxf
 echo.   Run process  evalresp  *  *  %year%  %day%  0.001  10  100  -f  %%~nxf
 echo.   Count and compare target files two float cols
-echo
+echo.
 )> %%~nxf.robot
 )
 popd
