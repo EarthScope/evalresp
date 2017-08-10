@@ -45,7 +45,7 @@ REM powershell -Command 'Expand-Archive "..\$Env:EXTENDED_TARGET" "."'
 powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory(\"..\$Env:EXTENDED_TARGET\",\".\"); }"
 POPD
 
-set run_dir=test\robot\all\extended\%year%\%day%
+set run_dir=tests\robot\all\extended\%year%\%day%
 if not exist %run_dir% (
     md %run_dir%
     )
