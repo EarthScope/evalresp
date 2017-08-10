@@ -206,8 +206,10 @@ evalresp_cwd_to_cwd (evalresp_logger *log, evalresp_options *options, evalresp_f
 
   if (EVALRESP_OK == status)
   {
-    status = responses_to_cwd (log, responses, options->unwrap_phase, options->format,
-                               options->use_stdio);
+    /* Traditionally, FAP is always unwrapped. */
+    status = responses_to_cwd (log, responses,
+                               options->unwrap_phase || options->format == evalresp_fap_output_format,
+                               options->format, options->use_stdio);
   }
   evalresp_free_responses (&responses);
   return status;
