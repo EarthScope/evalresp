@@ -62,11 +62,11 @@ echo *** Test Cases **
 echo
 echo
 echo Automated call to evalresp
-echo.   Prepare  extended/%year%/%day%/%%f  extended  %%f
-echo.   Run process  evalresp  *  *  %year%  %day%  0.001  10  100  -f  %%f
+echo.   Prepare  extended/%year%/%day%/%%~nxf  extended  %%~nxf
+echo.   Run process  evalresp  *  *  %year%  %day%  0.001  10  100  -f  %%~nxf
 echo.   Count and compare target files two float cols
 echo
-)> %%f.robot
+)> %%~nxf.robot
 )
 popd
 ENDLOCAL
