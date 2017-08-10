@@ -130,6 +130,16 @@ Unwrap
     Run process  evalresp  CGV  HYZ  2010  1  0.001  10  100  -f  RESP.Z.CGV..HYZ  -unwrap
     Count and compare target files two float cols
 
+Unwrap (IRIS no flag)
+    Prepare  base/args/unwrap-iris-no-flag  base  RESP.CT.SAVY..BHE
+    Run process  evalresp  SAVY  BHE  1995  265  1.0E-5  20.0  200  -f  RESP.CT.SAVY..BHE  -u  def  -r  ap  -n  CT  -l  \ \   -t  04:25:27  -s  log  -v  stdout=stdout  stderr=stderr
+    Compare n float cols absolute  base/args/unwrap-iris-no-flag  2  360  PHASE.CT.SAVY..BHE
+
+Unwrap (IRIS flag)
+    Prepare  base/args/unwrap-iris-flag  base  RESP.CT.SAVY..BHE
+    Run process  evalresp  SAVY  BHE  1995  265  1.0E-5  20.0  200  -f  RESP.CT.SAVY..BHE  -u  def  -r  ap  -n  CT  -l  \ \   -t  04:25:27  -s  log  -v  -unwrap  stdout=stdout  stderr=stderr
+    Compare n float cols absolute  base/args/unwrap-iris-flag  2  360  PHASE.CT.SAVY..BHE
+
 Total sensitivity
     Prepare  base/args/total_sens  base  RESP.Z.CGV..HYZ
     Run process  evalresp  CGV  HYZ  2010  1  0.001  10  100  -f  RESP.Z.CGV..HYZ  -ts

@@ -24,19 +24,20 @@ get_SEEDUNITS (int idx)
 
 int
 evalresp_response_to_char (evalresp_logger *log, const evalresp_response *response,
-                           evalresp_file_format format, char **output)
+                           int unwrap, evalresp_file_format format, char **output)
 {
   int status = EVALRESP_OK;
   int num_of_points = 0;
   int i, length, offset;
+  double added_value = 0, prev_phase = 0;
   double *amp_arr = NULL;
   double *pha_arr = NULL;
   double *freq_arr = NULL;
 
   if (*output)
   {
-    /* don't want to get bad memory location to write too
-         * or we don't want to zombify stuff */
+    /* don't want to get bad memory location to write to
+       or we don't want to zombify stuff */
     evalresp_log (log, EV_ERROR, EV_ERROR, "cannot out put to an already allocated output");
     return EVALRESP_ERR;
   }
@@ -82,6 +83,11 @@ evalresp_response_to_char (evalresp_logger *log, const evalresp_response *respon
       if (pha_arr)
       {
         pha_arr[i] = atan2 (response->rvec[i].imag, response->rvec[i].real + 1.e-200) * 180.0 / M_PI;
+        if (unwrap)
+        {
+          pha_arr[i] = unwrap_phase(pha_arr[i], prev_phase, 360, &added_value);
+          prev_phase = pha_arr[i];
+        }
       }
     }
     /* Get Size of output string */
@@ -145,7 +151,7 @@ evalresp_response_to_char (evalresp_logger *log, const evalresp_response *respon
 
 int
 evalresp_response_to_stream (evalresp_logger *log, const evalresp_response *response,
-                             evalresp_file_format format, FILE *const file)
+                             int unwrap, evalresp_file_format format, FILE *const file)
 {
   char *resp_string = NULL;
   int status = EVALRESP_OK, len;
@@ -159,7 +165,7 @@ evalresp_response_to_stream (evalresp_logger *log, const evalresp_response *resp
   else
   {
     /* get the output string */
-    if (!(status = evalresp_response_to_char (log, response, format, &resp_string)))
+    if (!(status = evalresp_response_to_char (log, response, unwrap, format, &resp_string)))
     {
       /* print to the FILE * */
       len = fprintf (file, "%s", resp_string);
@@ -178,7 +184,7 @@ evalresp_response_to_stream (evalresp_logger *log, const evalresp_response *resp
 
 int
 evalresp_response_to_file (evalresp_logger *log, const evalresp_response *response,
-                           evalresp_file_format format, const char *filename)
+                           int unwrap, evalresp_file_format format, const char *filename)
 {
   int status = EVALRESP_OK;
   FILE *file;
@@ -199,7 +205,7 @@ evalresp_response_to_file (evalresp_logger *log, const evalresp_response *respon
     }
     else
     {
-      status = evalresp_response_to_stream (log, response, format, file);
+      status = evalresp_response_to_stream (log, response, unwrap, format, file);
       /* clean up NOTE: file should not be NULL at this point */
       fclose (file);
     }

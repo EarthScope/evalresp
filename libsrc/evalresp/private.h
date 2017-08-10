@@ -995,7 +995,7 @@ int process_stdio (evalresp_logger *log, evalresp_options *options,
  * @retval EVALRESP_OK on success
  */
 int responses_to_cwd (evalresp_logger *log, const evalresp_responses *responses,
-                      evalresp_output_format format, int use_stdio);
+                      int unwrap, evalresp_output_format format, int use_stdio);
 
 int /* O - Number of bytes formatted */
 _evalresp_snprintf (char *buffer, /* I - Output buffer */
