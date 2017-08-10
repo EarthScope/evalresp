@@ -50,7 +50,7 @@ if not exist %run_dir% (
     md %run_dir%
     )
 pushd %run_dir%
-for %%file IN (..\..\..\..\data\extended\%pattern%) DO (
+for %%f IN (..\..\..\..\data\extended\%pattern%) DO (
 (echo
 echo *** Settings ***
 echo
@@ -62,11 +62,11 @@ echo *** Test Cases **
 echo
 echo
 echo Automated call to evalresp
-echo.   Prepare  extended/%year%/%day%/%%file  extended  %%file
-echo.   Run process  evalresp  *  *  %year%  %day%  0.001  10  100  -f  %%file
+echo.   Prepare  extended/%year%/%day%/%%f  extended  %%f
+echo.   Run process  evalresp  *  *  %year%  %day%  0.001  10  100  -f  %%f
 echo.   Count and compare target files two float cols
 echo
-)> %%file.robot
+)> %%f.robot
 )
 popd
 ENDLOCAL
