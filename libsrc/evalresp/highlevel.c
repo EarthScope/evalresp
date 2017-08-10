@@ -38,7 +38,7 @@ print_file (evalresp_logger *log, int unwrap, evalresp_file_format format,
             int use_stdio, const evalresp_response *response)
 {
   int status = EVALRESP_OK, length;
-  char *filename = NULL, *prefix = prefixes[(use_stdio && (format == evalresp_fap_file_format))? 4 : format];
+  char *filename = NULL, *prefix = prefixes[(use_stdio && (format == evalresp_fap_file_format)) ? 4 : format];
   length = _evalresp_snprintf (filename, 0, FILENAME_TEMPLATE, prefix,
                                response->network, response->station, response->locid, response->channel);
   if (!(filename = calloc (length + 1, sizeof (*filename))))
@@ -207,7 +207,7 @@ evalresp_cwd_to_cwd (evalresp_logger *log, evalresp_options *options, evalresp_f
   if (EVALRESP_OK == status)
   {
     status = responses_to_cwd (log, responses, options->unwrap_phase, options->format,
-        options->use_stdio);
+                               options->use_stdio);
   }
   evalresp_free_responses (&responses);
   return status;

@@ -680,6 +680,7 @@ typedef enum {
  * @ingroup evalresp_public_low_level_output
  * @param[in] log logging structure
  * @param[in] response the response object created by evalresp
+ * @param[in] unwrap whether to unwrap phase
  * @param[in] format the output format to generate
  * @param[out] output pointer to the char * that the response will be printed into
  * @brief Format an @ref evalresp_response to a string.
@@ -694,6 +695,7 @@ int evalresp_response_to_char (evalresp_logger *log, const evalresp_response *re
  * @ingroup evalresp_public_low_level_output
  * @param[in] log logging structure
  * @param[in] response the response object created by evalresp
+ * @param[in] unwrap whether to unwrap phase
  * @param[in] format the output format to generate
  * @param[out] file stream that the response will be printed into
  * @brief Format an @ref evalresp_response to a file stream.
@@ -707,6 +709,7 @@ int evalresp_response_to_stream (evalresp_logger *log, const evalresp_response *
  * @ingroup evalresp_public_low_level_output
  * @param[in] log logging structure
  * @param[in] response the response object created by evalresp
+ * @param[in] unwrap whether to unwrap phase
  * @param[in] format the output format to generate
  * @param[out] filename name of the file that the response will be printed into
  * @brief Format an @ref evalresp_response to a named file.
