@@ -34,11 +34,11 @@ _evalresp_snprintf (char *buffer, /* I - Output buffer */
 }
 
 static int
-print_file (evalresp_logger *log, evalresp_file_format format,
+print_file (evalresp_logger *log, int unwrap, evalresp_file_format format,
             int use_stdio, const evalresp_response *response)
 {
   int status = EVALRESP_OK, length;
-  char *filename = NULL, *prefix = prefixes[(use_stdio && (format == evalresp_fap_file_format))? 4 : format];
+  char *filename = NULL, *prefix = prefixes[(use_stdio && (format == evalresp_fap_file_format)) ? 4 : format];
   length = _evalresp_snprintf (filename, 0, FILENAME_TEMPLATE, prefix,
                                response->network, response->station, response->locid, response->channel);
   if (!(filename = calloc (length + 1, sizeof (*filename))))
@@ -55,12 +55,12 @@ print_file (evalresp_logger *log, evalresp_file_format format,
       fprintf (stdout, " --------------------------------------------------\n");
       fprintf (stdout, " %s\n", filename);
       fprintf (stdout, " --------------------------------------------------\n");
-      status = evalresp_response_to_stream (log, response, format, stdout);
+      status = evalresp_response_to_stream (log, response, unwrap, format, stdout);
       fprintf (stdout, " --------------------------------------------------\n");
     }
     else
     {
-      status = evalresp_response_to_file (log, response, format, filename);
+      status = evalresp_response_to_file (log, response, unwrap, format, filename);
     }
   }
   free (filename);
@@ -70,7 +70,7 @@ print_file (evalresp_logger *log, evalresp_file_format format,
 
 int
 responses_to_cwd (evalresp_logger *log, const evalresp_responses *responses,
-                  evalresp_output_format format, int use_stdio)
+                  int unwrap, evalresp_output_format format, int use_stdio)
 {
   int status = EVALRESP_OK, i;
 
@@ -79,16 +79,16 @@ responses_to_cwd (evalresp_logger *log, const evalresp_responses *responses,
     switch (format)
     {
     case evalresp_fap_output_format:
-      status = print_file (log, evalresp_fap_file_format, use_stdio, responses->responses[i]);
+      status = print_file (log, unwrap, evalresp_fap_file_format, use_stdio, responses->responses[i]);
       break;
     case evalresp_ap_output_format:
-      if (!(status = print_file (log, evalresp_amplitude_file_format, use_stdio, responses->responses[i])))
+      if (!(status = print_file (log, unwrap, evalresp_amplitude_file_format, use_stdio, responses->responses[i])))
       {
-        status = print_file (log, evalresp_phase_file_format, use_stdio, responses->responses[i]);
+        status = print_file (log, unwrap, evalresp_phase_file_format, use_stdio, responses->responses[i]);
       }
       break;
     case evalresp_complex_output_format:
-      status = print_file (log, evalresp_complex_file_format, use_stdio, responses->responses[i]);
+      status = print_file (log, unwrap, evalresp_complex_file_format, use_stdio, responses->responses[i]);
       break;
     }
   }
@@ -206,7 +206,8 @@ evalresp_cwd_to_cwd (evalresp_logger *log, evalresp_options *options, evalresp_f
 
   if (EVALRESP_OK == status)
   {
-    status = responses_to_cwd (log, responses, options->format, options->use_stdio);
+    status = responses_to_cwd (log, responses, options->unwrap_phase, options->format,
+                               options->use_stdio);
   }
   evalresp_free_responses (&responses);
   return status;

@@ -52,6 +52,10 @@ class Support:
             if (abs(a - b) / magnitude) > tol:
                 raise Exception('%f and %f differ at %s' % (a, b, location))
 
+    def _assert_equal_floats_absolute(self, a, b, tol, location):
+        if abs(a - b) > tol:
+            raise Exception('%f and %f differ at %s' % (a, b, location))
+
     def prepare(self, dest_dir, data_dir, files):
         """Call this method before running evalresp on a single set of files.
         It creates the working directory (under 'run') and copies
@@ -79,11 +83,45 @@ class Support:
             raise Exception('Missing data in %s at line %d' % (path, index))
         return data
 
+    def compare_n_float_cols_absolute(self, target_dir, ncols, tol, files):
+        """Call this method after running evalresp on a single set of files.
+        It checks the given files (a comma-separated list with no
+        spaces) between the working directory and the target
+        directory.  The test here is absolute (not relative)"""
+        ncols = int(ncols)
+        tol = float(tol)
+        run = join(RUN, getcwd())
+        self._assert_present_dir(run)
+        target = join(TARGET, target_dir)
+        self._assert_present_dir(target)
+        for file in files.split(','):
+            result_path = join(run, file)
+            target_path = join(target, file)
+            logger.info('Comparing %s with %s' % (result_path, target_path))
+            with open(target_path, 'r') as target_file:
+                with open(result_path, 'r') as result_file:
+                    for (index, result_line) in enumerate(result_file.readlines()):
+                        target_line = target_file.readline()
+                        try:
+                            result_data = self._extract_floats(ncols, result_line, result_path, index)
+                            target_data = self._extract_floats(ncols, target_line, target_path, index)
+                            for (r, t) in zip(result_data, target_data):
+                                location = '%s and %s at line %d' % (result_path, target_path, index)
+                                self._assert_equal_floats_absolute(r, t, tol, location)
+                        except Exception, e:
+                            # try comparing as text (may be titles etc)
+                            if result_line != target_line:
+                                raise e
+                if target_file.readline():
+                    raise Exception('Missing data at end of %s' % result_path)
+
     def compare_n_float_cols(self, target_dir, ncols, tol, files):
         """Call this method after running evalresp on a single set of files.
         It checks the given files (a comma-separated list with no
         spaces) between the working directory and the target
         directory."""
+        ncols = int(ncols)
+        tol = float(tol)
         run = join(RUN, getcwd())
         self._assert_present_dir(run)
         target = join(TARGET, target_dir)
@@ -114,7 +152,7 @@ class Support:
         It checks the given files (a comma-separated list with no
         spaces) between the working directory and the target
         directory."""
-        self.compare_n_float_cols(target_dir, 2, tol, files)
+        self.compare_n_float_cols(target_dir, 2, float(tol), files)
 
     def compare_target_files_two_float_cols(self, target_dir=None, tol=None):
         """Call this method after running evalresp on a single set of files.
@@ -138,6 +176,7 @@ class Support:
         the run directory (the target directory can be inferred if
         both have the same relative paths).  No additional files can
         be present."""
+        ncols = int(ncols)
         if not target_dir:
             target_dir = relpath(realpath(getcwd()), realpath(RUN))
         if tol:
@@ -220,6 +259,8 @@ class Support:
         It checks the given files (a comma-separated list with no
         spaces) between the working directory and the target
         directory, using the average relative deviation."""
+        ncols = int(ncols)
+        tol = float(tol)
         run = join(RUN, getcwd())
         self._assert_present_dir(run)
         target = join(TARGET, target_dir)

@@ -769,7 +769,6 @@ normalize_response (evalresp_logger *log, evalresp_options const *const options,
 
 /* IGD 04/05/04 Phase unwrapping function
  * It works only inside a loop over phases.
- *
  */
 double
 unwrap_phase (double phase, double prev_phase, double range,

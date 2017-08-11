@@ -57,8 +57,8 @@ lowlevel ()
       // Evaluate the response
       (void)evalresp_channel_to_response (NULL, channels->channels[0], options, &response);
       // Write the AMP and PHA files
-      (void)evalresp_response_to_file (NULL, response, evalresp_amplitude_file_format, "AMP.NET.STA.LOC.CHN");
-      (void)evalresp_response_to_file (NULL, response, evalresp_phase_file_format, "PHA.NET.STA.LOC.CHN");
+      (void)evalresp_response_to_file (NULL, response, options->unwrap_phase, evalresp_amplitude_file_format, "AMP.NET.STA.LOC.CHN");
+      (void)evalresp_response_to_file (NULL, response, options->unwrap_phase, evalresp_phase_file_format, "PHA.NET.STA.LOC.CHN");
     }
   }
 

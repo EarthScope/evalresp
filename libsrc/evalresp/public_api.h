@@ -142,8 +142,8 @@ lowlevel ()
       // Evaluate the response
       (void)evalresp_channel_to_response (NULL, channels->channels[0], options, &response);
       // Write the AMP and PHA files
-      (void)evalresp_response_to_file (NULL, response, evalresp_amplitude_file_format, "AMP.NET.STA.LOC.CHN");
-      (void)evalresp_response_to_file (NULL, response, evalresp_phase_file_format, "PHA.NET.STA.LOC.CHN");
+      (void)evalresp_response_to_file (NULL, response, options->unwrap_phase, evalresp_amplitude_file_format, "AMP.NET.STA.LOC.CHN");
+      (void)evalresp_response_to_file (NULL, response, options->unwrap_phase, evalresp_phase_file_format, "PHA.NET.STA.LOC.CHN");
     }
   }
 
@@ -680,6 +680,7 @@ typedef enum {
  * @ingroup evalresp_public_low_level_output
  * @param[in] log logging structure
  * @param[in] response the response object created by evalresp
+ * @param[in] unwrap whether to unwrap phase
  * @param[in] format the output format to generate
  * @param[out] output pointer to the char * that the response will be printed into
  * @brief Format an @ref evalresp_response to a string.
@@ -687,33 +688,35 @@ typedef enum {
  * @post output will be allocated on success and must be free'd by other functions
  */
 int evalresp_response_to_char (evalresp_logger *log, const evalresp_response *response,
-                               evalresp_file_format format, char **output);
+                               int unwrap, evalresp_file_format format, char **output);
 
 /**
  * @public
  * @ingroup evalresp_public_low_level_output
  * @param[in] log logging structure
  * @param[in] response the response object created by evalresp
+ * @param[in] unwrap whether to unwrap phase
  * @param[in] format the output format to generate
  * @param[out] file stream that the response will be printed into
  * @brief Format an @ref evalresp_response to a file stream.
  * @retval EVALRESP_OK on success
  */
 int evalresp_response_to_stream (evalresp_logger *log, const evalresp_response *response,
-                                 evalresp_file_format format, FILE *const file);
+                                 int unwrap, evalresp_file_format format, FILE *const file);
 
 /**
  * @public
  * @ingroup evalresp_public_low_level_output
  * @param[in] log logging structure
  * @param[in] response the response object created by evalresp
+ * @param[in] unwrap whether to unwrap phase
  * @param[in] format the output format to generate
  * @param[out] filename name of the file that the response will be printed into
  * @brief Format an @ref evalresp_response to a named file.
  * @retval EVALRESP_OK on success
  */
 int evalresp_response_to_file (evalresp_logger *log, const evalresp_response *response,
-                               evalresp_file_format format, const char *filename);
+                               int unwrap, evalresp_file_format format, const char *filename);
 
 /**
  * @public
