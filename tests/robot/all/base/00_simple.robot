@@ -40,3 +40,9 @@ A simple call to evalresp (alternative data file)
     Compare target files two float cols
     Check number of files  3
 
+Filter dulicates (warning message in log)
+    Prepare  base/simple/filter  base  RESP.H2.H2O.00.HHZ
+    Run process  evalresp  H2O  HHZ  2001  235  1.0E-5  160.0  200  -f  RESP.H2.H2O.00.HHZ  -u  def  -r  fap  -n  H2  -l  00  -t  08:16:02  -s  log  -v  stdout=stdout  stderr=stderr
+    Run process  cut  -d  [  -f  2-  stderr  stdout=temp
+    Run Process  mv  temp  stderr
+    Compare text  base/simple/filter  stdout,stderr

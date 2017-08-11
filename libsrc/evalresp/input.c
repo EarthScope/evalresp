@@ -2622,6 +2622,7 @@ filter_channels (evalresp_logger *log, const evalresp_filter *filter,
                 /* second, either there's no date filter or that matches too */
                 if (!(filter && filter->datetime && filter->datetime->year))
                 {
+                  /* when no date filter is specified, we go with the latest data */
                   if (earlier (candidate, other))
                   {
                     best_match = 0;
@@ -2629,7 +2630,7 @@ filter_channels (evalresp_logger *log, const evalresp_filter *filter,
                 }
                 else
                 {
-                  /* note that if it's not in_epoch then it's automatically a loser
+                  /* note that if other is not in_epoch then it's automatically a loser
                      and can be deleted.  it's only kept if it matches AND is shorter */
                   if (in_epoch (filter->datetime, other->beg_t, other->end_t) &&
                       duration (candidate) >= duration (other))
