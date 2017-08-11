@@ -273,6 +273,6 @@ evalresp_free_channels (evalresp_channels **channels);
 TODO IGD: finish the description
 */
 void
-evalresp_free_channel (evalresp_channel *channel);
+evalresp_free_channel (evalresp_channel **channel);
 
 #endif

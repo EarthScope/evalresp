@@ -78,7 +78,7 @@ START_TEST (test_file_to_char)
   fail_if (open_file (NULL, "./data/RESP.IU.ANMO..BHZ", &in));
   fail_if (file_to_char (NULL, in, &seed));
   int len = strlen (seed);
-  fail_if (len != 192511, "wrong length: %d", len); // value checks with wc
+  fail_if (len != 192590, "wrong length: %d", len); // value checks with wc
   char start[40];
   int i;
   for (i = 0; i < 39; ++i)
@@ -88,8 +88,8 @@ START_TEST (test_file_to_char)
            "Bad start: '%s'", start);
   char end[40];
   for (i = 0; i < 40; ++i)
-    end[i] = seed[i + 192511 - 40];
-  fail_if (strncmp (seed + 192511 - 40, "of calibrations:                0\r\n#\t\t\r\n", 40),
+    end[i] = seed[i + 192590 - 40];
+  fail_if (strncmp (seed + 192590 - 40, "of calibrations:                0\r\n#\t\t\r\n", 40),
            "Bad end: '%s'", end);
 }
 END_TEST
@@ -99,7 +99,7 @@ START_TEST (test_filename_to_channels)
   evalresp_channels *channels = NULL;
   fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", NULL, NULL,
                                           &channels));
-  fail_if (channels->nchannels != 6, "Unexpected number of channels: %d", channels->nchannels);
+  fail_if (channels->nchannels != 2, "Unexpected number of channels: %d", channels->nchannels);
   evalresp_free_channels (&channels);
 }
 END_TEST
@@ -145,7 +145,7 @@ START_TEST (test_filter)
 
   fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", NULL, filter,
                                           &channels));
-  fail_if (channels->nchannels != 6, "Unexpected number of channels: %d", channels->nchannels);
+  fail_if (channels->nchannels != 2, "Unexpected number of channels: %d", channels->nchannels);
   evalresp_free_channels (&channels);
 
   fail_if (!evalresp_set_year (NULL, filter, "1990x"));

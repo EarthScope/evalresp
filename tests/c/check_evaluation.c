@@ -13,7 +13,7 @@ START_TEST (test_no_options)
   evalresp_response *response = NULL;
   fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", NULL, NULL,
                                           &channels));
-  fail_if (channels->nchannels != 6, "Unexpected number of channels: %d", channels->nchannels);
+  fail_if (channels->nchannels != 2, "Unexpected number of channels: %d", channels->nchannels);
   fail_if (evalresp_channel_to_response (NULL, channels->channels[0], NULL, &response));
   fail_if (response->nfreqs != 1);
   fail_if (fabs (response->freqs[0] - 1) > 1e-6, "Freq: %f", response->freqs[0]);
@@ -36,7 +36,7 @@ START_TEST (test_start)
   fail_if (evalresp_set_start_stage (NULL, options, "2"));
   fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", options, NULL,
                                           &channels));
-  fail_if (channels->nchannels != 6, "Unexpected number of channels: %d", channels->nchannels);
+  fail_if (channels->nchannels != 2, "Unexpected number of channels: %d", channels->nchannels);
   fail_if (evalresp_channel_to_response (NULL, channels->channels[0], options, &response));
   fail_if (response->nfreqs != 1);
   fail_if (fabs (response->freqs[0] - 1) > 1e-6, "Freq: %f", response->freqs[0]);
@@ -59,7 +59,7 @@ START_TEST (test_freqs)
 
   fail_if (evalresp_filename_to_channels (NULL, "./data/RESP.IU.ANMO..BHZ", options, NULL,
                                           &channels));
-  fail_if (channels->nchannels != 6, "Unexpected number of channels: %d", channels->nchannels);
+  fail_if (channels->nchannels != 2, "Unexpected number of channels: %d", channels->nchannels);
   fail_if (evalresp_channel_to_response (NULL, channels->channels[0], options, &response));
   fail_if (response->nfreqs != 3);
   fail_if (fabs (response->freqs[0] - 2) > 1e-4, "Freq 0: %f", response->freqs[0]);

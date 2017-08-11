@@ -1,6 +1,8 @@
 
+#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "./input.h"
 #include "./private.h"
@@ -2403,13 +2405,97 @@ timecmp (evalresp_datetime *dt1, evalresp_datetime *dt2)
   return (0);
 }
 
+#define NO_ENDING_TIME "No Ending Time"
+
+static int
+earlier (evalresp_channel *a, evalresp_channel *b)
+{
+  int open_a, open_b;
+  evalresp_datetime a_time, b_time;
+  open_a = !strcmp (a->end_t, NO_ENDING_TIME);
+  open_b = !strcmp (b->end_t, NO_ENDING_TIME);
+  if (open_a || open_b)
+  {
+    if (!open_b)
+    {
+      return 0; // if a is open, but b is closed, a is later
+    }
+    else if (!open_a)
+    {
+      return 1; //  if b is open, but a is closed, a is earlier
+    }
+    else
+    {
+      // otherwise, both open so compare start times
+      parse_datetime (a->beg_t, &a_time);
+      parse_datetime (b->beg_t, &b_time);
+      return timecmp (&a_time, &b_time) <= 0;
+    }
+  }
+  else
+  {
+    // both closed, so compare end times
+    parse_datetime (a->end_t, &a_time);
+    parse_datetime (b->end_t, &b_time);
+    return timecmp (&a_time, &b_time) <= 0;
+  }
+}
+
+static time_t
+to_epoch (evalresp_datetime *datetime)
+{
+  struct tm time = {};
+  char *tz;
+  time_t epoch;
+  /* find epoch of start of year */
+  time.tm_year = datetime->year;
+  time.tm_mday = 1;
+  time.tm_mon = 0;
+  tz = getenv ("TZ");
+  if (tz)
+    tz = strdup (tz);
+  setenv ("TZ", "", 1);
+  tzset ();
+  epoch = mktime (&time);
+  if (tz)
+  {
+    setenv ("TZ", tz, 1);
+    free (tz);
+  }
+  else
+  {
+    unsetenv ("TZ");
+  }
+  tzset ();
+  /* then add the rest */
+  return epoch + datetime->sec + 60 * (datetime->min + 60 * (datetime->hour + 24 * datetime->jday));
+}
+
+#define INDEFINITE INT_MAX
+
+static int
+duration (evalresp_channel *channel)
+{
+  evalresp_datetime begin, end;
+  if (!strcmp (channel->end_t, NO_ENDING_TIME))
+  {
+    return INDEFINITE;
+  }
+  else
+  {
+    parse_datetime (channel->beg_t, &begin);
+    parse_datetime (channel->end_t, &end);
+    return (int)(to_epoch (&end) - to_epoch (&begin));
+  }
+}
+
 static int
 in_epoch (evalresp_datetime *requirement, const char *beg_t, const char *end_t)
 {
   evalresp_datetime start_time, end_time;
 
   parse_datetime (beg_t, &start_time);
-  if (strncmp (end_t, "No Ending Time", 14))
+  if (strncmp (end_t, NO_ENDING_TIME, 14))
   {
     parse_datetime (end_t, &end_time);
     return ((timecmp (&start_time, requirement) <= 0 && timecmp (&end_time, requirement) > 0));
@@ -2455,9 +2541,8 @@ channel_matches (evalresp_logger *log, const evalresp_filter *filter, evalresp_c
 }
 
 int
-evalresp_char_to_channels (evalresp_logger *log, const char *seed_or_xml,
-                           evalresp_options const *const options,
-                           const evalresp_filter *filter, evalresp_channels **channels)
+collect_channels (evalresp_logger *log, const char *seed_or_xml,
+                  evalresp_options const *const options, evalresp_channels **channels)
 {
   const char *read_ptr = seed_or_xml;
   evalresp_channel *channel;
@@ -2482,25 +2567,129 @@ evalresp_char_to_channels (evalresp_logger *log, const char *seed_or_xml,
         {
           if (!(status = read_channel_data (log, options, &read_ptr, first_line, channel)))
           {
-            if (!filter || channel_matches (log, filter, channel))
+            if (!(status = add_channel (log, channel, *channels)))
             {
-              /* check the filter sequence that was just read */
-              if (!(status = check_channel (log, channel)))
-              {
-
-                if (!(status = add_channel (log, channel, *channels)))
-                {
-                  channel = NULL; // don't free below because added above
-                }
-              }
+              channel = NULL; // don't free below because added above
             }
           }
         }
-        evalresp_free_channel (channel);
+        evalresp_free_channel (&channel);
       }
     }
   }
 
+  if (status)
+  {
+    evalresp_free_channels (channels);
+  }
+
+  return status;
+}
+
+static int
+same_channel (evalresp_channel *a, evalresp_channel *b)
+{
+  return !strcmp (a->network, b->network) && !strcmp (a->staname, b->staname) && !strcmp (a->locid, b->locid) && !strcmp (a->chaname, b->chaname);
+}
+
+int
+filter_channels (evalresp_logger *log, const evalresp_filter *filter,
+                 evalresp_channels *channels_in, evalresp_channels **channels_out)
+{
+  int status = EVALRESP_OK, i, j, best_match, warn_user = 0;
+  evalresp_channel *candidate, *other;
+
+  if (!(status = evalresp_alloc_channels (log, channels_out)))
+  {
+    for (i = 0; i < channels_in->nchannels && !status; ++i)
+    {
+      if ((candidate = channels_in->channels[i])) /* this may be null */
+      {
+        /* basic functionality: only ever consider candidates that match the filter */
+        if (!filter || channel_matches (log, filter, candidate))
+        {
+          /* run through remaining channels removing any that this "beats".
+             if it "loses" then stop, but delete this. */
+          best_match = 1;
+          for (j = i + 1; j < channels_in->nchannels && best_match; ++j)
+          {
+            if ((other = channels_in->channels[j])) /* this may be null */
+            {
+              /* other must match the filter too.  we do this in two parts.
+                first the channel must be the same */
+              if (same_channel (candidate, other))
+              {
+                /* second, either there's no date filter or that matches too */
+                if (!(filter && filter->datetime && filter->datetime->year))
+                {
+                  if (earlier (candidate, other))
+                  {
+                    best_match = 0;
+                  }
+                }
+                else
+                {
+                  /* note that if it's not in_epoch then it's automatically a loser
+                     and can be deleted.  it's only kept if it matches AND is shorter */
+                  if (in_epoch (filter->datetime, other->beg_t, other->end_t) &&
+                      duration (candidate) >= duration (other))
+                  {
+                    warn_user = 1;
+                    best_match = 0;
+                  }
+                }
+                if (best_match)
+                {
+                  /* candidate beat this, so discard it */
+                  evalresp_free_channel (&channels_in->channels[j]);
+                }
+              }
+            }
+          }
+          if (best_match) /* candidate won */
+          {
+            /* only check channels that we will output */
+            if (!(status = check_channel (log, candidate)))
+            {
+              if (!(status = add_channel (log, candidate, *channels_out)))
+              {
+                channels_in->channels[i] = NULL;  /* don't free with channels_in */
+              }
+            }
+          }
+          else /* candidate lost */
+          {
+            evalresp_free_channel (&channels_in->channels[i]);
+          }
+        }
+      }
+    }
+  }
+
+  if (!status && warn_user)
+  {
+    evalresp_log (log, EV_WARN, EV_WARN,
+                  "Two or more entries match the same SNCL and date; the shortest was used");
+  }
+
+  return status;
+}
+
+int
+evalresp_char_to_channels (evalresp_logger *log, const char *seed_or_xml,
+                           evalresp_options const *const options,
+                           const evalresp_filter *filter, evalresp_channels **channels)
+{
+  int status = EVALRESP_OK;
+  evalresp_channels *all_channels = NULL;
+
+  *channels = NULL;
+  if (!(status = collect_channels (log, seed_or_xml, options, &all_channels)))
+  {
+    status = filter_channels (log, filter, all_channels, channels);
+  }
+
+  evalresp_free_channels (&all_channels);
   if (status)
   {
     evalresp_free_channels (channels);
@@ -2801,7 +2990,9 @@ split_on (evalresp_logger *log, char *string, char *delim, struct string_array *
         end = start + strlen (start);
       }
       status = append_string (*array, start, end - start);
-      start = end + 1; /* drop delimiter */
+      start = end;
+      if (*start)
+        start++; /* drop delimiter */
     }
   }
 
