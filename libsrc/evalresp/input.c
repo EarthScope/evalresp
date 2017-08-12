@@ -2592,6 +2592,7 @@ same_channel (evalresp_channel *a, evalresp_channel *b)
   return !strcmp (a->network, b->network) && !strcmp (a->staname, b->staname) && !strcmp (a->locid, b->locid) && !strcmp (a->chaname, b->chaname);
 }
 
+/* WARNING - for efficiency this mutates channels_in (deleting channels) */
 int
 filter_channels (evalresp_logger *log, const evalresp_filter *filter,
                  evalresp_channels *channels_in, evalresp_channels **channels_out)
