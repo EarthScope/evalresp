@@ -2449,8 +2449,11 @@ to_epoch (evalresp_datetime *datetime)
   time_t epoch;
   /* find epoch of start of year */
   time.tm_year = datetime->year;
-  time.tm_mday = 1;
+  time.tm_mday = datetime->jday;
   time.tm_mon = 0;
+  time.tm_sec = datetime->sec;
+  time.tm_min = datetime->min;
+  time.tm_hour = datetime->hour;
   tz = getenv ("TZ");
   if (tz)
     tz = strdup (tz);
@@ -2483,7 +2486,8 @@ to_epoch (evalresp_datetime *datetime)
   tzset ();
 #endif
   /* then add the rest */
-  return epoch + datetime->sec + 60 * (datetime->min + 60 * (datetime->hour + 24 * datetime->jday));
+  return epoch;
+  //return epoch + datetime->sec + 60 * (datetime->min + 60 * (datetime->hour + 24 * datetime->jday));
 }
 
 #define INDEFINITE INT_MAX
