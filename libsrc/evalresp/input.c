@@ -2445,7 +2445,8 @@ static time_t
 to_epoch (evalresp_datetime *datetime)
 {
   struct tm time = {0};
-  char *tz;
+//  struct tm * utc_time;
+//  char *tz;
   time_t epoch;
   /* find epoch of start of year */
   time.tm_year = datetime->year;
@@ -2454,6 +2455,7 @@ to_epoch (evalresp_datetime *datetime)
   time.tm_sec = datetime->sec;
   time.tm_min = datetime->min;
   time.tm_hour = datetime->hour;
+/*
   tz = getenv ("TZ");
   if (tz)
     tz = strdup (tz);
@@ -2464,7 +2466,9 @@ to_epoch (evalresp_datetime *datetime)
   setenv ("TZ", "", 1);
   tzset ();
 #endif
+*/
   epoch = mktime (&time);
+/*
   if (tz)
   {
 #ifdef WIN32
@@ -2485,6 +2489,7 @@ to_epoch (evalresp_datetime *datetime)
   }
   tzset ();
 #endif
+*/
   /* then add the rest */
   return epoch;
   //return epoch + datetime->sec + 60 * (datetime->min + 60 * (datetime->hour + 24 * datetime->jday));
