@@ -2454,19 +2454,34 @@ to_epoch (evalresp_datetime *datetime)
   tz = getenv ("TZ");
   if (tz)
     tz = strdup (tz);
+#ifdef WIN32
+  _putenv_s("TZ", "");
+  _tzset();
+#else
   setenv ("TZ", "", 1);
   tzset ();
+#endif
   epoch = mktime (&time);
   if (tz)
   {
+#ifdef WIN32
+    _putenv_s("TZ", tz);
+#else
     setenv ("TZ", tz, 1);
+#endif
     free (tz);
   }
   else
   {
+#ifdef WIN32
+    _putenv_s("TZ", "");
+  }
+  _tzset();
+#else
     unsetenv ("TZ");
   }
   tzset ();
+#endif
   /* then add the rest */
   return epoch + datetime->sec + 60 * (datetime->min + 60 * (datetime->hour + 24 * datetime->jday));
 }
