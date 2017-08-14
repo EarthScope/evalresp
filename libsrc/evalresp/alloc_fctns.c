@@ -764,10 +764,11 @@ free_channel (evalresp_channel *chan_ptr)
 }
 
 void
-evalresp_free_channel (evalresp_channel *chan_ptr)
+evalresp_free_channel (evalresp_channel **chan_ptr)
 {
-  free_channel (chan_ptr);
-  free (chan_ptr);
+  free_channel (*chan_ptr);
+  free (*chan_ptr);
+  *chan_ptr = NULL;
 }
 
 void
@@ -827,8 +828,7 @@ evalresp_free_channels (evalresp_channels **channels)
   {
     for (i = 0; i < (*channels)->nchannels; ++i)
     {
-      evalresp_free_channel ((*channels)->channels[i]);
-      (*channels)->channels[i] = NULL;
+      evalresp_free_channel (&(*channels)->channels[i]);
     }
     free ((*channels)->channels);
     (*channels)->channels = NULL;

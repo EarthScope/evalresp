@@ -1,0 +1,16 @@
+INFO] << EVALRESP RESPONSE OUTPUT V5.0.a1 >>
+WARN] Two or more entries match the same SNCL and date; the shortest was used
+INFO]  --------------------------------------------------
+INFO]   RESP.H2.H2O.00.HHZ
+INFO]  --------------------------------------------------
+INFO]   H2 H2O 00 HHZ 
+INFO]  2001,199,21:29:52 2003,147,00:00:00
+   Seed units: M/S**2 - acceleration in Meters per Second squared(in)->COUNTS - Digital Counts(out)
+INFO]    computed sens=3.72483E+08 (reported=3.72483E+08) @ 1.00000E+00 Hz
+INFO]    calc_del=0.00000E+00  corr_app=0.00000E+00  est_delay=0.00000E+00  final_sint=0.00625(sec/sample)
+INFO]       stage  1: LAPLACE     A0=2.217470E+04 NZeros=  0 NPoles=  2 Sd=4.530000E+02
+INFO]       stage  2: GAIN        Sd=1.000000E+00
+INFO]       stage  3: LAPLACE     A0=4.942550E+05 NZeros=  0 NPoles=  3 Sd=2.509330E-01
+INFO]       stage  4: GAIN        Sd=1.024000E+03
+INFO]       stage  5: FIR_SYM_2   H0=1.000000E+00 Ncoeff=  0 SamInt=6.250000E-03 Sd=3.200000E+03
+INFO] --------------------------------------------------

@@ -195,20 +195,41 @@ process_cwd (evalresp_logger *log, evalresp_options *options,
 int
 evalresp_cwd_to_cwd (evalresp_logger *log, evalresp_options *options, evalresp_filter *filter)
 {
-  int status;
+  int status, free_options = 0;
   evalresp_responses *responses = NULL;
+
+  /* allow NULL options */
+  if (!options)
+  {
+    status = evalresp_new_options (log, &options);
+    free_options = 1;
+  }
 
   if (options->verbose)
   {
     evalresp_log (log, EV_INFO, 0, "<< EVALRESP RESPONSE OUTPUT V%s >>", REVNUM);
   }
-  status = (options && options->use_stdio) ? process_stdio (log, options, filter, &responses) : process_cwd (log, options, filter, &responses);
-
-  if (EVALRESP_OK == status)
+  if (options->use_stdio)
   {
-    status = responses_to_cwd (log, responses, options->unwrap_phase, options->format,
-                               options->use_stdio);
+    status = process_stdio (log, options, filter, &responses);
   }
+  else
+  {
+    status = process_cwd (log, options, filter, &responses);
+  }
+
+  if (!status)
+  {
+    /* Traditionally, FAP is always unwrapped. */
+    status = responses_to_cwd (log, responses,
+                               options->unwrap_phase || options->format == evalresp_fap_output_format,
+                               options->format, options->use_stdio);
+  }
+
   evalresp_free_responses (&responses);
+  if (free_options)
+  {
+    evalresp_free_options (&options);
+  }
   return status;
 }

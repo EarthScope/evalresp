@@ -1,4 +1,5 @@
 #		<< IRIS SEED Reader, Release 4.16 >>
+# WARNING - THIS HAS A CHANNEL NAME CHANGED SO TESTS RETURN MULTIPLE CHANNELS
 #		
 #		======== CHANNEL RESPONSE DATA ========
 B050F03     Station:     ANMO
@@ -1732,7 +1733,7 @@ B058F06     Number of calibrations:                0
 B050F03     Station:     ANMO
 B050F16     Network:     IU
 B052F03     Location:    ??
-B052F04     Channel:     BHZ
+B052F04     Channel:     BHX
 B052F22     Start date:  1991,042,20:48
 B052F23     End date:    1995,032
 #		=======================================
