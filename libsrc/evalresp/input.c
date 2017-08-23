@@ -13,6 +13,11 @@
 #include "evalresp/stationxml2resp/wrappers.h"
 #include "evalresp_log/log.h"
 
+#ifdef _WIN32
+// https://stackoverflow.com/questions/16647819/timegm-cross-platform
+#define timegm _mkgmtime
+#endif
+
 // code from parse_fctns.c heavily refactored to (1) parse all lines and (2)
 // read from strings rather than files.
 
@@ -2445,28 +2450,12 @@ static time_t
 to_epoch (evalresp_datetime *datetime)
 {
   struct tm time = {};
-  char *tz;
   time_t epoch;
   /* find epoch of start of year */
   time.tm_year = datetime->year;
   time.tm_mday = 1;
   time.tm_mon = 0;
-  tz = getenv ("TZ");
-  if (tz)
-    tz = strdup (tz);
-  setenv ("TZ", "", 1);
-  tzset ();
-  epoch = mktime (&time);
-  if (tz)
-  {
-    setenv ("TZ", tz, 1);
-    free (tz);
-  }
-  else
-  {
-    unsetenv ("TZ");
-  }
-  tzset ();
+  epoch = timegm (&time);
   /* then add the rest */
   return epoch + datetime->sec + 60 * (datetime->min + 60 * (datetime->hour + 24 * datetime->jday));
 }
@@ -2655,7 +2644,7 @@ filter_channels (evalresp_logger *log, const evalresp_filter *filter,
             {
               if (!(status = add_channel (log, candidate, *channels_out)))
               {
-                channels_in->channels[i] = NULL;  /* don't free with channels_in */
+                channels_in->channels[i] = NULL; /* don't free with channels_in */
               }
             }
           }
