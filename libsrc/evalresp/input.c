@@ -2449,7 +2449,7 @@ earlier (evalresp_channel *a, evalresp_channel *b)
 static time_t
 to_epoch (evalresp_datetime *datetime)
 {
-  struct tm time = {};
+  struct tm time = {0};
   time_t epoch;
   /* find epoch of start of year */
   time.tm_year = datetime->year;
