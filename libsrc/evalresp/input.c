@@ -2446,18 +2446,22 @@ earlier (evalresp_channel *a, evalresp_channel *b)
   }
 }
 
-static time_t
+time_t
 to_epoch (evalresp_datetime *datetime)
 {
   struct tm time = {0};
-  time_t epoch;
+  time_t epoch, delta;
   /* find epoch of start of year */
-  time.tm_year = datetime->year;
+  time.tm_year = datetime->year - 1900;
   time.tm_mday = 1;
   time.tm_mon = 0;
   epoch = timegm (&time);
-  /* then add the rest */
-  return epoch + datetime->sec + 60 * (datetime->min + 60 * (datetime->hour + 24 * datetime->jday));
+  /* then add the rest - note correction for julian day being 1-indexed */
+  delta = datetime->jday - 1;
+  delta = datetime->hour + delta * 24;
+  delta = datetime->min + delta * 60;
+  delta = datetime->sec + delta * 60;
+  return epoch + delta;
 }
 
 #define INDEFINITE INT_MAX

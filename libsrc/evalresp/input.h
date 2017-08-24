@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "evalresp_log/log.h"
+#include "public_api.h"
 
 // private functions exposed only for testing
 
@@ -24,5 +25,8 @@ open_file (evalresp_logger *log, const char *filename, FILE **in);
 
 int
 file_to_char (evalresp_logger *log, FILE *in, char **seed);
+
+time_t
+to_epoch (evalresp_datetime *datetime);
 
 #endif
