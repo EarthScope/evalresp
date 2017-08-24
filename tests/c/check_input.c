@@ -180,17 +180,17 @@ START_TEST (test_filter)
 }
 END_TEST
 
-START_TEST(test_julian_day)
+START_TEST (test_julian_day)
 {
   evalresp_filter *filter = NULL;
   evalresp_new_filter (NULL, &filter);
-  evalresp_set_year(NULL, filter, "2001");
-  evalresp_set_julian_day(NULL, filter, "235");
-  evalresp_set_time(NULL, filter, "08:16:02");
-  time_t epoch = to_epoch(filter->datetime);
+  evalresp_set_year (NULL, filter, "2001");
+  evalresp_set_julian_day (NULL, filter, "235");
+  evalresp_set_time (NULL, filter, "08:16:02");
+  time_t epoch = to_epoch (filter->datetime);
   // https://www.epochconverter.com/
-  fail_if(epoch != 998554562, "Bad epoch: %lld", epoch);
-  evalresp_free_filter(&filter);
+  fail_if (epoch != 998554562, "Bad epoch: %lld", epoch);
+  evalresp_free_filter (&filter);
 }
 END_TEST
 
