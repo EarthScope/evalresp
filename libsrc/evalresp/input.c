@@ -13,6 +13,11 @@
 #include "evalresp/stationxml2resp/wrappers.h"
 #include "evalresp_log/log.h"
 
+#ifdef _WIN32
+// https://stackoverflow.com/questions/16647819/timegm-cross-platform
+#define timegm _mkgmtime
+#endif
+
 // code from parse_fctns.c heavily refactored to (1) parse all lines and (2)
 // read from strings rather than files.
 
@@ -2441,55 +2446,22 @@ earlier (evalresp_channel *a, evalresp_channel *b)
   }
 }
 
-static time_t
+time_t
 to_epoch (evalresp_datetime *datetime)
 {
   struct tm time = {0};
-//  struct tm * utc_time;
-  char *tz;
-  time_t epoch;
+  time_t epoch, delta;
   /* find epoch of start of year */
-  time.tm_year = datetime->year;
-  time.tm_mday = datetime->jday;
+  time.tm_year = datetime->year - 1900;
+  time.tm_mday = 1;
   time.tm_mon = 0;
-  time.tm_sec = datetime->sec;
-  time.tm_min = datetime->min;
-  time.tm_hour = datetime->hour;
-  tz = getenv ("TZ");
-  if (tz)
-    tz = strdup (tz);
-#ifdef WIN32
-  _putenv_s("TZ", "");
-  _tzset();
-#else
-  setenv ("TZ", "", 1);
-  tzset ();
-#endif
-  /* mktime fixes inconsitancies eg. mday corrects mon, mday and yday then computes epoch */
-  epoch = mktime (&time);
-  if (tz)
-  {
-#ifdef WIN32
-    _putenv_s("TZ", tz);
-#else
-    setenv ("TZ", tz, 1);
-#endif
-    free (tz);
-  }
-  else
-  {
-#ifdef WIN32
-    _putenv_s("TZ", "");
-  }
-  _tzset();
-#else
-    unsetenv ("TZ");
-  }
-  tzset ();
-#endif
-  return epoch;
-  /* then add the rest */
-  //return epoch + datetime->sec + 60 * (datetime->min + 60 * (datetime->hour + 24 * datetime->jday));
+  epoch = timegm (&time);
+  /* then add the rest - note correction for julian day being 1-indexed */
+  delta = datetime->jday - 1;
+  delta = datetime->hour + delta * 24;
+  delta = datetime->min + delta * 60;
+  delta = datetime->sec + delta * 60;
+  return epoch + delta;
 }
 
 #define INDEFINITE INT_MAX
@@ -2676,7 +2648,7 @@ filter_channels (evalresp_logger *log, const evalresp_filter *filter,
             {
               if (!(status = add_channel (log, candidate, *channels_out)))
               {
-                channels_in->channels[i] = NULL;  /* don't free with channels_in */
+                channels_in->channels[i] = NULL; /* don't free with channels_in */
               }
             }
           }

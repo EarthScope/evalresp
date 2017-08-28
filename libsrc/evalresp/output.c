@@ -85,6 +85,14 @@ evalresp_response_to_char (evalresp_logger *log, const evalresp_response *respon
         pha_arr[i] = atan2 (response->rvec[i].imag, response->rvec[i].real + 1.e-200) * 180.0 / M_PI;
         if (unwrap)
         {
+          if (i == 0) /* force initial phase to [0,360) */
+          {
+            while (pha_arr[0] + added_value < 0)
+              added_value += 360;
+            while (pha_arr[0] + added_value >= 360)
+              added_value -= 360;
+            prev_phase = pha_arr[0] + added_value;
+          }
           pha_arr[i] = unwrap_phase (pha_arr[i], prev_phase, 360, &added_value);
           prev_phase = pha_arr[i];
         }

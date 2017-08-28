@@ -180,6 +180,20 @@ START_TEST (test_filter)
 }
 END_TEST
 
+START_TEST (test_julian_day)
+{
+  evalresp_filter *filter = NULL;
+  evalresp_new_filter (NULL, &filter);
+  evalresp_set_year (NULL, filter, "2001");
+  evalresp_set_julian_day (NULL, filter, "235");
+  evalresp_set_time (NULL, filter, "08:16:02");
+  time_t epoch = to_epoch (filter->datetime);
+  // https://www.epochconverter.com/
+  fail_if (epoch != 998554562, "Bad epoch: %lld", epoch);
+  evalresp_free_filter (&filter);
+}
+END_TEST
+
 int
 main (void)
 {
@@ -194,6 +208,7 @@ main (void)
   tcase_add_test (tc, test_filename_to_channels);
   tcase_add_test (tc, test_splits);
   tcase_add_test (tc, test_filter);
+  tcase_add_test (tc, test_julian_day);
   suite_add_tcase (s, tc);
   SRunner *sr = srunner_create (s);
   srunner_set_xml (sr, "check-log.xml");
