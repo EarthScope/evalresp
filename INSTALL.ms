@@ -8,29 +8,6 @@ Windows):
 
    * Visual Studio 12 (VS2013) (the free community version is fine)
 
-   * The libxml2, iconv and zlib libraries and headers.  These can be
-     downloaded from http://www.zlatkovic.com/libxml.en.html
-     Each library should be unpacked in the same directory as evalresp
-     (see below), without version numbers, so the final directory tree
-     from your working directory will look like:
-
-         +-- evalresp-[version]
-         | +-- doc
-         | +-- src
-         | +-- ...
-         +-- libxml2
-         | +-- bin
-         | +-- include
-         | +-- ...
-         +-- iconv
-         | +-- bin
-         | +-- include
-         | +-- ...
-         +-- zlib
-           +-- bin
-           +-- include
-           +-- ...
-
 1. Unzip the distribution file.  The simplest way to do this is to use
    the file explorer: right click and select "Expand all".
 
@@ -40,7 +17,7 @@ Windows):
 
 3. In the command prompt:
 
-   cd working\directory\evalresp-[version]\src
+   cd working\directory\evalresp-[version]\
    NMAKE /F Makefile.ms
 
 4. This should build the executables.  You must then configure windows
@@ -49,6 +26,6 @@ Windows):
    For example, from the command line, in the same directory where you
    built the code, for a quick test:
 
-   set PATH=%PATH%;..\..\libxml2\bin;..\..\iconv\bin;..\..\zlib\bin
+   set PATH=%PATH%;..\src
    .\evalresp
 
