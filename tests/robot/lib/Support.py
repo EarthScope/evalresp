@@ -1,14 +1,32 @@
 
 from __future__ import print_function
-from os import environ, chdir, makedirs, getcwd, listdir, symlink
+from os import environ, chdir, makedirs, getcwd, listdir
 from os.path import join, exists, relpath, realpath, isfile
 #from shutil import copyfile
 from robot.api import logger
+try:
+    from os import symlink
+except Exception:
+    def symlink(source, link_name):
+        import ctypes
+        from os.path import isdir
+        csl = ctypes.windll.kernel32.CreateSymbolicLinkW
+        csl.argtypes = (ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint32)
+        csl.restype = ctypes.c_ubyte
+        flags = 1 if isdir(source) else 0
+        if csl(link_name, source.replace('/', '\\'), flags) == 0:
+            raise ctypes.WinError()
 
-WORKSPACE = environ['WORKSPACE']
-TARGET = join(WORKSPACE, 'tests/robot/target')
-DATA = join(WORKSPACE, 'tests/robot/data')
-RUN = join(WORKSPACE, 'tests/robot/run')
+try:
+    WORKSPACE = environ['WORKSPACE']
+    TARGET = join(WORKSPACE, 'tests/robot/target')
+    DATA = join(WORKSPACE, 'tests/robot/data')
+    RUN = join(WORKSPACE, 'tests/robot/run')
+except Exception:
+    WORKSPACE = getcwd()
+    TARGET = join(WORKSPACE, 'target')
+    DATA = join(WORKSPACE, 'data')
+    RUN = join(WORKSPACE, 'run')
 
 TINY = 1e-5
 
@@ -193,7 +211,7 @@ class Support:
             raise Exception('Found %d files in %s, but expected %d' % (found, run, n))
 
     def compare_text(self, target_dir, files):
-        """Call this method to check the given files (a comma-separated 
+        """Call this method to check the given files (a comma-separated
         list with no spaces) between the working directory and the target
         directory."""
         run = join(RUN, getcwd())
@@ -209,14 +227,14 @@ class Support:
                     for (index, result_line) in enumerate(result_file.readlines()):
                         target_line = target_file.readline()
                         if result_line != target_line:
-                            raise Exception('"%s" and "%s" differ at %s and %s at line %d' % 
+                            raise Exception('"%s" and "%s" differ at %s and %s at line %d' %
                                             (result_line, target_line,
                                             result_path, target_path, index))
                 if target_file.readline():
                     raise Exception('Missing data at end of %s' % result_path)
 
     def compare_target_files_text(self, target_dir=None):
-        """Call this method to check the content of all files from 
+        """Call this method to check the content of all files from
         the target directory."""
         if not target_dir:
             target_dir = relpath(realpath(getcwd()), realpath(RUN))
@@ -225,7 +243,7 @@ class Support:
         self.compare_text(target_dir, files)
 
     def count_and_compare_target_files_text(self, target_dir=None):
-        """Call this method to check the content and number of all files 
+        """Call this method to check the content and number of all files
         from the target directory."""
         if not target_dir:
             target_dir = relpath(realpath(getcwd()), realpath(RUN))
@@ -294,3 +312,31 @@ class Support:
         target = join(TARGET, target_dir)
         files = ','.join(listdir(target))
         self.compare_n_float_cols_average(target_dir, 2, tol, files)
+
+    def cut_fields(self, source, destination, delim=',', fields='1-'):
+        """ this method is equivelent to cut -d delim -f fields source > destination."""
+        field_stop = fields.split('-')
+        if len(field_stop) > 2:
+            raise Exception('The fields \'%s\' has to many ranges' % (fields))
+        with open(source, 'r') as src_file:
+            with open(destination, 'w') as dest_file:
+                for src_line in src_file.readlines():
+                    split_src_line = src_line.split(delim)
+                    start = 0
+                    end = len(split_src_line) 
+                    if field_stop[0]:
+                        start = int(field_stop[0])-1
+                        if start >= len(split_src_line):
+                            start = len(split_src_line) - 1
+                    if len(field_stop) < 2:
+                        end = int(field_stop[0])-1
+                    elif field_stop[1]:
+                        end = int(field_stop[1])-1
+                        if end >= len(split_src_line):
+                            end = len(split_src_line)
+
+                    out_line = delim.join(split_src_line[start:end])
+                    dest_file.write("%s" % (out_line))
+            dest_file.close()
+        src_file.close()
+

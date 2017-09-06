@@ -3,6 +3,7 @@
 
 Library  Process
 Library  Support
+Library  OperatingSystem
 
 
 *** Test Cases ***
@@ -148,8 +149,9 @@ Total sensitivity
 Verbose
     Prepare  base/args/verbose  base  RESP.Z.CGV..HYZ
     Run process  evalresp  CGV  HYZ  2010  1  0.001  10  100  -f  RESP.Z.CGV..HYZ  -v  stdout=stdout  stderr=stderr
-    Run process  cut  -d  [  -f  2-  stderr  stdout=temp
-    Run Process  mv  temp  stderr
+    Cut Fields  stderr  temp  [  2-
+#    Run process  cut  -d  [  -f  2-  stderr  stdout=temp
+    Move File  temp  stderr
     Count and compare target files two float cols
 
 XML

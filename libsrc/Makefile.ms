@@ -1,4 +1,4 @@
-clean all:
+clean all install:
 	cd evalresp_log && $(MAKE) /F Makefile.ms $*
 	cd spline && $(MAKE) /F Makefile.ms $*
 	cd mxml && $(MAKE) /F Makefile.ms $*
