@@ -340,3 +340,18 @@ class Support:
             dest_file.close()
         src_file.close()
 
+    def clear_version(self, target_file_name):
+        """Use this method to clean the version number from verbose output"""
+        import re
+        from tempfile import mkstemp
+        from os import fdopen
+        from robot.libraries.BuiltIn import BuiltIn
+        ROS = BuiltIn().get_library_instance('OperatingSystem')
+        fh, path = mkstemp()
+        with fdopen(fh, 'w') as temp_file:
+            with open(target_file_name) as target_file:
+                #get the line with the version string
+                for line in target_file:
+                    temp_file.write(re.sub(r'(EVALRESP RESPONSE OUTPUT V)\d.+( >>)',r'\1ROBOT\2',line))
+        ROS.remove_file(target_file_name)
+        ROS.move_file(path, target_file_name)
