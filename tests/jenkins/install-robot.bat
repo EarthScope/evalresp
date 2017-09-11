@@ -6,7 +6,7 @@ IF NOT EXIST src (
 REM Need to do everything in a sanitary environment
 
 IF NOT EXIST env (
-    python -m virualenv env
+    python -m virtualenv env
     CALL env\Scripts\activate.bat
     pip install --upgrade robotframework
 ) ELSE (
