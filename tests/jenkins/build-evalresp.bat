@@ -13,6 +13,6 @@ CALL "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7
 CALL "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\Tools\\vsdevcmd\\ext\\vcvars.bat"
 cd %CD%
 nmake /F Makefile.ms
-nmake /F install-for-robot
+nmake /F Makefile.ms install-for-robot
 
 ENDLOCAL
