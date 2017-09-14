@@ -13,8 +13,8 @@ pipeline
             }
         }
 
-//        stage('build & test')
-//        {
+        stage('build & test')
+        {
 //            steps
 //            { 
 //                parallel centos64: {
@@ -70,7 +70,7 @@ pipeline
 //                    }
 //                }
 //            }
-//        }
+        }
     }
 }
 
