@@ -17,7 +17,7 @@ pipeline
         {
             steps
             { 
-                parallel centos64: {
+                parallel centos: {
                     node('centos64')
                     {
                         sh "echo centos 6.4"
