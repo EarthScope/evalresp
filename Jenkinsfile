@@ -17,11 +17,11 @@ pipeline
         {
             steps
             { 
-//                parallel centos64: {
-//                    node('centos64')
-//                    {
-//                        sh "echo centos 6.4"
-//                        unstash 'source'
+                parallel centos64: {
+                    node('centos64')
+                    {
+                        sh "echo centos 6.4"
+                        unstash 'source'
                         /*
                         sh 'sudo yum --enablerepo=epel install -y autoconf libtool libxml2-devel check-devel  python-pip doxygen'
                         sh 'sudo pip install --upgrade pip robotframework virtualenv virtualenvwrapper'
@@ -31,8 +31,8 @@ pipeline
                         sh './tests/jenkins/build-extended-robot-tests.sh 2010 365'
                         sh './tests/jenkins/run-robot-tests.sh'
                         */
-//                        stash includes: '**/tests/robot/*' name: 'centos64Results'
-//                    }
+                        stash includes: '**/tests/robot/*' name: 'centos64Results'
+                    }
 //                },
 //                centos7:
 //                {
@@ -68,7 +68,7 @@ pipeline
 //                        stash includes: '**/tests/robot/*' name: 'windows10Results'
 //                        //stasPh robot results only
 //                    }
-//                }
+                }
             }
         }
     }
