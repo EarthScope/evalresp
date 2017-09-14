@@ -95,15 +95,6 @@ pipeline
             agent {node{label 'centos64'}}
             steps
             {
-                unstash 'source'
-                sh 'sudo yum --enablerepo=epel install -y autoconf libtool libxml2-devel check-devel  python-pip doxygen'
-                sh 'sudo pip install --upgrade pip robotframework virtualenv virtualenvwrapper'
-                sh 'tests/jenkins/build-evalresp.sh'
-                sh 'tests/jenkins/run-c-tests.sh'
-                sh './tests/jenkins/build-extended-robot-tests.sh 2017 1'
-                sh './tests/jenkins/build-extended-robot-tests.sh 2010 365'
-                sh './tests/jenkins/run-robot-tests.sh'
-                stash name: 'store_C64'
             }
             post {
                 always {
@@ -116,9 +107,6 @@ pipeline
                       passThreshold: 100,
                       reportFileName: 'tests/robot/report.html',
                       unstableThreshold: 0])
-                }
-                failure {
-                    archiveArtifacts artifacts: **'/tests/robot/run/*', fingerprint: true
                 }
             }
         }
@@ -127,21 +115,6 @@ pipeline
             agent {node{label 'centos7'}}
             steps
             {
-                unstash 'source'
-                sh 'sudo yum --enablerepo=epel install -y autoconf libtool libxml2-devel check-devel doxygen'
-                sh 'sudo pip install --upgrade pip robotframework virtualenv virtualenvwrapper'
-                sh 'tests/jenkins/build-evalresp.sh'
-                //sh 'mkdir m4'
-                //sh 'autoreconf -ivf'
-                //sh './configure --prefix $(pwd)/install --enable-check --enable-debug --enable-shared --enable-lib-mode'
-                //sh 'make'
-                sh './tests/jenkins/run-c-tests.sh'
-                //sh 'sudo make install'
-                sh './tests/jenkins/build-extended-robot-tests.sh 2017 1'
-                sh './tests/jenkins/build-extended-robot-tests.sh 2010 365'
-                //sh './tests/jenkins/build-extended-robot-tests.sh 2010 365 *.G.RER.00.BHZ'
-                sh './tests/jenkins/run-robot-tests.sh'
-                stash 'store_check_7'
             }
             post {
                 always {
@@ -154,9 +127,6 @@ pipeline
                       passThreshold: 100,
                       reportFileName: 'tests/robot/report.html',
                       unstableThreshold: 0])
-                }
-                failure {
-                    archiveArtifacts artifacts: **'/tests/robot/run/*', fingerprint: true
                 }
             }
         }
@@ -165,11 +135,6 @@ pipeline
             agent { node { label 'windows10'}}
             steps
             {
-                unstash 'source'
-                bat 'tests\\jenkins\\build-evalresp.bat'
-                bat 'tests\\jenkins\\build-extended-robot-tests.bat 2017 1'
-                bat 'tests\\jenkins\\build-extended-robot-tests.bat 2010 365'
-                bat 'tests\\jenkins\\run-robot-tests.bat'
             }
             post {
                 always {
@@ -183,21 +148,8 @@ pipeline
                       reportFileName: 'tests/robot/report.html',
                       unstableThreshold: 0])
                 }
-                failure {
-                    archiveArtifacts artifacts: **'/tests/robot/run/*', fingerprint: true
-                }
             }
         }
         */
-        /*stage('distbuild')
-        {
-            agent { node {label 'centos7'}}
-            steps
-            {
-                sh 'sudo yum --enablerepo=epel install -y autoconf libtool libxml2-devel doxygen'
-                unstash 'store_check_7'
-                echo 'this is tbd'
-            }
-        }*/
-    }
+      }
 }
