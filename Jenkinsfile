@@ -15,8 +15,8 @@ pipeline
 
         stage('build & test')
         {
-//            steps
-//            { 
+            steps
+            { 
 //                parallel centos64: {
 //                    node('centos64')
 //                    {
@@ -69,7 +69,7 @@ pipeline
 //                        //stasPh robot results only
 //                    }
 //                }
-//            }
+            }
         }
     }
 }
