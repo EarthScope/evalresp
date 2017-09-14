@@ -17,7 +17,7 @@ pipeline
         {
 //            steps
 //            { 
-                parallel centos: {
+                parallel (centos: {
                     node('centos64')
                     {
                         sh "echo centos 6.4"
@@ -68,7 +68,7 @@ pipeline
 //                        stash includes: '**/tests/robot/*' name: 'windows10Results'
 //                        //stasPh robot results only
 //                    }
-                }
+                })
 //            }
         }
     }
