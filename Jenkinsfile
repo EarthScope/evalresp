@@ -19,7 +19,8 @@ pipeline
             {
                 parallel centos6:
                 {
-                    node('centos64') {
+                    node('centos64')
+                    {
                         sh "echo centos 6.4"
                         unstash 'source'
                         sh 'sudo yum --enablerepo=epel install -y autoconf libtool libxml2-devel check-devel  python-pip doxygen'
@@ -66,6 +67,7 @@ pipeline
                 }
             }
         }
+
         stage('Compile Robot Results')
         {
             agent any
