@@ -15,10 +15,9 @@ pipeline
 
         stage('build & test')
         {
-            //steps
-            //{
-                parallel centos64:
-                {
+            steps
+            {
+                parallel centos64: {
                     node('centos64')
                     {
                         sh "echo centos 6.4"
@@ -65,7 +64,7 @@ pipeline
                         //stasPh robot results only
                     }
                 }
-            //}
+            }
         }
 
         stage('Compile Robot Results')
