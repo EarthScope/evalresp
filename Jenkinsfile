@@ -15,27 +15,30 @@ pipeline
 
         stage('build & test')
         {
-            parallel centos6:
+            steps
             {
-                node('centos64') {
-                    sh "echo centos 6.4"
-                    unstash 'source'
-                }
-            },
-            centos7:
-            {
-                node('centos7')
+                parallel centos6:
                 {
-                    sh "echo centos 7"
-                    unstash 'source'
-                }
-            },
-            windwos:
-            {
-                node('windows10')
+                    node('centos64') {
+                        sh "echo centos 6.4"
+                        unstash 'source'
+                    }
+                },
+                centos7:
                 {
-                    bat "echo windows 10"
-                    unstash 'source'
+                    node('centos7')
+                    {
+                        sh "echo centos 7"
+                        unstash 'source'
+                    }
+                },
+                windows10:
+                {
+                    node('windows10')
+                    {
+                        bat "echo windows 10"
+                        unstash 'source'
+                    }
                 }
             }
         }
