@@ -71,6 +71,8 @@ pipeline
                 }
             }
         }
+    }
+}
 
 /*        stage('Compile Robot Results')
         {
@@ -156,5 +158,3 @@ pipeline
             }
         }
         */
-      }
-}
