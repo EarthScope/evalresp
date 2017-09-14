@@ -31,7 +31,7 @@ pipeline
                         sh './tests/jenkins/build-extended-robot-tests.sh 2010 365'
                         sh './tests/jenkins/run-robot-tests.sh'
                         */
-                        stash includes: '**/tests/robot/*' name: 'centos64Results'
+                        stash( includes: '**/tests/robot/*' name: 'centos64Results')
                     }
 //                },
 //                centos7:
