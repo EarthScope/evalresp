@@ -67,7 +67,7 @@ pipeline
             }
         }
 
-        stage('Compile Robot Results')
+/*        stage('Compile Robot Results')
         {
             agent any
             steps
@@ -88,6 +88,7 @@ pipeline
                 sh 'ls'
             }
         }
+*/
         /*
         stage('build & test - centos 6.4')
         {
