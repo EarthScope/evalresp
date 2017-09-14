@@ -16,7 +16,7 @@ pipeline
         stage('build & test')
         {
             steps
-            { }
+            { 
                 parallel centos64: {
                     node('centos64')
                     {
