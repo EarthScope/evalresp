@@ -22,6 +22,15 @@ pipeline
                     node('centos64') {
                         sh "echo centos 6.4"
                         unstash 'source'
+                        sh 'sudo yum --enablerepo=epel install -y autoconf libtool libxml2-devel check-devel  python-pip doxygen'
+                        sh 'sudo pip install --upgrade pip robotframework virtualenv virtualenvwrapper'
+                        sh 'tests/jenkins/build-evalresp.sh'
+                        sh 'tests/jenkins/run-c-tests.sh'
+                        sh './tests/jenkins/build-extended-robot-tests.sh 2017 1'
+                        sh './tests/jenkins/build-extended-robot-tests.sh 2010 365'
+                        sh './tests/jenkins/run-robot-tests.sh'
+                        stash includes: '**/tests/robot/*' name: 'centos64Results'
+                        //stash robot results only
                     }
                 },
                 centos7:
@@ -30,6 +39,15 @@ pipeline
                     {
                         sh "echo centos 7"
                         unstash 'source'
+                        sh 'sudo yum --enablerepo=epel install -y autoconf libtool libxml2-devel check-devel doxygen'
+                        sh 'sudo pip install --upgrade pip robotframework virtualenv virtualenvwrapper'
+                        sh 'tests/jenkins/build-evalresp.sh'
+                        sh './tests/jenkins/run-c-tests.sh'
+                        sh './tests/jenkins/build-extended-robot-tests.sh 2017 1'
+                        sh './tests/jenkins/build-extended-robot-tests.sh 2010 365'
+                        sh './tests/jenkins/run-robot-tests.sh'
+                        stash includes: '**/tests/robot/*' name: 'centos7Results'
+                        //stash robot results only
                     }
                 },
                 windows10:
@@ -38,8 +56,35 @@ pipeline
                     {
                         bat "echo windows 10"
                         unstash 'source'
+                        bat 'tests\\jenkins\\build-evalresp.bat'
+                        bat 'tests\\jenkins\\build-extended-robot-tests.bat 2017 1'
+                        bat 'tests\\jenkins\\build-extended-robot-tests.bat 2010 365'
+                        bat 'tests\\jenkins\\run-robot-tests.bat'
+                        stash includes: '**/tests/robot/*' name: 'windows10Results'
+                        //stasPh robot results only
                     }
                 }
+            }
+        }
+        stage('Compile Robot Results')
+        {
+            agent any
+            steps
+            {
+                dir('centos64')
+                {
+                    unstash centos64Results
+                }
+                dir('centos7')
+                {
+                    unstash centos7Results
+                }
+                dir('windows10')
+                {
+                    unstash windows10Results
+                }
+                sh 'rebot --merge centos64/output.xml centos7/output.xml windows10/output.xml'
+                sh 'ls'
             }
         }
         /*
