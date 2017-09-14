@@ -12,7 +12,7 @@ pipeline
                 stash 'source'
             }
         }
-        stage('build & test')
+        step {stage('build & test')
         {
             parallel centos6:
             {
@@ -37,7 +37,7 @@ pipeline
                     unstash 'source'
                 }
             }
-        }
+        }}
         /*
         stage('build & test - centos 6.4')
         {
