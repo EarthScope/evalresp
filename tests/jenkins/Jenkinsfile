@@ -20,7 +20,7 @@ pipeline
                 parallel (centos64: {
                     node('centos64')
                     {
-                        step (try {
+                        script { try {
                             sh "echo centos 6.4"
                             unstash 'source'
                             sh 'sudo yum --enablerepo=epel install -y autoconf libtool libxml2-devel check-devel  python-pip doxygen'
@@ -32,14 +32,14 @@ pipeline
                             sh './tests/jenkins/run-robot-tests.sh'
                         } finally {
                             stash includes: '**/tests/robot/*', name: 'centos64Results'
-                        })
+                        }}
                     }
                 },
                 centos7:
                 {
                     node('centos7')
                     {
-                        step(try {
+                        script { (try {
                             sh "echo centos 7"
                             unstash 'source'
                             sh 'sudo yum --enablerepo=epel install -y autoconf libtool libxml2-devel check-devel doxygen'
@@ -51,14 +51,14 @@ pipeline
                             sh './tests/jenkins/run-robot-tests.sh'
                         } finally {
                             stash includes: '**/tests/robot/*', name: 'centos7Results'
-                        })
+                        }}
                     }
                 },
                 windows10:
                 {
                     node('windows10')
                     {
-                        step(try {
+                        script { try {
                             bat "echo windows 10"
                             unstash 'source'
                             bat 'tests\\jenkins\\build-evalresp.bat'
@@ -67,7 +67,7 @@ pipeline
                             bat 'tests\\jenkins\\run-robot-tests.bat'
                         } finally {
                             stash includes: '**/tests/robot/*', name: 'windows10Results'
-                        })
+                        }}
                     }
                 })
             }
