@@ -39,7 +39,7 @@ pipeline
                 {
                     node('centos7')
                     {
-                        script { (try {
+                        script { try {
                             sh "echo centos 7"
                             unstash 'source'
                             sh 'sudo yum --enablerepo=epel install -y autoconf libtool libxml2-devel check-devel doxygen'
