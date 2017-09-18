@@ -72,7 +72,6 @@ pipeline
                 })
             }
         }
-    }
     post
     {
         always
@@ -101,6 +100,7 @@ pipeline
                   unstableThreshold: 0])
 
         }
+    }
     }
 }
 
