@@ -77,29 +77,33 @@ pipeline
     {
         always
         {
-            dir(centos64)
-            {
+            node('master'){
+              dir(centos64)
+              {
                 unstash centos64Results
-            }
-            dir(centos7)
-            {
+              }
+              dir(centos7)
+              {
                 unstash centos7Results
-            }
-            dir(windows10)
-            {
+              }
+              dir(windows10)
+              {
                 unstash windows10Results
+              }
+              script { try {
+                  sh 'rebot centos64/output.xml centos7/output.xml windows10/output.xml'
+              } finally {
+                step([$class: 'RobotPublisher',
+                      disableArchiveOutput: false,
+                      logFileName: 'log.html',
+                      otherFiles: '',
+                      outputFileName: 'output.xml',
+                      outputPath: '.',
+                      passThreshold: 100,
+                      reportFileName: 'report.html',
+                      unstableThreshold: 0])
+              }}
             }
-            sh 'rebot centos64/output.xml centos7/output.xml windows10/output.xml'
-            step([$class: 'RobotPublisher',
-                  disableArchiveOutput: false,
-                  logFileName: 'log.html',
-                  otherFiles: '',
-                  outputFileName: 'output.xml',
-                  outputPath: '.',
-                  passThreshold: 100,
-                  reportFileName: 'report.html',
-                  unstableThreshold: 0])
-
         }
     }
 }
