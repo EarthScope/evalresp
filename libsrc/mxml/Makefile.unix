@@ -1,26 +1,35 @@
+CFLAGS=-I.. -I../mxml
 
-all: Makefile
-	$(MAKE) libmxmlev.a
+MXML_SRC= mxml-attr.c mxml-entity.c mxml-file.c mxml-get.c mxml-index.c\
+	mxml-node.c mxml-private.c mxml-search.c mxml-set.c mxml-string.c\
+	mxmldoc.c
+MXML_HEADERS= mxml-private.h mxml.h
 
-install: Makefile
-	#$(MAKE) install-libmxmlev.a
-	test -z "$(LIB_DIR)" || /bin/mkdir -p "$(LIB_DIR)"
-	/bin/sh libtool   --mode=install /usr/bin/install -c   libmxmlev.a '$(LIB_DIR)'
+vpath %.c .
+OBJ=$(addprefix $(BUILD_DIR)/, $(patsubst %.c, %.o,$(notdir $(MXML_SRC))))
+TARGET=libmxmlev.a
+.PHONY: all clean install
+.SUFFIXES:
+.SUFFIXES: .c .o
 
-%: Makefile
-	$(MAKE) $*
+all: $(BUILD_DIR)/$(TARGET)
 
-Makefile: configure
-	./configure --prefix=`readline -f $(INSTALL_DIR)` --disable-threads
-	-mv Makefile.in.at Makefile.in
+$(BUILD_DIR)/%.o: %.c $(BUILD_DIR) $(BUILD_DIR)
+	$(CC) -c -o $@ $(CFLAGS) $<
 
-configure: configure.ac Makefile.in.at
-	rm -rf m4
-	mkdir m4
-	-autoreconf -fi
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
 
+$(BUILD_DIR)/$(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $^
 
-Makefile.in.at: Makefile.in.orig
-	-mv Makefile.in Makefile.in.at
-	cp Makefile.in.orig Makefile.in
+clean:
+	rm -f $(BUILD_DIR)/$(TARGET) $(OBJ)
+ifneq ("$(BUILD_DIR)",".")
+	rm -rf $(BUILD_DIR)
+endif
 
+install: $(BUILD_DIR)/$(TARGET)
+	cp $(BUILD_DIR)/$(TARGET) $(LIB_DIR)/$(TARGET)
+	mkdir -p $(INCLUDE_DIR)/mxml
+	cp $(MXML_HEADERS) $(INCLUDE_DIR)/mxml/
