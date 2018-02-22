@@ -24,7 +24,7 @@ $(BUILD_DIR)/$(TARGET): $(OBJ)
 	$(AR) $(ARFLAGS) $@ $^
 
 config.h: config.h.in
-	copy config.h.in config.h
+	cp config.h.in config.h
 
 clean:
 	rm -f $(BUILD_DIR)/$(TARGET) $(OBJ)
