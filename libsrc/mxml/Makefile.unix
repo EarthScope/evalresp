@@ -12,7 +12,7 @@ TARGET=libmxmlev.a
 .SUFFIXES:
 .SUFFIXES: .c .o
 
-all: $(BUILD_DIR)/$(TARGET)
+all: config.h $(BUILD_DIR)/$(TARGET)
 
 $(BUILD_DIR)/%.o: %.c $(BUILD_DIR) $(BUILD_DIR)
 	$(CC) -c -o $@ $(CFLAGS) $<
@@ -22,6 +22,9 @@ $(BUILD_DIR):
 
 $(BUILD_DIR)/$(TARGET): $(OBJ)
 	$(AR) $(ARFLAGS) $@ $^
+
+config.h: config.h.in
+	copy config.h.in config.h
 
 clean:
 	rm -f $(BUILD_DIR)/$(TARGET) $(OBJ)
