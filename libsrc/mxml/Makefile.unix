@@ -33,6 +33,7 @@ ifneq ("$(BUILD_DIR)",".")
 endif
 
 install: $(BUILD_DIR)/$(TARGET)
+	mkdir -p $(LIB_DIR)
 	cp $(BUILD_DIR)/$(TARGET) $(LIB_DIR)/$(TARGET)
 	mkdir -p $(INCLUDE_DIR)/mxml
 	cp $(MXML_HEADERS) $(INCLUDE_DIR)/mxml/
