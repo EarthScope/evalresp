@@ -57,15 +57,15 @@
  * Do we have the snprintf() and vsnprintf() functions?
  */
 
-define HAVE_SNPRINTF
-define HAVE_VSNPRINTF
+#define HAVE_SNPRINTF
+#define HAVE_VSNPRINTF
 
 
 /*
  * Do we have the strXXX() functions?
  */
 
-define HAVE_STRDUP
+#define HAVE_STRDUP
 
 
 /*
