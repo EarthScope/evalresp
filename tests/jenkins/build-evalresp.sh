@@ -11,8 +11,15 @@ if [ ! -d src ]; then
 fi
 
 rm -fr install
-rm -fr m4; mkdir m4  # needed by ancient aclocal on jenkins machine
-autoreconf -fi
-./configure --prefix `pwd`/install --enable-check
-make
-make install
+
+# autoconf approach
+#rm -fr m4; mkdir m4  # needed by ancient aclocal on jenkins machine
+#autoreconf -fi
+#./configure --prefix `pwd`/install --enable-check
+#make
+#make install
+
+# standalone makefile approach
+sed -e 's|^INSTALL_DIR.*|INSTALL_DIR = $(PWD)/install|' Build.config
+make -f Makefile.unix
+make -f Makefile.unix install
