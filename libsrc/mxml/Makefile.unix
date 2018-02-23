@@ -23,8 +23,8 @@ $(BUILD_DIR):
 $(BUILD_DIR)/$(TARGET): $(OBJ)
 	$(AR) $(ARFLAGS) $@ $^
 
-config.h: config.h.in
-	cp config.h.in config.h
+config.h: config.h.unix
+	cp config.h.unix config.h
 
 clean:
 	rm -f $(BUILD_DIR)/$(TARGET) $(OBJ)

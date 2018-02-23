@@ -11,8 +11,8 @@ all: mxmlev.lib
 mxmlev.lib: config.h $(OBJ)
 	link /lib $(OBJ) /debug /OUT:mxmlev.lib
 
-config.h: config.h.in
-	copy config.h.in config.h
+config.h: config.h.ms
+	copy config.h.ms config.h
 
 clean:
 	del mxmlev.lib
