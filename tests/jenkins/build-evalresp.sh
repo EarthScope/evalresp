@@ -20,6 +20,7 @@ rm -fr install
 #make install
 
 # standalone makefile approach
+mkdir install
 sed -i -e 's|^INSTALL_DIR.*|INSTALL_DIR = $(PWD)/install|' Build.config
 make -f Makefile.unix
 make -f Makefile.unix install
