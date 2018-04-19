@@ -17,7 +17,7 @@ pipeline
         {
             steps
             { 
-                parallel (/*centos64: {
+                parallel (centos7: {/*centos64: {
                     node('centos64')
                     {
                         script { try {
@@ -34,9 +34,9 @@ pipeline
                             stash includes: '**/tests/robot/*', name: 'centos64Results'
                         }}
                     }
-                },*/
+                },
                 centos7:
-                {
+                {*/
                     node('centos7')
                     {
                         script { try {
