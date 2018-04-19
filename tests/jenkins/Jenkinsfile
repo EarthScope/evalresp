@@ -17,7 +17,7 @@ pipeline
         {
             steps
             { 
-                parallel (centos64: {
+                parallel (/*centos64: {
                     node('centos64')
                     {
                         script { try {
@@ -34,7 +34,7 @@ pipeline
                             stash includes: '**/tests/robot/*', name: 'centos64Results'
                         }}
                     }
-                },
+                },*/
                 centos7:
                 {
                     node('centos7')
@@ -45,9 +45,9 @@ pipeline
                             sh 'sudo yum --enablerepo=epel install -y autoconf libtool libxml2-devel check-devel doxygen'
                             sh 'sudo pip install --upgrade pip robotframework virtualenv virtualenvwrapper'
                             sh 'tests/jenkins/build-evalresp.sh'
-//                            sh './tests/jenkins/run-c-tests.sh'
-//                            sh './tests/jenkins/build-extended-robot-tests.sh 2017 1'
-//                            sh './tests/jenkins/build-extended-robot-tests.sh 2010 365'
+                            sh './tests/jenkins/run-c-tests.sh'
+                            sh './tests/jenkins/build-extended-robot-tests.sh 2017 1'
+                            sh './tests/jenkins/build-extended-robot-tests.sh 2010 365'
                             sh './tests/jenkins/run-robot-tests.sh'
                         } finally {
                             stash includes: '**/tests/robot/*', name: 'centos7Results'
@@ -62,8 +62,8 @@ pipeline
                             bat "echo windows 10"
                             unstash 'source'
                             bat 'tests\\jenkins\\build-evalresp.bat'
-//                            bat 'tests\\jenkins\\build-extended-robot-tests.bat 2017 1'
-//                            bat 'tests\\jenkins\\build-extended-robot-tests.bat 2010 365'
+                            bat 'tests\\jenkins\\build-extended-robot-tests.bat 2017 1'
+                            bat 'tests\\jenkins\\build-extended-robot-tests.bat 2010 365'
                             bat 'tests\\jenkins\\run-robot-tests.bat'
                         } finally {
                             stash includes: '**/tests/robot/*', name: 'windows10Results'
