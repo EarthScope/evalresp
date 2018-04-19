@@ -31,7 +31,7 @@ pipeline
 //                            sh './tests/jenkins/build-extended-robot-tests.sh 2010 365'
                             sh './tests/jenkins/run-robot-tests.sh'
                         } finally {
-                            stash includes: '**/tests/robot/*', name: 'centos64Results'
+                            stash includes: '** /tests/robot/*', name: 'centos64Results'
                         }}
                     }
                 },
@@ -91,7 +91,7 @@ pipeline
                 unstash windows10Results
               }
               script { try {
-                  sh 'rebot centos64/output.xml centos7/output.xml windows10/output.xml'
+                  sh 'rebot centos7/output.xml windows10/output.xml'
               } finally {
                 step([$class: 'RobotPublisher',
                       disableArchiveOutput: false,
