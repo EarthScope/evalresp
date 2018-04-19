@@ -12,7 +12,7 @@ fi
 # remove manually locally if you want to rebuild the env
 #rm -fr env
 
-if [ ! -d env ]; then
+if [ ! -d "env/bin" ]; then
     virtualenv env
     . ./env/bin/activate
     pip install --upgrade robotframework
