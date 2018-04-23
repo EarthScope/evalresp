@@ -78,10 +78,6 @@ pipeline
         always
         {
             node('master'){
-              dir(centos64)
-              {
-                unstash centos64Results
-              }
               dir(centos7)
               {
                 unstash centos7Results
