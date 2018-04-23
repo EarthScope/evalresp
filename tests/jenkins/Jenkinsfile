@@ -59,7 +59,7 @@ pipeline
                     node('windows10')
                     {
                         script { try {
-                            bat "echo windows 10"
+                            //bat "echo windows 10"
                             unstash 'source'
                             bat 'tests\\jenkins\\build-evalresp.bat'
                             bat 'tests\\jenkins\\build-extended-robot-tests.bat 2017 1'
