@@ -73,7 +73,7 @@ pipeline
     }
     post {
         always {
-            node('master'){
+            //node('master'){
               dir(centos7)
               {
                 unstash centos7Results
@@ -95,7 +95,7 @@ pipeline
                       reportFileName: 'report.html',
                       unstableThreshold: 0])
               }}
-            }
+            //}
         }
     }
 }
