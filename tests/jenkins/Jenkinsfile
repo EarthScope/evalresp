@@ -74,15 +74,13 @@ pipeline
     post {
         always {
             node('master'){
-            echo 'Orange You glad I didn\'t say Banana!'
             dir('centos7')
             {
-                echo 'Orange You glad I didn\'t say Banana!'
-                unstash centos7Results
+                unstash 'centos7Results'
             }
             dir('windows10')
             {
-                unstash windows10Results
+                unstash 'windows10Results'
             }
             script { try {
                 sh 'rebot -o output.xml */output.xml'
