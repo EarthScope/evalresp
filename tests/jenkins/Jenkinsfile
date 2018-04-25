@@ -75,28 +75,28 @@ pipeline
         always {
             node('master'){
             echo 'Orange You glad I didn\'t say Banana!'
-              dir(centos7)
-              {
-            echo 'Orange You glad I didn\'t say Banana!'
+            dir('centos7')
+            {
+                echo 'Orange You glad I didn\'t say Banana!'
                 unstash centos7Results
-              }
-              dir(windows10)
-              {
+            }
+            dir('windows10')
+            {
                 unstash windows10Results
-              }
-              script { try {
-                  sh 'rebot -o output.xml */output.xml'
-              } finally {
-                step([$class: 'RobotPublisher',
-                      disableArchiveOutput: false,
-                      logFileName: 'log.html',
-                      otherFiles: '',
-                      outputFileName: 'output.xml',
-                      outputPath: '.',
-                      passThreshold: 100,
-                      reportFileName: 'report.html',
-                      unstableThreshold: 0])
-              }}
+            }
+            script { try {
+                sh 'rebot -o output.xml */output.xml'
+            } finally {
+              step([$class: 'RobotPublisher',
+                    disableArchiveOutput: false,
+                    logFileName: 'log.html',
+                    otherFiles: '',
+                    outputFileName: 'output.xml',
+                    outputPath: '.',
+                    passThreshold: 100,
+                    reportFileName: 'report.html',
+                    unstableThreshold: 0])
+            }}
             }
         }
     }
