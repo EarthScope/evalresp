@@ -83,7 +83,7 @@ pipeline
                 unstash 'windows10Results'
             }
             script { try {
-                sh 'rebot -o output.xml */output.xml'
+                sh 'rebot -o output.xml */tests/robot//output.xml'
             } finally {
               step([$class: 'RobotPublisher',
                     disableArchiveOutput: false,
