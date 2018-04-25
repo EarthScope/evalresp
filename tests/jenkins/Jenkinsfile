@@ -73,7 +73,6 @@ pipeline
     }
     post {
         always {
-            echo 'Orange You glad I didn\'t say Banana!'
             //node('master'){
               dir(centos7)
               {
@@ -83,6 +82,7 @@ pipeline
               {
                 unstash windows10Results
               }
+            echo 'Orange You glad I didn\'t say Banana!'
               script { try {
                   sh 'rebot -o output.xml */output.xml'
               } finally {
