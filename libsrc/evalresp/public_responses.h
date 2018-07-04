@@ -12,13 +12,13 @@
  */
 typedef struct evalresp_response_s
 {
-  char station[STALEN]; /**< Station name. */
-  char network[NETLEN]; /**< Network name. */
-  char locid[LOCIDLEN]; /**< Location ID. */
-  char channel[CHALEN]; /**< Channel name. */
-  evalresp_complex *rvec; /**< Output vector. */
-  int nfreqs; /**< Number of frequencies. */
-  double *freqs; /**< Array of frequencies. */
+  char station[STALEN];             /**< Station name. */
+  char network[NETLEN];             /**< Network name. */
+  char locid[LOCIDLEN];             /**< Location ID. */
+  char channel[CHALEN];             /**< Channel name. */
+  evalresp_complex *rvec;           /**< Output vector. */
+  int nfreqs;                       /**< Number of frequencies. */
+  double *freqs;                    /**< Array of frequencies. */
   struct evalresp_response_s *next; /**< Pointer to next response object (unused in new API, required for compatibility layer). */
 } evalresp_response;
 

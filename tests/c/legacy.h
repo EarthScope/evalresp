@@ -8,26 +8,26 @@
  */
 enum error_codes
 {
-  NON_EXIST_FLD = -2, /**< Field does not exist. */
-  ILLEGAL_RESP_FORMAT = -5, /**< Illegal response format. */
-  PARSE_ERROR = -4, /**< Parse error. */
-  UNDEF_PREFIX = -3, /**< Undefined prefix. */
-  UNDEF_SEPSTR = -6, /**< Undefined separator. */
-  OUT_OF_MEMORY = -1, /**< Out of memory */
-  UNRECOG_FILTYPE = -7, /**< Unrecognized filter type */
-  UNEXPECTED_EOF = -8, /**< Unexpected EOF. */
+  NON_EXIST_FLD = -2,         /**< Field does not exist. */
+  ILLEGAL_RESP_FORMAT = -5,   /**< Illegal response format. */
+  PARSE_ERROR = -4,           /**< Parse error. */
+  UNDEF_PREFIX = -3,          /**< Undefined prefix. */
+  UNDEF_SEPSTR = -6,          /**< Undefined separator. */
+  OUT_OF_MEMORY = -1,         /**< Out of memory */
+  UNRECOG_FILTYPE = -7,       /**< Unrecognized filter type */
+  UNEXPECTED_EOF = -8,        /**< Unexpected EOF. */
   ARRAY_BOUNDS_EXCEEDED = -9, /**< Array bound exceeded. */
-  OPEN_FILE_ERROR = 2, /**< Failure to open the file. */
-  RE_COMP_FAILED = 3, /**< Failure to compile the pattern. */
-  MERGE_ERROR = 4, /**< lure to merge blockettes. */
-  SWAP_FAILED = 5, /**< Swapping failure: not used. */
-  USAGE_ERROR = 6, /**< User errors detencted on teh command line. */
-  BAD_OUT_UNITS = 7, /**< Bad output units error. */
-  IMPROP_DATA_TYPE = -10, /**< Unsupported data type. */
-  UNSUPPORT_FILTYPE = -11, /**< Unsupported filter type. */
-  ILLEGAL_FILT_SPEC = -12, /**< Illigal filter specs. */
-  NO_STAGE_MATCHED = -13, /**< No stage matched error. */
-  UNRECOG_UNITS = -14 /**< Unrecognized units. */
+  OPEN_FILE_ERROR = 2,        /**< Failure to open the file. */
+  RE_COMP_FAILED = 3,         /**< Failure to compile the pattern. */
+  MERGE_ERROR = 4,            /**< lure to merge blockettes. */
+  SWAP_FAILED = 5,            /**< Swapping failure: not used. */
+  USAGE_ERROR = 6,            /**< User errors detencted on teh command line. */
+  BAD_OUT_UNITS = 7,          /**< Bad output units error. */
+  IMPROP_DATA_TYPE = -10,     /**< Unsupported data type. */
+  UNSUPPORT_FILTYPE = -11,    /**< Unsupported filter type. */
+  ILLEGAL_FILT_SPEC = -12,    /**< Illigal filter specs. */
+  NO_STAGE_MATCHED = -13,     /**< No stage matched error. */
+  UNRECOG_UNITS = -14         /**< Unrecognized units. */
 };
 
 /**

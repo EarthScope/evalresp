@@ -636,7 +636,7 @@ free_generic (evalresp_blkt *blkt_ptr)
     free (blkt_ptr);
   }
 }
-/*
+
 void
 free_gain (evalresp_blkt *blkt_ptr)
 {
@@ -664,7 +664,7 @@ free_ref (evalresp_blkt *blkt_ptr)
     free (blkt_ptr);
   }
 }
-*/
+
 void
 free_evalresp_blkt (evalresp_blkt *blkt_ptr)
 {
@@ -725,13 +725,13 @@ free_stages (evalresp_stage *stage_ptr)
         free_generic (this_blkt);
         break;
       case DECIMATION:
-      //        free_deci (this_blkt);
-      //        break;
+        free_deci (this_blkt);
+        break;
       case GAIN:
-      //        free_gain (this_blkt);
-      //        break;
+        free_gain (this_blkt);
+        break;
       case REFERENCE:
-        //        free_ref (this_blkt);
+        free_ref (this_blkt);
         free_evalresp_blkt (this_blkt);
         break;
       case POLYNOMIAL:

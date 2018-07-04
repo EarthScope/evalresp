@@ -51,12 +51,12 @@
 typedef struct regexp
 {
   char *startp[NSUBEXP]; /**< Start pointers for subexpressions. */
-  char *endp[NSUBEXP]; /**< End pointers for subexpressions. */
-  char regstart; /**< Internal use only. */
-  char reganch; /**< Internal use only. */
-  char *regmust; /**< Internal use only. */
-  int regmlen; /**<  Internal use only. */
-  char program[1]; /**< Unwarranted chumminess with compiler. */
+  char *endp[NSUBEXP];   /**< End pointers for subexpressions. */
+  char regstart;         /**< Internal use only. */
+  char reganch;          /**< Internal use only. */
+  char *regmust;         /**< Internal use only. */
+  int regmlen;           /**<  Internal use only. */
+  char program[1];       /**< Unwarranted chumminess with compiler. */
 } regexp;
 
 /**

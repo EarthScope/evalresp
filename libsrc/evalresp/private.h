@@ -135,15 +135,15 @@
 enum units
 {
   UNDEF_UNITS, /**< Undefined. */
-  DIS, /**< Displacement. */
-  VEL, /**< Velocity. */
-  ACC, /**< Acceleration. */
-  COUNTS, /**< Counts. */
-  VOLTS, /**< Volts. */
-  DEFAULT, /**< Default. */
-  PRESSURE, /**< Pressure. */
-  TESLA, /**< Tesla. */
-  CENTIGRADE /**< Degrees Celsius. */
+  DIS,         /**< Displacement. */
+  VEL,         /**< Velocity. */
+  ACC,         /**< Acceleration. */
+  COUNTS,      /**< Counts. */
+  VOLTS,       /**< Volts. */
+  DEFAULT,     /**< Default. */
+  PRESSURE,    /**< Pressure. */
+  TESLA,       /**< Tesla. */
+  CENTIGRADE   /**< Degrees Celsius. */
 };
 
 /**
@@ -155,19 +155,19 @@ enum filt_types
 {
   UNDEF_FILT, /**< Undefined filter. */
   LAPLACE_PZ, /**< Laplace transform filter: poles and zeros representation B53 . */
-  ANALOG_PZ, /**< Analog filter: poles and zeros representation B53. */
-  IIR_PZ, /**< Infinite Impulse Response: polez and zeros representation B53. */
-  FIR_SYM_1, /**< Finite Impulse Response Filter (symmetrical with odd number of weights) B61. */
-  FIR_SYM_2, /**< Finie Impulse Response Filter (symmetrical with even number of weights) B61. */
-  FIR_ASYM, /**< Finite Impulse Response Filter (assymetrical) B54. */
-  LIST, /**< Filter presented as a list B55 (Frequency/amplitude). */
-  GENERIC, /**< Filter presented as a generi B56 (via Corener frequencies/slopes. */
+  ANALOG_PZ,  /**< Analog filter: poles and zeros representation B53. */
+  IIR_PZ,     /**< Infinite Impulse Response: polez and zeros representation B53. */
+  FIR_SYM_1,  /**< Finite Impulse Response Filter (symmetrical with odd number of weights) B61. */
+  FIR_SYM_2,  /**< Finie Impulse Response Filter (symmetrical with even number of weights) B61. */
+  FIR_ASYM,   /**< Finite Impulse Response Filter (assymetrical) B54. */
+  LIST,       /**< Filter presented as a list B55 (Frequency/amplitude). */
+  GENERIC,    /**< Filter presented as a generi B56 (via Corener frequencies/slopes. */
   DECIMATION, /**< Decimation B57. */
-  GAIN, /**< Channel Sensitiity/Gain B58. */
-  REFERENCE, /**< Response Reference B60 to replace B53-58,61 with the dictionary counterparts. */
+  GAIN,       /**< Channel Sensitiity/Gain B58. */
+  REFERENCE,  /**< Response Reference B60 to replace B53-58,61 with the dictionary counterparts. */
   FIR_COEFFS, /**< FIR response: coefficients representation B61. */
   IIR_COEFFS, /**< Infinite Impulse response represented in B54. */
-  POLYNOMIAL /**< Polynomial filter via B62. */
+  POLYNOMIAL  /**< Polynomial filter via B62. */
 };
 
 /**
@@ -177,15 +177,15 @@ enum filt_types
  */
 enum stage_types
 {
-  UNDEF_STAGE, /**< Undefined stage. */
-  PZ_TYPE, /**< Polez and zeros stage. */
-  IIR_TYPE, /**< Infinite Impulse response stage. */
-  FIR_TYPE, /**< Finite Impulse response stage. */
-  GAIN_TYPE, /**< Channel Sensitivity/Gain stage. */
-  LIST_TYPE, /**< List response representation stage. */
+  UNDEF_STAGE,     /**< Undefined stage. */
+  PZ_TYPE,         /**< Polez and zeros stage. */
+  IIR_TYPE,        /**< Infinite Impulse response stage. */
+  FIR_TYPE,        /**< Finite Impulse response stage. */
+  GAIN_TYPE,       /**< Channel Sensitivity/Gain stage. */
+  LIST_TYPE,       /**< List response representation stage. */
   IIR_COEFFS_TYPE, /**< Infinite Impulse response in coefficient form stage. */
-  GENERIC_TYPE, /**< Generic response stage. */
-  POLYNOMIAL_TYPE /**< Polynomial type stage. */
+  GENERIC_TYPE,    /**< Generic response stage. */
+  POLYNOMIAL_TYPE  /**< Polynomial type stage. */
 };
 
 /**
@@ -197,9 +197,9 @@ typedef struct
 {
   char *station; /**< Station name. */
   char *network; /**< Network name. */
-  char *locid; /**< Location ID. */
+  char *locid;   /**< Location ID. */
   char *channel; /**< Channel name. */
-  int found; /**< Number of times found in the input RESP file. */
+  int found;     /**< Number of times found in the input RESP file. */
 } evalresp_sncl;
 
 /**
@@ -209,7 +209,7 @@ typedef struct
  */
 typedef struct evalresp_sncls_s
 {
-  int nscn; /**< Number of network-station-locid-channel objects. */
+  int nscn;                /**< Number of network-station-locid-channel objects. */
   evalresp_sncl **scn_vec; /**< Array of network-station-locid-channel objects. */
 } evalresp_sncls;
 
@@ -231,7 +231,7 @@ void evalresp_free_sncls (evalresp_sncls *sncls);
  */
 struct string_array
 {
-  int nstrings; /**< Number of strings. */
+  int nstrings;   /**< Number of strings. */
   char **strings; /**< String array. */
 };
 
@@ -242,7 +242,7 @@ struct string_array
  */
 struct file_list
 {
-  char *name; /**< File name. */
+  char *name;                  /**< File name. */
   struct file_list *next_file; /**< Pointer to next file list object. */
 };
 
@@ -253,8 +253,8 @@ struct file_list
  */
 struct matched_files
 {
-  int nfiles; /**< Number of files. */
-  struct file_list *first_list; /**< Array of file list objects. */
+  int nfiles;                     /**< Number of files. */
+  struct file_list *first_list;   /**< Array of file list objects. */
   struct matched_files *ptr_next; /**< Pointer to next matches files object. */
 };
 
@@ -997,10 +997,10 @@ int process_stdio (evalresp_logger *log, evalresp_options *options,
 int responses_to_cwd (evalresp_logger *log, const evalresp_responses *responses,
                       int unwrap, evalresp_output_format format, int use_stdio);
 
-int /* O - Number of bytes formatted */
-_evalresp_snprintf (char *buffer, /* I - Output buffer */
-                    size_t bufsize, /* I - Size of output buffer */
+int                                     /* O - Number of bytes formatted */
+_evalresp_snprintf (char *buffer,       /* I - Output buffer */
+                    size_t bufsize,     /* I - Size of output buffer */
                     const char *format, /* I - Printf-style format string */
-                    ...); /* I - Additional arguments as needed */
+                    ...);               /* I - Additional arguments as needed */
 
 #endif

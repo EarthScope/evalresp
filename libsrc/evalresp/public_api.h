@@ -274,13 +274,13 @@ lowlevel ()
 enum evalresp_status_enum
 {
   EVALRESP_OK = 0, /**< No error (intentionally false). */
-  EVALRESP_MEM, /**< Memory error. */
-  EVALRESP_IO, /**< IO Error. */
-  EVALRESP_INP, /**< Bad user input. */
-  EVALRESP_ERR, /**< Internal (coding) error. */
-  EVALRESP_PAR, /**< Parsing error in file. */
-  EVALRESP_EOF, /**< End of input. */
-  EVALRESP_VAL /**< Validation error. */
+  EVALRESP_MEM,    /**< Memory error. */
+  EVALRESP_IO,     /**< IO Error. */
+  EVALRESP_INP,    /**< Bad user input. */
+  EVALRESP_ERR,    /**< Internal (coding) error. */
+  EVALRESP_PAR,    /**< Parsing error in file. */
+  EVALRESP_EOF,    /**< End of input. */
+  EVALRESP_VAL     /**< Validation error. */
 };
 
 // --- filters
@@ -292,10 +292,10 @@ enum evalresp_status_enum
  */
 typedef struct
 {
-  int year; /**< Year. */
-  int jday; /**< Julian day of year. */
-  int hour; /**< Hour. */
-  int min; /**< Minutes. */
+  int year;  /**< Year. */
+  int jday;  /**< Julian day of year. */
+  int hour;  /**< Hour. */
+  int min;   /**< Minutes. */
   float sec; /**< Seconds. */
 } evalresp_datetime;
 
@@ -307,7 +307,7 @@ typedef struct
 typedef struct
 {
   struct evalresp_sncls_s *sncls; /**< The SNCLs to match (if set, one must match).  Values can added using @ref evalresp_add_sncl_text and @ref evalresp_add_sncl_all. */
-  evalresp_datetime *datetime; /**< The datetime to use (if set). */
+  evalresp_datetime *datetime;    /**< The datetime to use (if set). */
 } evalresp_filter;
 
 /**
@@ -408,8 +408,8 @@ void evalresp_free_filter (evalresp_filter **filter);
  * @brief Enumeration of output formats (FAP, complex, etc - can require multiple files).
  */
 typedef enum {
-  evalresp_ap_output_format, /**< Two files, AMP and PHASE. */
-  evalresp_fap_output_format, /**< One file, FAP. */
+  evalresp_ap_output_format,     /**< Two files, AMP and PHASE. */
+  evalresp_fap_output_format,    /**< One file, FAP. */
   evalresp_complex_output_format /**< One file, COMPLEX. */
 } evalresp_output_format;
 
@@ -419,14 +419,14 @@ typedef enum {
  * @brief Enumeration of response units (acceleration, velocity or displacement).
  */
 typedef enum {
-  evalresp_file_unit, /**< Use the units in the input file. */
+  evalresp_file_unit,         /**< Use the units in the input file. */
   evalresp_displacement_unit, /**< Displacement units. */
-  evalresp_velocity_unit, /**< Velocity units (the default). */
-  evalresp_acceleration_unit /**< Acceleration units. */
+  evalresp_velocity_unit,     /**< Velocity units (the default). */
+  evalresp_acceleration_unit  /**< Acceleration units. */
 } evalresp_unit;
 
 #define EVALRESP_ALL_STAGES -1 /**< Default for start and stop stage. */
-#define EVALRESP_NO_FREQ -1 /**< Default for frequency limits. */
+#define EVALRESP_NO_FREQ -1    /**< Default for frequency limits. */
 
 /**
  * @public
@@ -436,23 +436,23 @@ typedef enum {
  */
 typedef struct
 {
-  char *filename; /**< Input file (if omitted, some routines will scan the current directory for files). */
-  double b62_x; /**< X value for evaluating blockette 62. */
-  double min_freq; /**< Minimum frequency to evaluate. */
-  double max_freq; /**< Maximum frequency to evaluate. */
-  int nfreq; /**< Number of frequencies (ie "bins") to evaluate. */
-  int lin_freq; /**< Linear frequency steps (logarithmic by default)? */
-  int start_stage; /**< First stage to evaluate (all be default). */
-  int stop_stage; /**< Last stage to evaluate (all by default). */
-  int use_estimated_delay; /**< Use the estimated delay (ignore by default)? */
-  int unwrap_phase; /**< Unwrap phase (leave unwrapped by default)? */
-  int b55_interpolate; /**< Interpolate blockette 55 to match min_freq, max_freq, etc (use frequencies given in the blockette, overriding options here, by default)? */
-  int use_total_sensitivity; /**< Use the total sensitivity (ignore by default)? */
-  int use_stdio; /**< Read from stdin / write to stdout (use files by default)? */
-  int station_xml; /**< Expect station.xml formatted input (RSEED by default)? */
+  char *filename;                /**< Input file (if omitted, some routines will scan the current directory for files). */
+  double b62_x;                  /**< X value for evaluating blockette 62. */
+  double min_freq;               /**< Minimum frequency to evaluate. */
+  double max_freq;               /**< Maximum frequency to evaluate. */
+  int nfreq;                     /**< Number of frequencies (ie "bins") to evaluate. */
+  int lin_freq;                  /**< Linear frequency steps (logarithmic by default)? */
+  int start_stage;               /**< First stage to evaluate (all be default). */
+  int stop_stage;                /**< Last stage to evaluate (all by default). */
+  int use_estimated_delay;       /**< Use the estimated delay (ignore by default)? */
+  int unwrap_phase;              /**< Unwrap phase (leave unwrapped by default)? */
+  int b55_interpolate;           /**< Interpolate blockette 55 to match min_freq, max_freq, etc (use frequencies given in the blockette, overriding options here, by default)? */
+  int use_total_sensitivity;     /**< Use the total sensitivity (ignore by default)? */
+  int use_stdio;                 /**< Read from stdin / write to stdout (use files by default)? */
+  int station_xml;               /**< Expect station.xml formatted input (RSEED by default)? */
   evalresp_output_format format; /**< Output format (AMP and PHA by default). */
-  evalresp_unit unit; /**< Output unit (displacement by default). */
-  int verbose; /**< Verbose output? */
+  evalresp_unit unit;            /**< Output unit (displacement by default). */
+  int verbose;                   /**< Verbose output? */
 } evalresp_options;
 
 /**
@@ -669,10 +669,10 @@ int evalresp_channels_to_responses (evalresp_logger *log, evalresp_channels *cha
  * @brief Enumeration of output file formats (for a single file).
  */
 typedef enum {
-  evalresp_fap_file_format, /**< A file containing frequency, amplitude and phase columns. */
+  evalresp_fap_file_format,       /**< A file containing frequency, amplitude and phase columns. */
   evalresp_amplitude_file_format, /**< A file containing frequency and amplitude columns. */
-  evalresp_phase_file_format, /**< A file containing frequency and phase columns. */
-  evalresp_complex_file_format /**< A file containing frequency and complex response columns. */
+  evalresp_phase_file_format,     /**< A file containing frequency and phase columns. */
+  evalresp_complex_file_format    /**< A file containing frequency and complex response columns. */
 } evalresp_file_format;
 
 /**

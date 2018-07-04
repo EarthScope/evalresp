@@ -17,14 +17,14 @@ static char *prefixes[] = {"FAP", "AMP", "PHASE", "SPECTRA", "AMP/PHS"};
 
 /* IGD This function is needed for MS Windows VS2013 and below */
 
-int /* O - Number of bytes formatted */
-_evalresp_snprintf (char *buffer, /* I - Output buffer */
-                    size_t bufsize, /* I - Size of output buffer */
+int                                     /* O - Number of bytes formatted */
+_evalresp_snprintf (char *buffer,       /* I - Output buffer */
+                    size_t bufsize,     /* I - Size of output buffer */
                     const char *format, /* I - Printf-style format string */
-                    ...) /* I - Additional arguments as needed */
+                    ...)                /* I - Additional arguments as needed */
 {
   va_list ap; /* Argument list */
-  int bytes; /* Number of bytes formatted */
+  int bytes;  /* Number of bytes formatted */
 
   va_start (ap, format);
   bytes = vsnprintf (buffer, bufsize, format, ap);

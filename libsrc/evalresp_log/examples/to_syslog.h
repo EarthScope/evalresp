@@ -53,9 +53,9 @@ extern int evalresp_log_to_syslog (evalresp_log_msg *msg, void *data);
  */
 typedef struct evalresp_syslog_data_s
 {
-  int option; /**< Option to pass to openlog(). */
+  int option;   /**< Option to pass to openlog(). */
   int facility; /**< The Facility that this program is using. THis is passed to openlog() */
-  char *ident; /**< The name of the program you want to be displayed in the syslog  */
+  char *ident;  /**< The name of the program you want to be displayed in the syslog  */
 } evalresp_syslog_data;
 
 /**
