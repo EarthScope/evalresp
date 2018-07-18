@@ -28,7 +28,7 @@ This README file is a part the evalresp distribution.
 
 - To use evalresp Application Programming Interface:
    * Build evalresp.pdf from the source run (in doc directory)
-   * `cd doc; make pdf`
+   * `cd doc; make -f Makefile.unix docs`
    * See the examples in the section "evalresp Public Interface".
 
 - To call evalresp library from FORTRAN:
