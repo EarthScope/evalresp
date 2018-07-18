@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# version is duplicated across build systems, so set it here
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage:  $0 XX.YY.ZZ"
+    exit 1
+fi
+
+VERSION="$1"
+echo "Version: $VERSION"
+
+sed -i -e "s/REVNUM \".*\"/REVNUM \"$VERSION\"/" libsrc/evalresp/public.h
+sed -i -e "s/\[evalresp], \[[^]]\+/[evalresp], [$VERSION/" configure.ac
+
+

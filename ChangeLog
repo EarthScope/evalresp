@@ -1,655 +1,733 @@
+
+Version 5.0.a3
+
+	18-07-2018 Andrew Cooke (a.cooke@isti.com), Ilya Dricker, Dylan
+	Thies
+
+	* FIXED: Bug that resulted in gain being reused from an earlier
+	stage if not specified (and subsequenct memory corruption on
+	free).
+
+	* IMPROVED: Build for libxml (use simple make).
+
+	* IMPROVED: Automated testing.
+
+Version 5.0.a2
+
+	18-08-2017 Ilya Dricker (i.dricker@isti.com), Dylan Thies, Andrew
+	Cooke
+
+	* FIXED: Many bugs introduced in rewrite.
+
 Version 5.0.a1
-26-July-2017 Ilya Dricker (i.dricker@isti.com), Andrew Cooke, Dylan Thies
-  * NEW: Significant re-factorization and rewrite of the of the evalresp code
-  * NEW: A rewrite of the evalresp source code in addition to enhancements for embedded usage.
-  * NEW: C99 compliance
-  * IMPROVED: Removal of the compiler warnings on gcc, clang/llvm
-  * IMPROVED: Normalized source code style
-  * IMPROVED: Applied best practices: no use of goto, setjmp/longjmp, and other constructs
-     that make code hard to follow and maintain.
-  * REPLACED: short non-descriptive naming conventions,
-  * IMPROVED: Normalize source code formatting using a clang-format profile (provided by IRIS).
-  * MODIFIED: Exposed and document structures that can be used to express a response cascade 
-     and provide functions for evaluation.
-  * MODIFIED: Provided functions to accept RESP and StationXML from memory buffers, 
-     that then use the lower level interfaces.
-  * NEW: Provided functions that perform “file discovery” and then use the lower level
-      interfaces.
-  * NEW: Provided explicit definitions (enums or defines) for input and output units 
-      and focused functionality
-  * NEW: Provided a common logging facility for error, diagnostic and verbose messaging.
-  * NEW: Created unit and black-box testing system based on Robot framework
-  * NEW: Created Doxyen-based Developer's Guide
-  * NEW: Created a system with a plain Makefile and nmake Makefile.win (for Windows).
-  * MODIFIED: Replace usage of libxml2 with an embedded solution
-  * MODIFIED: Replaced GPL-based splining functions with LGPL countreparts
-  * NEW: Moved the source code to IRIS Github
+
+	26-July-2017 Ilya Dricker (i.dricker@isti.com), Andrew Cooke,
+	Dylan Thies
+
+	* NEW: Significant re-factorization and rewrite of the of the
+	evalresp code
+
+	* NEW: A rewrite of the evalresp source code in addition to
+	enhancements for embedded usage.
+
+	* NEW: C99 compliance
+
+	* IMPROVED: Removal of the compiler warnings on gcc, clang/llvm
+
+	* IMPROVED: Normalized source code style
+
+	* IMPROVED: Applied best practices: no use of goto,
+	setjmp/longjmp, and other constructs that make code hard to follow
+	and maintain.
+
+	* REPLACED: short non-descriptive naming conventions,
+
+	* IMPROVED: Normalize source code formatting using a clang-format
+	profile (provided by IRIS).
+
+	* MODIFIED: Exposed and document structures that can be used to
+	express a response cascade and provide functions for evaluation.
+
+	* MODIFIED: Provided functions to accept RESP and StationXML from
+	memory buffers, that then use the lower level interfaces.
+
+	* NEW: Provided functions that perform “file discovery” and then
+	use the lower level interfaces.
+
+	* NEW: Provided explicit definitions (enums or defines) for input
+	and output units and focused functionality
+
+	* NEW: Provided a common logging facility for error, diagnostic
+	and verbose messaging.
+
+	* NEW: Created unit and black-box testing system based on Robot
+	framework
+
+	* NEW: Created Doxyen-based Developer's Guide
+
+	* NEW: Created a system with a plain Makefile and nmake
+	Makefile.win (for Windows).
+
+	* MODIFIED: Replace usage of libxml2 with an embedded solution
+
+	* MODIFIED: Replaced GPL-based splining functions with LGPL
+	countreparts
+
+	* NEW: Moved the source code to IRIS Github
 
 Version 4.0.7
-10-Mar-2016 Ilya Dricker (i.dricker@isti.com)
-  * FIXED: a typo in test/java/Makefile.am file
+
+	10-Mar-2016 Ilya Dricker (i.dricker@isti.com)
+
+	* FIXED: a typo in test/java/Makefile.am file
 
 Version 4.0.6
 
-  07-Oct-2015 Andrew Cooke (a.cooke@isti.com)
+	07-Oct-2015 Andrew Cooke (a.cooke@isti.com)
 
-  * ADDED: #define EVRESP_XML so that library code can detect the
-    new functions (with xml flag).
+	* ADDED: #define EVRESP_XML so that library code can detect the
+	new functions (with xml flag).
 
 Version 4.0.5
 
-  09-Sep-2015 Andrew Cooke (a.cooke@isti.com)
+	09-Sep-2015 Andrew Cooke (a.cooke@isti.com)
 
-  * MODIFIED: Added -x flag back; removed auto-detetcion of XML
-    (cannot guarantee that rewind/fseek works on all streams in C).
+	* MODIFIED: Added -x flag back; removed auto-detetcion of XML
+	(cannot guarantee that rewind/fseek works on all streams in C).
 
 Version 4.0.4
 
-  07-Sep-2015 Andrew Cooke (a.cooke@isti.com)
+	07-Sep-2015 Andrew Cooke (a.cooke@isti.com)
 
-  * MODIFIED: Documentation, removing mention of -x flag.
+	* MODIFIED: Documentation, removing mention of -x flag.
 
-  * MODIFIED: File reset during auto-detection (from rewind to fseek)
-    in the hope of working better on OSX.
+	* MODIFIED: File reset during auto-detection (from rewind to
+	fseek) in the hope of working better on OSX.
 
 Version 4.0.3
 
-  27-Jul-2015 Andrew Cooke (a.cooke@isti.com)
+	27-Jul-2015 Andrew Cooke (a.cooke@isti.com)
 
-  * REMOVED: -x flag.  Station.xml files are now detected automatically
-    (by checking if the first non-blank character is "<").
+	* REMOVED: -x flag.  Station.xml files are now detected
+	automatically
+	(by checking if the first non-blank character is "<").
 
-  * FIXED: Small bug in reallocation of command line arg while addressing
-    compiler warnings from -Wunused-but-set-variable.
+	* FIXED: Small bug in reallocation of command line arg while
+	addressing compiler warnings from -Wunused-but-set-variable.
 
-  * MODIFIED: Handling of stages with "no data".  Now accepted, as they may
-    still have decimation and channel gain.
+	* MODIFIED: Handling of stages with "no data".  Now accepted, as
+	they may still have decimation and channel gain.
 
-  * MODIFIED: Handling of location ID '??' which is now equivalent to '*'.
+	* MODIFIED: Handling of location ID '??' which is now equivalent
+	to '*'.
 
 Version 4.0.2
 
-  01-Jun-2015 Andrew Cooke (a.cooke@isti.com)
+	01-Jun-2015 Andrew Cooke (a.cooke@isti.com)
 
-  * FIXED: Compiler error on OSX.
+	* FIXED: Compiler error on OSX.
 
 Version 4.0.1
 
-  22-May-2015 Andrew Cooke (a.cooke@isti.com)
+	22-May-2015 Andrew Cooke (a.cooke@isti.com)
 
-  * MODIFIED: Fortran demo (fix passing of double array).
+	* MODIFIED: Fortran demo (fix passing of double array).
 
 Version 4.0.0
 
-  22-May-2015 Andrew Cooke (a.cooke@isti.com)
+	22-May-2015 Andrew Cooke (a.cooke@isti.com)
 
-  * ADDED: Support for station.xml files (evalresp -x).  All high level
-    functions take an additional flag indicating whether this is set.
-    NOTE: this implies a new dependency on libxml2.
+	* ADDED: Support for station.xml files (evalresp -x).  All high
+	level functions take an additional flag indicating whether this is
+	set.  NOTE: this implies a new dependency on libxml2.
 
-  * ADDED: The xml2resp command to convert from station.xml to
-    response format (and man page), based on IRIS-WS output.
+	* ADDED: The xml2resp command to convert from station.xml to
+	response format (and man page), based on IRIS-WS output.
 
-  * ADDED: Tests (configure --enable-check; make check).
+	* ADDED: Tests (configure --enable-check; make check).
 
-  * ADDED: Continuous integration at https://phase2.isti.com:8080
+	* ADDED: Continuous integration at https://phase2.isti.com:8080
 
-  * ADDED: Support for COUNT units (as well as COUNTS).
+	* ADDED: Support for COUNT units (as well as COUNTS).
 
-  * ADDED: Installation of man pages.
+	* ADDED: Installation of man pages.
 
-  * MODIFIED: Fortran demo and associated code (works; now Fortran 95).
+	* MODIFIED: Fortran demo and associated code (works; now Fortran
+	95).
 
-  * MODIFIED: Source: removed tabs; standardised indents; fixed warnings
+	* MODIFIED: Source: removed tabs; standardised indents; fixed
+	warnings
 
-  * MODIFIED: Documentation and directory layout (autoreconf, multiple
-    directories).
+	* MODIFIED: Documentation and directory layout (autoreconf,
+	multiple directories).
 
-  * MODIFIED: To build with latest Windows environment.
+	* MODIFIED: To build with latest Windows environment.
 
-  * REMOVED: Borland support.
-
+	* REMOVED: Borland support.
 
 Version 3.3.4
 
-  09-Oct-2013 Ilya Dricker (i.dricker@isti.com)
+	09-Oct-2013 Ilya Dricker (i.dricker@isti.com)
 
-  * ADDED: processing of blockette 62 (which requires input parameter
-    -b62_x)
+	* ADDED: processing of blockette 62 (which requires input
+	parameter -b62_x)
 
-  * MODIFIED: Redefined processing of DECIMATION as correction applied
-    minus calculated delay
+	* MODIFIED: Redefined processing of DECIMATION as correction
+	applied minus calculated delay
 
-  * MODIFIED: Redifined processing of DECIMATION with
-    --use-estimated-delay as estimated delay
+	* MODIFIED: Redifined processing of DECIMATION with
+	--use-estimated-delay as estimated delay
 
-  * FIXED: Reverted back to version 2.3.25 the code in function
-    fir_asym_trans()
+	* FIXED: Reverted back to version 2.3.25 the code in function
+	fir_asym_trans()
 
-  * ADDED: support of temperature units in centigrades C 30-May-2013
-    Ilya Dricker (i.dricker@isti.com)
+	* ADDED: support of temperature units in centigrades C 30-May-2013
+	Ilya Dricker (i.dricker@isti.com)
 
-  * FIXED: get_names() to properly process cases with the
-    environmental variable SEEDRESP set
-
+	* FIXED: get_names() to properly process cases with the
+	environmental variable SEEDRESP set
 
 Version 3.3.3
 
-  27-Apr-2010 Ilya Dricker (i.dricker@isti.com)
+	27-Apr-2010 Ilya Dricker (i.dricker@isti.com)
 
-  * FIXED: bug which prevented using evalresp with -stdio flag
+	* FIXED: bug which prevented using evalresp with -stdio flag
 
-  * MIDFIED: Unwrapping now starts casual: first phase value is within
-    (0:360) degree
-
+	* MIDFIED: Unwrapping now starts casual: first phase value is
+	within(0:360) degree
 
 Version 3.3.2
 
-  12-Feb-2010 Ilya Dricker (i.dricker@isti.com)
+	12-Feb-2010 Ilya Dricker (i.dricker@isti.com)
 
-  * MODIFIED: get_names() to properly parse file names: did not work
-    under Mac OSX: done by Chad
+	* MODIFIED: get_names() to properly parse file names: did not work
+	under Mac OSX: done by Chad
 
-  * MOVED: evalresp.man to evalresp.1
+	* MOVED: evalresp.man to evalresp.1
 
-  * MOVED: What's New section of evalresp.1 to ChangeLog file
+	* MOVED: What's New section of evalresp.1 to ChangeLog file
 
-  * MODIFIED: printing a warning when using a negative delay
+	* MODIFIED: printing a warning when using a negative delay
 
-  * MODIFIED: evalresp man pages
+	* MODIFIED: evalresp man pages
 
-  * REMOVED: evresp_adjust_phase() for 'fap' and 'ap' cases
+	* REMOVED: evresp_adjust_phase() for 'fap' and 'ap' cases
 
-  * RENAMED: parse_line() to ev_parse_line() to avoid naming conflict
+	* RENAMED: parse_line() to ev_parse_line() to avoid naming
+	conflict
 
-  * MODIFIED: searching for RESP files now uses system glob().
-
+	* MODIFIED: searching for RESP files now uses system glob().
 
 Version 3.3.1
 
-  29-Jan-2010 Ilya Dricker (i.dricker@isti.com)
+	29-Jan-2010 Ilya Dricker (i.dricker@isti.com)
 
-  * NEW: Added a 'fap' response type with the -r option (in addition
-    to the 'ap' and 'cs' types) to write out frequency-amplitude-phase
-    triplets.  The resulting file names are in the form :
-    "FAP.Net.Sta.Loc.Chan". The phase is always unwrapped in this
-    output.  Essential this is just a re-packaging of the
-    amplitude-phase output into a single, three-column file with
-    unwrapped phase.
+	* NEW: Added a 'fap' response type with the -r option (in addition
+	to the 'ap' and 'cs' types) to write out frequency-amplitude-phase
+	triplets.  The resulting file names are in the form :
+	"FAP.Net.Sta.Loc.Chan". The phase is always unwrapped in this
+	output.  Essential this is just a re-packaging of the
+	amplitude-phase output into a single, three-column file with
+	unwrapped phase.
 
-  * NEW: Added run-time option (-unwrap) to unwrap the output phase in
-    addition to the previous compile-time option.
+	* NEW: Added run-time option (-unwrap) to unwrap the output phase
+	in addition to the previous compile-time option.
 
-  * NEW: Added option (-ts ?) to use the stage 0 total sensitivity
-    instead of product of the stage gains.  The idea is that this can
-    be used in combination with the -stage option to provide a full
-    scale response, i.e. just stage 1 (the sensor) with a correct
-    system gain (which is exact what SAC Poles and Zeros do).
+	* NEW: Added option (-ts ?) to use the stage 0 total sensitivity
+	instead of product of the stage gains.  The idea is that this can
+	be used in combination with the -stage option to provide a full
+	scale response, i.e. just stage 1 (the sensor) with a correct
+	system gain (which is exact what SAC Poles and Zeros do).
 
-  * NEW: Included checks for likely incorrect (negative) delay values;
-    in case such delays are found evalresp prints a warning.
+	* NEW: Included checks for likely incorrect (negative) delay
+	values; in case such delays are found evalresp prints a warning.
 
-  * FIXED: Cleaned improper checks for IIR_PZ blockette types in
-    calc_fctns.c and resp_fctns.c.
+	* FIXED: Cleaned improper checks for IIR_PZ blockette types in
+	calc_fctns.c and resp_fctns.c.
 
-  * FIXED: Fixed search for matching RESP files, name search did not
-    seem to use location ID.
+	* FIXED: Fixed search for matching RESP files, name search did not
+	seem to use location ID.
 
-  * FIXED: Documented the SEED requirements regarding the order of the
-    FIR coefficients and the sign of the delay (see section below).
-
+	* FIXED: Documented the SEED requirements regarding the order of
+	the FIR coefficients and the sign of the delay (see section
+	below).
 
 Version 3.3.0
 
-  18-May-2009 Ilya Dricker (i.dricker@isti.com)
+	18-May-2009 Ilya Dricker (i.dricker@isti.com)
 
-  * MODIFIED: This version modifies the way evalresp deals with the
-    delays in FIR stages.  Note that -use-delay option becomes
-    obsolete in this version Now the following rules are applied for
-    adding delays to the FIR stages:
+	* MODIFIED: This version modifies the way evalresp deals with the
+	delays in FIR stages.  Note that -use-delay option becomes
+	obsolete in this version Now the following rules are applied for
+	adding delays to the FIR stages:
 
-    1: Calculation of the response for a symmetrical FIR filter
-       ignores the delay value in the RESP;
+	1: Calculation of the response for a symmetrical FIR filter
+	ignores the delay value in the RESP;
 
-    2: Calculation of the response for an asymmetrical FIR filter uses
-       the "correction applied" field of the RESP by default and
-       "estimated delay" field on user request (a user should use an
-       option -use-estimated-delay to switch this option on). This
-       version has been tested to work on 64-bit processors.
-
+	2: Calculation of the response for an asymmetrical FIR filter uses
+	the "correction applied" field of the RESP by default and
+	"estimated delay" field on user request (a user should use an
+	option -use-estimated-delay to switch this option on). This
+	version has been tested to work on 64-bit processors.
 
 Version 3.2.41
 
-  29-Apr-2009 Ilya Dricker (i.dricker@isti.com)
+	29-Apr-2009 Ilya Dricker (i.dricker@isti.com)
 
-  * MODIFIED: processing of delays in FIR stages.
+	* MODIFIED: processing of delays in FIR stages.
 
-    Now the following rules are applied for adding delays to the FIR
-    stages:
+	Now the following rules are applied for adding delays to the FIR
+	stages:
 
-    1: Calculation of the response for a symmetrical FIR filter
-       ignores the delay value in the RESP;
+	1: Calculation of the response for a symmetrical FIR filter
+	ignores the delay value in the RESP;
 
-    2: Calculation of the response for an asymmetrical FIR filter uses
-       the "correction applied" field of the RESP by default and
-       "estimated delay" field on user request (a user should use an
-       option -use-estimated-delay to switch this option on).
-
+	2: Calculation of the response for an asymmetrical FIR filter uses
+	the "correction applied" field of the RESP by default and
+	"estimated delay" field on user request (a user should use an
+	option -use-estimated-delay to switch this option on).
 
 Version 3.2.40
 
-  20-Jun-2008 Ilya Dricker (i.dricker@isti.com)
+	20-Jun-2008 Ilya Dricker (i.dricker@isti.com)
 
-  * FIXED: bug in computation time limits 25-Sep-2007 Ilya Dricker
-    (i.dricker@isti.com)
+	* FIXED: bug in computation time limits 25-Sep-2007 Ilya Dricker
+	(i.dricker@isti.com)
 
-  * REMOVED: 2 return statements in eversp which break LIB_MODE logic
-
+	* REMOVED: 2 return statements in eversp which break LIB_MODE
+	logic
 
 Version 3.2.39
 
-  12-Jul-2007 Ilya Dricker (i.dricker@isti.com)
+	12-Jul-2007 Ilya Dricker (i.dricker@isti.com)
 
-  * REMOVED: -g -Wall hardcoded flags from configure.in. Made them
-    configurable options;
-
+	* REMOVED: -g -Wall hardcoded flags from configure.in. Made them
+	configurable options;
 
 Version 3.2.38
 
-  04-Mar-2007 Ilya Dricker (i.dricker@isti.com)
+	04-Mar-2007 Ilya Dricker (i.dricker@isti.com)
 
-  * ADDED: new configure option --enable-log-label When evalresp is
-    configured with this option, most of log messages are being
-    prepended by a label. A label consists of [Net.Sta.Loc.Chan].
-    27-Feb-2007 Ilya Dricker (i.dricker@isti.com)
+	* ADDED: new configure option --enable-log-label When evalresp is
+	configured with this option, most of log messages are being
+	prepended by a label. A label consists of [Net.Sta.Loc.Chan].
+	27-Feb-2007 Ilya Dricker (i.dricker@isti.com)
 
-  * ADDED: Return (#ifdef LIB_MODE) if input file is not found
-    01-Feb-2007 Ilya Dricker (i.dricker@isti.com)
+	* ADDED: Return (#ifdef LIB_MODE) if input file is not found
+	01-Feb-2007 Ilya Dricker (i.dricker@isti.com)
 
-  * FIXED: Bug pointed by <alessia@sismo.u-strasbg.fr> : use else
-    if(!strcmp(argv[i], "-u")) instead of just if in evalresp.c:141
-    08-Nov-2006 Ilya Dricker (i.dricker@isti.com)
+	* FIXED: Bug pointed by <alessia@sismo.u-strasbg.fr> : use else
+	if(!strcmp(argv[i], "-u")) instead of just if in evalresp.c:141
+	08-Nov-2006 Ilya Dricker (i.dricker@isti.com)
 
-  * NEW: Libtoolized evresp library: using libtool instead of ranlib.
-    Now a builder can create dynamic library, not only static
-
+	* NEW: Libtoolized evresp library: using libtool instead of
+	ranlib.  Now a builder can create dynamic library, not only static
 
 Version 3.2.37
 
-  16-Oct-2006 Eric Thomas (e.thomas@isti.com)
+	16-Oct-2006 Eric Thomas (e.thomas@isti.com)
 
-  * ADDED: two more 'free()' calls to "evresp.c" to fix memory leaks
-    when program functions are used in external applications.
-
+	* ADDED: two more 'free()' calls to "evresp.c" to fix memory leaks
+	when program functions are used in external applications.
 
 Version 3.2.36
 
-  21-Aug-2006 Ilya Dricker (i.dricker@isti.com)
+	21-Aug-2006 Ilya Dricker (i.dricker@isti.com)
 
-  * Modified to support Tesla ("T") units.
-
+	* Modified to support Tesla ("T") units.
 
 Version 3.2.35
 
-  4-Apr-2006 Eric Thomas (e.thomas@isti.com)
+	4-Apr-2006 Eric Thomas (e.thomas@isti.com)
 
-  * MODIFIED: to support channel-IDs with location codes equal to an
-    empty string.
-
+	* MODIFIED: to support channel-IDs with location codes equal to an
+	empty string.
 
 Version 3.2.34
 
-  28-Mar-2006 Eric Thomas (e.thomas@isti.com)
+	28-Mar-2006 Eric Thomas (e.thomas@isti.com)
 
-  * ADDED: 'free()' calls to "evresp.c" to fix memory leaks when
-  program functions used in external applications.
-
+	* ADDED: 'free()' calls to "evresp.c" to fix memory leaks when
+	program functions used in external applications.
 
 Version 3.2.33
 
-  27-Mar-2006 Ilya Dricker (i.dricker@isti.com)
+	27-Mar-2006 Ilya Dricker (i.dricker@isti.com)
 
-  * Added include_HEADERS target "evr_spline.h" to "Makefile.am".
+	* Added include_HEADERS target "evr_spline.h" to "Makefile.am".
 
-  * UPGRADED: missing script.
-
+	* UPGRADED: missing script.
 
 Version 3.2.32
 
-  13-Feb-2006 Eric Thomas (e.thomas@isti.com)
+	13-Feb-2006 Eric Thomas (e.thomas@isti.com)
 
-  * MOVED: 'use_delay()' function from 'evalresp.c' to 'evresp.c'.
+	* MOVED: 'use_delay()' function from 'evalresp.c' to 'evresp.c'.
 
-  * MODIFIED: to close input file when a single response file is
-    specified.
-
+	* MODIFIED: to close input file when a single response file is
+	specified.
 
 Version 3.2.31
 
-  19-Jan-2006 Eric Thomas (e.thomas@isti.com)
+	19-Jan-2006 Eric Thomas (e.thomas@isti.com)
 
-  * RENAMED: 'regexp' functions to prevent name clashes with other
-    libraries.
+	* RENAMED: 'regexp' functions to prevent name clashes with other
+	libraries.
 
-  * RESTORED: 'depcomp' script in distribution.
-
+	* RESTORED: 'depcomp' script in distribution.
 
 Version 3.2.30
 
-  3-Nov-2005 Eric Thomas (e.thomas@isti.com)
+	3-Nov-2005 Eric Thomas (e.thomas@isti.com)
 
-  * MODIFIED: to unwrap phase values before interpolation and re-wrap
-    after (if needed).
+	* MODIFIED: to unwrap phase values before interpolation and
+	re-wrap after (if needed).
 
-  * MODIFIED: to detect when all requested interpolated frequencies
-    are out of range.
-
+	* MODIFIED: to detect when all requested interpolated frequencies
+	are out of range.
 
 Version 3.2.29
 
-  21-Oct-2005 Eric Thomas (e.thomas@isti.com)
+	21-Oct-2005 Eric Thomas (e.thomas@isti.com)
 
-  * IMPLEMENTED: interpolation of amplitude/phase values from
-    responses containing List blockettes (55).
+	* IMPLEMENTED: interpolation of amplitude/phase values from
+	responses containing List blockettes (55).
 
-  * MODIFIED: message shown when List blockette encountered.
+	* MODIFIED: message shown when List blockette encountered.
 
-  * MODIFIED: so as not to require characters after 'units' specifiers
-    like "M" and "COUNTS".
+	* MODIFIED: so as not to require characters after 'units'
+	specifiers like "M" and "COUNTS".
 
-  * MODIFIED: to handle case where file contains "B052F03 Location"
-    and nothing after it on line.
+	* MODIFIED: to handle case where file contains "B052F03 Location"
+	and nothing after it on line.
 
-  * ADDED: warnings for unrecognized parameters.
+	* ADDED: warnings for unrecognized parameters.
 
-  * FIXED: issue where program would crash under Linux/UNIX
-    "segmentation fault" if input response file contained
-    Windows-style "CR/LF" line ends.
-
+	* FIXED: issue where program would crash under Linux/UNIX
+	"segmentation fault" if input response file contained
+	Windows-style "CR/LF" line ends.
 
 Version 3.2.28
 
-  2-Aug-2005 Eric Thomas (e.thomas@isti.com)
+	2-Aug-2005 Eric Thomas (e.thomas@isti.com)
 
-  * MODIFIED: to allow command-line parameters for frequency values to
-    be missing (default values used).
-
+	* MODIFIED: to allow command-line parameters for frequency values
+	to be missing (default values used).
 
 Version 3.2.27
 
-  1-Mar-2005 Ilya Dricker(i.dricker@isti.com)
+	1-Mar-2005 Ilya Dricker(i.dricker@isti.com)
 
-  * ADDED: -add-delay command line option
-
+	* ADDED: -add-delay command line option
 
 Version 3.2.26
 
-  20-Oct-2004 Ilya Dricker (i.dricker@isti.com)
+	20-Oct-2004 Ilya Dricker (i.dricker@isti.com)
 
-  * NEW: Now evalresp runs on Mac OS X
-
+	* NEW: Now evalresp runs on Mac OS X
 
 Version 3.2.25
 
-  20-Jul-2005 Ilya Dricker (i.dricker@isti.com)
+	20-Jul-2005 Ilya Dricker (i.dricker@isti.com)
 
-  * STARTED: Finally, we started ChangeLog
+	* STARTED: Finally, we started ChangeLog
 
-  * FIXED: Processing of B55 + GAIN stage is now allowed
+	* FIXED: Processing of B55 + GAIN stage is now allowed
 
-  * ADDED: config.h to the source code and AM_CONFIG_HEADER to
-    configure.in
-
+	* ADDED: config.h to the source code and AM_CONFIG_HEADER to
+	configure.in
 
 Version 3.2.24
 
-  05-Apr-2004 Ilya Dricker (i.dricker@isti.com)
+	05-Apr-2004 Ilya Dricker (i.dricker@isti.com)
 
-  * ADDED: two confuration options (--enable-delay Use estimated delay
-    in phase computation) and (--enable-phase-unwrap Unwrap phase).
-
+	* ADDED: two confuration options (--enable-delay Use estimated
+	delay in phase computation) and (--enable-phase-unwrap Unwrap
+	phase).
 
 Version 3.2.23
 
-  19-Mar-2004 SBH
+	19-Mar-2004 SBH
 
-  * ADDED: support for SHAPE compatible RESP files. When parsing lines
-    that are valid RESP format, but unexpected, evalresp now skips to
-    the next line. Added support for blank lines within and at the end
-    of a RESP file.
-
+	* ADDED: support for SHAPE compatible RESP files. When parsing
+	lines that are valid RESP format, but unexpected, evalresp now
+	skips to the next line. Added support for blank lines within and
+	at the end of a RESP file.
 
 Version 3.2.22
 
-  21-Oct-2003 Ilya Dricker (i.dricker@isti.com)
+	21-Oct-2003 Ilya Dricker (i.dricker@isti.com)
 
-  * FIXED: evaluation of the response for an IIR filter. Versions before 
-    2.3.20 computed IIR PZ incorrectly. Versions 3.2.20-21 computed amplitude
-    of the filter properly, while PHASE was improperly multiplied by (-1),
-    mirrored aross y = 0. This release fixes the problem.
+	* FIXED: evaluation of the response for an IIR filter. Versions
+	before 2.3.20 computed IIR PZ incorrectly. Versions 3.2.20-21
+	computed amplitude of the filter properly, while PHASE was
+	improperly multiplied by (-1), mirrored aross y = 0. This release
+	fixes the problem.
 
-  * ADDED: Interpolation of blockette 55 (to enable this feature, the program
-    should be compiled with -DB55_INTRPL compilation flag, which is not set
-    by default). This feature is experimaental and not recommended for the 
-    general use. 
+	* ADDED: Interpolation of blockette 55 (to enable this feature,
+	the program should be compiled with -DB55_INTRPL compilation flag,
+	which is not set by default). This feature is experimaental and
+	not recommended for the general use.
 
 Version 3.2.21
 
-  21-May-2002 Ilya Dricker (i.dricker@isti.com)
+	21-May-2002 Ilya Dricker (i.dricker@isti.com)
 
-  * NEW: Allows a user to compile and run evalresp on WIN32 platform.
+	* NEW: Allows a user to compile and run evalresp on WIN32
+	platform.
 
-  * FIXED: A bug in pole-zero representations for digital stages has
-    been fixed.
+	* FIXED: A bug in pole-zero representations for digital stages has
+	been fixed.
 
-  * ADDDED: Partial support for generic response blockette. Partial means that
-    if such blockette is found, evalresp ignores the blockette, prints a warning
-    and continues execution. Previous versions considered the generic response 
-    blockette to be offensive and terminated the processing of the response
+	* ADDDED: Partial support for generic response blockette. Partial
+	means that if such blockette is found, evalresp ignores the
+	blockette, prints a warning and continues execution. Previous
+	versions considered the generic response blockette to be offensive
+	and terminated the processing of the response
 
+Version 3.2.20
 
-Version 3.2.20 
-  28-Aug-2001 Eric Thomas (e.thomas@isti.com)
-  * NEW: Code ported to work with Microsoft Windows-based compilers.  Functionality
-    should be unchanged.
+	28-Aug-2001 Eric Thomas (e.thomas@isti.com)
 
-Version 3.2.19 
-  30-July-2001 Ilya Dricker (i.dricker@isti.com)
-    *FIXED: A bug which forced evalresp to compute incorrect group delays has been fixed.
+	* NEW: Code ported to work with Microsoft Windows-based compilers.
+	Functionality should be unchanged.
 
-    * REMOVED: A computation of decimation is removed from evalresp. To compute decimation 
-    evalresp relies upon the fields 7 and 8 of SEED blockette 57. However, the use of these 
-    fields are inconsistant among digitizers and SEED builders.
+Version 3.2.19
 
-    * MOFIFIED: A mechinism of selecting files for processing from the working directory for some
-    Solaris computers was shown to be unrelible in at least a single case in all versions
-    below 3.2.19. This mechanism was modified. As a trade-off the acessing of a single RESP
-    file in versions 3.2.19 and above is slower by about one second than in the previous
-    versions.
+	30-July-2001 Ilya Dricker (i.dricker@isti.com)
+
+	* FIXED: A bug which forced evalresp to compute incorrect group
+	delays has been fixed.
+
+	* REMOVED: A computation of decimation is removed from
+	evalresp. To compute decimation evalresp relies upon the fields 7
+	and 8 of SEED blockette 57. However, the use of these fields are
+	inconsistant among digitizers and SEED builders.
+
+	* MOFIFIED: A mechinism of selecting files for processing from the
+	working directory for some Solaris computers was shown to be
+	unrelible in at least a single case in all versions below
+	3.2.19. This mechanism was modified. As a trade-off the acessing
+	of a single RESP file in versions 3.2.19 and above is slower by
+	about one second than in the previous versions.
 
 Version 3.2.18
-   ??? Ilya Dricker (i.dricker@isti.com)
-    * NEW: Presure data support is included
+
+	??? Ilya Dricker (i.dricker@isti.com)
+
+	* NEW: Presure data support is included
 
 Version 3.2.17
-   ??? Ilya Dricker (i.dricker@isti.com)
 
-     * NEW: Modifications from version 3.2.16 to version 3.2.17 are conduced by  Instrumental Software 
-       Technologies, Inc. (www.isti.com) Modifications have been requested by IRIS DMC. These modifications include:
+	??? Ilya Dricker (i.dricker@isti.com)
 
-      * MODIFIED: Version  3.2.17  supports  IIR digital filters in coeffi­
-       cients format with a non-zero phase  shift.   IIR  coeffi­
-       cients  for a single stage must fit in a single blockette.
-       The algorithm was adopted from the FORTRAN code provided by
-       B. Hutt (hutt@asl.cr.usgs.gov).
+	* NEW: Modifications from version 3.2.16 to version 3.2.17 are
+	conduced by Instrumental Software Technologies,
+	Inc. (www.isti.com) Modifications have been requested by IRIS
+	DMC. These modifications include:
 
-      * MODIFIED: Version 3.2.17 and above supports generic response block­
-       ette  (SEED blockettes 55).  Generic response blockette is
-       a list of phases and amplitudes computed  for  the  prese­
-       lected  set  of frequencies. This filter type is supported
-       only if the response input file contains  blockette(s)  55
-       as a stage 1 and possibly channel sensitivity blockette as
-       a stage 0.  If generic response blockette is recognized in
-       the  input,  evalresp  ignores  the user-defined frequency
-       sampling from the command line. The ouput, therefore, con­
-       tains responses for only those frequencies which have been 			
-       defined in the generic response blockette.
+	* MODIFIED: Version 3.2.17 supports IIR digital filters in coeffi­
+	cients format with a non-zero phase shift.  IIR coeffi­ cients for
+	a single stage must fit in a single blockette.  The algorithm was
+	adopted from the FORTRAN code provided by B. Hutt
+	(hutt@asl.cr.usgs.gov).
 
-      * MODIFIED: The source code is cleaned; all unused variables are removed
+	* MODIFIED: Version 3.2.17 and above supports generic response
+	block­ ette (SEED blockettes 55).  Generic response blockette is a
+	list of phases and amplitudes computed for the prese­ lected set
+	of frequencies. This filter type is supported only if the response
+	input file contains blockette(s) 55 as a stage 1 and possibly
+	channel sensitivity blockette as a stage 0.  If generic response
+	blockette is recognized in the input, evalresp ignores the
+	user-defined frequency sampling from the command line. The ouput,
+	therefore, con­ tains responses for only those frequencies which
+	have been defined in the generic response blockette.
 
-      * MODIFIED: The man pages are modified to reflect the current version of 
-       the evalresp. 
-	 
-Version 3.0 to version 3.2 (TJM) tjm@iris.washington.edu
-14 March, 1997
+	* MODIFIED: The source code is cleaned; all unused variables are
+	removed
 
-(1) Error handling improved.  In version 3.0, if the end of the file was
-    encountered while searching for the next response, an extraneous error
-    message was often printed to the effect of
+	* MODIFIED: The man pages are modified to reflect the current
+	version of the evalresp.
 
-    EVRESP ERROR: get_line (parsing blockette [050]); unexpected fld number
-                    fld_xpt=F16, fld_found=F03, skipping to next response now
+Version 3.0 to version 3.2
 
-    when, in fact, a message should have appeared that this sta-chan-net tuple
-    was not found.  In version 3.1 so that the message that now appears is
+	14-03-1997 TJM (tjm@iris.washington.edu)
 
-    WARNING: no response found for STA=ANMO,CHAN=SHZ,DATE=1994,122,00:00:00
+	(1) Error handling improved.  In version 3.0, if the end of the
+	file was encountered while searching for the next response, an
+	extraneous error message was often printed to the effect of
 
-(2) Error messages improved.  In version 3.0, when an error was printed, there
-    was no information in the error input as to where in the process the error
-    occurred.  While this may have been apparent if only a few files were being
-    processed, it was not at all obvious where the error occurred if a large
-    number of sta-cha-net files were being processed.  To improve this,
+	EVRESP ERROR: get_line (parsing blockette [050]); unexpected fld
+	number fld_xpt=F16, fld_found=F03, skipping to next response now
 
-    (a) The name of the file that is being parsed has been added to all error
-        messages.  For example, if an error occurred while parsing the file
-        response information for the ANMO LHZ channel as reported by the SRO
-        network because the line containing the network code was missing,
-        evalresp v3.0 would have reported
+	when, in fact, a message should have appeared that this
+	sta-chan-net tuple was not found.  In version 3.1 so that the
+	message that now appears is
 
-        EVRESP ERROR: get_line; blkt and fld numbers do not match expected values
-                blkt_xpt=B050, blkt_found=B052; fld_xpt=F16, fld_found=F04, skipping
-                to next response now
+	WARNING: no response found for
+	STA=ANMO,CHAN=SHZ,DATE=1994,122,00:00:00
+
+	(2) Error messages improved.  In version 3.0, when an error was
+	printed, there was no information in the error input as to where
+	in the process the error occurred.  While this may have been
+	apparent if only a few files were being processed, it was not at
+	all obvious where the error occurred if a large number of
+	sta-cha-net files were being processed.  To improve this,
+
+	(a) The name of the file that is being parsed has been added to
+	all error messages.  For example, if an error occurred while
+	parsing the file response information for the ANMO LHZ channel as
+	reported by the SRO network because the line containing the
+	network code was missing, evalresp v3.0 would have reported
+
+        EVRESP ERROR: get_line; blkt and fld numbers do not match expected
+	values blkt_xpt=B050, blkt_found=B052; fld_xpt=F16, fld_found=F04,
+	skipping to next response now
 
         whereas evalresp v3.1 reports (for the same parsing error)
 
-        EVRESP ERROR (RESP.SR.ANMO.LHZ): get_line; blkt and fld numbers do not match
-            expected values blkt_xpt=B050, blkt_found=B052; fld_xpt=F16, fld_found=F04,
-            skipping to next response now
+        EVRESP ERROR (RESP.SR.ANMO.LHZ): get_line; blkt and fld numbers do
+	not match expected values blkt_xpt=B050, blkt_found=B052;
+	fld_xpt=F16, fld_found=F04, skipping to next response now
 
-(3) Changes were made to make the code more portable.  Although the code was 'test compiled'
-    on a DEC ALPHA and on SUNs running SUNOS 4.1.3, problems were encountered when porting
-    the code to the HPUX OS.  To make the code more portable, the following changes were made.
+	(3) Changes were made to make the code more portable.  Although
+	the code was 'test compiled' on a DEC ALPHA and on SUNs running
+	SUNOS 4.1.3, problems were encountered when porting the code to
+	the HPUX OS.  To make the code more portable, the following
+	changes were made.
 
-    (a) The buffer length for the output of the child process that lists the directory
-        to find matching files has been set to zero using 'setbuf' rather than 'setlinebuf'.
-        Again, this change was made so that the code would be 'ANSI standard'.
+	(a) The buffer length for the output of the child process that
+	lists the directory to find matching files has been set to zero
+	using 'setbuf' rather than 'setlinebuf'.  Again, this change was
+	made so that the code would be 'ANSI standard'.
 
-    (b) The calls to 'getwd()' have been replaced with calls to 'getcwd()', which seems to
-        be more 'standard' than 'getwd()', as it exists as part of the SUN OS, the DEC OS,
-        and the HPUX OS
+	(b) The calls to 'getwd()' have been replaced with calls to
+	'getcwd()', which seems to be more 'standard' than 'getwd()', as
+	it exists as part of the SUN OS, the DEC OS, and the HPUX OS
 
-    (c) Finally, the 're_comp()' and 're_exec()' routines, which are not part of the ANSI
-        standard C standard library, do not seem to be supported under the HPUX OS (although
-        both the DEC Unix OS and SUN OS do support them).  As a result, code is included in this
-        distribution for a set of routines taken from Henry Spencer's 'regexp' utility that
-        implement 'regular expression' pattern matching in the style of the UNIX utility
-        'egrep'.  The new files are:  'regexp.c', 'regsub.c', 'regerror.c', 'regexp.h', and
-        'regmagic.h'.  The 'main' routines of this package (which are used in place of
-        're_comp()' and 're_exec()') are called 'regcomp()' and 'regexec()', respectively.
-        The inclusion of these files should result in a more portable distribution, since the
-        only function calls made in this package are to ANSI standard library functions.
+	(c) Finally, the 're_comp()' and 're_exec()' routines, which are
+	not part of the ANSI standard C standard library, do not seem to
+	be supported under the HPUX OS (although both the DEC Unix OS and
+	SUN OS do support them).  As a result, code is included in this
+	distribution for a set of routines taken from Henry Spencer's
+	'regexp' utility that implement 'regular expression' pattern
+	matching in the style of the UNIX utility 'egrep'.  The new files
+	are: 'regexp.c', 'regsub.c', 'regerror.c', 'regexp.h', and
+	'regmagic.h'.  The 'main' routines of this package (which are used
+	in place of 're_comp()' and 're_exec()') are called 'regcomp()'
+	and 'regexec()', respectively.  The inclusion of these files
+	should result in a more portable distribution, since the only
+	function calls made in this package are to ANSI standard library
+	functions.
 
-        This package was obtained via anonymous ftp from the University of Toronto, and minimal
-        changes have been made to make it more compatible with 'evalresp'.  Specifically, a few
-        '#include' directives were removed that were not needed for the routines to be used as
-        a 'stand-alone' package and several redeclarations of the 'strchr()' standard library
-        function in the file 'regexp.c' were replaced with an '#include <string.h>' statement
-        at the beginning of that code.  The following statements are taken from the 'README'
-        file for this package and are included to give credit where credit is due:
+        This package was obtained via anonymous ftp from the University of
+	Toronto, and minimal changes have been made to make it more
+	compatible with 'evalresp'.  Specifically, a few '#include'
+	directives were removed that were not needed for the routines to
+	be used as a 'stand-alone' package and several redeclarations of
+	the 'strchr()' standard library function in the file 'regexp.c'
+	were replaced with an '#include <string.h>' statement at the
+	beginning of that code.  The following statements are taken from
+	the 'README' file for this package and are included to give credit
+	where credit is due:
 
-                 This is a nearly-public-domain reimplementation of the V8 regexp(3) package.
-                 It gives C programs the ability to use egrep-style regular expressions, and
-                 does it in a much cleaner fashion than the analogous routines in SysV.
+                 This is a nearly-public-domain reimplementation of the V8
+	regexp(3) package.  It gives C programs the ability to use
+	egrep-style regular expressions, and does it in a much cleaner
+	fashion than the analogous routines in SysV.
 
                       Copyright (c) 1986 by University of Toronto.
-                      Written by Henry Spencer.  Not derived from licensed software.
+	Written by Henry Spencer.  Not derived from licensed software.
 
-                 Permission is granted to anyone to use this software for any
-                 purpose on any computer system, and to redistribute it freely,
-                 subject to the following restrictions:
+                 Permission is granted to anyone to use this software for
+	any purpose on any computer system, and to redistribute it freely,
+	subject to the following restrictions:
 
-                  1. The author is not responsible for the consequences of use of
-                         this software, no matter how awful, even if they arise
-                         from defects in it.
+                  1. The author is not responsible for the consequences of
+	use of this software, no matter how awful, even if they arise from
+	defects in it.
 
-                  2. The origin of this software must not be misrepresented, either
-                         by explicit claim or by omission.
+                  2. The origin of this software must not be
+	misrepresented, either by explicit claim or by omission.
 
-                  3. Altered versions must be plainly marked as such, and must not
-                             be misrepresented as being the original software.
+                  3. Altered versions must be plainly marked as such, and
+	must not be misrepresented as being the original software.
 
 
-                 This implementation is *NOT* AT&T/Bell code, and is not derived from licensed
-                 software.  Even though U of T is a V8 licensee.  This software is based on
-                 a V8 manual page sent to me by Dennis Ritchie (the manual page enclosed
-                 here is a complete rewrite and hence is not covered by AT&T copyright).
-                 The software was nearly complete at the time of arrival of our V8 tape.
-                 I haven't even looked at V8 yet, although a friend elsewhere at U of T has
-                 been kind enough to run a few test programs using the V8 regexp(3) to resolve
-                 a few fine points.  I admit to some familiarity with regular-expression
-                 implementations of the past, but the only one that this code traces any
-                 ancestry to is the one published in Kernighan & Plauger (from which this
-                 one draws ideas but not code).
+                 This implementation is *NOT* AT&T/Bell code, and is not
+	derived from licensed software.  Even though U of T is a V8
+	licensee.  This software is based on a V8 manual page sent to me
+	by Dennis Ritchie (the manual page enclosed here is a complete
+	rewrite and hence is not covered by AT&T copyright).  The software
+	was nearly complete at the time of arrival of our V8 tape.  I
+	haven't even looked at V8 yet, although a friend elsewhere at U of
+	T has been kind enough to run a few test programs using the V8
+	regexp(3) to resolve a few fine points.  I admit to some
+	familiarity with regular-expression implementations of the past,
+	but the only one that this code traces any ancestry to is the one
+	published in Kernighan & Plauger (from which this one draws ideas
+	but not code).
 
-(4) Bug fixed for handling of FIR filters.  If a FIR filter was renormalized in version 3.0,
-    the normalization constant for that filter was not changed to compensate.  As a result the
-    response of channels with FIR filter stages that were renormalized to a constant frequency
-    are not correct in evalresp v3.0.
+	(4) Bug fixed for handling of FIR filters.  If a FIR filter was
+	renormalized in version 3.0, the normalization constant for that
+	filter was not changed to compensate.  As a result the response of
+	channels with FIR filter stages that were renormalized to a
+	constant frequency are not correct in evalresp v3.0.
 
-(5) A fourth option was added to the 'output units'.  If this option is chosen, then
-    the response that is returned to the user will be in terms of the input units per output
-    units, regardless of the unit themselves.  This was done to allow responses to be calculated
-    for magnetometers, strain meters, and pressure, or temperature sensors, where it really
-    doesn't make sense to talk about the 'units' in terms of displacement, velocity, or
-    acceleration, but the user would still like to see the frequency response of the instrument.
-    If the flag '-u def' is chosen, then evalresp will calculate the response spectra for these
-    types of instruments, if any other units are specified, these types of instruments will
-    be skipped as having 'unrecognized' types of units (i.e. units that cannot be converted
-    into the type of units that the user requested).
+	(5) A fourth option was added to the 'output units'.  If this
+	option is chosen, then the response that is returned to the user
+	will be in terms of the input units per output units, regardless
+	of the unit themselves.  This was done to allow responses to be
+	calculated for magnetometers, strain meters, and pressure, or
+	temperature sensors, where it really doesn't make sense to talk
+	about the 'units' in terms of displacement, velocity, or
+	acceleration, but the user would still like to see the frequency
+	response of the instrument.  If the flag '-u def' is chosen, then
+	evalresp will calculate the response spectra for these types of
+	instruments, if any other units are specified, these types of
+	instruments will be skipped as having 'unrecognized' types of
+	units (i.e. units that cannot be converted into the type of units
+	that the user requested).
 
-(6) many bugs that were reported by users in the way that evalresp went about
-    evaluation of responses have been fixed.  Some of these problems were due
-    to the fact that evalresp expected the blockettes to appear in a certain
-    order (when, in fact, the SEED format did not), while others had to do with
-    legal SEED constructs that had not been seen yet (and, as a result, where not
-    tested before the release of version 3.0).  In some cases, the response values
-    calculated by evalresp were found to be in error by several percent, while in
-    other cases evalresp failed to correctly parse legal filter sequences.  In each
-    case, the bug reports were traced and fixes were made.  Thanks to the beta
-    test group for all of the work that they put in on this.
+	(6) many bugs that were reported by users in the way that evalresp
+	went about evaluation of responses have been fixed.  Some of these
+	problems were due to the fact that evalresp expected the
+	blockettes to appear in a certain order (when, in fact, the SEED
+	format did not), while others had to do with legal SEED constructs
+	that had not been seen yet (and, as a result, where not tested
+	before the release of version 3.0).  In some cases, the response
+	values calculated by evalresp were found to be in error by several
+	percent, while in other cases evalresp failed to correctly parse
+	legal filter sequences.  In each case, the bug reports were traced
+	and fixes were made.  Thanks to the beta test group for all of the
+	work that they put in on this.
 
-(7) a "-stdio" command line flag has been added that allows evalresp to be
-    placed into a "pipeline".  In fact, this functionality is already in use
-    here at the DMC in calculation of responses from a set of "stage response
-    files".  When the "-stdio" command line flag is set, the program takes input
-    (which is assumed to be from a RESP file or a series of RESP files) from stdin
-    and returns the calculated responses to stdout.  The format is slightly
-    different than the format used to output the calculated responses when the
-    output is to a file, since there are multiple station-channel-netword tuple's
-    responses being returned to stdout.  Basically, the program adds a short
-    header to the stdout stream so that the responses can be separated later by
-    whatever application program will be receiving the output from evalresp.
-    As always, the verbose output and error output both appear on stderr, so they
-    will not appear mixed in with the calculated responses.
+	(7) a "-stdio" command line flag has been added that allows
+	evalresp to be placed into a "pipeline".  In fact, this
+	functionality is already in use here at the DMC in calculation of
+	responses from a set of "stage response files".  When the "-stdio"
+	command line flag is set, the program takes input
+	(which is assumed to be from a RESP file or a series of RESP
+	files) from stdin and returns the calculated responses to stdout.
+	The format is slightly different than the format used to output
+	the calculated responses when the output is to a file, since there
+	are multiple station-channel-netword tuple's responses being
+	returned to stdout.  Basically, the program adds a short header to
+	the stdout stream so that the responses can be separated later by
+	whatever application program will be receiving the output from
+	evalresp.  As always, the verbose output and error output both
+	appear on stderr, so they will not appear mixed in with the
+	calculated responses.
 
-(8) a new command line option was defined to allow users to evaluate the response
-    for a subset of the overall response for a channel.  This option allows users
-    to specify the stage (or range of stages) that they wish to evaluate the
-    response for.  If response stages are skipped in this process, then evalresp
-    will not compare the calculated overall sensitivity with the reported
-    overall sensitivity in the RESP file, since the calculated response leaves
-    out parts of the response file.  This option is useful for looking at the
-    effect of individual response stages on the overall response (and for checking
-    for problems with a stage that is under construction).
+	(8) a new command line option was defined to allow users to
+	evaluate the response for a subset of the overall response for a
+	channel.  This option allows users to specify the stage (or range
+	of stages) that they wish to evaluate the response for.  If
+	response stages are skipped in this process, then evalresp will
+	not compare the calculated overall sensitivity with the reported
+	overall sensitivity in the RESP file, since the calculated
+	response leaves out parts of the response file.  This option is
+	useful for looking at the effect of individual response stages on
+	the overall response (and for checking for problems with a stage
+	that is under construction).
 

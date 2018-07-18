@@ -13,20 +13,21 @@ steps:
 
 1. Uncompress and untar the distribution file.  
  
-        zcat evalresp-[version].tar.gz | tar -xvf - 
+     zcat evalresp-[version].tar.gz | tar -xvf - 
 
    This will create a directory "evalresp" that contains the full
    evalresp distribution.
 
    Go into the "evalresp" directory 
  
-        cd evalresp
+     cd evalresp
 
 2. Open the file Build.config in your favorite editor and modify the value:
 
      INSTALL_DIR
 
-   to reflect the installation directory of your choice. To install in standard location"
+   to reflect the installation directory of your choice. To install in
+   standard location"
 
      INSTALL_DIR=/usr
 
@@ -34,32 +35,32 @@ steps:
 
      INSTALL_DIR=$(HOME)
 
-
 3. Compile the program "evalresp".
  
-        make -f Makefile.unix
+     make -f Makefile.unix
         
 4. Optionally, install, as root:
 
-        make -f Makefile.unix install 
+     make -f Makefile.unix install 
 
-5. This will also construct libraries (libevalresp.a  libevalresp_log.a  
-   libmxmlev.a  libspline.a) that can be linked into other external programs 
-   in order to allow them to evaluate responses the same way that evalresp does.  
-   To add the 'evalresp' function to your own program, just add the call to evalresp
-   in your code and link with the 'libevresp.a' library when compiling
-   and linking your executable.
+5. This will also construct libraries (libevalresp.a libevalresp_log.a
+   libmxmlev.a libspline.a) that can be linked into other external
+   programs in order to allow them to evaluate responses the same way
+   that evalresp does.  To add the 'evalresp' function to your own
+   program, just add the call to evalresp in your code and link with
+   the 'libevresp.a' library when compiling and linking your
+   executable.
 
-6.  An example of this process is the compile statement for the
+6. An example of this process is the compile statement for the
    'evtest.f' FORTRAN program, which is included in this distribution
    as an example of how to call evresp from your own code.  Although
    the 'evtest' program is not compiled by default, it can be compiled
    and run using the following commands:
 
-        cd tests/fortran
-        gfortran evtest.f -g -o evtest   -levalresp  -levalresp_log  -lmxmlev  -lspline
-        LD_LIBRARY_PATH=/usr/local/lib ./evtest
-        cat evtest.out
+     cd tests/fortran
+     gfortran evtest.f -g -o evtest   -levalresp  -levalresp_log  -lmxmlev  -lspline
+     LD_LIBRARY_PATH=/usr/local/lib ./evtest
+     cat evtest.out
   
    (See also run.sh in that directory)
 
