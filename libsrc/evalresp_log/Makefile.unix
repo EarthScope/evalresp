@@ -1,4 +1,6 @@
 
+# This Makefile requires GNU make, sometimes available as gmake.
+
 CFLAGS += -I..
 
 EVALRESP_LOG_SRC= helpers.c log.c examples/to_syslog.c examples/to_file.c

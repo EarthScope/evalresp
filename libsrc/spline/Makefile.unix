@@ -1,4 +1,6 @@
 
+# This Makefile requires GNU make, sometimes available as gmake.
+
 CFLAGS += -I..
 
 SPLINE_SRC= spline.c

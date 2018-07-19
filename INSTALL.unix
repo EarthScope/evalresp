@@ -36,6 +36,8 @@ steps:
      INSTALL_DIR=$(HOME)
 
 3. Compile the program "evalresp".
+
+   Note: the Makefile requires GNU make, sometimes available as gmake
  
      make -f Makefile.unix
         

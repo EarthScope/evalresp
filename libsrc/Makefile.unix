@@ -1,4 +1,6 @@
 
+# This Makefile requires GNU make, sometimes available as gmake.
+
 .PHONY: all clean
 
 all:

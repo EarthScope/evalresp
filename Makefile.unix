@@ -1,3 +1,6 @@
+
+# This Makefile requires GNU make, sometimes available as gmake
+
 LIB_SRC_DIR = libsrc
 BIN_SRC_DIR = src
 include Build.config
