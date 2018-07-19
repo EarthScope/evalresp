@@ -1,4 +1,5 @@
-CFLAGS=-I..
+
+CFLAGS += -I..
 
 SPLINE_SRC= spline.c
 SPLINE_HEADERS= spline.h

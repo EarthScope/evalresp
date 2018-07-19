@@ -1,4 +1,5 @@
-CFLAGS=-I.. -I../mxml
+
+CFLAGS += -I.. -I../mxml
 
 EVALRESP_SRC= alloc_fctns.c calc_fctns.c file_ops.c\
 			  regexp.c regsub.c resp_fctns.c spline.c input.c\
