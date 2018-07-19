@@ -21,7 +21,8 @@ EXTRA_DIST = \
 	Doxyfile \
 	evalresp.1 \
 	intro_dox.h \
-	xml2resp.1
+	xml2resp.1 \
+	Makefile.unix
 
 clean-local: mostlyclean-local
 	-rm -f evalresp.pdf

@@ -1,4 +1,6 @@
 
+EXTRA_DIST = README.rst
+
 # the following could be used so that all tests run with 'make check'
 # but imho it's better to keep them separate
 # (if you do this, it breaks run-c-tests.sh which instead runs everything)

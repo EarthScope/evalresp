@@ -1,6 +1,8 @@
 
 # To build the distribution:
 
+  autoreconf -fi
+  ./configure --enable-debug
   make distclean
   autoreconf -fi
   ./configure --enable-debug
