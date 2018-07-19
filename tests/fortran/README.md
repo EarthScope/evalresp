@@ -15,3 +15,5 @@ Hopefully the example is sufficiently detailed to explain the new
 approach.
 
 Andrew Cooke (a.cooke@isti.com), release 4.0.0
+
+Note: To run the example, edit and then execute run.sh
