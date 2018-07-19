@@ -33,9 +33,9 @@
 
       character*1 :: sta = "*", net = "*", loc = "*"
       character*3 :: cha = "VMZ"
-      character*8 :: datime = "2010,260"
+      character*20 :: datime = "2010,260,00:00:00.000"
       character*3 :: units = "VEL"
-      character*21 :: file = "../data/station-1.xml"
+      character*23 :: file = "../c/data/station-1.xml"
       integer(kind=c_int), parameter :: npts = 100
       real(kind=c_double), target :: freq(npts), resp(2*npts)
       character*2 :: rtype = "CS"

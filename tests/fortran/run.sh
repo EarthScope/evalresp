@@ -1,15 +1,22 @@
 #!/bin/bash
 
-# compile
-gfortran evtest.f -g -o evtest   -levalresp  -levalresp_log  -lmxmlev  -lspline
+# these variables may need modifying - see Build.config in the build dir
+INSTALL_DIR=../../install
+#INSTALL_DIR=/usr/local
+BIN_DIR=$INSTALL_DIR/bin
+LIB_DIR=$INSTALL_DIR/lib
 
-# run (puts output in evtest.out)
-LD_LIBRARY_PATH=/usr/local/lib ./evtest
+echo "compiling evtest"
+gfortran evtest.f -L $LIB_DIR -g -o evtest -levalresp -levalresp_log -lmxmlev -lspline
 
-# run equivalent evalresp (to AMP.IU.ANMO.00.VMZ and PHASE.IU.ANMO.00.VMZ)
-evalresp "*" VMZ 2010 260 0.0001 100 100 -x -f ../data/station-1.xml -b62_x 3 -stage 1 1
+echo "running evtest"
+LD_LIBRARY_PATH=$LIB_DIR ./evtest
 
-# paste together for comparison
+echo "running evalresp"
+PATH=$BIN_DIR:$PATH
+evalresp "*" VMZ 2010 260 0.0001 100 100 -x -f ../c/data/station-1.xml -b62_x 3 -stage 1 1
+
+echo "generating comparison"
 sed -i -e 's/^\s*//' evtest.out
 sed -i -e 's/\s\s*/ /g' evtest.out
 sed -i -e 's/\s\s*/ /g' AMP.IU.ANMO.00.VMZ
@@ -25,5 +32,5 @@ echo "freq            amp (f)         amp (c)         phase (f)       phase (c)"
 cat tmp-all >> comparison
 rm tmp*
 
-# not a great choice of responses to compare, but it seems to be working
+echo "comparison:"
 cat comparison
