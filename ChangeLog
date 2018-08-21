@@ -1,3 +1,12 @@
+Version 5.0.DEV
+
+	21-08-2018 Chad Trabant
+
+	* IMPROVED: Allow StationXML files to be autodetected when
+	options.station_xml == -1.
+
+	* IMPROVED: Use mxmlLoadFile() instead of mxmlLoadFd() to avoid
+	unnecessary indirection.  Also fixes rewinding of file stream.
 
 Version 5.0.a3
 

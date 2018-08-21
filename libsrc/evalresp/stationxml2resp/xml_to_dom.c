@@ -23,7 +23,7 @@ static int stream2doc(evalresp_logger *log, FILE *in, mxml_node_t **doc) {
 
     int status = X2R_OK;
 
-    if (!(*doc = mxmlLoadFd(NULL, fileno(in), MXML_OPAQUE_CALLBACK))) {
+    if (!(*doc = mxmlLoadFile(NULL, in, MXML_OPAQUE_CALLBACK))) {
         evalresp_log(log, EV_ERROR, 0, "Could not parse input");
         status = X2R_ERR_XML;
     }

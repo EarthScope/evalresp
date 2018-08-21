@@ -2708,17 +2708,56 @@ evalresp_file_to_channels (evalresp_logger *log, FILE *file,
   return status;
 }
 
+/* Detection FDSN StationXML by searching the first 255 bytes of the
+ * file for "<FDSNStationXML".
+ *
+ * Return 1 if Station, 0 if not and -1 on error. */
+int
+evalresp_file_detect_stationxml (evalresp_logger *log, FILE *file)
+{
+  char buffer[255];
+  int status = -1;
+
+  if (fread (buffer, sizeof (buffer), 1, file) == 1)
+  {
+    buffer[sizeof (buffer) - 1] = '\0';
+
+    if (strstr (buffer, "<FDSNStationXML"))
+      status = 1;
+    else
+      status = 0;
+  }
+
+  if (fseek (file, 0L, SEEK_SET))
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot set file position back to 0: %s", strerror (errno));
+  }
+
+  return status;
+}
+
 int
 evalresp_filename_to_channels (evalresp_logger *log, const char *filename, evalresp_options const *const options,
                                const evalresp_filter *filter, evalresp_channels **channels)
 {
   FILE *file = NULL;
   int status = EVALRESP_OK;
+  int station_xml = options->station_xml;
+
   if (!(status = open_file (log, filename, &file)))
   {
     FILE *temp_file = NULL;
 
-    if (options != NULL && options->station_xml)
+    /* Attempt to detect StationXML if requested */
+    if (options != NULL && options->station_xml == -1)
+    {
+      station_xml = evalresp_file_detect_stationxml (log, file);
+
+      if (station_xml == -1)
+        station_xml = 0;
+    }
+
+    if (options != NULL && station_xml)
     {
       if (EVALRESP_OK == (status = evalresp_xml_stream_to_resp_file (log, 1, file, NULL, &temp_file)))
       {
