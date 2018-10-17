@@ -12,7 +12,7 @@ TESTS = check_read_xml check_convert check_parse_datetime check_response \
 	check_count check_auto check_match check_log check_input \
 	check_response_char check_evaluation check_xml_to_char\
 	check_legacy 
-#TESTS = check_match
+#TESTS = check_input
 
 check_PROGRAMS = check_read_xml check_convert check_parse_datetime check_response \
 	check_count check_auto check_match check_log check_input \

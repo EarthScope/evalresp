@@ -263,13 +263,16 @@ int x2r_parse_iso_datetime(evalresp_logger *log, const char *datetime, time_t *e
 
 
 /* Read an attribute value as an ISO formatted epoch. */
-static int datetime_attribute(evalresp_logger *log, mxml_node_t *node, const char *name, time_t *epoch) {
+static int datetime_attribute(evalresp_logger *log, mxml_node_t *node, const char *name,
+		int missing_ok, time_t *epoch) {
 
     int status = X2R_OK;
     char *value = NULL;
 
-    if (!(status = char_attribute(log, node, name, NULL, &value))) {
-        status = x2r_parse_iso_datetime(log, value, epoch);
+    if (mxmlElementGetAttr(node, name) || !missing_ok) {
+        if (!(status = char_attribute(log, node, name, NULL, &value))) {
+            status = x2r_parse_iso_datetime(log, value, epoch);
+        }
     }
 
     free(value);
@@ -298,12 +301,13 @@ static int int_attribute(evalresp_logger *log, mxml_node_t *node, const char *na
 
 
 /* Read an attribute value as double. */
-static int double_attribute(evalresp_logger *log, mxml_node_t *node, const char *name, double *value) {
+static int double_attribute(evalresp_logger *log, mxml_node_t *node, const char *name,
+		const char *deflt, double *value) {
 
     int status = X2R_OK;
     char *text = NULL, *end;
 
-    if (!(status = char_attribute(log, node, name, NULL, &text))) {
+    if (!(status = char_attribute(log, node, name, deflt, &text))) {
         *value = strtod(text, &end);
         if (*end) {  // should point to end of string
             evalresp_log(log, EV_ERROR, 0, "Did not parse all of %s", text);
@@ -326,8 +330,9 @@ static int parse_float(evalresp_logger *log, mxml_node_t *parent, const char *pa
 
     if (!(status = find_child(log, &node, NULL, parent, path))) {
         if (!(status = double_element(log, node, ".", NULL, &flt->value))) {
-            if (!(status = double_attribute(log, node, "plusError", &flt->plus_error))) {
-                status = double_attribute(log, node, "minusError", &flt->minus_error);
+        	// these are optional on reading and unused in the output to SEED
+            if (!(status = double_attribute(log, node, "plusError", "-1", &flt->plus_error))) {
+                status = double_attribute(log, node, "minusError", "-1", &flt->minus_error);
             }
         }
     }
@@ -1095,8 +1100,9 @@ static int parse_channel(evalresp_logger *log, mxml_node_t *node, x2r_channel *c
 
     if (!(status = char_attribute(log, node, "code", NULL, &channel->code))) {
         if (!(status = char_attribute(log, node, "locationCode", NULL, &channel->location_code))) {
-            if (!(status = datetime_attribute(log, node, "startDate", &channel->start_date))) {
-                status = datetime_attribute(log, node, "endDate", &channel->end_date);
+            if (!(status = datetime_attribute(log, node, "startDate", 0, &channel->start_date))) {
+                // allow missing end date - see issue 69 and corresponding code in dom_to_seed.c
+                status = datetime_attribute(log, node, "endDate", 1, &channel->end_date);
             }
         }
     }

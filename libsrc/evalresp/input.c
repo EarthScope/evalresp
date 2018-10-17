@@ -2742,7 +2742,7 @@ evalresp_filename_to_channels (evalresp_logger *log, const char *filename, evalr
 {
   FILE *file = NULL;
   int status = EVALRESP_OK;
-  int station_xml = options->station_xml;
+  int station_xml = options != NULL ? options->station_xml : -1;
 
   if (!(status = open_file (log, filename, &file)))
   {

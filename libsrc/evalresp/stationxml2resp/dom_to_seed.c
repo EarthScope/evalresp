@@ -57,25 +57,40 @@ static int lines(evalresp_logger *log, FILE *out, ...) {
 }
 
 
+// https://github.com/iris-edu/evalresp/issues/69
+#define OPEN "No Ending Time"
+
 /* Format epoch as given. */
 static int format_date(evalresp_logger *log, const time_t epoch, int n, char *template, char **date) {
 
     int status = X2R_OK;
     struct tm *tm;
 
-    if (!(tm = gmtime(&epoch))) {
-        evalresp_log(log, EV_ERROR, 0, "Cannot convert epoch to time");
-        status = X2R_ERR_DATE;
+    if (epoch) {
+		if (!(tm = gmtime(&epoch))) {
+			evalresp_log(log, EV_ERROR, 0, "Cannot convert epoch to time");
+			status = X2R_ERR_DATE;
+		} else {
+			if (!(*date = calloc(n, sizeof(**date)))) {
+				evalresp_log(log, EV_ERROR, 0, "Cannot alloc date");
+				status = X2R_ERR_MEMORY;
+			} else {
+				if (!(strftime(*date, n, template, tm))) {
+					evalresp_log(log, EV_ERROR, 0, "Cannot format date in %d char", n);
+					status = X2R_ERR_BUFFER;
+				}
+			}
+		}
     } else {
-        if (!(*date = calloc(n, sizeof(**date)))) {
-            evalresp_log(log, EV_ERROR, 0, "Cannot alloc date");
-            status = X2R_ERR_MEMORY;
-        } else {
-            if (!(strftime(*date, n, template, tm))) {
-                evalresp_log(log, EV_ERROR, 0, "Cannot format date in %d char", n);
-                status = X2R_ERR_BUFFER;
-            }
-        }
+    	if (!(*date = calloc(1+strlen(OPEN), sizeof(**date)))) {
+    		evalresp_log(log, EV_ERROR, 0, "Cannot alloc open date");
+    		status = X2R_ERR_MEMORY;
+    	} else {
+    		if (!(*date = strdup(OPEN))) {
+    			evalresp_log(log, EV_ERROR, 0, "Cannot copy open date");
+				status = X2R_ERR_MEMORY;
+    		}
+    	}
     }
 
     return status;

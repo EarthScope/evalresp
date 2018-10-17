@@ -49,8 +49,8 @@
  */
 typedef struct {
     double value;  /**< The value itself. */
-    double plus_error;  /**< The positive error. */
-    double minus_error;  /**< The negative error. */
+    double plus_error;  /**< The positive error (optional; -1 if missing). */
+    double minus_error;  /**< The negative error (optional; -1 if missing). */
 } x2r_float;
 
 /**

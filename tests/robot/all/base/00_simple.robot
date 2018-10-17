@@ -53,3 +53,8 @@ Filter duplicates (get expected result)
     Prepare  base/simple/filter_2  base  RESP.CT.SAVY..BHE
     Run process  evalresp  SAVY  BHE  1995  265  1.0E-5  20.0  200  -f  RESP.CT.SAVY..BHE  -u  def  -r  ap  -n  CT  -l  \ \   -t  04:25:27  -s  log  -v
     Count and compare target files two float cols
+
+Open date in XML
+    Prepare  base/simple/open  base  TITA1.HGZ
+    Run process  evalresp  TITA1  HGZ  2019  1  0.001  10  100  -f  TITA1.HGZ  -x
+    Count and compare target files two float cols

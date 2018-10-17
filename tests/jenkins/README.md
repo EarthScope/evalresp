@@ -4,6 +4,9 @@ To build and run these tests outside of Jenkins do something like:
 ```
   git clone https://github.com/iris-edu/evalresp.git
   cd evalresp
+  autoreconf -fi
+  touch libtoolT
+  ./configure --enable-check
   ./tests/jenkins/build-evalresp.sh
   ./tests/jenkins/clean-test-dirs.sh
   # uncomment these line for automated tests (large amounts of data)
