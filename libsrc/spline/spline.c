@@ -65,12 +65,11 @@ double basis_function_b_val ( double tdata[], double tval )
   int left;
   int right;
   double u;
-  double yval;
+  double yval = 0.0;
 
   if ( tval <= tdata[0] || tdata[NDATA-1] <= tval )
   {
-    yval = 0.0;
-    return yval;
+    return 0.0;
   }
 /*
   Find the interval [ TDATA(LEFT), TDATA(RIGHT) ] containing TVAL.
@@ -182,12 +181,11 @@ double basis_function_beta_val ( double beta1, double beta2, double tdata[],
   int left;
   int right;
   double u;
-  double yval;
+  double yval = 0.0;
 
   if ( tval <= tdata[0] || tdata[NDATA-1] <= tval )
   {
-    yval = 0.0;
-    return yval;
+    return 0.0;
   }
 /*
   Find the interval [ TDATA(LEFT), TDATA(RIGHT) ] containing TVAL.
@@ -240,8 +238,9 @@ double basis_function_beta_val ( double beta1, double beta2, double tdata[],
     yval = 2.0 * pow ( beta1 * ( 1.0 - u ), 3 );
   }
 
-  yval = yval / ( 2.0 + beta2 + 4.0 * beta1 + 4.0 * beta1 * beta1
-    + 2.0 * beta1 * beta1 * beta1 );
+  if ( yval )
+    yval = yval / ( 2.0 + beta2 + 4.0 * beta1 + 4.0 * beta1 * beta1
+                    + 2.0 * beta1 * beta1 * beta1 );
 
   return yval;
 # undef NDATA
@@ -945,8 +944,8 @@ double basis_matrix_tmp ( int left, int n, double mbasis[], int ndata,
     Output, double BASIS_MATRIX_TMP, the value of the spline at TVAL.
 */
 {
-  double arg;
-  int first;
+  double arg = 0.0;
+  int first = 0;
   int i;
   int j;
   double tm;
@@ -3176,7 +3175,7 @@ double pchst ( double arg1, double arg2 )
     +1.0, if ARG1 and ARG2 are of the same sign.
 */
 {
-  double value;
+  double value = 0.0;
 
   if ( arg1 == 0.0 )
   {
@@ -5825,9 +5824,9 @@ double spline_overhauser_nonuni_val ( int ndata, double tdata[],
   double d32;
   double d43;
   int left;
-  double *mbasis;
+  double *mbasis = NULL;
   int right;
-  double yval;
+  double yval = 0.0;
 /*
   Check NDATA.
 */
@@ -5899,7 +5898,8 @@ double spline_overhauser_nonuni_val ( int ndata, double tdata[],
     exit ( 1 ); /* TODO imho this should not exit */
   }
 
-  free ( mbasis );
+  if ( mbasis )
+    free ( mbasis );
 
   return yval;
 }
@@ -5945,9 +5945,9 @@ double spline_overhauser_uni_val ( int ndata, double tdata[], double ydata[],
 */
 {
   int left;
-  double *mbasis;
+  double *mbasis = NULL;
   int right;
-  double yval;
+  double yval = 0.0;
 /*
   Check NDATA.
 */
@@ -5985,7 +5985,8 @@ double spline_overhauser_uni_val ( int ndata, double tdata[], double ydata[],
 
   }
 
-  free ( mbasis );
+  if ( mbasis )
+    free ( mbasis );
 
   return yval;
 }
