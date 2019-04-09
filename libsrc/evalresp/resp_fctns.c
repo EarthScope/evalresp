@@ -716,8 +716,18 @@ interpolate_list_blockette (double **frequency_ptr,
                   " Note:  %d frequenc%s clipped from end of requested range\n",
                   num, ((num == 1) ? "y" : "ies"));
   }
-  if (i > 0)            /* if freq entries were skipped then */
+
+  if (req_num_freqs <= i) /* all requested frequency values were clipped  */
+  {
+    evalresp_log (log, EV_ERROR, 0, "Error interpolating amp/phase values:  %s",
+                  "All requested freqencies out of range\n");
+    return EVALRESP_VAL;
+  }
+  else if (i > 0)        /* if freq entries were skipped then */
+  {
     req_num_freqs -= i; /* subtract # of freqs clipped from beg */
+  }
+
   /* allocate new array for requested frequency values */
   used_req_freq_arr = (double *)calloc (req_num_freqs, sizeof (double));
   /* copy over freq values (excluding out-of-bounds values) */
