@@ -48,14 +48,11 @@ usage (char *program)
   printf ("    -x                   (expect FDSN StationXML format, default autodetect)\n\n");
   printf ("  NOTES:\n\n");
   printf ("    (1) If the 'file' argument is a directory, that directory will be\n");
-  printf ("        searched for files of the form RESP.NETID.STA.CHA.  Files\n");
+  printf ("        searched for files of the form RESP.NETID.STA.CHA\n");
   printf ("        of this type are created by rdseed when it is run with the\n");
-  printf ("        '-R' option or when the '-d' option is used and responses are\n");
-  printf ("        requested, but station.xml format files can also be read (if\n");
-  printf ("        the '-x' flag is given).\n");
-  printf ("    (2) If the 'file' argument is a file, that file is assumed to be\n");
-  printf ("        output from a call to rdseed with the '-R' option, or a file\n");
-  printf ("        in the station.xml format if '-x' is also given.\n");
+  printf ("    (2) If the 'file' argument is a file, the format of the file is\n");
+  printf ("        autodetected to be either StationXML or RESP, defaulting to RESP \n");
+  printf ("        The expected format can be forced to StationXML using '-x'\n");
   printf ("    (3) If the 'file' argument is missing, the current directory\n");
   printf ("        will be searched for files of the form RESP.NETID.STA.CHA.\n");
   printf ("    (4) The directory indicated by the environment variable SEEDRESP\n");
