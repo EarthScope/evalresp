@@ -16,13 +16,13 @@ export
 .PHONY: install
 
 all:
-	$(MAKE) -C $(LIB_SRC_DIR) -f Makefile.unix
-	$(MAKE) -C $(BIN_SRC_DIR) -f Makefile.unix
+	$(MAKE) -C $(LIB_SRC_DIR) -f Makefile
+	$(MAKE) -C $(BIN_SRC_DIR) -f Makefile
 
 clean:
-	$(MAKE) -C $(LIB_SRC_DIR) -f Makefile.unix clean
-	$(MAKE) -C $(BIN_SRC_DIR) -f Makefile.unix clean
+	$(MAKE) -C $(LIB_SRC_DIR) -f Makefile clean
+	$(MAKE) -C $(BIN_SRC_DIR) -f Makefile clean
 
 install:
-	$(MAKE) -C $(LIB_SRC_DIR) -f Makefile.unix install
-	$(MAKE) -C $(BIN_SRC_DIR) -f Makefile.unix install
+	$(MAKE) -C $(LIB_SRC_DIR) -f Makefile install
+	$(MAKE) -C $(BIN_SRC_DIR) -f Makefile install

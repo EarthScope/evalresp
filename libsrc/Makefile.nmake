@@ -1,0 +1,6 @@
+clean all install:
+	cd evalresp_log && $(MAKE) /F Makefile.nmake $*
+	cd spline && $(MAKE) /F Makefile.nmake $*
+	cd mxml && $(MAKE) /F Makefile.nmake $*
+	cd evalresp && $(MAKE) /F Makefile.nmake $*
+

@@ -20,7 +20,7 @@ This README file is a part the evalresp distribution.
    * Follow instructions in INSTALL.unix
      
 - To build evalresp on Windows platform:
-   * Follow instructions in INSTALL.ms
+   * Follow instructions in INSTALL.win
 
 - For development and testing:
    * Follow instructions in tests/jenkins/README.md
@@ -28,7 +28,7 @@ This README file is a part the evalresp distribution.
 
 - To use evalresp Application Programming Interface:
    * Build evalresp.pdf from the source run (in doc directory)
-   * `cd doc; make -f Makefile.unix`
+   * `cd doc; make -f Makefile`
    * See the examples in the section "evalresp Public Interface".
 
 - To call evalresp library from FORTRAN:

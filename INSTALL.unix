@@ -39,11 +39,11 @@ steps:
 
    Note: the Makefile requires GNU make, sometimes available as gmake
  
-     make -f Makefile.unix
+     make -f Makefile
         
 4. Optionally, install, as root:
 
-     make -f Makefile.unix install 
+     make -f Makefile install
 
 5. This will also construct libraries (libevalresp.a libevalresp_log.a
    libmxmlev.a libspline.a) that can be linked into other external

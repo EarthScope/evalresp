@@ -18,7 +18,7 @@ Windows):
 3. In the command prompt:
 
    cd working\directory\evalresp-[version]\
-   NMAKE /F Makefile.ms
+   NMAKE /F Makefile.nmake
 
 4. This should build the executables.  You must then configure windows
    PATH in the usual way before running them.

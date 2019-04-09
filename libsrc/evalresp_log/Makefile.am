@@ -8,4 +8,4 @@ evalresp_log_includedir=$(includedir)/evalresp_log
 nobase_evalresp_log_include_HEADERS =  log.h examples/to_syslog.h\
 								examples/to_file.h
 
-EXTRA_DIST = Makefile.unix Makefile.ms
+EXTRA_DIST = Makefile Makefile.nmake

@@ -1,0 +1,7 @@
+clean all:
+	cd libsrc && $(MAKE) /F Makefile.nmake $*
+	cd src && $(MAKE) /F Makefile.nmake $*
+
+install-for-robot:
+	cd libsrc && $(MAKE) /F Makefile.nmake install
+	cd src && $(MAKE) /F Makefile.nmake install
