@@ -1,9 +1,7 @@
 dnl
-dnl "$Id: configure.ac 462 2016-06-11 20:51:49Z msweet $"
-dnl
 dnl Configuration script for Mini-XML, a small XML-like file parsing library.
 dnl
-dnl Copyright 2003-2016 by Michael R Sweet.
+dnl Copyright 2003-2018 by Michael R Sweet.
 dnl
 dnl These coded instructions, statements, and computer programs are the
 dnl property of Michael R Sweet and are protected by Federal copyright
@@ -11,11 +9,23 @@ dnl law.  Distribution and use rights are outlined in the file "COPYING"
 dnl which should have been included with this file.  If this file is
 dnl missing or damaged, see the license at:
 dnl
-dnl     http://www.msweet.org/projects.php/Mini-XML
+dnl     https://michaelrsweet.github.io/mxml
 dnl
 
 dnl Package name and version...
-AC_INIT([Mini-XML], [2.10], [http://www.msweet.org/bugs.php/Mini-XML], [mxml], [http://www.msweet.org/projects.php/Mini-XML])
+AC_INIT([Mini-XML], [2.12], [https://github.com/michaelrsweet/mxml/issues], [mxml], [https://michaelrsweet.github.io/mxml])
+
+dnl This line is provided to ensure that you don't run the autoheader program
+dnl against this project.  Doing so is completely unsupported and WILL cause
+dnl problems!
+AH_TOP([#error "Somebody ran autoheader on this project which is unsupported and WILL cause problems."])
+
+dnl Get the build and host platforms and split the host_os value
+AC_CANONICAL_BUILD
+AC_CANONICAL_HOST
+
+[host_os_name=`echo $host_os | sed -e '1,$s/[0-9.]*$//g'`]
+[host_os_version=`echo $host_os | sed -e '1,$s/^[^0-9.]*//g'`]
 
 dnl Set the name of the config header file...
 AC_CONFIG_HEADER(config.h)
@@ -58,13 +68,6 @@ AC_ARG_WITH(vsnprintf, [  --with-vsnprintf        use vsnprintf emulation functi
 	use_vsnprintf="$withval",
 	use_vsnprintf="no")
 
-dnl Get the operating system and version number...
-uname=`uname`
-uversion=`uname -r | sed -e '1,$s/[[^0-9]]//g'`
-if test x$uname = xIRIX64; then
-	uname="IRIX"
-fi
-
 dnl Checks for programs...
 AC_PROG_CC
 AC_PROG_CXX
@@ -74,15 +77,15 @@ if test "$INSTALL" = "$ac_install_sh"; then
 	INSTALL="`pwd`/install-sh -c"
 fi
 AC_PROG_RANLIB
-AC_PATH_PROG(AR,ar)
+AC_CHECK_TOOL(AR,ar)
 AC_PATH_PROG(CP,cp)
 AC_PATH_PROG(LN,ln)
 AC_PATH_PROG(MKDIR,mkdir)
 AC_PATH_PROG(RM,rm)
 
 dnl Flags for "ar" command...
-case "$uname" in
-        Darwin* | *BSD*)
+case "$host_os_name" in
+        darwin* | *bsd)
                 ARFLAGS="-rcv"
                 ;;
         *)
@@ -97,11 +100,11 @@ AC_C_INLINE
 
 dnl Checks for string functions.
 if test "x$use_ansi" != xyes; then
-	AC_CHECK_FUNCS(strdup)
+	AC_CHECK_FUNCS(strdup strlcat strlcpy)
 fi
 
 if test "x$use_vsnprintf" != xyes; then
-	AC_CHECK_FUNCS(snprintf vsnprintf)
+	AC_CHECK_FUNCS(snprintf vasprintf vsnprintf)
 fi
 
 dnl Check for "long long" support...
@@ -117,6 +120,17 @@ AC_CACHE_CHECK(for long long int, ac_cv_c_long_long,
 if test $ac_cv_c_long_long = yes; then
 	AC_DEFINE(HAVE_LONG_LONG)
 fi
+
+dnl EPUB support (via libz and zipc)
+MXML_EPUB=""
+AC_SUBST(MXML_EPUB)
+ZIPC=""
+AC_SUBST(ZIPC)
+AC_SEARCH_LIBS(gzgets,z,[
+	AC_DEFINE(HAVE_ZLIB_H)
+	ZIPC="zipc.o"
+	MXML_EPUB="mxml.epub"
+	LIBS="-lz $LIBS"])
 
 dnl Threading support
 AC_ARG_ENABLE(threads, [  --enable-threads        enable multi-threading support])
@@ -146,9 +160,11 @@ if test "x$enable_threads" != xno; then
 
 				# Solaris requires -D_POSIX_PTHREAD_SEMANTICS to
 				# be POSIX-compliant... :(
-				if test $uname = SunOS; then
+				case "$host_os_name" in
+					sunos)
 					PTHREAD_FLAGS="$PTHREAD_FLAGS -D_POSIX_PTHREAD_SEMANTICS"
-				fi
+					;;
+				esac
 				break
 			fi
 		done
@@ -168,16 +184,16 @@ if test x$enable_shared != xno; then
 	AC_MSG_CHECKING(for shared library support)
 	PICFLAG=1
 
-	case "$uname" in
-		SunOS* | UNIX_S*)
+	case "$host_os_name" in
+		sunos | unix_s)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.5"
+			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-h,libmxml.so.1 -G -R\$(libdir) \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -R\$(libdir)"
                 	;;
 
-		HP-UX*)
+		hp-ux)
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.sl.1"
 			DSO="ld"
@@ -185,35 +201,49 @@ if test x$enable_shared != xno; then
 			LDFLAGS="$LDFLAGS -Wl,+s,+b,\$(libdir)"
 			;;
 
-		IRIX)
+		irix)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.5"
+			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-rpath,\$(libdir),-set_version,sgi1.0,-soname,libmxml.so.1 -shared \$(OPTIM)"
 			;;
 
-		OSF1* | Linux | GNU)
+		linux*)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.5"
+			LIBMXML="libmxml.so.1.6"
+			DSO="\$(CC)"
+			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1 -shared \$(OPTIM)"
+			;;
+
+		osf | gnu)
+			AC_MSG_RESULT(yes)
+			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-rpath,\$(libdir) -shared \$(OPTIM)"
                         LDFLAGS="$LDFLAGS -Wl,-rpath,\$(libdir)"
 			;;
 
-		*BSD*)
+		*bsd)
 			AC_MSG_RESULT(yes)
-			LIBMXML="libmxml.so.1.5"
+			LIBMXML="libmxml.so.1.6"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS -Wl,-soname,libmxml.so.1,-R\$(libdir) -shared \$(OPTIM)"
 			LDFLAGS="$LDFLAGS -Wl,-R\$(libdir)"
                         ;;
 
-		Darwin*)
+		darwin)
 			AC_MSG_RESULT(yes)
 			LIBMXML="libmxml.1.dylib"
 			DSO="\$(CC)"
 			DSOFLAGS="$DSOFLAGS \$(RC_CFLAGS) -dynamiclib -lc"
 			;;
+
+                mingw)
+                        AC_MSG_RESULT(yes)
+                        LIBMXML="mxml1.dll"
+                        DSO="\$(CC)"
+                        DSOFLAGS="$DSOFLAGS -shared -Wl,--out-implib,libmxml1.a,--no-undefined,--enable-runtime-pseudo-reloc"
+                        ;;
 
 		*)
 			AC_MSG_RESULT(no)
@@ -234,7 +264,7 @@ AC_SUBST(PICFLAG)
 
 dnl Add -Wall for GCC...
 if test -n "$GCC"; then
-	CFLAGS="-Wall $CFLAGS"
+	CFLAGS="-Wall -D_GNU_SOURCE $CFLAGS"
 
 	if test "x$OPTIM" = x; then
 		OPTIM="-Os -g"
@@ -244,12 +274,12 @@ if test -n "$GCC"; then
 		CFLAGS="-ansi -pedantic $CFLAGS"
 	fi
 
-	if test $PICFLAG = 1 -a $uname != AIX; then
+	if test $PICFLAG = 1 -a "$host_os_name" != aix; then
     		OPTIM="-fPIC $OPTIM"
 	fi
 else
-	case $uname in
-		HP-UX*)
+	case "$host_os_name" in
+		hp-ux)
 			CFLAGS="-Ae $CFLAGS"
 
 			if test "x$OPTIM" = x; then
@@ -263,7 +293,7 @@ else
 			fi
 			;;
 
-		UNIX_SVR* | SunOS*)
+		unix_svr | sunos)
 			if test "x$OPTIM" = x; then
 				OPTIM="-O"
 			fi
@@ -280,6 +310,14 @@ else
 			;;
 	esac
 fi
+
+dnl Determine whether we are cross-compiling...
+if test "$build" = "$host"; then
+	TARGETS="ALLTARGETS"
+else
+	TARGETS="CROSSTARGETS"
+fi
+AC_SUBST(TARGETS)
 
 dnl Fix "prefix" variable if it hasn't been specified...
 if test "$prefix" = "NONE"; then
@@ -298,12 +336,12 @@ fi
 
 dnl Fix "mandir" variable if it hasn't been specified...
 if test "$mandir" = "\${prefix}/man" -a "$prefix" = "/usr"; then
-	case "$uname" in
-        	*BSD* | Darwin* | Linux*)
-        		# BSD, Darwin (MacOS X), and Linux
+	case "$host_os_name" in
+        	*bsd | darwin | linux*)
+        		# *BSD, Darwin (macOS), and Linux
         		mandir="/usr/share/man"
         		;;
-        	IRIX*)
+        	irix)
         		# SGI IRIX
         		mandir="/usr/share/catman/u_man"
         		;;
@@ -331,8 +369,4 @@ AC_SUBST(PC_CFLAGS)
 AC_SUBST(PC_LIBS)
 
 dnl Output the makefile, etc...
-AC_OUTPUT(Makefile mxml.list mxml.pc)
-
-dnl
-dnl End of "$Id: configure.ac 462 2016-06-11 20:51:49Z msweet $".
-dnl
+AC_OUTPUT(Makefile mxml.pc)

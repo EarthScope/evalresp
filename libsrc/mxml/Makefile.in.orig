@@ -1,9 +1,7 @@
 #
-# "$Id: Makefile.in 459 2014-10-19 17:21:48Z msweet $"
-#
 # Makefile for Mini-XML, a small XML-like file parsing library.
 #
-# Copyright 2003-2014 by Michael R Sweet.
+# Copyright 2003-2018 by Michael R Sweet.
 #
 # These coded instructions, statements, and computer programs are the
 # property of Michael R Sweet and are protected by Federal copyright
@@ -11,7 +9,7 @@
 # which should have been included with this file.  If this file is
 # missing or damaged, see the license at:
 #
-#     http://www.msweet.org/projects.php/Mini-XML
+#     https://michaelrsweet.github.io/mxml
 #
 
 #
@@ -22,7 +20,7 @@ AR		=	@AR@
 ARFLAGS		=	@ARFLAGS@
 ARCHFLAGS	=	@ARCHFLAGS@
 CC		=	@CC@
-CFLAGS		=	$(OPTIM) $(ARCHFLAGS) @CFLAGS@ @CPPFLAGS@ @PTHREAD_FLAGS@
+CFLAGS		=	$(OPTIM) $(ARCHFLAGS) @CFLAGS@ @CPPFLAGS@ @PTHREAD_FLAGS@ -DZIPC_ONLY_WRITE
 CP		=	@CP@
 DSO		=	@DSO@
 DSOFLAGS	=	@DSOFLAGS@
@@ -57,7 +55,7 @@ BUILDROOT	=	$(DSTROOT)
 # Install commands...
 #
 
-INSTALL_BIN	=	$(LIBTOOL) $(INSTALL) -m 755 -s
+INSTALL_BIN	=	$(LIBTOOL) $(INSTALL) -m 755
 INSTALL_DATA	=	$(INSTALL) -m 644
 INSTALL_DIR	=	$(INSTALL) -d
 INSTALL_LIB	=	$(LIBTOOL) $(INSTALL) -m 755
@@ -80,22 +78,21 @@ INSTALL_SCRIPT	=	$(INSTALL) -m 755
 # Targets...
 #
 
-DOCFILES	=	doc/0.gif doc/1.gif doc/2.gif doc/3.gif doc/4.gif \
-			doc/A.gif doc/B.gif doc/C.gif doc/D.gif \
-			doc/mxml.html doc/mxmldoc.xsd \
-			README COPYING CHANGES
+DOCFILES	=	doc/mxml.html doc/mxmldoc.xsd README.md COPYING CHANGES.md
 PUBLIBOBJS	=	mxml-attr.o mxml-entity.o mxml-file.o mxml-get.o \
 			mxml-index.o mxml-node.o mxml-search.o mxml-set.o
 LIBOBJS		=	$(PUBLIBOBJS) mxml-private.o mxml-string.o
-OBJS		=	$(LIBOBJS)
-TARGETS		=	$(LIBMXML) libmxmlev.a
+OBJS		=	mmd.o mxmldoc.o testmxml.o zipc.o $(LIBOBJS)
+ALLTARGETS	=	$(LIBMXML) mxmldoc testmxml mxml.xml @MXML_EPUB@
+CROSSTARGETS	=	$(LIBMXML) mxmldoc
+TARGETS		=	$(@TARGETS@)
 
 
 #
 # Make everything...
 #
 
-all:		Makefile config.h $(TARGETS)
+all:		$(TARGETS)
 
 
 #
@@ -104,8 +101,13 @@ all:		Makefile config.h $(TARGETS)
 
 clean:
 	echo Cleaning build files...
-	$(RM) $(OBJS) $(TARGETS)
-	$(RM) mxmldoc-static libmxmlev.a libmxmlev.so.1.5 libmxmlev.sl.1 libmxmlev.1.dylib
+	$(RM) $(OBJS) $(ALLTARGETS)
+	$(RM) mxmldoc-static
+	$(RM) mxml1.dll
+	$(RM) libmxml.a
+	$(RM) libmxml.so.1.6
+	$(RM) libmxml.sl.1
+	$(RM) libmxml.1.dylib
 
 
 #
@@ -139,62 +141,62 @@ clang-changes:
 # Install everything...
 #
 
-install:	$(TARGETS) install-$(LIBMXML) install-libmxmlev.a
-#	echo Installing mxmldoc in $(BUILDROOT)$(bindir)...
-#	$(INSTALL_DIR) $(BUILDROOT)$(bindir)
-#	$(INSTALL_BIN) mxmldoc $(BUILDROOT)$(bindir)
-#	echo Installing documentation in $(BUILDROOT)$(docdir)...
-#	$(INSTALL_DIR) $(BUILDROOT)$(docdir)
-#	for file in $(DOCFILES); do \
-#		$(INSTALL_MAN) $$file $(BUILDROOT)$(docdir); \
-#	done
-#	echo Installing header files in $(BUILDROOT)$(includedir)...
-#	$(INSTALL_DIR) $(BUILDROOT)$(includedir)
-#	$(INSTALL_DATA) mxml.h $(BUILDROOT)$(includedir)
-#	echo Installing pkgconfig files in $(BUILDROOT)$(libdir)/pkgconfig...
-#	$(INSTALL_DIR) $(BUILDROOT)$(libdir)/pkgconfig
-#	$(INSTALL_DATA) mxml.pc $(BUILDROOT)$(libdir)/pkgconfig
-#	echo Installing man pages in $(BUILDROOT)$(mandir)...
-#	$(INSTALL_DIR) $(BUILDROOT)$(mandir)/man1
-#	$(INSTALL_MAN) doc/mxmldoc.man $(BUILDROOT)$(mandir)/man1/mxmldoc.1
-#	$(INSTALL_DIR) $(BUILDROOT)$(mandir)/man3
-#	$(INSTALL_MAN) doc/mxml.man $(BUILDROOT)$(mandir)/man3/mxml.3
+install:	$(TARGETS) install-$(LIBMXML) install-libmxml.a
+	echo Installing mxmldoc in $(BUILDROOT)$(bindir)...
+	$(INSTALL_DIR) $(BUILDROOT)$(bindir)
+	$(INSTALL_BIN) mxmldoc $(BUILDROOT)$(bindir)
+	echo Installing documentation in $(BUILDROOT)$(docdir)...
+	$(INSTALL_DIR) $(BUILDROOT)$(docdir)
+	for file in $(DOCFILES); do \
+		$(INSTALL_MAN) $$file $(BUILDROOT)$(docdir)/`basename $$file .md`; \
+	done
+	echo Installing header files in $(BUILDROOT)$(includedir)...
+	$(INSTALL_DIR) $(BUILDROOT)$(includedir)
+	$(INSTALL_DATA) mxml.h $(BUILDROOT)$(includedir)
+	echo Installing pkgconfig files in $(BUILDROOT)$(libdir)/pkgconfig...
+	$(INSTALL_DIR) $(BUILDROOT)$(libdir)/pkgconfig
+	$(INSTALL_DATA) mxml.pc $(BUILDROOT)$(libdir)/pkgconfig
+	echo Installing man pages in $(BUILDROOT)$(mandir)...
+	$(INSTALL_DIR) $(BUILDROOT)$(mandir)/man1
+	$(INSTALL_MAN) doc/mxmldoc.man $(BUILDROOT)$(mandir)/man1/mxmldoc.1
+	$(INSTALL_DIR) $(BUILDROOT)$(mandir)/man3
+	$(INSTALL_MAN) doc/mxml.man $(BUILDROOT)$(mandir)/man3/mxml.3
 
-install-libmxmlev.a:
-	echo Installing libmxmlev.a to $(BUILDROOT)$(libdir)...
+install-libmxml.a:	libmxml.a
+	echo Installing libmxml.a to $(BUILDROOT)$(libdir)...
 	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
-	$(INSTALL_LIB) libmxmlev.a $(BUILDROOT)$(libdir)
-	$(RANLIB) $(BUILDROOT)$(libdir)/libmxmlev.a
+	$(INSTALL_LIB) libmxml.a $(BUILDROOT)$(libdir)
+	$(RANLIB) $(BUILDROOT)$(libdir)/libmxml.a
 
-install-libmxmlev.so.1.5:
-	echo Installing libmxmlev.so to $(BUILDROOT)$(libdir)...
+install-libmxml.so.1.6:	libmxml.so.1.6
+	echo Installing libmxml.so to $(BUILDROOT)$(libdir)...
 	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
-	$(INSTALL_LIB) libmxmlev.so.1.5 $(BUILDROOT)$(libdir)
-	$(RM) $(BUILDROOT)$(libdir)/libmxmlev.so
-	$(LN) libmxmlev.so.1.5 $(BUILDROOT)$(libdir)/libmxmlev.so
-	$(RM) $(BUILDROOT)$(libdir)/libmxmlev.so.1
-	$(LN) libmxmlev.so.1.5 $(BUILDROOT)$(libdir)/libmxmlev.so.1
+	$(INSTALL_LIB) libmxml.so.1.6 $(BUILDROOT)$(libdir)
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.so
+	$(LN) libmxml.so.1.6 $(BUILDROOT)$(libdir)/libmxml.so
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1
+	$(LN) libmxml.so.1.6 $(BUILDROOT)$(libdir)/libmxml.so.1
 
-install-libmxmlev.sl.1:
-	echo Installing libmxmlev.sl to $(BUILDROOT)$(libdir)...
+install-libmxml.sl.1:	libmxml.sl.1
+	echo Installing libmxml.sl to $(BUILDROOT)$(libdir)...
 	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
-	$(INSTALL_LIB) libmxmlev.sl.1 $(BUILDROOT)$(libdir)
-	$(RM) $(BUILDROOT)$(libdir)/libmxmlev.so
-	$(LN) libmxmlev.sl.1 $(BUILDROOT)$(libdir)/libmxmlev.sl
+	$(INSTALL_LIB) libmxml.sl.1 $(BUILDROOT)$(libdir)
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.so
+	$(LN) libmxml.sl.1 $(BUILDROOT)$(libdir)/libmxml.sl
 
-install-libmxmlev.1.dylib:
-	echo Installing libmxmlev.dylib to $(BUILDROOT)$(libdir)...
+install-libmxml.1.dylib: libmxml.1.dylib
+	echo Installing libmxml.dylib to $(BUILDROOT)$(libdir)...
 	$(INSTALL_DIR) $(BUILDROOT)$(libdir)
-	$(INSTALL_LIB) libmxmlev.1.dylib $(BUILDROOT)$(libdir)
-	$(RM) $(BUILDROOT)$(libdir)/libmxmlev.dylib
-	$(LN) libmxmlev.1.dylib $(BUILDROOT)$(libdir)/libmxmlev.dylib
+	$(INSTALL_LIB) libmxml.1.dylib $(BUILDROOT)$(libdir)
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.dylib
+	$(LN) libmxml.1.dylib $(BUILDROOT)$(libdir)/libmxml.dylib
 
 
 #
 # Uninstall everything...
 #
 
-uninstall: uninstall-$(LIBMXML) uninstall-libmxmlev.a
+uninstall: uninstall-$(LIBMXML) uninstall-libmxml.a
 	echo Uninstalling mxmldoc from $(BUILDROOT)$(bindir)...
 	$(RM) $(BUILDROOT)$(bindir)/mxmldoc
 	echo Uninstalling documentation from $(BUILDROOT)$(docdir)...
@@ -207,62 +209,25 @@ uninstall: uninstall-$(LIBMXML) uninstall-libmxmlev.a
 	$(RM) $(BUILDROOT)$(mandir)/man1/mxmldoc.1
 	$(RM) $(BUILDROOT)$(mandir)/man3/mxml.3
 
-uninstall-libmxmlev.a:
-	echo Uninstalling libmxmlev.a from $(BUILDROOT)$(libdir)...
-	$(RM) $(BUILDROOT)$(libdir)/libmxmlev.a
+uninstall-libmxml.a:
+	echo Uninstalling libmxml.a from $(BUILDROOT)$(libdir)...
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.a
 
-uninstall-libmxmlev.so.1.5:
-	echo Uninstalling libmxmlev.so from $(BUILDROOT)$(libdir)...
-	$(RM) $(BUILDROOT)$(libdir)/libmxmlev.so
-	$(RM) $(BUILDROOT)$(libdir)/libmxmlev.so.1
-	$(RM) $(BUILDROOT)$(libdir)/libmxmlev.so.1.4
+uninstall-libmxml.so.1.6:
+	echo Uninstalling libmxml.so from $(BUILDROOT)$(libdir)...
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.so
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.so.1.4
 
-uninstall-libmxmlev.sl.1:
-	echo Uninstalling libmxmlev.sl from $(BUILDROOT)$(libdir)...
-	$(RM) $(BUILDROOT)$(libdir)/libmxmlev.sl
-	$(RM) $(BUILDROOT)$(libdir)/libmxmlev.sl.1
+uninstall-libmxml.sl.1:
+	echo Uninstalling libmxml.sl from $(BUILDROOT)$(libdir)...
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.sl
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.sl.1
 
-uninstall-libmxmlev.1.dylib:
-	echo Uninstalling libmxmlev.dylib from $(BUILDROOT)$(libdir)...
-	$(RM) $(BUILDROOT)$(libdir)/libmxmlev.dylib
-	$(RM) $(BUILDROOT)$(libdir)/libmxmlev.1.dylib
-
-
-#
-# Make packages using EPM (http://www.epmhome.org/)
-#
-
-epm:	all
-	echo Creating distribution packages...
-	epm --output-dir dist -v -f native mxml
-	epm --output-dir dist -v -f portable mxml
-
-
-#
-# autoconf stuff...
-#
-
-#Makefile:	configure Makefile.in
-#	echo Updating makefile...
-#	if test -f config.status; then \
-#		./config.status --recheck; \
-#		./config.status; \
-#	else \
-#		./configure; \
-#	fi
-#	touch config.h
-
-
-#config.h:	configure config.h.in
-#	echo Updating config.h...
-#	autoconf
-#	if test -f config.status; then \
-#		./config.status --recheck; \
-#		./config.status; \
-#	else \
-#		./configure; \
-#	fi
-#	touch config.h
+uninstall-libmxml.1.dylib:
+	echo Uninstalling libmxml.dylib from $(BUILDROOT)$(libdir)...
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.dylib
+	$(RM) $(BUILDROOT)$(libdir)/libmxml.1.dylib
 
 
 #
@@ -278,10 +243,10 @@ sloc:
 
 
 #
-# libmxmlev.a
+# libmxml.a
 #
 
-libmxmlev.a:	$(LIBOBJS)
+libmxml.a:	$(LIBOBJS)
 	echo Creating $@...
 	$(RM) $@
 	$(AR) $(ARFLAGS) $@ $(LIBOBJS)
@@ -292,56 +257,67 @@ mxml-entity.o mxml-file.o mxml-private.o: mxml-private.h
 
 
 #
-# libmxmlev.so.1.5
+# mxml1.dll
 #
 
-libmxmlev.so.1.5:	$(LIBOBJS)
+mxml1.dll:	$(LIBOBJS)
 	echo Creating $@...
-	$(DSO) $(DSOFLAGS) -o libmxmlev.so.1.5 $(LIBOBJS)
-	$(RM) libmxmlev.so libmxmlev.so.1
-	$(LN) libmxmlev.so.1.5 libmxmlev.so
-	$(LN) libmxmlev.so.1.5 libmxmlev.so.1
+	$(DSO) $(DSOFLAGS) $(LDFLAGS) -o $@ $(LIBOBJS) $(LIBS)
 
 
 #
-# libmxmlev.sl.1
+# libmxml.so.1.6
 #
 
-libmxmlev.sl.1:	$(LIBOBJS)
+libmxml.so.1.6:	$(LIBOBJS)
 	echo Creating $@...
-	$(DSO) $(DSOFLAGS) -o libmxmlev.sl.1 $(LIBOBJS)
-	$(RM) libmxmlev.sl
-	$(LN) libmxmlev.sl.1 libmxmlev.sl
+	$(DSO) $(DSOFLAGS) $(LDFLAGS) -o libmxml.so.1.6 $(LIBOBJS) $(LIBS)
+	$(RM) libmxml.so libmxml.so.1
+	$(LN) libmxml.so.1.6 libmxml.so
+	$(LN) libmxml.so.1.6 libmxml.so.1
 
 
 #
-# libmxmlev.1.dylib
+# libmxml.sl.1
 #
 
-libmxmlev.1.dylib:	$(LIBOBJS)
+libmxml.sl.1:	$(LIBOBJS)
 	echo Creating $@...
-	$(DSO) $(DSOFLAGS) -o libmxmlev.1.dylib \
-		-install_name $(libdir)/libmxmlev.dylib \
-		-current_version 1.5.0 \
+	$(DSO) $(DSOFLAGS) $(LDFLAGS) -o libmxml.sl.1 $(LIBOBJS) $(LIBS)
+	$(RM) libmxml.sl
+	$(LN) libmxml.sl.1 libmxml.sl
+
+
+#
+# libmxml.1.dylib
+#
+
+libmxml.1.dylib:	$(LIBOBJS)
+	echo Creating $@...
+	$(DSO) $(DSOFLAGS) $(LDFLAGS) -o libmxml.1.dylib \
+		-install_name $(libdir)/libmxml.dylib \
+		-current_version 1.6.0 \
 		-compatibility_version 1.0.0 \
-		$(LIBOBJS)
-	$(RM) libmxmlev.dylib
-	$(LN) libmxmlev.1.dylib libmxmlev.dylib
+		$(LIBOBJS) $(LIBS)
+	$(RM) libmxml.dylib
+	$(LN) libmxml.1.dylib libmxml.dylib
 
 
 #
 # mxmldoc
 #
 
-mxmldoc:	$(LIBMXML) mxmldoc.o
+mxmldoc:	$(LIBMXML) mxmldoc.o mmd.o @ZIPC@
 	echo Linking $@...
-	$(CC) -L. $(LDFLAGS) -o $@ mxmldoc.o -lmxml $(LIBS)
+	$(CC) -L. $(LDFLAGS) -o $@ mxmldoc.o mmd.o @ZIPC@ -lmxml $(LIBS)
 
-mxmldoc-static:	libmxmlev.a mxmldoc.o
+mxmldoc-static:	libmxml.a mxmldoc.o mmd.o @ZIPC@
 	echo Linking $@...
-	$(CC) $(LDFLAGS) -o $@ mxmldoc.o libmxmlev.a $(LIBS)
+	$(CC) $(LDFLAGS) -o $@ mxmldoc.o mmd.o @ZIPC@ libmxml.a $(LIBS)
 
-mxmldoc.o:	mxml.h
+mxmldoc.o:	mxml.h zipc.h mmd.h
+zipc.o:		zipc.h
+mmd.o:		mmd.h
 
 
 #
@@ -384,23 +360,35 @@ testmxml.o:	mxml.h
 # mxml.xml
 #
 
-mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c)
+mxml.xml:	mxmldoc-static mxml.h $(PUBLIBOBJS:.o=.c) \
+		doc/body.man doc/footer.man \
+		doc/reference.header
 	echo Generating API documentation...
 	$(RM) mxml.xml
-	./mxmldoc-static --header doc/reference.heading mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >doc/reference.html
-	if test "x`uname`" = xDarwin; then \
-		./mxmldoc-static --docset org.minixml.docset \
-			--docversion @VERSION@ --feedname minixml.org \
-			--feedurl http://www.minixml.org/org.minixml.atom \
-			--header doc/docset.header --intro doc/docset.intro \
-			--css doc/docset.css --title "Mini-XML API Reference" \
-			mxml.xml || exit 1; \
-		$(RM) org.minixml.atom; \
-		xcrun docsetutil package --output org.minixml.xar \
-			--atom org.minixml.atom \
-			--download-url http://www.minixml.org/org.minixml.xar \
-			org.minixml.docset || exit 1; \
-	fi
+	./mxmldoc-static --header doc/reference.header \
+		--docversion @VERSION@ --author "Michael R Sweet" \
+		--copyright "Copyright 2003-2018, All Rights Reserved." \
+		--title "Mini-XML API Reference" \
+		mxml.xml mxml.h $(PUBLIBOBJS:.o=.c) >doc/reference.html
+	./mxmldoc-static --man mxml --title "Mini-XML API" \
+		--body doc/body.man --footer doc/footer.man \
+		mxml.xml >doc/mxml.man
+
+
+#
+# mxml.epub
+#
+
+mxml.epub:	mxml.xml mxmldoc-static doc/body.md doc/mxml-cover.png
+	echo Generating EPUB API documentation...
+	./mxmldoc-static --body doc/body.md \
+		--coverimage doc/mxml-cover.png \
+		--epub mxml.epub mxml.xml
+
+
+#
+# Use Valgrind (http://valgrind.org) to check for problems in mxmldoc.
+#
 
 valgrind:	mxmldoc-static
 	echo Doing dynamic code analysis using Valgrind...
@@ -411,32 +399,7 @@ valgrind:	mxmldoc-static
 
 
 #
-# doc/mxml.man
-#
-
-doc/mxml.man: mxmldoc-static mxml.xml
-	echo "Generating mxml(3) man page..."
-	$(RM) doc/mxml.man
-	./mxmldoc-static --man mxml --title "Mini-XML API" \
-		--intro doc/intro.man --footer doc/footer.man \
-		mxml.xml >doc/mxml.man
-
-
-#
-# All object files depend on the makefile...
+# All object files depend on the makefile and config header...
 #
 
 $(OBJS):	Makefile config.h
-
-check: all
-
-info:
-dvi:
-ps:
-pdf:
-html:
-
-#
-# End of "$Id: Makefile.in 459 2014-10-19 17:21:48Z msweet $".
-#
-

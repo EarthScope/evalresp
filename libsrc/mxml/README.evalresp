@@ -1,25 +1,12 @@
 
-This is a direct copy of mini-xml release 2.10 with the following
+This is a direct copy of mini-xml release 2.12 with the following
 modifications:
 
- o patch applied
-   https://github.com/michaelrsweet/mxml/commit/1272c3dfdb967f49ebb502f28ba3eb56e2360f54?diff=unified 
+ o Rename Makefile.in => Makefile.in.orig
 
- o autoconf section (Makefile, config.h) commented out in Makefile.in
+ o Rename configure => configure.orig
 
- o mxmldoc, mxml.xml and testxml removed from Makefile.in targets
-   (and install).
+ o Add our own Makefile, Makefile.nmake, Makefile.am, config.h.ms,
+   config.h.unix, README.evalresp
 
- o change libmxml. to libmxmlev. in Makefile.in (to avoid conflicts)
-
- o add libmxmlev.a to targets (was otherwise chained in via deleted
-   targets)
-
- o removed packageconfig support (in install) (is this wise?)
-
- o removed install of headers and man pages (unrenamed; avoid conflicts)
-
- o added empty check and documentation targets
-
-Also, modified parent configure.ac, Makefile.ac to include this
-directory (and copied various things from configure.ac here to there).
+Our build target is libmxmlev.a instead of the default libmxml.a.
