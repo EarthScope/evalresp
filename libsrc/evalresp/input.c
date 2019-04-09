@@ -2742,14 +2742,14 @@ evalresp_filename_to_channels (evalresp_logger *log, const char *filename, evalr
 {
   FILE *file = NULL;
   int status = EVALRESP_OK;
-  int station_xml = options != NULL ? options->station_xml : -1;
+  int station_xml = options != NULL ? options->station_xml : 0;
 
   if (!(status = open_file (log, filename, &file)))
   {
     FILE *temp_file = NULL;
 
-    /* Attempt to detect StationXML if requested */
-    if (options != NULL && options->station_xml == -1)
+    /* Attempt to detect StationXML if not forced */
+    if (options != NULL && options->station_xml == 0)
     {
       station_xml = evalresp_file_detect_stationxml (log, file);
 

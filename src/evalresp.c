@@ -45,7 +45,7 @@ usage (char *program)
   printf ("    -b62_x value         (sample value/volts where we compute response for\n");
   printf ("                          B62)\n");
   printf ("    -v                   (verbose; list parameters on stdout)\n");
-  printf ("    -x                   (xml; expect station.xml format)\n\n");
+  printf ("    -x                   (expect FDSN StationXML format, default autodetect)\n\n");
   printf ("  NOTES:\n\n");
   printf ("    (1) If the 'file' argument is a directory, that directory will be\n");
   printf ("        searched for files of the form RESP.NETID.STA.CHA.  Files\n");
