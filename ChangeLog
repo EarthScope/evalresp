@@ -1,4 +1,16 @@
-Version 5.0.DEV
+Version 5.0.0
+
+	09-04-2019 Chad Trabant
+
+	* IMPROVED: Autodetect file format by default, when
+	options.station_xml == 0.
+
+	* IMPROVED: Rename Makefile.unix to Makefile and Makefile.ms
+	to Makefile.nmake.
+
+	* IMPROVED: Fix many compiler warnings.
+
+	* MODIFIED: Update Mini-XML library from 2.10 to 2.12.
 
 	21-08-2018 Chad Trabant
 
