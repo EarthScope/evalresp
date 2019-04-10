@@ -325,7 +325,7 @@ int evalresp_new_filter (evalresp_logger *log, evalresp_filter **filter);
  * @ingroup evalresp_public_options
  * @param[in] log logging structure
  * @param[in] filter evalresp_filter pointer to set the year
- * @param[in] year 
+ * @param[in] year
  * @brief Set the year in an evalresp_filter from a string.  Input channels will only be read and
  * evaluated for the year given.
  * @retval EVALRESP_OK on success
@@ -360,7 +360,7 @@ int evalresp_set_time (evalresp_logger *log, evalresp_filter *filter, const char
  * @public
  * @ingroup evalresp_public_options
  * @param[in] log logging structure
- * @param[in] filter evalresp_filter pointer to set 
+ * @param[in] filter evalresp_filter pointer to set
  * @param[in] sta the station code
  * @param[in] net the network code
  * @param[in] chan the channel code
@@ -370,7 +370,7 @@ int evalresp_set_time (evalresp_logger *log, evalresp_filter *filter, const char
  * @retval EVALRESP_OK on success
  */
 int evalresp_add_sncl_text (evalresp_logger *log, evalresp_filter *filter,
-                            const char *sta, const char *net, const char *chan, const char *locid);
+                            const char *net, const char *sta, const char *locid, const char *chan);
 
 /**
  * Splits comma-separated values in input and adds all combinations.
@@ -379,7 +379,7 @@ int evalresp_add_sncl_text (evalresp_logger *log, evalresp_filter *filter,
  * @public
  * @ingroup evalresp_public_options
  * @param[in] log logging structure
- * @param[in] filter evalresp_filter pointer to set 
+ * @param[in] filter evalresp_filter pointer to set
  * @param[in] sta the station code list
  * @param[in] net the network code list
  * @param[in] chan the channel code list
