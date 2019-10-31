@@ -442,10 +442,20 @@ parse_units (evalresp_logger *log, evalresp_options const *const options, char *
   {
     *units = PRESSURE;
   }
+  else if (strncasecmp (line, "KPA", 2) == 0)
+  {
+    *units = PRESSURE;
+    channel->unit_scale_fact = 1.0;
+  }
   /* IGD 08/21/06 Added support for TESLA */
   else if (strncasecmp (line, "T -", 3) == 0)
   {
     *units = TESLA;
+  }
+  else if (strncasecmp (line, "NT -", 3) == 0)
+  {
+    *units = TESLA;
+    channel->unit_scale_fact = 1.0e9;
   }
   /* IHD 10/03/13 Adding DEGREES CENTIGRADE */
   else if (strncasecmp (line, "C -", 3) == 0)

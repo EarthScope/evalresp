@@ -731,7 +731,7 @@ free_stages (evalresp_stage *stage_ptr)
         free_gain (this_blkt);
         break;
       case REFERENCE:
-        free_ref (this_blkt);
+          //free_ref (this_blkt);
         free_evalresp_blkt (this_blkt);
         break;
       case POLYNOMIAL:
@@ -743,6 +743,7 @@ free_stages (evalresp_stage *stage_ptr)
       this_blkt = next_blkt;
     }
     free (stage_ptr);
+    stage_ptr = NULL;
   }
 }
 
