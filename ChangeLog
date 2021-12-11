@@ -2,9 +2,12 @@ Version 5.0.NEXT
 
 	2021-12-11 Chad Trabant
 
-	* Properly treat StationXML 'number' attribute as optional for
-	Pole, Zero and Coefficient elements.  Converted values in RESP
+	* FIXED: Properly treat StationXML 'number' attribute as optional
+	for Pole, Zero and Coefficient elements.  Converted values in RESP
 	will be 0.
+
+	* IMPROVED: Always re-compile binary targets in default target,
+	since dependencies are not provided for make to decided.
 
 Version 5.0.0
 

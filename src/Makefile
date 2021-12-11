@@ -14,7 +14,7 @@ TARGETS = evalresp xml2resp
 _targets = $(addprefix $(BUILD_DIR)/,$(TARGETS))
 .PHONY: all clean install
 
-all: $(BUILD_DIR) $(_targets)
+all: clean $(BUILD_DIR) $(_targets)
 	echo $(_targets)
 
 $(BUILD_DIR)/evalresp: $(evalresp_SOURCES)
