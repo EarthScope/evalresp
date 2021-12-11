@@ -1,3 +1,11 @@
+Version 5.0.NEXT
+
+	2021-12-11 Chad Trabant
+
+	* Properly treat StationXML 'number' attribute as optional for
+	Pole, Zero and Coefficient elements.  Converted values in RESP
+	will be 0.
+
 Version 5.0.0
 
 	09-04-2019 Chad Trabant

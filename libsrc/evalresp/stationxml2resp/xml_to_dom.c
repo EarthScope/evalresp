@@ -348,7 +348,8 @@ static int parse_pole_zero(evalresp_logger *log, mxml_node_t *node, x2r_pole_zer
 
     //evalresp_log(log, EV_DEBUG, 0, "Parsing pole_zero");
 
-    if (!(status = int_attribute(log, node, "number", NULL, &pole_zero->number))) {
+    /* The number attribute is optional in StationXML, default to 0 if not present */
+    if (!(status = int_attribute(log, node, "number", "0", &pole_zero->number))) {
         if (!(status = parse_float(log, node, "Real", &pole_zero->real))) {
             status = parse_float(log, node, "Imaginary", &pole_zero->imaginary);
         }
@@ -365,7 +366,8 @@ static int parse_coefficient(evalresp_logger *log, mxml_node_t *node, x2r_coeffi
 
     //evalresp_log(log, EV_DEBUG, 0, "Parsing coefficient");
 
-    if (!(status = int_attribute(log, node, "number", NULL, &coefficient->number))) {
+    /* The number attribute is optional in StationXML, default to 0 if not present */
+    if (!(status = int_attribute(log, node, "number", "0", &coefficient->number))) {
         status = parse_float(log, node, ".", &coefficient->value);
     }
 
