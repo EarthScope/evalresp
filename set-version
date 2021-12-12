@@ -10,7 +10,6 @@ fi
 VERSION="$1"
 echo "Version: $VERSION"
 
-sed -i -e "s/REVNUM \".*\"/REVNUM \"$VERSION\"/" libsrc/evalresp/public.h
-sed -i -e "s/\[evalresp], \[[^]]\+/[evalresp], [$VERSION/" configure.ac
-
+sed -i -E -e "s/REVNUM \".*\"/REVNUM \"$VERSION\"/" libsrc/evalresp/public.h
+sed -i -E -e "s/\[evalresp],\[[^]]*]/[evalresp],[$VERSION]/" configure.ac
 

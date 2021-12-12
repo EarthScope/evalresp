@@ -1,5 +1,5 @@
 
-AC_INIT([evalresp], [5.0.0], [software-owner@iris.washington.edu])
+AC_INIT([evalresp],[5.0.NEXT],[software-owner@iris.washington.edu])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_FILES([Makefile libsrc/Makefile src/Makefile tests/Makefile tests/c/Makefile tests/java/Makefile tests/fortran/Makefile tests/robot/Makefile tests/jenkins/Makefile doc/Makefile libsrc/mxml/Makefile libsrc/evalresp_log/Makefile libsrc/spline/Makefile libsrc/evalresp/Makefile])
@@ -20,11 +20,10 @@ dnl Checks for libraries.
 AC_CHECK_LIB(m, fabs)
 
 dnl Checks for header files.
-AC_HEADER_STDC
 AC_CHECK_HEADERS(sys/time.h unistd.h malloc.h stdlib.h getopt.h)
 
 dnl Checks for library functions.
-AC_FUNC_VFORK
+AC_FUNC_FORK
 AC_CHECK_FUNCS(getcwd regcomp strcspn strstr)
 
 
