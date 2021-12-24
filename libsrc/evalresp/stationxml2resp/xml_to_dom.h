@@ -41,6 +41,8 @@
 // Names below correspond, in general, to edu.iris.dmc.fdsn.station.model classes
 // in the IRIS-WS source.
 
+/* A value to represent an unset, open, date-time.  Equates to 1906-08-16T20:26:40 */
+#define unset_time_t -2000000000
 
 /**
  * @private

@@ -66,7 +66,7 @@ static int format_date(evalresp_logger *log, const time_t epoch, int n, char *te
     int status = X2R_OK;
     struct tm *tm;
 
-    if (epoch) {
+    if (epoch != unset_time_t) {
 		if (!(tm = gmtime(&epoch))) {
 			evalresp_log(log, EV_ERROR, 0, "Cannot convert epoch to time");
 			status = X2R_ERR_DATE;

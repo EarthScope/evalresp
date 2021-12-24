@@ -1146,6 +1146,8 @@ static int parse_station(evalresp_logger *log, mxml_node_t *node, x2r_station *s
         } else {
             if (!(status = char_attribute(log, node, "code", NULL, &station->code))) {
                 for (i = 0; !status && i < station->n_channels; ++i) {
+                    station->channel[i].start_date = unset_time_t;
+                    station->channel[i].end_date = unset_time_t;
                     status = parse_channel(log, stations->node[i], &station->channel[i]);
                 }
             }
