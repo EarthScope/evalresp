@@ -2450,8 +2450,9 @@ earlier (evalresp_channel *a, evalresp_channel *b)
 {
   int open_a, open_b;
   evalresp_datetime a_time, b_time;
-  open_a = !strcmp (a->end_t, NO_ENDING_TIME);
-  open_b = !strcmp (b->end_t, NO_ENDING_TIME);
+  open_a = !strncasecmp (a->end_t, NO_ENDING_TIME, (sizeof(NO_ENDING_TIME)-1));
+  open_b = !strncasecmp (b->end_t, NO_ENDING_TIME, (sizeof(NO_ENDING_TIME)-1));
+
   if (open_a || open_b)
   {
     if (!open_b)
@@ -2503,7 +2504,8 @@ static int
 duration (evalresp_channel *channel)
 {
   evalresp_datetime begin, end;
-  if (!strcmp (channel->end_t, NO_ENDING_TIME))
+
+  if (!strncasecmp (channel->end_t, NO_ENDING_TIME, (sizeof(NO_ENDING_TIME)-1)))
   {
     return INDEFINITE;
   }
@@ -2521,7 +2523,7 @@ in_epoch (evalresp_datetime *requirement, const char *beg_t, const char *end_t)
   evalresp_datetime start_time, end_time;
 
   parse_datetime (beg_t, &start_time);
-  if (strncmp (end_t, NO_ENDING_TIME, 14))
+  if (strncasecmp (end_t, NO_ENDING_TIME, (sizeof(NO_ENDING_TIME)-1)))
   {
     parse_datetime (end_t, &end_time);
     return ((timecmp (&start_time, requirement) <= 0 && timecmp (&end_time, requirement) > 0));
