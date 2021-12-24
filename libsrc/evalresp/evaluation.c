@@ -139,6 +139,21 @@ evalresp_set_unit (evalresp_logger *log, evalresp_options *options,
   return status;
 }
 
+const char *
+evalresp_unit_string (const evalresp_unit unit)
+{
+  if (unit == evalresp_displacement_unit)
+    return "Displacement (m)";
+  else if (unit == evalresp_velocity_unit)
+    return "Velocity (m/s)";
+  else if (unit == evalresp_acceleration_unit)
+    return "Acceleration (m/s**2)";
+  else if (unit == evalresp_file_unit)
+    return "Documented response unit";
+  else
+    return "Unrecognized response unit";
+}
+
 static option_pair spacings[] = {
     {0, "LOG"},
     {1, "LIN"}};

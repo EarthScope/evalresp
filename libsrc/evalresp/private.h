@@ -261,6 +261,15 @@ struct matched_files
 /**
  * @private
  * @ingroup evalresp_private_string
+ * @brief A function that returns a string describing the specified unit value.
+ * @param[in] unit Unit value, one of evalresp_unit.
+ * @returns pointer to string describing unit.
+ */
+const char *evalresp_unit_string (const evalresp_unit unit);
+
+/**
+ * @private
+ * @ingroup evalresp_private_string
  * @brief A function that tests whether a string can be converted into an
  *        integer using string_match().
  * @param[in] test String to test.

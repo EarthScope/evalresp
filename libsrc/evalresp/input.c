@@ -507,7 +507,7 @@ parse_units (evalresp_logger *log, evalresp_options const *const options, char *
   {
     *units = UNDEF_UNITS;
     evalresp_log (log, EV_WARN, EV_WARN,
-                  "check_units; units found ('%s') are not supported", line);
+                  "units found ('%s') cannot be converted to %s", line, evalresp_unit_string(options->unit));
     status = EVALRESP_PAR;
   }
 

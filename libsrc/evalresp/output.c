@@ -9,21 +9,6 @@
 #include "./private.h"
 #include "evalresp/public_api.h"
 
-static const char *
-units_string (const evalresp_unit units)
-{
-  if (units == evalresp_displacement_unit)
-    return "Displacement (m)";
-  else if (units == evalresp_velocity_unit)
-    return "Velocity (m/s)";
-  else if (units == evalresp_acceleration_unit)
-    return "Acceleration (m/s**2)";
-  else if (units == evalresp_file_unit)
-    return "Documented response units";
-  else
-    return "Unrecognized response units";
-}
-
 int
 evalresp_response_to_char (evalresp_logger *log, const evalresp_response *response,
                            int unwrap, evalresp_file_format format, char **output)
@@ -296,7 +281,7 @@ evalresp_channel_to_log (evalresp_logger *log, evalresp_options const *const opt
 
   evalresp_log (log, EV_INFO, 0, "   documented input units: %s", (in_units_str) ? in_units_str : "None");
   evalresp_log (log, EV_INFO, 0, "   documented output units: %s", (out_units_str) ? out_units_str : "None");
-  evalresp_log (log, EV_INFO, 0, "   requested units: %s", units_string(options->unit));
+  evalresp_log (log, EV_INFO, 0, "   requested units: %s", evalresp_unit_string(options->unit));
 
   evalresp_log (log, EV_INFO, 0, "   computed sens=%.5E (reported=%.5E) @ %.5E Hz",
                 channel->calc_sensit, channel->sensit, channel->sensfreq);
