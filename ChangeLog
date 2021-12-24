@@ -1,6 +1,6 @@
 Version 5.0.NEXT
 
-	2021-12-11 Chad Trabant
+	2021-12-12 Chad Trabant
 
 	* FIXED: Properly treat StationXML 'number' attribute as optional
 	for Pole, Zero and Coefficient elements.  Converted values in RESP
@@ -8,6 +8,11 @@ Version 5.0.NEXT
 
 	* IMPROVED: Always re-compile binary targets in default target,
 	since dependencies are not provided for make to decided.
+
+	* IMPROVED: Retain documented unit strings and include them in
+	returned structure and use to improve diagnostic/verbose output.
+
+	* IMPROVED: Include requested units in diagnostic output.
 
 Version 5.0.0
 

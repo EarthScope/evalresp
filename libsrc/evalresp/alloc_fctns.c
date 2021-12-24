@@ -488,6 +488,8 @@ alloc_stage (evalresp_logger *log)
   stage_ptr->sequence_no = 0;
   stage_ptr->output_units = 0;
   stage_ptr->input_units = 0;
+  stage_ptr->output_units_str = NULL;
+  stage_ptr->input_units_str = NULL;
   stage_ptr->first_blkt = NULL;
   stage_ptr->next_stage = NULL;
 
@@ -742,6 +744,12 @@ free_stages (evalresp_stage *stage_ptr)
       }
       this_blkt = next_blkt;
     }
+
+    if (stage_ptr->output_units_str)
+      free (stage_ptr->output_units_str);
+    if (stage_ptr->input_units_str)
+      free (stage_ptr->input_units_str);
+
     free (stage_ptr);
   }
 }

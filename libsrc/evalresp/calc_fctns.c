@@ -981,7 +981,7 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
     }
 
     /*  Write output for freq[i] in output[i] (note: unit_scale_fact is set by the
-     * 'check_units' function that is used to convert to 'MKS' units when the
+     * 'parse_units' function that is used to convert to 'MKS' units when the
      * the response was given as a displacement, velocity, or acceleration in units other
      * than meters) */
     if (0 == options->use_total_sensitivity)

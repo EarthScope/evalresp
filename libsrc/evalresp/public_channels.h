@@ -182,6 +182,8 @@ typedef struct evalresp_stage_s
   int sequence_no;                     /**< Sequence number. */
   int input_units;                     /**< Input units. */
   int output_units;                    /**< Output units. */
+  char *input_units_str;               /**< Input units string. */
+  char *output_units_str;              /**< Output units string. */
   evalresp_blkt *first_blkt;           /**< Pointer to first blockette of the filter. */
   struct evalresp_stage_s *next_stage; /**< Pointer to the next stage in the response. */
 } evalresp_stage;
