@@ -1227,18 +1227,28 @@ int x2r_parse_fdsn_station_xml(evalresp_logger *log, mxml_node_t *doc, x2r_fdsn_
         evalresp_log(log, EV_ERROR, 0, "Cannot alloc fdsn_station_xml");
         status = X2R_ERR_MEMORY;
     } else {
-        if (!(status = find_child(log, &fdsn, NULL, doc, "FDSNStationXML"))) {
-            if (!(status = find_children(log, &networks, fdsn, "Network"))) {
-                (*root)->n_networks = networks->n;
-                if (!((*root)->network = calloc((*root)->n_networks, sizeof(*(*root)->network)))) {
-                    evalresp_log(log, EV_ERROR, 0, "Cannot alloc networks");
-                    status = X2R_ERR_MEMORY;
-                } else {
-                    for (i = 0; !status && i < (*root)->n_networks; ++i) {
-                        status = parse_network(log, networks->node[i], &(*root)->network[i]);
-                    }
-                }
-            }
+        // Find FDSNStationXML document node, could be the root or following XML declaration (<?xml ...?>)
+        if (mxmlGetType(doc) == MXML_ELEMENT && !strcmp("FDSNStationXML",  mxmlGetElement(doc))) {
+            fdsn = doc;
+        } else {
+            fdsn = mxmlFindElement(doc, doc, "FDSNStationXML", NULL, NULL, MXML_DESCEND_FIRST);
+        }
+
+        if (fdsn) {
+           if (!(status = find_children(log, &networks, fdsn, "Network"))) {
+               (*root)->n_networks = networks->n;
+               if (!((*root)->network = calloc((*root)->n_networks, sizeof(*(*root)->network)))) {
+                   evalresp_log(log, EV_ERROR, 0, "Cannot alloc networks");
+                   status = X2R_ERR_MEMORY;
+               } else {
+                   for (i = 0; !status && i < (*root)->n_networks; ++i) {
+                     status = parse_network(log, networks->node[i], &(*root)->network[i]);
+                   }
+               }
+           }
+        } else {
+            evalresp_log(log, EV_ERROR, 0, "FDSNStationXML not detected");
+            status = X2R_ERR_XML;
         }
     }
 
@@ -1277,5 +1287,3 @@ int x2r_station_service_load(evalresp_logger *log, FILE *in, x2r_fdsn_station_xm
     mxmlDelete(doc);
     return status;
 }
-
-

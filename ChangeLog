@@ -1,6 +1,6 @@
 Version 5.0.NEXT
 
-	2021-12-12 Chad Trabant
+	2021-12-24 Chad Trabant
 
 	* FIXED: Properly treat StationXML 'number' attribute as optional
 	for Pole, Zero and Coefficient elements.  Converted values in RESP
@@ -16,6 +16,9 @@ Version 5.0.NEXT
 
 	* IMPROVED: Properly recognize date times of 1970-01-01T00:00:00
 	StationXML to avoid treating them as "open".
+
+	* IMPROVED: Allow StationXML input without an XML declaration,
+	aka the <?xml ... ?> prefix which is not required by StationXML.
 
 Version 5.0.0
 

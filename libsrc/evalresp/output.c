@@ -277,7 +277,7 @@ evalresp_channel_to_log (evalresp_logger *log, evalresp_options const *const opt
   evalresp_log (log, EV_INFO, 0, "  %s %s %s %s ",
                 (strlen (channel->network) ? channel->network : "??"), channel->staname,
                 (strlen (channel->locid) ? channel->locid : "??"), channel->chaname);
-  evalresp_log (log, EV_INFO, 0, " %s %s", channel->beg_t, channel->end_t);
+  evalresp_log (log, EV_INFO, 0, "  %s %s", channel->beg_t, channel->end_t);
 
   evalresp_log (log, EV_INFO, 0, "   documented input units: %s", (in_units_str) ? in_units_str : "None");
   evalresp_log (log, EV_INFO, 0, "   documented output units: %s", (out_units_str) ? out_units_str : "None");
