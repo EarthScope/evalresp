@@ -660,17 +660,7 @@ free_deci (evalresp_blkt *blkt_ptr)
 void
 free_ref (evalresp_blkt *blkt_ptr)
 {
-
   if (blkt_ptr != (evalresp_blkt *)NULL)
-  {
-    free (blkt_ptr);
-  }
-}
-
-void
-free_evalresp_blkt (evalresp_blkt *blkt_ptr)
-{
-  if (blkt_ptr != NULL)
   {
     free (blkt_ptr);
   }
@@ -734,7 +724,6 @@ free_stages (evalresp_stage *stage_ptr)
         break;
       case REFERENCE:
         free_ref (this_blkt);
-        free_evalresp_blkt (this_blkt);
         break;
       case POLYNOMIAL:
         free_polynomial (this_blkt);

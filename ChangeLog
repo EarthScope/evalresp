@@ -6,6 +6,8 @@ Version 5.0.NEXT
 	for Pole, Zero and Coefficient elements.  Converted values in RESP
 	will be 0.
 
+	* FIXED: Avoid double-free in free_stages() and remove stub code.
+
 	* IMPROVED: Always re-compile binary targets in default target,
 	since dependencies are not provided for make to decided.
 
