@@ -2743,7 +2743,7 @@ evalresp_file_to_channels (evalresp_logger *log, FILE *file,
   return status;
 }
 
-/* Detection FDSN StationXML by searching the first 255 bytes of the
+/* Detection of FDSN StationXML by searching the first 255 bytes of the
  * file for "<FDSNStationXML".
  *
  * Return 1 if Station, 0 if not and -1 on error. */
@@ -2788,6 +2788,7 @@ evalresp_filename_to_channels (evalresp_logger *log, const char *filename, evalr
     {
       station_xml = evalresp_file_detect_stationxml (log, file);
 
+      /* Assume RESP on detection error */
       if (station_xml == -1)
         station_xml = 0;
     }

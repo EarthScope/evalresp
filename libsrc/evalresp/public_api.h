@@ -449,7 +449,7 @@ typedef struct
   int b55_interpolate;           /**< Interpolate blockette 55 to match min_freq, max_freq, etc (use frequencies given in the blockette, overriding options here, by default)? */
   int use_total_sensitivity;     /**< Use the total sensitivity (ignore by default)? */
   int use_stdio;                 /**< Read from stdin / write to stdout (use files by default)? */
-  int station_xml;               /**< Expect StationXML input, use -1 to autodetect (SEED RESP by default)? */
+  int station_xml;               /**< Expect StationXML input, use 0 to autodetect (SEED RESP by default)? */
   evalresp_output_format format; /**< Output format (AMP and PHA by default). */
   evalresp_unit unit;            /**< Output unit (displacement by default). */
   int verbose;                   /**< Verbose output? */
