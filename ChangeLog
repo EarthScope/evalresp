@@ -8,9 +8,6 @@ Version 5.0.NEXT
 
 	* FIXED: Avoid double-free in free_stages() and remove stub code.
 
-	* IMPROVED: Always re-compile binary targets in default target,
-	since dependencies are not provided for make to decided.
-
 	* IMPROVED: Retain documented unit strings and include them in
 	returned structure and use to improve diagnostic/verbose output.
 
@@ -21,6 +18,9 @@ Version 5.0.NEXT
 
 	* IMPROVED: Allow StationXML input without an XML declaration,
 	aka the <?xml ... ?> prefix which is not required by StationXML.
+
+	* IMPROVED: Always re-compile binary targets in default target,
+        as dependencies are not provided for make to determine when needed.
 
 Version 5.0.0
 
