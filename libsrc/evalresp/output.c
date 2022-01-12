@@ -216,7 +216,6 @@ evalresp_channel_to_log (evalresp_logger *log, evalresp_options const *const opt
   evalresp_blkt *this_blkt;
   char tmp_str[TMPSTRLEN], out_str[OUTPUTLEN];
   int in_units = 0;
-  int out_units = 0;
   char *in_units_str = 0;
   char *out_units_str = 0;
   int first_blkt;
@@ -245,7 +244,6 @@ evalresp_channel_to_log (evalresp_logger *log, evalresp_options const *const opt
     }
     if (last_stage->output_units || last_stage->output_units_str)
     {
-      out_units = last_stage->output_units;
       out_units_str = last_stage->output_units_str;
     }
     this_stage = last_stage->next_stage;
