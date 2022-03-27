@@ -92,8 +92,14 @@ convert_responses_to_response_chain (evalresp_responses *responses, evalresp_res
   int i;
   int nresp;
 
+  *first_resp = NULL;
+  if(!responses) {
+      return -1;
+  }
   nresp = responses->nresponses;
-
+  if(nresp == 0 || !responses->responses) {
+      return -1;
+  }
   for (i = 1; i < nresp; i++)
   {
     responses->responses[i - 1]->next = responses->responses[i];
@@ -138,7 +144,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   {
     return NULL;
   }
-  options->filename = strdup (file);
+  options->filename = (file) ? strdup (file) : NULL;
   options->b62_x = x_for_b62;
   options->nfreq = nfreqs;
   options->min_freq = freqs[0];
