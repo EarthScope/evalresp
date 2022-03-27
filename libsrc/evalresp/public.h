@@ -7,7 +7,7 @@
 #ifdef VERSION
 #define REVNUM VERSION
 #else
-#define REVNUM "5.0.1RC"
+#define REVNUM "5.0.1"
 #endif
 
 #include "./public_api.h"
