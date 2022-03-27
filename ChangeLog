@@ -1,6 +1,9 @@
 Version 5.0.1
 
-	2021-12-24 Chad Trabant
+	2022-03-27 Chad Trabant
+
+	* FIXED: Fix memory issues with legacy interfaces and add known Units (#72)
+	from @savage13.
 
 	* FIXED: Properly treat StationXML 'number' attribute as optional
 	for Pole, Zero and Coefficient elements.  Converted values in RESP
