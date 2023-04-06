@@ -57,7 +57,7 @@ static int lines(evalresp_logger *log, FILE *out, ...) {
 }
 
 
-// https://github.com/iris-edu/evalresp/issues/69
+// https://github.com/earthscope/evalresp/issues/69
 #define OPEN "No Ending Time"
 
 /* Format epoch as given. */

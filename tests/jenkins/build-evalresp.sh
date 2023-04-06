@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 
 # previously (in jenkins directly)
-# git clone git@github.com-evalresp:iris-edu/evalresp.git
+# git clone git@github.com-evalresp:earthscope/evalresp.git
 # where github.com-evalresp is defined in ~/.ssh/config according to
 # https://gist.github.com/jexchan/2351996
 

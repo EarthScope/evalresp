@@ -2,7 +2,7 @@
 To build and run these tests outside of Jenkins do something like:
 
 ```
-  git clone https://github.com/iris-edu/evalresp.git
+  git clone https://github.com/earthscope/evalresp.git
   cd evalresp
   autoreconf -fi
   touch libtoolT

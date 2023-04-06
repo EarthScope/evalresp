@@ -1,15 +1,12 @@
 
 This README file is a part the evalresp distribution.
 
-- Repositary evalresp is hosted in iris-edu github: 
-   * https://github.com/iris-edu/evalresp
+- The evalresp repositary location:
+   * https://github.com/earthscope/evalresp
 
-- Additional information about this project can be found in iris-edu
+- Additional information about this project can be found in the
   github wiki:
-   * https://github.com/iris-edu/evalresp/wiki
-
-- IRIS maintains evalresp page here:
-   * https://ds.iris.edu/ds/nodes/dmc/software/downloads/evalresp/
+   * https://github.com/earthscope/evalresp/wiki
 
 - Please read ChangeLog for modifications of evalresp
 
@@ -24,7 +21,7 @@ This README file is a part the evalresp distribution.
 
 - For development and testing:
    * Follow instructions in tests/jenkins/README.md
-   * https://github.com/iris-edu/evalresp/tree/master/tests/jenkins
+   * https://github.com/earthscope/evalresp/tree/main/tests/jenkins
 
 - To use evalresp Application Programming Interface:
    * Build evalresp.pdf from the source run (in doc directory)
@@ -33,4 +30,4 @@ This README file is a part the evalresp distribution.
 
 - To call evalresp library from FORTRAN:
    * Follow instructions in tests/fortran/README.md
-   * https://github.com/iris-edu/evalresp/tree/master/tests/fortran
+   * https://github.com/earthscope/evalresp/tree/main/tests/fortran
