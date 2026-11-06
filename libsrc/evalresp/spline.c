@@ -18,9 +18,9 @@ spline_interpolate (int num_points, double *t, double *y,
 {
   int i, status = EVALRESP_OK;
   const int ibcbeg = 2;
-  const int ybcbeg = 0.0;
+  const double ybcbeg = 0.0;
   const int ibcend = 2;
-  const int ybcend = 0.0;
+  const double ybcend = 0.0;
   double *ypp = NULL;
   double tval;
   double yval;
