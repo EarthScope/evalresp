@@ -1,7 +1,16 @@
-clean all:
-	cd libsrc && $(MAKE) /F Makefile.nmake $*
-	cd src && $(MAKE) /F Makefile.nmake $*
+all:
+	cd libsrc && $(MAKE) /F Makefile.nmake all
+	cd src && $(MAKE) /F Makefile.nmake all
 
-install-for-robot:
+clean:
+	cd libsrc && $(MAKE) /F Makefile.nmake clean
+	cd src && $(MAKE) /F Makefile.nmake clean
+	cd tests && $(MAKE) /F Makefile.nmake clean
+
+# unit and command-line tests; need only the compiler
+check: all
+	cd tests && $(MAKE) /F Makefile.nmake check
+
+install:
 	cd libsrc && $(MAKE) /F Makefile.nmake install
 	cd src && $(MAKE) /F Makefile.nmake install

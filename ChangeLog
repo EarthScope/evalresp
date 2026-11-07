@@ -48,6 +48,9 @@ Unreleased
 
 	* ADDED: tests/c/check_spline.c unit tests for the above.
 
+	* Replace the Check and Robot Framework tests with a single portable C
+	test suite.
+
 Version 5.0.1
 
 	2022-03-27 Chad Trabant

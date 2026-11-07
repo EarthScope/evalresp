@@ -1,0 +1,3 @@
+# Test fixtures are compared byte for byte (some are CRLF); never convert them.
+tests/data/** -text
+tests/expected/** -text

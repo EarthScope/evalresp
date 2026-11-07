@@ -29,3 +29,8 @@ Windows):
    set PATH=%PATH%;..\src
    .\evalresp
 
+5. To run the tests (they need nothing beyond the compiler; see
+   tests\README.md):
+
+   NMAKE /F Makefile.nmake check
+

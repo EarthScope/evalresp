@@ -22,8 +22,9 @@
 doc/latex
 
 # local development and test output
-env
 install
-log.html
-output.xml
-report.html
+tests/run-tests
+tests/run-tests.exe
+tests/*.pdb
+tests/*.ilk
+tests/work/

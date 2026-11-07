@@ -6,10 +6,8 @@ steps:
 
    * The standard C development tools
 
-   * To run tests, you also need the check library for C unit tests
-     (and pkg-config to locate it).  Both are usually available via a
-     package manager.  Once evalresp is built (see below), run the
-     tests with
+   * The tests need nothing beyond the C compiler.  To build evalresp
+     and run them (see tests/README.md):
 
        make -f Makefile check
 
@@ -52,19 +50,5 @@ steps:
    programs in order to allow them to evaluate responses the same way
    that evalresp does.  To add the 'evalresp' function to your own
    program, just add the call to evalresp in your code and link with
-   the 'libevresp.a' library when compiling and linking your
-   executable.
-
-6. An example of this process is the compile statement for the
-   'evtest.f' FORTRAN program, which is included in this distribution
-   as an example of how to call evresp from your own code.  Although
-   the 'evtest' program is not compiled by default, it can be compiled
-   and run using the following commands:
-
-     cd tests/fortran
-     gfortran evtest.f -g -o evtest   -levalresp  -levalresp_log  -lmxmlev  -lspline
-     LD_LIBRARY_PATH=/usr/local/lib ./evtest
-     cat evtest.out
-  
-   (See also run.sh in that directory)
+   these libraries when compiling and linking your executable.
 

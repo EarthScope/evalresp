@@ -20,14 +20,14 @@ all:
 	$(MAKE) -C $(LIB_SRC_DIR) -f Makefile
 	$(MAKE) -C $(BIN_SRC_DIR) -f Makefile
 
-# unit tests; requires the "check" library (found via pkg-config)
+# unit and command-line tests; need only a C compiler
 check: all
-	$(MAKE) -C tests/c -f Makefile check
+	$(MAKE) -C tests -f Makefile check
 
 clean:
 	$(MAKE) -C $(LIB_SRC_DIR) -f Makefile clean
 	$(MAKE) -C $(BIN_SRC_DIR) -f Makefile clean
-	$(MAKE) -C tests/c -f Makefile clean
+	$(MAKE) -C tests -f Makefile clean
 
 install:
 	$(MAKE) -C $(LIB_SRC_DIR) -f Makefile install

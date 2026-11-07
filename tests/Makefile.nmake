@@ -1,0 +1,42 @@
+# Builds and runs the test suite with nmake; see README.md.  Run from the
+# top level with
+#
+#   nmake /F Makefile.nmake check
+#
+# which builds the libraries and programs first.
+
+HARNESS = harness\harness.obj harness\compare.obj harness\platform.obj
+
+UNIT = unit\test_auto.obj unit\test_compare.obj unit\test_convert.obj unit\test_count.obj \
+       unit\test_evaluation.obj unit\test_input.obj unit\test_legacy.obj \
+       unit\test_log.obj unit\test_match.obj unit\test_parse_datetime.obj \
+       unit\test_read_xml.obj unit\test_response.obj \
+       unit\test_response_char.obj unit\test_spline.obj \
+       unit\test_xml_to_char.obj
+
+LEGACY = unit\legacy\old_parse_fctns.obj unit\legacy\old_string_fctns.obj
+
+CLI = cli\test_cli.obj
+
+OBJS = $(HARNESS) suites.obj $(UNIT) $(LEGACY) $(CLI)
+
+LIBS = ..\libsrc\evalresp_log\evalresp_log.lib \
+       ..\libsrc\spline\spline.lib \
+       ..\libsrc\evalresp\evalresp.lib \
+       ..\libsrc\mxml\mxmlev.lib
+
+all: run-tests.exe
+
+.c.obj:
+	$(CC) /nologo /Zi /c /I. /I..\libsrc /I..\libsrc\mxml /Fo$@ $<
+
+run-tests.exe: $(OBJS) $(LIBS)
+	link /nologo /debug /out:run-tests.exe $(OBJS) $(LIBS)
+
+check: run-tests.exe
+	run-tests.exe --data data --expected expected --bin ..\src --work work
+
+clean:
+	-del run-tests.exe run-tests.pdb run-tests.ilk vc*.pdb
+	-del $(OBJS)
+	-rmdir /s /q work

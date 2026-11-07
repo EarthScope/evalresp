@@ -20,14 +20,10 @@ This README file is a part the evalresp distribution.
    * Follow instructions in INSTALL.win
 
 - For development and testing:
-   * Follow instructions in tests/jenkins/README.md
-   * https://github.com/earthscope/evalresp/tree/main/tests/jenkins
+   * Run `make check` (Unix) or `nmake /F Makefile.nmake check` (Windows)
+   * Follow instructions in tests/README.md
 
 - To use evalresp Application Programming Interface:
    * Build evalresp.pdf from the source run (in doc directory)
    * `cd doc; make -f Makefile`
    * See the examples in the section "evalresp Public Interface".
-
-- To call evalresp library from FORTRAN:
-   * Follow instructions in tests/fortran/README.md
-   * https://github.com/earthscope/evalresp/tree/main/tests/fortran
