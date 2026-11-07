@@ -6,7 +6,7 @@ OBJ= mxml-attr.obj mxml-file.obj mxml-get.obj mxml-index.obj \
 all: mxmlev.lib
 
 .c.obj:
-	$(CC) /Zi /c $*.c /I ..\ /Wall /DWIN32 /Fo$@
+	$(CC) /O2 /Zi /c $*.c /I ..\ /Wall /DWIN32 /Fo$@
 
 mxmlev.lib: config.h $(OBJ)
 	link /lib $(OBJ) /debug /OUT:mxmlev.lib

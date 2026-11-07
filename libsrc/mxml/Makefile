@@ -1,7 +1,7 @@
 
 # This Makefile requires GNU make, sometimes available as gmake.
 
-CFLAGS += -I.. -I../mxml
+override CFLAGS += -I.. -I../mxml
 
 MXML_SRC= mxml-attr.c mxml-file.c mxml-get.c mxml-index.c mxml-node.c\
 	mxml-options.c mxml-private.c mxml-search.c mxml-set.c

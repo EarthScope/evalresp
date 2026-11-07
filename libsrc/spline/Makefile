@@ -1,7 +1,7 @@
 
 # This Makefile requires GNU make, sometimes available as gmake.
 
-CFLAGS += -I..
+override CFLAGS += -I..
 
 SPLINE_SRC= spline.c
 SPLINE_HEADERS= spline.h

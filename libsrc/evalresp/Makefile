@@ -1,7 +1,7 @@
 
 # This Makefile requires GNU make, sometimes available as gmake.
 
-CFLAGS += -I.. -I../mxml
+override CFLAGS += -I.. -I../mxml
 
 EVALRESP_SRC= alloc_fctns.c calc_fctns.c file_ops.c\
 			  globmatch.c resp_fctns.c spline.c input.c\

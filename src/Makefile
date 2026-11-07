@@ -6,7 +6,7 @@ LDFLAGS += -L ../libsrc/evalresp_log/$(BUILD_DIR)/ -levalresp_log\
 		 -L ../libsrc/spline/$(BUILD_DIR)/ -lspline\
 		 -L ../libsrc/mxml/ -lmxmlev\
 		 -lm
-CFLAGS += -I../libsrc -I../libsrc/mxml -DHAVE_GETOPT_H
+override CFLAGS += -I../libsrc -I../libsrc/mxml -DHAVE_GETOPT_H
 
 evalresp_SOURCES=evalresp.c
 xml2resp_SOURCES=xml2resp.c

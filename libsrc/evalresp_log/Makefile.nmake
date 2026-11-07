@@ -4,7 +4,7 @@ OBJ=log.obj helpers.obj examples\to_file.obj
 all: evalresp_log.lib
 
 .c.obj:
-	$(CC) /Zi /c $*.c /I ..\ /Wall /Fo$@
+	$(CC) /O2 /Zi /c $*.c /I ..\ /Wall /Fo$@
 
 evalresp_log.lib: $(OBJ)
 	link /lib $(OBJ) /debug /OUT:evalresp_log.lib

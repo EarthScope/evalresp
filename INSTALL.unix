@@ -40,7 +40,11 @@ steps:
    Note: the Makefile requires GNU make, sometimes available as gmake
  
      make -f Makefile
-        
+
+   The build uses -O2 unless CFLAGS is set; to choose other flags:
+
+     make -f Makefile CFLAGS="-O0 -g"
+
 4. Optionally, install, as root:
 
      make -f Makefile install

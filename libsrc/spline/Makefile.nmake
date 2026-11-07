@@ -4,7 +4,7 @@ OBJ = spline.obj
 all: spline.lib
 
 .c.obj:
-	$(CC) /c /I ..\ $<
+	$(CC) /O2 /c /I ..\ $<
 
 spline.lib: $(OBJ)
 	link /lib $(OBJ) /OUT:spline.lib

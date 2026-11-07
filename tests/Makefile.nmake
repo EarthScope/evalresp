@@ -26,7 +26,7 @@ LIBS = ..\libsrc\evalresp_log\evalresp_log.lib \
 all: run-tests.exe
 
 .c.obj:
-	$(CC) /nologo /Zi /c /I. /I..\libsrc /I..\libsrc\mxml /Fo$@ $<
+	$(CC) /nologo /O2 /Zi /c /I. /I..\libsrc /I..\libsrc\mxml /Fo$@ $<
 
 run-tests.exe: $(OBJS) $(LIBS)
 	link /nologo /debug /out:run-tests.exe $(OBJS) $(LIBS)

@@ -9,6 +9,7 @@ BUILD_DIR := .
 endif
 TOPDIR=$(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 ARFLAGS=crv
+CFLAGS ?= -O2
 
 export
 .PHONY: all

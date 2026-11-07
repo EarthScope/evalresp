@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.1">
+  <Source>EarthScope</Source>
+  <Created>2026-11-06T14:28:02.2313</Created>
+  <Network code="UW" startDate="1963-01-01T00:00:00.0000">
+   <Station code="LON9" startDate="2024-08-20T00:00:00.0000" endDate="2026-12-30T00:00:00.0000">
+    <Latitude>46.7506</Latitude>
+    <Longitude>-121.8096</Longitude>
+    <Elevation>853.0</Elevation>
+    <Site><Name>LON</Name></Site>
+    <Channel code="HAX" locationCode="T1" startDate="2024-08-20T00:00:00.0000" endDate="2026-12-30T00:00:00.0000">
+     <Latitude>46.7506</Latitude>
+     <Longitude>-121.8096</Longitude>
+     <Elevation>853</Elevation>
+     <Depth>0</Depth>
+     <Azimuth>280</Azimuth>
+     <Dip>0</Dip>
+     <SampleRate>1E02</SampleRate>
+     <Response>
+     <InstrumentSensitivity>
+       <Value>1.0</Value>
+       <Frequency>1.0</Frequency>
+       <InputUnits><Name>Radians</Name><Description>Tilt in Radians</Description></InputUnits>
+       <OutputUnits><Name>Radians</Name><Description>Tilt in Radians</Description></OutputUnits>
+     </InstrumentSensitivity>
+      <Stage number="1">
+      <StageGain><Value>1.0</Value><Frequency>1.0</Frequency></StageGain>
+      </Stage>
+     </Response>
+    </Channel>
+   </Station>
+  </Network>
+</FDSNStationXML>

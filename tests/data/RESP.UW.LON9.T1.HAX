@@ -1,0 +1,31 @@
+#
+###################################################################################
+#
+B050F03     Station:     LON9
+B050F16     Network:     UW
+B052F03     Location:    T1
+B052F04     Channel:     HAX
+B052F22     Start date:  2024,233,00:00:00
+B052F23     End date:    2026,364,00:00:00
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        UW  LON9   T1  HAX         |
+#                  |     08/20/2024 to 12/30/2026      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 1
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +1.00000E+00
+B058F06     Number of calibrations:                0
+#
+#                  +-----------------------------------+
+#                  |      Channel Sensitivity/Gain     |
+#                  |        UW  LON9   T1  HAX         |
+#                  |     08/20/2024 to 12/30/2026      |
+#                  +-----------------------------------+
+#
+B058F03     Stage sequence number:                 0
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +1.00000E+00
+B058F06     Number of calibrations:                0
