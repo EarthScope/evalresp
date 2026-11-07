@@ -273,7 +273,9 @@ get_names (char *in_file, struct matched_files *files, evalresp_logger *log)
   struct file_list *lst_ptr, *tmp_ptr;
   struct _finddata_t fblk; /* define block for 'findfirst()' fn */
   /* setup things for Microsoft compiler compatibility: */
-  int fhandval;
+  intptr_t fhandval;
+  size_t dirlen = 0;
+  const char *sep;
 #define ff_name name
 #define findfirst(name, blk, attrib) (fhandval = _findfirst (name, blk))
 #define findnext(blk) _findnext (fhandval, blk)
@@ -285,6 +287,13 @@ get_names (char *in_file, struct matched_files *files, evalresp_logger *log)
     return 0;
   }
 
+  /* matches are qualified with the directory part of the pattern */
+  for (sep = in_file; *sep; ++sep)
+  {
+    if (*sep == '/' || *sep == '\\')
+      dirlen = (size_t)(sep - in_file) + 1;
+  }
+
   files->first_list = alloc_file_list (log);
   lst_ptr = files->first_list;
 
@@ -293,8 +302,9 @@ get_names (char *in_file, struct matched_files *files, evalresp_logger *log)
   do
   {
     files->nfiles++;
-    lst_ptr->name = alloc_char (strlen (fblk.ff_name) + 1, log);
-    strcpy (lst_ptr->name, fblk.ff_name);
+    lst_ptr->name = alloc_char (dirlen + strlen (fblk.ff_name) + 1, log);
+    memcpy (lst_ptr->name, in_file, dirlen);
+    strcpy (lst_ptr->name + dirlen, fblk.ff_name);
     lst_ptr->next_file = alloc_file_list (log);
     tmp_ptr = lst_ptr;
     lst_ptr = lst_ptr->next_file;

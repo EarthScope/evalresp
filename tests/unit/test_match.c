@@ -116,7 +116,27 @@ test_match (void)
   ER_CHECK_MSG (err <= 0.01, "Error > 1%%");
 }
 
+static void
+test_match_subdir (void)
+{
+  char tmpdir[ER_PATH_MAX], subdir[ER_PATH_MAX];
+  double freqs[1] = {1.0};
+  evalresp_response *response = NULL;
+
+  /* the matched files live outside the current directory */
+  ER_CHECK (er_getcwd (tmpdir, sizeof (tmpdir)));
+  ER_CHECK (strlen (tmpdir) + 8 < sizeof (subdir));
+  sprintf (subdir, "%s/subdir", tmpdir);
+  ER_CHECK (!er_mkdir_p (subdir));
+  cp_file (er_data_dir (), subdir, "RESP.IU.ANMO.00.BHZ");
+
+  ER_CHECK (NULL != (response = evresp_itp ("ANMO", "BHZ", "IU", "??", "2015,1,00:00:00", "VEL",
+                                            subdir, freqs, 1, "AP", "-v", 0, 99, 0, 0, 0, 0, 0, 0.1, 0)));
+  evalresp_free_response (&response);
+}
+
 const er_test unit_match_tests[] = {
     {"match", test_match, NULL},
+    {"match_subdir", test_match_subdir, NULL},
     {NULL, NULL, NULL},
 };
