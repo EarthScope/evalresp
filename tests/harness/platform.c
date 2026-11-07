@@ -23,6 +23,12 @@
 #define MKDIR(p) _mkdir (p)
 #define RMDIR(p) _rmdir (p)
 #define CHDIR(p) _chdir (p)
+#ifndef S_ISREG
+#define S_ISREG(m) (((m)&S_IFMT) == S_IFREG)
+#endif
+#ifndef S_ISDIR
+#define S_ISDIR(m) (((m)&S_IFMT) == S_IFDIR)
+#endif
 #else
 #define MKDIR(p) mkdir ((p), 0777)
 #define RMDIR(p) rmdir (p)
@@ -49,14 +55,14 @@ int
 er_is_file (const char *path)
 {
   struct stat st;
-  return stat (path, &st) == 0 && (st.st_mode & S_IFMT) == S_IFREG;
+  return stat (path, &st) == 0 && S_ISREG (st.st_mode);
 }
 
 int
 er_is_dir (const char *path)
 {
   struct stat st;
-  return stat (path, &st) == 0 && (st.st_mode & S_IFMT) == S_IFDIR;
+  return stat (path, &st) == 0 && S_ISDIR (st.st_mode);
 }
 
 static int
