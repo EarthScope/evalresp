@@ -342,8 +342,60 @@ test_zero_freq_pz (void)
   evalresp_free_options (&options);
 }
 
+static void
+test_non_motion_units_not_converted (void)
+{
+  /* pressure input: displacement and acceleration requests leave the response as in file units */
+  const double freqs[] = {0.1, 1.0, 10.0};
+  const int nfreqs = sizeof (freqs) / sizeof (freqs[0]);
+  const char *units[] = {"def", "dis", "acc"};
+  evalresp_response *responses[3][2] = {{NULL}};
+  int u, i, k;
+
+  for (u = 0; u < 3; ++u)
+  {
+    evalresp_channels *channels = NULL;
+    evalresp_options *options = NULL;
+
+    ER_CHECK (!evalresp_new_options (NULL, &options));
+    ER_CHECK (!evalresp_set_unit (NULL, options, units[u]));
+    options->station_xml = 1;
+    ER_CHECK (!evalresp_filename_to_channels (NULL, er_data_path ("station-pz-zero-freq.xml"), options, NULL,
+                                              &channels));
+    ER_CHECK (channels && channels->nchannels == 2);
+    for (i = 0; i < channels->nchannels; ++i)
+    {
+      ER_CHECK (!evalresp_channel_to_response_freqs (NULL, channels->channels[i], options, freqs, nfreqs,
+                                                     &responses[u][i]));
+    }
+    evalresp_free_channels (&channels);
+    evalresp_free_options (&options);
+  }
+
+  for (u = 1; u < 3; ++u)
+  {
+    for (i = 0; i < 2; ++i)
+    {
+      for (k = 0; k < nfreqs; ++k)
+      {
+        const evalresp_complex *a = &responses[0][i]->rvec[k], *b = &responses[u][i]->rvec[k];
+        const double tol = 1e-9 * (fabs (a->real) + fabs (a->imag));
+
+        ER_CHECK_MSG (fabs (a->real - b->real) <= tol && fabs (a->imag - b->imag) <= tol,
+                      "-u %s channel %d %g Hz: %g %g vs %g %g", units[u], i, freqs[k],
+                      b->real, b->imag, a->real, a->imag);
+      }
+    }
+  }
+
+  for (u = 0; u < 3; ++u)
+    for (i = 0; i < 2; ++i)
+      evalresp_free_response (&responses[u][i]);
+}
+
 const er_test unit_evaluation_tests[] = {
     {"zero_freq_pz", test_zero_freq_pz, NULL},
+    {"non_motion_units_not_converted", test_non_motion_units_not_converted, NULL},
     {"arbitrary_freqs", test_arbitrary_freqs, NULL},
     {"legacy_arbitrary_freqs", test_legacy_arbitrary_freqs, NULL},
     {"no_options", test_no_options, NULL},

@@ -91,6 +91,10 @@ convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, do
     return EVALRESP_ERR; /* BAD_OUT_UNITS */
   }
 
+  /* only ground motion is converted */
+  if (inp != DIS && inp != VEL && inp != ACC)
+    return EVALRESP_OK;
+
   if (inp == DIS)
   {
     if (out == DIS)
@@ -214,20 +218,12 @@ iir_trans (evalresp_blkt *blkt_ptr, double wint, evalresp_complex *out)
  * Function introduced in version 3.3.4 of evalresp
  * Ilya Dricker ISTI (.dricker@isti.com) 06/01/13
  *===============================================================*/
-static int
+static void
 calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
-                 double x_for_b62, evalresp_logger *log)
+                 double x_for_b62)
 {
   double amp = 0, phase = 0;
   int j;
-
-  if (x_for_b62 <= 0)
-  {
-    evalresp_log (log, EV_ERROR, 0,
-                  "Cannot compute B62 response for negative or zero input: %f",
-                  x_for_b62);
-    return EVALRESP_VAL; /* IMPROP_DATA_TYPE */
-  }
 
   // Compute a first derivate of MacLaurin polynomial
   for (j = 1; j < blkt_ptr->blkt_info.polynomial.ncoeffs; j++)
@@ -246,8 +242,6 @@ calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
 
   out->real = amp * cos (phase);
   out->imag = amp * sin (phase);
-
-  return EVALRESP_OK;
 }
 
 /*================================================================
@@ -882,6 +876,16 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
      "No Matching Stages Found (requested",start_stage, chan->nstages);
      } */
 
+  if ((options->unit == evalresp_displacement_unit || options->unit == evalresp_acceleration_unit) &&
+      chan->first_stage &&
+      chan->first_stage->input_units != DIS && chan->first_stage->input_units != VEL &&
+      chan->first_stage->input_units != ACC)
+  {
+    evalresp_log (log, EV_WARN, EV_WARN,
+                  "input units ('%s') are not ground motion, response is not converted to %s",
+                  chan->first_units, evalresp_unit_string (options->unit));
+  }
+
   /* for each frequency */
 
   for (i = 0; i < nfreqs; i++)
@@ -987,10 +991,7 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
           eval_flag = 1;
           break;
         case POLYNOMIAL: /* IGD 06/01/2013*/
-          if ((status = calc_polynomial (blkt_ptr, &of, options->b62_x, log)))
-          {
-            return status;
-          }
+          calc_polynomial (blkt_ptr, &of, options->b62_x);
           eval_flag = 1;
           break;
         case IIR_COEFFS: /* This option is added in version 2.3.17 I.Dricker*/

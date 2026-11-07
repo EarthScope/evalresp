@@ -2,6 +2,14 @@ Unreleased
 
 	2026-11-07
 
+	* FIXED: Evaluate B62 polynomial responses at any -b62_x value, including the
+	default 0
+
+	* FIXED: Leave responses with non-ground-motion input units unconverted when
+	displacement or acceleration is requested
+
+	* Suggest file units (-u def) in the undefined-units error
+
 	* ADDED: evalresp_log_error(), evalresp_log_warn(), evalresp_log_info() and
 	evalresp_log_debug() to log at a level with matching verbosity.
 

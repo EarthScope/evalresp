@@ -69,7 +69,8 @@ usage (char *program)
   printf ("        any stage between (and including) the start and stop stages\n");
   printf ("        will be included in the calculation.\n");
   printf ("    (7) -b62_x defines a value in counts or volts where response is\n");
-  printf ("        computed. This flag only is applied to responses with B62.\n\n");
+  printf ("        computed (default 0). This flag only is applied to responses\n");
+  printf ("        with B62.\n\n");
   printf ("  EXAMPLES:\n\n");
   printf ("    evalresp AAK,ARU,TLY VHZ 1992 21 0.001 10 100 -f /EVRESP/NEW/rdseed.out\n");
   printf ("    evalresp KONO BHN,BHE 1992 1 0.001 10 100 -f /EVRESP/NEW -t 12:31:04 -v\n");

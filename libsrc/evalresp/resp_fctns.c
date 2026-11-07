@@ -532,7 +532,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
       if (stage_ptr->input_units == UNDEF_UNITS || stage_ptr->output_units == UNDEF_UNITS)
       {
         evalresp_log (log, EV_ERROR, EV_ERROR,
-                      "undefined units");
+                      "undefined units, request file units (-u def) to evaluate without conversion");
         return EVALRESP_VAL;
       }
 

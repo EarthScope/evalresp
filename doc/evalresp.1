@@ -282,7 +282,8 @@ tangent at the signal value is used as the linear case.
 For f(x) = a0 + a1 x + a2 x^2 + ... + an x^n the slope at X is the sum, for i = 1
 to n, of i * ai * X^(i\-1).  X is given with \fB\-b62_x\fR, in counts if the
 blockette is the only one in the response and in volts if it is part of a cascade.
-The amplitude of the result depends on it.  \fB\-b62_x\fR is not needed for
+The amplitude of the result depends on it.  X defaults to 0, where the slope is
+a1.  \fB\-b62_x\fR is not needed for
 responses without a polynomial blockette.
 .SS "Unexpected cases"
 .IP \(bu 2
