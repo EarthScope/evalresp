@@ -48,6 +48,9 @@ Unreleased
 
 	* ADDED: tests/c/check_spline.c unit tests for the above.
 
+  * ADDED: Add GitHub Actions workflow that builds and runs the tests on Linux,
+	macOS and Windows.
+
 	* Replace the Check and Robot Framework tests with a single portable C
 	test suite.
 
