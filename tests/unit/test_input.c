@@ -212,7 +212,40 @@ test_reference_without_responses (void)
   evalresp_free_channels (&channels);
 }
 
+static void
+test_unrecognized_units_null_options (void)
+{
+  const char *resp =
+      "B050F03     Station:     ANMO\n"
+      "B050F16     Network:     IU\n"
+      "B052F03     Location:    00\n"
+      "B052F04     Channel:     BHZ\n"
+      "B052F22     Start date:  1998,299,20\n"
+      "B052F23     End date:    2000,293,16\n"
+      "B053F03     Transfer function type:                A - Laplace transform analog stage (rad/sec)\n"
+      "B053F04     Stage sequence number:                 1\n"
+      "B053F05     Response in units lookup:              RAD/S - Radians per second\n"
+      "B053F06     Response out units lookup:             V - Volts\n"
+      "B053F07     A0 normalization factor:               +1.00000E+00\n"
+      "B053F08     Normalization frequency:               +1.00000E+00\n"
+      "B053F09     Number of zeroes:                      0\n"
+      "B053F14     Number of poles:                       0\n"
+      "B058F03     Stage sequence number:                 1\n"
+      "B058F04     Sensitivity:                           +1.00000E+00\n"
+      "B058F05     Frequency of sensitivity:              +1.00000E+00\n"
+      "B058F06     Number of calibrations:                0\n"
+      "B058F03     Stage sequence number:                 0\n"
+      "B058F04     Sensitivity:                           +1.00000E+00\n"
+      "B058F05     Frequency of sensitivity:              +1.00000E+00\n"
+      "B058F06     Number of calibrations:                0\n";
+  evalresp_channels *channels = NULL;
+  int status = evalresp_char_to_channels (NULL, resp, NULL, NULL, &channels);
+  ER_CHECK_MSG (status == EVALRESP_VAL, "Unexpected status: %d", status);
+  evalresp_free_channels (&channels);
+}
+
 const er_test unit_input_tests[] = {
+    {"unrecognized_units_null_options", test_unrecognized_units_null_options, NULL},
     {"slurp_line", test_slurp_line, NULL},
     {"slurp_line_buffer", test_slurp_line_buffer, NULL},
     {"find_line", test_find_line, NULL},

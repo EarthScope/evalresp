@@ -9,13 +9,16 @@
  * @brief A logger that prefixes errors and warnings with a context string
  *        before passing them to a parent logger.
  * @details Pass &ctx.logger to the code that runs within the context. The
- *          structure must not be moved after initialisation.
+ *          structure must not be moved after initialisation. A context
+ *          whose prefix is already named, as a whole code, by the prefix of
+ *          an enclosing context adds nothing to messages.
  */
 typedef struct
 {
   evalresp_logger logger;  /**< the logger to pass on */
   evalresp_logger *parent; /**< where messages go; NULL for the default output */
   char prefix[MAX_LOG_MSG_LEN];
+  int repeated; /**< the prefix is named by an enclosing context */
 } evalresp_log_context;
 
 /**

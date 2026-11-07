@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+ <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.1.xsd" schemaVersion="1.1">
+  <Source>EarthScope</Source>
+  <Sender>EarthScope</Sender>
+  <Module>EarthScope WEB SERVICE: fdsnws-station | version: 1.1.59</Module>
+  <ModuleURI>https://service.earthscope.org/fdsnws/station/1/query?net=IU&amp;sta=MAJO&amp;chan=LDO&amp;level=resp&amp;format=xml&amp;nodata=404</ModuleURI>
+  <Created>2026-11-07T23:04:25.9365</Created>
+  <Network code="IU" startDate="1988-01-01T00:00:00.0000">
+   <Description>Global Seismograph Network (GSN - IRIS/USGS) (GSN)</Description>
+   <Identifier type="DOI">10.7914/SN/IU</Identifier>
+   <TotalNumberStations>115</TotalNumberStations>
+   <SelectedNumberStations>1</SelectedNumberStations>
+   <Station code="MAJO" startDate="1990-08-18T00:00:00.0000" iris:alternateNetworkCodes="_FDSN,_FDSN-ALL,_GSN,_GSN-BROADBAND,_REALTIME,_STS-1,.UNRESTRICTED">
+    <Description>(GSN) IRIS/USGS (IU) and JMA</Description>
+    <Latitude>36.54567</Latitude>
+    <Longitude>138.20406</Longitude>
+    <Elevation>405.0</Elevation>
+    <Site>
+     <Name>Matsushiro, Japan</Name>
+    </Site>
+    <CreationDate>1990-08-18T00:00:00.0000</CreationDate>
+    <TotalNumberChannels>1</TotalNumberChannels>
+    <SelectedNumberChannels>1</SelectedNumberChannels>
+    <Channel code="LDO" locationCode="30" startDate="2015-07-24T08:00:00.0000">
+     <Latitude>36.54567</Latitude>
+     <Longitude>138.20406</Longitude>
+     <Elevation>405</Elevation>
+     <Depth>0</Depth>
+     <Azimuth>0</Azimuth>
+     <Dip>0</Dip>
+     <Type>CONTINUOUS</Type>
+     <Type>WEATHER</Type>
+     <SampleRate>1E00</SampleRate>
+     <ClockDrift>0E00</ClockDrift>
+     <Sensor>
+      <Description>lower quality chip sensor in Setra box</Description>
+     </Sensor>
+     <Response>
+     <InstrumentPolynomial>
+       <InputUnits>
+         <Name>Pa</Name>
+         <Description>Pressure in Pascals</Description>
+       </InputUnits>
+       <OutputUnits>
+         <Name>counts</Name>
+         <Description>Digital Counts</Description>
+       </OutputUnits>
+       <ApproximationType>MACLAURIN</ApproximationType>
+       <FrequencyLowerBound>0.0</FrequencyLowerBound>
+       <FrequencyUpperBound>0.5</FrequencyUpperBound>
+       <ApproximationLowerBound>0.0</ApproximationLowerBound>
+       <ApproximationUpperBound>0.0</ApproximationUpperBound>
+       <MaximumError>0.0</MaximumError>
+       <Coefficient number="0">0.0</Coefficient>
+       <Coefficient number="1">-0.1</Coefficient>
+     </InstrumentPolynomial>
+     </Response>
+    </Channel>
+   </Station>
+  </Network>
+</FDSNStationXML>

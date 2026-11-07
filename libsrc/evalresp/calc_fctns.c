@@ -222,7 +222,7 @@ static void
 calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
                  double x_for_b62)
 {
-  double amp = 0, phase = 0;
+  double amp = 0;
   int j;
 
   // Compute a first derivate of MacLaurin polynomial
@@ -231,17 +231,9 @@ calc_polynomial (evalresp_blkt *blkt_ptr, evalresp_complex *out,
     amp += blkt_ptr->blkt_info.polynomial.coeffs[j] * j * pow (x_for_b62, j - 1);
   }
 
-  if (amp >= 0)
-  {
-    phase = 0;
-  }
-  else
-  {
-    phase = M_PI;
-  }
-
-  out->real = amp * cos (phase);
-  out->imag = amp * sin (phase);
+  /* a negative derivative is a response with a phase of 180 degrees */
+  out->real = amp;
+  out->imag = 0.0;
 }
 
 /*================================================================
@@ -264,8 +256,10 @@ calc_list (evalresp_blkt *blkt_ptr, int i, evalresp_complex *out)
 
 /*==================================================================
  *                Response of analog filter
+ * Returns 1 if the response is infinite (poles at freq outnumber the
+ * zeros there), otherwise 0.
  *=================================================================*/
-static void
+static int
 analog_trans (evalresp_blkt *blkt_ptr, double freq, evalresp_complex *out)
 {
   int nz, np, i, nz0 = 0, np0 = 0;
@@ -309,11 +303,13 @@ analog_trans (evalresp_blkt *blkt_ptr, double freq, evalresp_complex *out)
     zmul (&denom, &temp);
   }
 
-  /* zeros and poles at omega cancel pairwise; any excess gives zero */
+  /* zeros and poles at omega cancel pairwise; excess zeros give zero,
+     excess poles infinity */
   if (nz0 != np0)
   {
-    out->real = out->imag = 0.0;
-    return;
+    out->real = nz0 > np0 ? 0.0 : HUGE_VAL;
+    out->imag = 0.0;
+    return nz0 < np0;
   }
 
   /* gain*num/denum */
@@ -326,6 +322,7 @@ analog_trans (evalresp_blkt *blkt_ptr, double freq, evalresp_complex *out)
   temp.imag /= mod_squared;
   out->real = h0 * temp.real;
   out->imag = h0 * temp.imag;
+  return 0;
 }
 
 /*==================================================================
@@ -699,15 +696,24 @@ normalize_response (evalresp_logger *log, evalresp_options const *const options,
             if (main_type == ANALOG_PZ || main_type == LAPLACE_PZ)
             {
               main_filt->blkt_info.pole_zero.a0 = 1.0;
-              analog_trans (main_filt,
-                            fil->blkt_info.gain.gain_freq, &df);
+              if (analog_trans (main_filt, fil->blkt_info.gain.gain_freq, &df))
+              {
+                evalresp_log (log, EV_ERROR, 0,
+                              "norm_resp: Gain frequency is at a pole of the analog filter");
+                return EVALRESP_VAL;
+              }
               if (df.real == 0.0 && df.imag == 0.0)
               {
                 evalresp_log (log, EV_ERROR, 0,
                               "norm_resp: Gain frequency of zero found in bandpass analog filter");
                 return EVALRESP_VAL; /* ILLEGAL_FILT_S{EC */
               }
-              analog_trans (main_filt, f, &of);
+              if (analog_trans (main_filt, f, &of))
+              {
+                evalresp_log (log, EV_ERROR, 0,
+                              "norm_resp: Chan. Sens. frequency is at a pole of the analog filter");
+                return EVALRESP_VAL;
+              }
               if (of.real == 0.0 && of.imag == 0.0)
               {
                 evalresp_log (log, EV_ERROR, 0,
@@ -857,6 +863,20 @@ wrap_phase (double phase, double range, double *added_value)
   return phase;
 }
 
+/* Input units of the first stage that has any; gain-only stages have none. */
+static int
+channel_input_units (const evalresp_channel *chan)
+{
+  const evalresp_stage *stage_ptr;
+
+  for (stage_ptr = chan->first_stage; stage_ptr; stage_ptr = stage_ptr->next_stage)
+  {
+    if (stage_ptr->input_units != UNDEF_UNITS)
+      return stage_ptr->input_units;
+  }
+  return UNDEF_UNITS;
+}
+
 int
 calculate_response (evalresp_logger *log, evalresp_options *options,
                     evalresp_channel *chan, double *freq, int nfreqs,
@@ -864,9 +884,9 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
 {
   evalresp_blkt *blkt_ptr;
   evalresp_stage *stage_ptr;
-  int i, j, units_code, eval_flag = 0, nc = 0, sym_fir = 0;
+  int i, j, units_code, input_units, eval_flag = 0, nc = 0, sym_fir = 0;
   double w;
-  int matching_stages = 0, has_stage0 = 0;
+  int matching_stages = 0, has_stage0 = 0, infinite;
   evalresp_complex of, val;
   double corr_applied, calc_delay, estim_delay, delay;
   int status = EVALRESP_OK;
@@ -876,10 +896,10 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
      "No Matching Stages Found (requested",start_stage, chan->nstages);
      } */
 
+  input_units = channel_input_units (chan);
+
   if ((options->unit == evalresp_displacement_unit || options->unit == evalresp_acceleration_unit) &&
-      chan->first_stage &&
-      chan->first_stage->input_units != DIS && chan->first_stage->input_units != VEL &&
-      chan->first_stage->input_units != ACC)
+      input_units != DIS && input_units != VEL && input_units != ACC)
   {
     evalresp_log (log, EV_WARN, EV_WARN,
                   "input units ('%s') are not ground motion, response is not converted to %s",
@@ -893,12 +913,13 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
     w = 2 * M_PI * freq[i];
     val.real = 1.0;
     val.imag = 0.0;
+    infinite = 0;
 
     /* loop through the stages and filters for each stage, calculating
          the response for each frequency for all stages */
 
     stage_ptr = chan->first_stage;
-    units_code = stage_ptr->input_units;
+    units_code = input_units;
     for (j = 0; j < chan->nstages; j++)
     {
       nc = 0;
@@ -924,7 +945,13 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
         {
         case ANALOG_PZ:
         case LAPLACE_PZ:
-          analog_trans (blkt_ptr, freq[i], &of);
+          if (analog_trans (blkt_ptr, freq[i], &of))
+          {
+            evalresp_log (log, EV_WARN, EV_WARN,
+                          "Stage %d has a pole at %g Hz with no matching zero; the response is infinite there",
+                          stage_ptr->sequence_no, freq[i]);
+            infinite = 1;
+          }
           eval_flag = 1;
           break;
         case IIR_PZ:
@@ -1025,6 +1052,13 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
                     "No Matching Stages Found (requested", options->start_stage,
                     chan->nstages - 1);
       return EVALRESP_PAR;
+    }
+
+    /* an infinite stage response makes the product infinite, with no phase */
+    if (infinite)
+    {
+      val.real = HUGE_VAL;
+      val.imag = 0.0;
     }
 
     /*  Write output for freq[i] in output[i] (note: unit_scale_fact is set by the

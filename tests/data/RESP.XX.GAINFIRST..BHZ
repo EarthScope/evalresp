@@ -1,0 +1,37 @@
+#
+# A gain-only first stage (no units) followed by a velocity analog
+# poles and zeros stage.
+#
+B050F03     Station:     GAINFIRST
+B050F16     Network:     XX
+B052F03     Location:    ??
+B052F04     Channel:     BHZ
+B052F22     Start date:  1970,001,00:00:00
+B052F23     End date:    No Ending Time
+#
+B058F03     Stage sequence number:                 1
+B058F04     Sensitivity:                           +2.00000E+00
+B058F05     Frequency of sensitivity:              +1.00000E+00
+B058F06     Number of calibrations:                0
+#
+B053F03     Transfer function type:                A - Laplace transform analog stage (rad/sec)
+B053F04     Stage sequence number:                 2
+B053F05     Response in units lookup:              M/S - Velocity in Meters Per Second
+B053F06     Response out units lookup:             V - Volts
+B053F07     A0 normalization factor:               +1.00000E+00
+B053F08     Normalization frequency:               +1.00000E+00
+B053F09     Number of zeroes:                      0
+B053F14     Number of poles:                       1
+#              Complex poles:
+#              i  real          imag          real_error    imag_error
+B053F15-18     0  -1.00000E+00  +0.00000E+00  +0.00000E+00  +0.00000E+00
+#
+B058F03     Stage sequence number:                 2
+B058F04     Sensitivity:                           +1.00000E+00
+B058F05     Frequency of sensitivity:              +1.00000E+00
+B058F06     Number of calibrations:                0
+#
+B058F03     Stage sequence number:                 0
+B058F04     Sensitivity:                           +2.00000E+00
+B058F05     Frequency of sensitivity:              +1.00000E+00
+B058F06     Number of calibrations:                0

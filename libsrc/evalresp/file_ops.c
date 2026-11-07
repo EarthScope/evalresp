@@ -43,6 +43,26 @@
 #define S_ISDIR(m) ((m) & S_IFDIR)
 #endif
 
+/* Files matching name, or else those matching alt (if not empty). */
+static int
+get_names_in (char *name, char *alt, struct matched_files *files, evalresp_logger *log)
+{
+  int n = get_names (name, files, log);
+
+  if (!n && *alt)
+    n = get_names (alt, files, log);
+  return n;
+}
+
+static void
+warn_no_files (evalresp_logger *log, const char *name, const char *alt, const char *note)
+{
+  if (*alt)
+    evalresp_log (log, EV_WARN, EV_WARN, "no files match '%s' or '%s'%s", name, alt, note);
+  else
+    evalresp_log (log, EV_WARN, EV_WARN, "no files match '%s'%s", name, note);
+}
+
 // TODO - change mode to enum
 struct matched_files *
 find_files (char *file, evalresp_sncls *scn_lst,
@@ -77,8 +97,7 @@ find_files (char *file, evalresp_sncls *scn_lst,
 
   if (file != NULL && strlen (file) != 0)
   {
-    stat (file, &buf);
-    if (S_ISDIR (buf.st_mode))
+    if (!stat (file, &buf) && S_ISDIR (buf.st_mode))
     {
       for (i = 0; i < nscn; i++)
       {
@@ -92,8 +111,7 @@ find_files (char *file, evalresp_sncls *scn_lst,
         nfiles = get_names (comp_name, flst_ptr, log);
         if (!nfiles && !loc_wild)
         {
-          evalresp_log (log, EV_WARN, EV_WARN, "no files match '%s'",
-                        comp_name);
+          warn_no_files (log, comp_name, "", "");
         }
         else if (!nfiles && loc_wild)
         {
@@ -104,9 +122,7 @@ find_files (char *file, evalresp_sncls *scn_lst,
           nfiles = get_names (comp_name, flst_ptr, log);
           if (!nfiles)
           {
-            evalresp_log (log, EV_WARN, EV_WARN,
-                          "no files match '%s' (or globbed location)",
-                          comp_name);
+            warn_no_files (log, comp_name, "", " (or globbed location)");
           }
         }
         tmp_ptr = alloc_matched_files (log);
@@ -126,6 +142,7 @@ find_files (char *file, evalresp_sncls *scn_lst,
       memset (comp_name, 0, MAXLINELEN);
       sprintf (comp_name, "./RESP.%s.%s.%s.%s", scn_ptr->network,
                scn_ptr->station, scn_ptr->locid, scn_ptr->channel);
+      new_name[0] = '\0';
       if ((basedir = (char *)getenv ("SEEDRESP")) != NULL)
       {
         /* if the current directory is not the same as the SEEDRESP
@@ -135,42 +152,37 @@ find_files (char *file, evalresp_sncls *scn_lst,
           testdir[0] = '\0';
         if (!stat (basedir, &buf) && S_ISDIR (buf.st_mode) && strcmp (testdir, basedir))
         {
-          memset (new_name, 0, MAXLINELEN);
-          sprintf (new_name, " %s/RESP.%s.%s.%s.%s", basedir,
+          sprintf (new_name, "%s/RESP.%s.%s.%s.%s", basedir,
                    scn_ptr->network, scn_ptr->station, scn_ptr->locid,
                    scn_ptr->channel);
-          strcat (comp_name, new_name);
         }
       }
-      nfiles = get_names (comp_name, flst_ptr, log);
+      nfiles = get_names_in (comp_name, new_name, flst_ptr, log);
       if (!nfiles && strcmp (scn_ptr->locid, "*"))
       {
-        evalresp_log (log, EV_WARN, EV_WARN, "no files match '%s'",
-                      comp_name);
+        warn_no_files (log, comp_name, new_name, "");
       }
       else if (!nfiles && !strcmp (scn_ptr->locid, "*"))
       {
         memset (comp_name, 0, MAXLINELEN);
         sprintf (comp_name, "./RESP.%s.%s.%s", scn_ptr->network,
                  scn_ptr->station, scn_ptr->channel);
+        new_name[0] = '\0';
         if (basedir != NULL)
         {
           if (!getcwd (testdir, MAXLINELEN))
             testdir[0] = '\0';
           if (!stat (basedir, &buf) && S_ISDIR (buf.st_mode) && strcmp (testdir, basedir))
           {
-            memset (new_name, 0, MAXLINELEN);
-            sprintf (new_name, " %s/RESP.%s.%s.%s", basedir,
+            sprintf (new_name, "%s/RESP.%s.%s.%s", basedir,
                      scn_ptr->network, scn_ptr->station,
                      scn_ptr->channel);
-            strcat (comp_name, new_name);
           }
         }
-        nfiles = get_names (comp_name, flst_ptr, log);
+        nfiles = get_names_in (comp_name, new_name, flst_ptr, log);
         if (!nfiles)
         {
-          evalresp_log (log, EV_WARN, EV_WARN, "no files match '%s'",
-                        comp_name);
+          warn_no_files (log, comp_name, new_name, "");
         }
       }
       tmp_ptr = alloc_matched_files (log);
@@ -197,33 +209,13 @@ get_names (char *in_file, struct matched_files *files, evalresp_logger *log)
   glob_t globs;
   int count;
   int rv;
-  char *first_infile = NULL;
-  char *second_infile = NULL;
-
-  /* IGD 05/30/2013: in_file can contain one token (pathname with possible widlcards)
-   * or two tokens pathname + default pathname pointed by SEEDRESP environmental variable.
-   * When ET modified this function SEEDRESP case was forgoten. I am restoring it adding strtok
-   * function
-   */
-
-  first_infile = strtok (in_file, " "); /*IGD 05/30/2013 Assumed to be always present */
 
   /* Search for matching file names */
-  if ((rv = glob (first_infile, 0, NULL, &globs)))
+  if ((rv = glob (in_file, 0, NULL, &globs)))
   {
-    second_infile = strtok (NULL, " ");
-    if (!second_infile)
-    {
-      if (GLOB_NOMATCH != rv)
-        perror ("glob");
-      return 0;
-    }
-    if ((rv = glob (second_infile, 0, NULL, &globs)))
-    {
-      if (GLOB_NOMATCH != rv)
-        perror ("glob");
-      return 0;
-    }
+    if (GLOB_NOMATCH != rv)
+      perror ("glob");
+    return 0;
   }
 
   /* set the head of the 'files' linked list to a pointer to a newly allocated
@@ -264,11 +256,11 @@ get_names (char *in_file, struct matched_files *files, evalresp_logger *log)
 
 #else /* if Windows compiler then use new 'get_names()' */
 
-/* find_names:  uses 'findfirst()' and 'findnext()' to get filenames
+/* get_names:  uses 'findfirst()' and 'findnext()' to get filenames
  matching the expression in 'in_file'. */
 
-static int
-find_names (const char *in_file, struct matched_files *files, evalresp_logger *log)
+int
+get_names (char *in_file, struct matched_files *files, evalresp_logger *log)
 {
   struct file_list *lst_ptr, *tmp_ptr;
   struct _finddata_t fblk; /* define block for 'findfirst()' fn */
@@ -321,25 +313,6 @@ find_names (const char *in_file, struct matched_files *files, evalresp_logger *l
   }
 
   return (files->nfiles);
-}
-
-/* in_file may hold a second, space-separated pattern, tried only when the
-   first matches nothing */
-
-int
-get_names (char *in_file, struct matched_files *files, evalresp_logger *log)
-{
-  char *second = strchr (in_file, ' ');
-  int n;
-
-  if (second)
-    *second++ = '\0';
-
-  n = find_names (in_file, files, log);
-  if (!n && second)
-    n = find_names (second, files, log);
-
-  return n;
 }
 
 #endif

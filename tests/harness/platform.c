@@ -259,6 +259,18 @@ er_list_files (const char *dir, char ***names)
   return m;
 }
 
+/* a directory itself, not a symbolic link to one */
+static int
+is_real_dir (const char *path)
+{
+#ifdef _WIN32
+  return er_is_dir (path);
+#else
+  struct stat st;
+  return lstat (path, &st) == 0 && S_ISDIR (st.st_mode);
+#endif
+}
+
 int
 er_remove_contents (const char *dir)
 {
@@ -274,7 +286,7 @@ er_remove_contents (const char *dir)
       rc = -1;
       continue;
     }
-    if (er_is_dir (path))
+    if (is_real_dir (path))
     {
       if (er_remove_contents (path) || RMDIR (path))
         rc = -1;

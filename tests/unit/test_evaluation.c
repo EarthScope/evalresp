@@ -343,6 +343,101 @@ test_zero_freq_pz (void)
 }
 
 static void
+test_b55_freqs_order (void)
+{
+  const double up[] = {0.2, 0.5, 2.0};
+  const double down[] = {2.0, 0.5, 0.2};
+  evalresp_channels *channels = NULL;
+  evalresp_response *response = NULL;
+  evalresp_options *options = NULL;
+
+  ER_CHECK (!evalresp_new_options (NULL, &options));
+  options->b55_interpolate = 1;
+  options->station_xml = 1;
+  ER_CHECK (!evalresp_filename_to_channels (NULL, er_data_path ("station-list.xml"), options, NULL, &channels));
+  ER_CHECK (channels && channels->nchannels == 1);
+
+  ER_CHECK (evalresp_channel_to_response_freqs (NULL, channels->channels[0], options, down, 3, &response) ==
+            EVALRESP_INP);
+  ER_CHECK (!response);
+
+  /* the blockette is intact after the refusal */
+  ER_CHECK (!evalresp_channel_to_response_freqs (NULL, channels->channels[0], options, up, 3, &response));
+  ER_CHECK_MSG (response->nfreqs == 3, "nfreqs: %d", response->nfreqs);
+
+  evalresp_free_response (&response);
+  evalresp_free_channels (&channels);
+  evalresp_free_options (&options);
+}
+
+static void
+test_polynomial_negative (void)
+{
+  /* the derivative of the polynomial is -0.1: magnitude 0.1 at 180 degrees */
+  const double freqs[] = {0.1};
+  evalresp_channels *channels = NULL;
+  evalresp_response *response = NULL;
+  evalresp_options *options = NULL;
+
+  ER_CHECK (!evalresp_new_options (NULL, &options));
+  options->station_xml = 1;
+  ER_CHECK (!evalresp_filename_to_channels (NULL, er_data_path ("station-polynomial-negative.xml"), options, NULL,
+                                            &channels));
+  ER_CHECK (channels && channels->nchannels == 1);
+  ER_CHECK (!evalresp_channel_to_response_freqs (NULL, channels->channels[0], options, freqs, 1, &response));
+  ER_CHECK_MSG (fabs (response->rvec[0].real + 0.1) < 1e-12 && fabs (response->rvec[0].imag) < 1e-12,
+                "response: %g %g", response->rvec[0].real, response->rvec[0].imag);
+
+  evalresp_free_response (&response);
+  evalresp_free_channels (&channels);
+  evalresp_free_options (&options);
+}
+
+static void
+test_excess_pole_freq (void)
+{
+  /* 1/(s (s+1)): the pole at the origin has no zero to cancel it at 0 Hz */
+  const double poles[] = {0.0, -1.0};
+  const double freqs[] = {0.0, 1.0};
+  char text[4096];
+  size_t n;
+  FILE *fd;
+  double re, im;
+  evalresp_logger *log;
+  evalresp_channels *channels = NULL;
+  evalresp_response *response = NULL;
+  evalresp_options *options = NULL;
+
+  ER_CHECK (NULL != (fd = fopen ("pole.log", "w+")));
+  ER_CHECK (NULL != (log = evalresp_logger_alloc (evalresp_log_to_file, (void *)fd)));
+  ER_CHECK (!evalresp_new_options (NULL, &options));
+  options->station_xml = 1;
+  ER_CHECK (!evalresp_filename_to_channels (NULL, er_data_path ("station-pz-excess-pole.xml"), options, NULL,
+                                            &channels));
+  ER_CHECK (channels && channels->nchannels == 1);
+  ER_CHECK (!evalresp_channel_to_response_freqs (log, channels->channels[0], options, freqs, 2, &response));
+
+  ER_CHECK_MSG (response->rvec[0].real > 1e300 && response->rvec[0].imag == 0.0, "0 Hz: %g %g",
+                response->rvec[0].real, response->rvec[0].imag);
+  pz_real_roots (1.0, NULL, 0, poles, 2, 2.0 * M_PI * freqs[1], &re, &im);
+  ER_CHECK_MSG (fabs (response->rvec[1].real - re) <= 1e-9 * fabs (re) &&
+                    fabs (response->rvec[1].imag - im) <= 1e-9 * fabs (im),
+                "1 Hz: %g %g vs %g %g", response->rvec[1].real, response->rvec[1].imag, re, im);
+
+  fflush (fd);
+  rewind (fd);
+  n = fread (text, 1, sizeof (text) - 1, fd);
+  text[n] = '\0';
+  ER_CHECK_MSG (strstr (text, "[WARN]") && strstr (text, "pole at 0 Hz"), "no pole warning in log: %s", text);
+
+  evalresp_free_response (&response);
+  evalresp_free_channels (&channels);
+  evalresp_free_options (&options);
+  evalresp_logger_free (log);
+  fclose (fd);
+}
+
+static void
 test_non_motion_units_not_converted (void)
 {
   /* pressure input: displacement and acceleration requests leave the response as in file units */
@@ -393,8 +488,57 @@ test_non_motion_units_not_converted (void)
       evalresp_free_response (&responses[u][i]);
 }
 
+static void
+test_units_after_gain_only_stage (void)
+{
+  /* velocity response behind a unitless gain-only first stage converts as velocity */
+  const double freqs[] = {0.1, 1.0, 10.0};
+  const int nfreqs = sizeof (freqs) / sizeof (freqs[0]);
+  const char *units[] = {"vel", "dis", "acc"};
+  evalresp_response *responses[3] = {NULL};
+  int u, k;
+
+  for (u = 0; u < 3; ++u)
+  {
+    evalresp_channels *channels = NULL;
+    evalresp_options *options = NULL;
+
+    ER_CHECK (!evalresp_new_options (NULL, &options));
+    ER_CHECK (!evalresp_set_unit (NULL, options, units[u]));
+    ER_CHECK (!evalresp_filename_to_channels (NULL, er_data_path ("RESP.XX.GAINFIRST..BHZ"), options, NULL,
+                                              &channels));
+    ER_CHECK (channels && channels->nchannels == 1);
+    ER_CHECK (channels->channels[0]->first_stage->input_units == 0);
+    ER_CHECK (!evalresp_channel_to_response_freqs (NULL, channels->channels[0], options, freqs, nfreqs,
+                                                   &responses[u]));
+    evalresp_free_channels (&channels);
+    evalresp_free_options (&options);
+  }
+
+  for (k = 0; k < nfreqs; ++k)
+  {
+    const double w = 2.0 * M_PI * freqs[k];
+    const evalresp_complex *v = &responses[0]->rvec[k];
+    const evalresp_complex *d = &responses[1]->rvec[k];
+    const evalresp_complex *a = &responses[2]->rvec[k];
+    const double tol = 1e-9 * (fabs (v->real) + fabs (v->imag)) * (1.0 + w + 1.0 / w);
+
+    ER_CHECK_MSG (fabs (d->real - (-v->imag * w)) <= tol && fabs (d->imag - (v->real * w)) <= tol,
+                  "dis %g Hz: %g %g", freqs[k], d->real, d->imag);
+    ER_CHECK_MSG (fabs (a->real - (v->imag / w)) <= tol && fabs (a->imag - (-v->real / w)) <= tol,
+                  "acc %g Hz: %g %g", freqs[k], a->real, a->imag);
+  }
+
+  for (u = 0; u < 3; ++u)
+    evalresp_free_response (&responses[u]);
+}
+
 const er_test unit_evaluation_tests[] = {
+    {"units_after_gain_only_stage", test_units_after_gain_only_stage, NULL},
     {"zero_freq_pz", test_zero_freq_pz, NULL},
+    {"excess_pole_freq", test_excess_pole_freq, NULL},
+    {"polynomial_negative", test_polynomial_negative, NULL},
+    {"b55_freqs_order", test_b55_freqs_order, NULL},
     {"non_motion_units_not_converted", test_non_motion_units_not_converted, NULL},
     {"arbitrary_freqs", test_arbitrary_freqs, NULL},
     {"legacy_arbitrary_freqs", test_legacy_arbitrary_freqs, NULL},

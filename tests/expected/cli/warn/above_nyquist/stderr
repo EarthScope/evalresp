@@ -1,6 +1,6 @@
 INFO] << EVALRESP RESPONSE OUTPUT VROBOT >>
-WARN] RESP.XX.NYQ.00.ZZZ: XX.NYQ.00.ZZZ: Stage 1 is normalized at 10 Hz, above its Nyquist frequency of 0.5 Hz
-WARN] RESP.XX.NYQ.00.ZZZ: XX.NYQ.00.ZZZ: Computed and reported sensitivities differ by more than 5 percent; execution continuing
+WARN] RESP.XX.NYQ.00.ZZZ: Stage 1 is normalized at 10 Hz, above its Nyquist frequency of 0.5 Hz
+WARN] RESP.XX.NYQ.00.ZZZ: Computed and reported sensitivities differ by more than 5 percent; execution continuing
 INFO]  --------------------------------------------------
 INFO]   RESP.XX.NYQ.00.ZZZ
 INFO]  --------------------------------------------------

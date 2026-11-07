@@ -409,9 +409,19 @@ static int
 interpolate_b55 (evalresp_logger *log, evalresp_channel *channel,
                  evalresp_response *response, evalresp_blkt **b55_save)
 {
-  int status = EVALRESP_OK;
+  int status = EVALRESP_OK, i;
   evalresp_blkt *b55 = channel->first_stage->first_blkt;
   evalresp_list *list = &b55->blkt_info.list;
+
+  for (i = 1; i < response->nfreqs; ++i)
+  {
+    if (response->freqs[i] < response->freqs[i - 1])
+    {
+      evalresp_log (log, EV_ERROR, EV_ERROR,
+                    "Frequencies must be in ascending order to interpolate blockette 55");
+      return EVALRESP_INP;
+    }
+  }
   if (!(status = save_b55 (log, channel, b55_save)))
   {
     if (!(status = restrict_frequency_range (log, list->freq[0], list->freq[list->nresp - 1],

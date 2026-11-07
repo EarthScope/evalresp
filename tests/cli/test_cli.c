@@ -59,6 +59,11 @@ static const cli_case cases[] = {
      .program = "evalresp",
      .input = CGV_FILE,
      .argv = {"CGV", "XXX", "2009", "365", "0.001", "10", "100", "-f", CGV_FILE}},
+    {.name = "simple_missing_file",
+     .program = "evalresp",
+     .input = CGV_FILE,
+     .argv = {"CGV", "HYZ", "2010", "1", "0.001", "10", "100", "-f", "no-such-file"},
+     .rc = 2},
     {.name = "simple_wildcards",
      .expected = "simple/direct",
      .program = "evalresp",
@@ -220,7 +225,59 @@ static const cli_case cases[] = {
 
 #define N_CASES (sizeof (cases) / sizeof (cases[0]))
 
-static er_test table[N_CASES + 1];
+static void
+check_cgv_output (void)
+{
+  const char *names[] = {"AMP.Z.CGV..HYZ", "PHASE.Z.CGV..HYZ"};
+  char target[ER_PATH_MAX];
+  er_cmp o;
+  int i;
+
+  memset (&o, 0, sizeof (o));
+  o.ncols = 2;
+  for (i = 0; i < 2; ++i)
+  {
+    ER_CHECK_MSG ((size_t)snprintf (target, sizeof (target), "%s/%s", er_expected_path ("cli/simple/direct"),
+                                    names[i]) < sizeof (target),
+                  "expected path too long");
+    ER_CHECK_MSG (er_is_file (names[i]), "missing output file %s", names[i]);
+    er_assert_files_match (names[i], target, &o);
+  }
+}
+
+/* A directory whose name contains a space is searched whole. */
+static void
+test_dir_with_space (void)
+{
+  const char *argv[] = {NULL, "CGV", "HYZ", "2010", "1", "0.001", "10", "100", "-f", "resp dir", NULL};
+
+  ER_CHECK (!er_mkdir_p ("resp dir"));
+  ER_CHECK (!er_copy_file (er_data_path (CGV_FILE), "resp dir/" CGV_FILE));
+  argv[0] = er_bin_path ("evalresp");
+  ER_CHECK_MSG (er_run (argv, NULL, NULL, NULL) == 0, "evalresp failed");
+  check_cgv_output ();
+}
+
+/* A SEEDRESP directory whose name contains a space is searched whole. */
+static void
+test_seedresp_with_space (void)
+{
+  const char *argv[] = {NULL, "CGV", "HYZ", "2010", "1", "0.001", "10", "100", NULL};
+  char dir[ER_PATH_MAX];
+  int rc;
+
+  ER_CHECK (!er_mkdir_p ("seed resp"));
+  ER_CHECK (!er_copy_file (er_data_path (CGV_FILE), "seed resp/" CGV_FILE));
+  ER_CHECK (!er_abspath ("seed resp", dir, sizeof (dir)));
+  ER_CHECK (!er_setenv ("SEEDRESP", dir));
+  argv[0] = er_bin_path ("evalresp");
+  rc = er_run (argv, NULL, NULL, NULL);
+  er_setenv ("SEEDRESP", NULL);
+  ER_CHECK_MSG (rc == 0, "evalresp failed");
+  check_cgv_output ();
+}
+
+static er_test table[N_CASES + 3];
 
 static int
 in_list (const char *list, const char *name)
@@ -342,5 +399,9 @@ cli_tests (void)
     table[i].fn = run_case;
     table[i].ctx = &cases[i];
   }
+  table[N_CASES].name = "dir_with_space";
+  table[N_CASES].fn = test_dir_with_space;
+  table[N_CASES + 1].name = "seedresp_with_space";
+  table[N_CASES + 1].fn = test_seedresp_with_space;
   return table;
 }

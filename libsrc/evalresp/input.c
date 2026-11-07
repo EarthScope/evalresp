@@ -472,7 +472,8 @@ parse_units (evalresp_logger *log, evalresp_options const *const options, char *
   {
     *units = UNDEF_UNITS;
     evalresp_log (log, EV_WARN, EV_WARN,
-                  "units found ('%s') cannot be converted to %s", line, evalresp_unit_string (options->unit));
+                  "units found ('%s') cannot be converted to %s", line,
+                  evalresp_unit_string (options ? options->unit : evalresp_velocity_unit));
     status = EVALRESP_PAR;
   }
 
@@ -2605,13 +2606,15 @@ static void
 warn_shortest_used (evalresp_logger *log, const evalresp_channel *channel, char *last, size_t size)
 {
   char sncl[NETLEN + STALEN + LOCIDLEN + CHALEN + 4];
+  evalresp_log_context ctx;
 
   (void)_evalresp_snprintf (sncl, sizeof (sncl), "%s.%s.%s.%s",
                             channel->network, channel->staname, channel->locid, channel->chaname);
   if (strncmp (sncl, last, size))
   {
-    evalresp_log (log, EV_WARN, EV_WARN,
-                  "%s: Two or more entries match the same SNCL and date; the shortest was used", sncl);
+    evalresp_log_context_init (&ctx, log, "%s", sncl);
+    evalresp_log (&ctx.logger, EV_WARN, EV_WARN,
+                  "Two or more entries match the same SNCL and date; the shortest was used");
     (void)_evalresp_snprintf (last, size, "%s", sncl);
   }
 }
