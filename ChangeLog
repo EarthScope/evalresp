@@ -2,6 +2,9 @@ Unreleased
 
 	2026-11-07
 
+	* ADDED: evalresp_log_error(), evalresp_log_warn(), evalresp_log_info() and
+	evalresp_log_debug() to log at a level with matching verbosity.
+
 	* FIXED: Cancel analog poles and zeros that coincide with the evaluation frequency
 	instead of dividing by zero
 

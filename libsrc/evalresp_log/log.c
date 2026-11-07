@@ -24,6 +24,60 @@ evalresp_log (evalresp_logger *log, int level, int verbosity, char *fmt, ...)
   return status;
 }
 
+static int
+log_at_level (evalresp_logger *log, int level, char *fmt, va_list args)
+{
+  if (!log)
+  {
+    return evalresp_log_v (NULL, NULL, level, level, fmt, args);
+  }
+  return evalresp_log_v (log->log_func, log->func_data, level, level, fmt, args);
+}
+
+int
+evalresp_log_error (evalresp_logger *log, char *fmt, ...)
+{
+  va_list p_args;
+  int status;
+  va_start (p_args, fmt);
+  status = log_at_level (log, EV_ERROR, fmt, p_args);
+  va_end (p_args);
+  return status;
+}
+
+int
+evalresp_log_warn (evalresp_logger *log, char *fmt, ...)
+{
+  va_list p_args;
+  int status;
+  va_start (p_args, fmt);
+  status = log_at_level (log, EV_WARN, fmt, p_args);
+  va_end (p_args);
+  return status;
+}
+
+int
+evalresp_log_info (evalresp_logger *log, char *fmt, ...)
+{
+  va_list p_args;
+  int status;
+  va_start (p_args, fmt);
+  status = log_at_level (log, EV_INFO, fmt, p_args);
+  va_end (p_args);
+  return status;
+}
+
+int
+evalresp_log_debug (evalresp_logger *log, char *fmt, ...)
+{
+  va_list p_args;
+  int status;
+  va_start (p_args, fmt);
+  status = log_at_level (log, EV_DEBUG, fmt, p_args);
+  va_end (p_args);
+  return status;
+}
+
 int
 evalresp_log_basic (evalresp_log_func log_func, void *log_func_data, int level, int verbosity, char *fmt, ...)
 {

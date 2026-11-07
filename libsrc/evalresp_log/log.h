@@ -266,6 +266,70 @@ extern int evalresp_log_basic (evalresp_log_func log_func, void *log_func_data, 
  */
 extern int evalresp_log_v (evalresp_log_func log_func, void *log_func_data, int level, int verbosity, char *fmt, va_list args);
 
+/**
+ * @private
+ * @ingroup evalresp_private_log
+ * @brief send an EV_ERROR message to log, with verbosity equal to the level
+ *
+ * @param[in] log structure containing the information for the logging
+ *                function and data required to control the log
+ * @param[in] fmt a format string that follows the printf style format
+ * @param[in] ... any additional variables needed for fmt
+ * @retval EXIT_SUCCESS when succesfully called
+ * @retval EXIT_FAILURE if something went wrong
+ *
+ * @sa { evalresp_log evalresp_log_v }
+ */
+extern int evalresp_log_error (evalresp_logger *log, char *fmt, ...);
+
+/**
+ * @private
+ * @ingroup evalresp_private_log
+ * @brief send an EV_WARN message to log, with verbosity equal to the level
+ *
+ * @param[in] log structure containing the information for the logging
+ *                function and data required to control the log
+ * @param[in] fmt a format string that follows the printf style format
+ * @param[in] ... any additional variables needed for fmt
+ * @retval EXIT_SUCCESS when succesfully called
+ * @retval EXIT_FAILURE if something went wrong
+ *
+ * @sa { evalresp_log evalresp_log_v }
+ */
+extern int evalresp_log_warn (evalresp_logger *log, char *fmt, ...);
+
+/**
+ * @private
+ * @ingroup evalresp_private_log
+ * @brief send an EV_INFO message to log, with verbosity equal to the level
+ *
+ * @param[in] log structure containing the information for the logging
+ *                function and data required to control the log
+ * @param[in] fmt a format string that follows the printf style format
+ * @param[in] ... any additional variables needed for fmt
+ * @retval EXIT_SUCCESS when succesfully called
+ * @retval EXIT_FAILURE if something went wrong
+ *
+ * @sa { evalresp_log evalresp_log_v }
+ */
+extern int evalresp_log_info (evalresp_logger *log, char *fmt, ...);
+
+/**
+ * @private
+ * @ingroup evalresp_private_log
+ * @brief send an EV_DEBUG message to log, with verbosity equal to the level
+ *
+ * @param[in] log structure containing the information for the logging
+ *                function and data required to control the log
+ * @param[in] fmt a format string that follows the printf style format
+ * @param[in] ... any additional variables needed for fmt
+ * @retval EXIT_SUCCESS when succesfully called
+ * @retval EXIT_FAILURE if something went wrong
+ *
+ * @sa { evalresp_log evalresp_log_v }
+ */
+extern int evalresp_log_debug (evalresp_logger *log, char *fmt, ...);
+
 /* log/helpers.c */
 /**
  * @private

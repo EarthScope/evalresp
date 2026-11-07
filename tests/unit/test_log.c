@@ -62,9 +62,59 @@ test_log_4 (void)
 }
 #endif
 
+typedef struct
+{
+  int n;
+  int level[4];
+  int verbosity[4];
+  char msg[4][MAX_LOG_MSG_LEN];
+} capture;
+
+static int
+capture_msg (evalresp_log_msg *msg, void *data)
+{
+  capture *c = data;
+
+  if (c->n < 4)
+  {
+    c->level[c->n] = msg->log_level;
+    c->verbosity[c->n] = msg->verbosity_level;
+    strcpy (c->msg[c->n], msg->msg);
+    c->n++;
+  }
+  return EXIT_SUCCESS;
+}
+
+/* level wrappers set level and verbosity to the same value */
+static void
+test_log_levels (void)
+{
+  int i;
+  capture c = {0};
+  evalresp_logger log[1];
+
+  ER_CHECK (EXIT_SUCCESS == evalresp_logger_init (log, capture_msg, &c));
+  ER_CHECK (EXIT_SUCCESS == evalresp_log_error (log, "e %d", 1));
+  ER_CHECK (EXIT_SUCCESS == evalresp_log_warn (log, "w %d", 2));
+  ER_CHECK (EXIT_SUCCESS == evalresp_log_info (log, "i %s", "x"));
+  ER_CHECK (EXIT_SUCCESS == evalresp_log_debug (log, "d"));
+
+  ER_CHECK (c.n == 4);
+  for (i = 0; i < 4; i++)
+  {
+    ER_CHECK_MSG (c.level[i] == i, "level[%d] = %d", i, c.level[i]);
+    ER_CHECK_MSG (c.verbosity[i] == i, "verbosity[%d] = %d", i, c.verbosity[i]);
+  }
+  ER_CHECK (!strcmp (c.msg[0], "e 1"));
+  ER_CHECK (!strcmp (c.msg[1], "w 2"));
+  ER_CHECK (!strcmp (c.msg[2], "i x"));
+  ER_CHECK (!strcmp (c.msg[3], "d"));
+}
+
 const er_test unit_log_tests[] = {
     {"1", test_log_1, NULL},
     {"2", test_log_2, NULL},
+    {"levels", test_log_levels, NULL},
 #ifndef _WIN32
     {"3", test_log_3, NULL},
     {"4", test_log_4, NULL},
