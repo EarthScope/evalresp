@@ -2,7 +2,9 @@ Unreleased
 
 	2026-11-07
 
-	* Warn when a digital stage is normalized above its Nyquist frequency
+	* FIXED: Free the unit gain substituted for a missing stage gain when it is not linked into the stage
+
+	* IMPROVED: Warn when a digital stage is normalized above its Nyquist frequency
 
 	* FIXED: Accept empty optional StationXML elements such as <Description></Description>.
 

@@ -574,6 +574,11 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
         filt_blkt->next_blkt = gain_blkt;
         gain_blkt->next_blkt = NULL;
       }
+      else
+      {
+        /* substituted gain is not linked into the stage */
+        free_gain (gain_blkt);
+      }
     }
 
     /* check for mismatch in units between this stage and the previous one
