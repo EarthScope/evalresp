@@ -143,7 +143,10 @@ static int find_child(evalresp_logger *log, mxml_node_t **result, int* found, mx
 }
 
 
-/* Read the text contents of an element as a char*. */
+/*
+ * Read the text contents of an element as a char*.  An element with no text
+ * yields deflt, as a missing element does.
+ */
 static int char_element(evalresp_logger *log, mxml_node_t *node, const char *name,
         const char *deflt, char **value) {
 
@@ -156,8 +159,12 @@ static int char_element(evalresp_logger *log, mxml_node_t *node, const char *nam
             child = mxmlGetFirstChild(element);
             while (child && mxmlGetType(child) != MXML_TYPE_OPAQUE) child = mxmlGetNextSibling(child);
             if (!child) {
-                evalresp_log(log, EV_ERROR, 0, "No text for %s", name);
-                status = X2R_ERR_XML;
+                if (deflt) {
+                    *value = strdup(deflt);
+                } else {
+                    evalresp_log(log, EV_ERROR, 0, "No text for %s", name);
+                    status = X2R_ERR_XML;
+                }
             } else {
                 if (!(text = mxmlGetOpaque(child))) {
                     evalresp_log(log, EV_ERROR, 0, "Cannot access text for %s", name);

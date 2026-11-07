@@ -50,8 +50,45 @@ test_read_xml_response_list (void)
   ER_CHECK (!x2r_free_fdsn_station_xml (root, X2R_OK));
 }
 
+static void
+test_read_xml_empty_description (void)
+{
+  static const char xml[] =
+      "<FDSNStationXML xmlns=\"http://www.fdsn.org/xml/station/1\" schemaVersion=\"1.1\">"
+      "<Source>test</Source><Created>2026-11-06T14:28:02</Created>"
+      "<Network code=\"XX\" startDate=\"1963-01-01T00:00:00\">"
+      "<Station code=\"STA\" startDate=\"2024-08-20T00:00:00\">"
+      "<Latitude>1</Latitude><Longitude>1</Longitude><Elevation>1</Elevation>"
+      "<Site><Name>S</Name></Site>"
+      "<Channel code=\"BHZ\" locationCode=\"00\" startDate=\"2024-08-20T00:00:00\">"
+      "<Latitude>1</Latitude><Longitude>1</Longitude><Elevation>1</Elevation>"
+      "<Depth>0</Depth><SampleRate>1</SampleRate>"
+      "<Response>"
+      "<Stage number=\"1\"><PolesZeros>"
+      "<InputUnits><Name>m</Name><Description></Description></InputUnits>"
+      "<OutputUnits><Name>V</Name><Description/></OutputUnits>"
+      "<PzTransferFunctionType>LAPLACE (RADIANS/SECOND)</PzTransferFunctionType>"
+      "<NormalizationFactor>1.0</NormalizationFactor>"
+      "<NormalizationFrequency>1.0</NormalizationFrequency>"
+      "</PolesZeros>"
+      "<StageGain><Value>1.0</Value><Frequency>1.0</Frequency></StageGain></Stage>"
+      "</Response></Channel></Station></Network></FDSNStationXML>";
+  evalresp_logger *log = NULL;
+  x2r_fdsn_station_xml *root = NULL;
+  x2r_poles_zeros *pz;
+
+  ER_CHECK (!x2r_station_service_load_string (log, xml, &root));
+  ER_CHECK (!(root->network[0].station[0].channel[0].response.n_stages != 1));
+  pz = root->network[0].station[0].channel[0].response.stage[0].u.poles_zeros;
+  ER_CHECK (!strcmp (pz->input_units.name, "m"));
+  ER_CHECK (!strcmp (pz->input_units.description, ""));
+  ER_CHECK (!strcmp (pz->output_units.description, ""));
+  ER_CHECK (!x2r_free_fdsn_station_xml (root, X2R_OK));
+}
+
 const er_test unit_read_xml_tests[] = {
     {"read_xml", test_read_xml, NULL},
     {"response_list", test_read_xml_response_list, NULL},
+    {"empty_description", test_read_xml_empty_description, NULL},
     {NULL, NULL, NULL},
 };
