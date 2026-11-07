@@ -25,6 +25,30 @@ START_TEST (test_read_xml)
 }
 END_TEST
 
+START_TEST (test_read_xml_response_list)
+{
+  FILE *in;
+  evalresp_logger *log = NULL;
+  x2r_fdsn_station_xml *root = NULL;
+  x2r_stage *stage;
+  x2r_response_list *list;
+
+  fail_if (!(in = fopen ("./data/station-list.xml", "r")));
+  fail_if (x2r_station_service_load (log, in, &root));
+  fclose (in);
+  fail_if (root->network[0].station[0].n_channels != 1);
+  fail_if (root->network[0].station[0].channel[0].response.n_stages != 1);
+  stage = &root->network[0].station[0].channel[0].response.stage[0];
+  fail_if (stage->type != X2R_STAGE_RESPONSE_LIST);
+  list = stage->u.response_list;
+  fail_if (list->n_response_list_elements != 3, "unexpected number of elements: %d", list->n_response_list_elements);
+  fail_if (list->response_list_element[0].frequency != 0.1);
+  fail_if (list->response_list_element[1].amplitude.value != 2.5);
+  fail_if (list->response_list_element[2].phase.value != 30.0);
+  fail_if (x2r_free_fdsn_station_xml (root, X2R_OK));
+}
+END_TEST
+
 int
 main (void)
 {
@@ -32,6 +56,7 @@ main (void)
   Suite *s = suite_create ("suite");
   TCase *tc = tcase_create ("case");
   tcase_add_test (tc, test_read_xml);
+  tcase_add_test (tc, test_read_xml_response_list);
   suite_add_tcase (s, tc);
   SRunner *sr = srunner_create (s);
   srunner_set_xml (sr, "check-read_xml.xml");

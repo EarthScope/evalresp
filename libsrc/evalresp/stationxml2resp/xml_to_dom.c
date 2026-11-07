@@ -666,7 +666,7 @@ static int parse_response_list(evalresp_logger *log, mxml_node_t *node,
         if (!(status = parse_units(log, node, "OutputUnits",
             &response_list->output_units))) {
 
-            if ((status = find_children(log, &elements, node, "ResponseListElement"))) {
+            if (!(status = find_children(log, &elements, node, "ResponseListElement"))) {
                 response_list->n_response_list_elements = elements->n;
                 if (!(response_list->response_list_element =
                         calloc(response_list->n_response_list_elements,

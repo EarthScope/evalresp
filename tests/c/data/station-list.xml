@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0">
+ <Source>TEST</Source>
+ <Created>2015-07-17T13:30:11</Created>
+ <Network code="XX" startDate="2013-01-01T00:00:00" endDate="2014-12-31T23:59:59" restrictedStatus="open">
+  <Station code="LIST" startDate="2013-11-07T00:00:00" endDate="2014-03-10T23:59:59" restrictedStatus="open">
+   <Latitude>29.2576</Latitude>
+   <Longitude>-82.0562</Longitude>
+   <Elevation>20.0</Elevation>
+   <Site>
+    <Name>Response list test</Name>
+   </Site>
+   <CreationDate>2013-11-07T00:00:00</CreationDate>
+   <Channel locationCode="" startDate="2013-11-07T17:00:00" restrictedStatus="open" endDate="2014-03-10T23:59:59" code="EHZ">
+    <Latitude>29.2576</Latitude>
+    <Longitude>-82.0562</Longitude>
+    <Elevation>20.0</Elevation>
+    <Depth>0.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <SampleRate>100.0</SampleRate>
+    <Response>
+     <Stage number="1">
+      <ResponseList>
+       <InputUnits>
+        <Name>M/S</Name>
+        <Description>velocity in meters per second</Description>
+       </InputUnits>
+       <OutputUnits>
+        <Name>V</Name>
+        <Description>emf in volts</Description>
+       </OutputUnits>
+       <ResponseListElement>
+        <Frequency>0.1</Frequency>
+        <Amplitude>1.5</Amplitude>
+        <Phase>10.0</Phase>
+       </ResponseListElement>
+       <ResponseListElement>
+        <Frequency>1.0</Frequency>
+        <Amplitude>2.5</Amplitude>
+        <Phase>20.0</Phase>
+       </ResponseListElement>
+       <ResponseListElement>
+        <Frequency>10.0</Frequency>
+        <Amplitude>3.5</Amplitude>
+        <Phase>30.0</Phase>
+       </ResponseListElement>
+      </ResponseList>
+      <StageGain>
+       <Value>1.0</Value>
+       <Frequency>1.0</Frequency>
+      </StageGain>
+     </Stage>
+    </Response>
+   </Channel>
+  </Station>
+ </Network>
+</FDSNStationXML>
