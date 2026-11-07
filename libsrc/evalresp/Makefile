@@ -9,7 +9,7 @@ EVALRESP_SRC= alloc_fctns.c calc_fctns.c file_ops.c\
 			  highlevel.c evaluation.c legacy_interface.c\
 			  stationxml2resp/dom_to_seed.c stationxml2resp/xml_to_dom.c\
 			  stationxml2resp/dom_to_channels.c
-EVALRESP_HEADERS= public.h public_api.h public_channels.h public_responses.h public_compat.h stationxml2resp.h evresp.h
+EVALRESP_HEADERS= constants.h public.h public_api.h public_channels.h public_responses.h public_compat.h stationxml2resp.h evresp.h
 
 #OBJ=$(patsubst %,$(BUILD_DIR)/%,$(patsubst %.c,%.o,$(EVALRESP_LOG_SRC)))
 vpath %.c stationxml2resp

@@ -1,22 +1,52 @@
-.TH "XML2RESP" "V4.0.0" "??-MAY-2015" "" "EarthScope programs"
+.TH "XML2RESP" "1" "2026-11-07" "evalresp 5.0.1" "EarthScope programs"
 .SH "NAME"
-\fIxml2resp\fR \- convert a file from station.xml to RESP format.
+\fIxml2resp\fR \- convert a file from FDSN StationXML to SEED RESP format
 .SH "SYNOPSIS"
-xml2resp [-v] [-o output] [input]
+.B xml2resp
+[\fB\-v\fR]
+[\fB\-o\fR \fIoutput\fR]
+[\fIinput\fR]
 .SH "DESCRIPTION"
-\fIXml2resp\fR will read an input file in station.xml format and write the
-equivalent response data in RESP format.  It is intended to produce identical
-output to the IRIS-WS package, and is used internally by \fIevalresp\fR when
-the \fB-x\fR option is given.
-.SH "COMMAND-LINE PARAMETERS"
-.nf 
- \-o file      output file (RESP format; stdout used if omitted)
- \-v           show error messages (to stderr)
- \-v \-v        show warning messages
- \-v \-v \-v     show information messages
- \-v \-v \-v \-v  show debug messages
-
-If no input file is given, stdin is read.
-.fi
+\fIxml2resp\fR reads one file in FDSN StationXML format and writes the
+equivalent response information in RESP format, the legacy text format written
+by \fIrdseed\fR.  It is intended to produce the same RESP as the IRIS\-WS package.
+.LP
+\fIevalresp\fR(1) reads StationXML directly, at the full precision of the file,
+and does not need this program.  Use \fIxml2resp\fR to make RESP files for
+software that reads only that format.  RESP carries fewer significant digits
+than StationXML, so a response evaluated from the RESP file can differ slightly
+from one evaluated from the StationXML.
+.SH "OPTIONS"
+.TP
+.BR \-o " " \fIfile\fR ", " \-\-output =\fIfile\fR
+Write the RESP text to \fIfile\fR, which is overwritten.  The default is standard output.
+.TP
+.BR \-v ", " \-\-verbose [=\fIlevel\fR]
+Accepted, with an optional level that is a number attached to the option
+(\fB\-v3\fR or \fB\-\-verbose=3\fR).  The option may be repeated as separate
+words (\fB\-v \-v\fR); a level that is not a number, including the grouped form
+\fB\-vv\fR, is rejected as invalid usage.  It does not change the messages
+written: they are always written to standard error, as described under
+\fBMESSAGES\fR.
+.PP
+\fIinput\fR is the StationXML file.  At most one may be given; if it is omitted,
+the StationXML is read from standard input.
+.SH "MESSAGES"
+Each message is written to standard error with a date and a level, so it never
+mixes with the RESP text on standard output.  The messages include the
+files being read and written, and what stopped the conversion if it fails.
+.SH "EXIT STATUS"
+0 on success.  Otherwise non\-zero, with a message on standard error:
+1 for invalid usage, 2 for a memory error, 3 for a buffer error, 4 for input that
+cannot be parsed as StationXML (including a RESP file), 5 for a file that cannot be
+read or written, and 6 for a date that cannot be read.
+.SH "EXAMPLES"
+To convert a file:
+.IP
+xml2resp \-o RESP.IU.ANMO station.xml
+.LP
+To convert from standard input to standard output, and keep the messages in a file:
+.IP
+xml2resp < station.xml > RESP.IU.ANMO 2> messages.log
 .SH "SEE ALSO"
-\fIevalresp\fR.
+\fIevalresp\fR(1)

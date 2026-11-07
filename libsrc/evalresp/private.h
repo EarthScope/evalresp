@@ -1,11 +1,6 @@
 /**
- * @mainpage Introduction
- *
- * @section purpose Purpose
- *
- * Implements the interfaces for evalresp.
- *
- * @section history History
+ * @file
+ * @brief Implements the interfaces for evalresp.
  *
  * Written by <a href="http://www.isti.com/">Instrumental Software
  * Technologies, Inc.</a> (ISTI).

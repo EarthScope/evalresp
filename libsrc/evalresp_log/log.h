@@ -1,11 +1,6 @@
 /**
- * @mainpage Introduction
- *
- * @section purpose Purpose
- *
- * Implements a private logging interface for evalresp.
- *
- * @section history History
+ * @file
+ * @brief Implements a private logging interface for evalresp.
  *
  * Written by <a href="http://www.isti.com/">Instrumental Software
  * Technologies, Inc.</a> (ISTI) in 2017.

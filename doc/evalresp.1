@@ -1,360 +1,323 @@
-.TH "EVALRESP" "V4.0.0" "??-MAY-2015" "" "EarthScope programs"
+.TH "EVALRESP" "1" "2026-11-07" "evalresp 5.0.1" "EarthScope programs"
 .SH "NAME"
-\fIevalresp\fR \- evaluate response information and output to ASCII files using \fIrdseed V4.16\fR and above RESP files.
+\fIevalresp\fR \- evaluate the frequency response of instrument channels described in FDSN StationXML or SEED RESP
 .SH "SYNOPSIS"
-evalresp STA_LIST CHA_LIST YYYY DAY MIN_FREQ MAX_FREQ NFREQS [\fB\-f\fR file]
-[\fB\-u\fR units] [\fB\-t\fR time\-of\-day] [\fB\-s\fR type\-of\-spacing]
-[\fB\-r\fR resp\-type] [\fB\-n\fR network\-id] [\fB\-l\fR location\-id]
-[\fB\-stage\fR start [stop]] [\fB\-stdio\fR] [\fB\-use\-estimated\-delay\fR]
-[\fB\-unwrap\fR] [\fB-ts\fR] [\fB\-il\fR] [\fB\-ii\fR] [\fB\-it\fR tension]
-[\fB\-b62_x\fR x] [\fB\-x\fR] [\fB\-v\fR]
+.B evalresp
+.I STA_LIST CHA_LIST YYYY DAY
+[\fIMIN_FREQ\fR [\fIMAX_FREQ\fR [\fINFREQS\fR]]]
+[\fB\-f\fR \fIfile\fR]
+[\fB\-u\fR \fIunits\fR]
+[\fB\-t\fR \fItime\-of\-day\fR]
+[\fB\-s\fR \fItype\-of\-spacing\fR]
+[\fB\-r\fR \fIresp\-type\fR]
+[\fB\-n\fR \fInetwork\-id\fR]
+[\fB\-l\fR \fIlocation\-id\fR]
+[\fB\-stage\fR \fIstart\fR [\fIstop\fR]]
+[\fB\-stdio\fR]
+[\fB\-use\-estimated\-delay\fR]
+[\fB\-unwrap\fR]
+[\fB\-ts\fR]
+[\fB\-il\fR | \fB\-ii\fR]
+[\fB\-b62_x\fR \fIvalue\fR]
+[\fB\-x\fR]
+[\fB\-v\fR]
 .SH "DESCRIPTION"
-.LP 
-\fIEvalresp \fR will calculate the complex response of a specified station or set
-of stations, channel or channels, and network, for a specified date, time and frequency, all by using
-the SEED ASCII response files produced by the program \fI`rdseed'\fR.
-.I Evalresp
-by itself returns the usage or `help' lines useful for how to correctly input
-the options.
-.SH "COMMAND-LINE PARAMETERS"
-.nf 
- \-f file              directory\-name|filename
- \-u units             'dis'|'vel'|'acc'|'def'
- \-t time\-of\-day       HH:MM:SS
- \-s type\-of\-spacing   log|lin
- \-n netid             'II'|'IU'|'G'|'*'...
- \-l locid             '01'|'AA,AB,AC'|'A?'|'*'...
- \-r resp_type         'ap'=amplitude/phase|'cs'=complex spectra|
-                         'fap'=frequency/amplitude/phase
- \-stage start [stop]  integer stage numbers
- \-stdio               take input from stdin, output to stdout
- \-use\-estimated\-delay use estimated delay in computation of response
- \-il                  interpolate List blockette output
- \-ii                  interpolate List blockette input
- \-it tension          tension for List blockette interpolation
- \-unwrap              unwrap phase if the output is ap 
-                         (amplitude/phase)
- \-ts                  use total sensitivity from stage 0 instead 
-                         of computed
- \-b62_x value         sample value/volts when we compute response 
-                         for B62
- \-v                   verbose; list parameters on stdout
- \-x                   xml; expect station.xml format
-
-.fi 
-.SH "WHAT IS NEW"
-See ChangeLog file from evalresp distribution.
-.SH "STATION.XML FORMAT INPUT"
-From version 4.0.0, input files in the station.xml format are read if the -x
-flag is given, or if the file is detected as station.xml.
-
-Values are used at the precision given in the station.xml file.  The
-\fIxml2resp\fR program (installed alongside evalresp) writes the equivalent
-RESP format, as produced with the IRIS-WS package, which carries fewer
-significant digits.
-.SH "SUPPORT OF PRESSURE, MAGNETIC DATA AND TEMPERATURE"
-\fIEvalresp\fR is able to process responses of
-pressure instruments (in Pascals), temperature (in C) and magnetic flux density (in Tesla). Note that the default units 
-are assumed to be Pascals, Centigrades, or Tesla respectively, therefore the "\-u" option is ignored while
-processing pressure, temperature, and magnetic flux density responses.
-.SH "SEED FILTER COEFFICIENTS AND STAGE DELAY CORRECTION"
-As of July 2007 the SEED standard was clarified to require that digital filter coefficients are to be listed in forward order.  For a mathematical description see the SEED manual. As a reference, minimum\-phase filters (which are asymmetric) should be written with the largest values near the beginning of the coefficient list.  Additionally the sign convention for the estimated delay and correction applied specified in Blockette 57 for a given stage were clarified.  In almost all cases both the estimated delay and correction applied should be positive values and very nearly the same, if not exactly, the same value.
-
-Proper evalresp operation requires the conventions described above to be followed.  Unfortunately there are some SEED response descriptions which do not follow the convention.  Using such responses with evalresp will likely result in improper response calculation.  Furthermore, applying improper evalresp results to time series data can result in either obvious, or more problematic, subtle data modifications.
-.SH "FIR FILTERS"
-All FIR filters are considered as having a zero phase\-shift, even
-if they are not symmetrical and the delay correction is null.
-If there are 2 FIR filters in the same stage, the
-program assumes that both filters have the same input sample
-interval (in other words, the first filter has a decimation factor
-of 1). Typically if two FIR filters appear in the same stage,
-the second FIR filter is a continuation of the first. This often
-results when the FIR filter in question has more than 415 coefficients
-(which causes the length of the blockette containing the response
-information to exceed the "%4.4d" format of the blockette length specifier
-(defined by SEED). When this occurs, a second (continuation) blockette
-is written that contains the coefficients that would not fit in the first blockette.
-\fIevalresp\fR will handle such continuation filters by joining all FIR filters in the same
-stage into one large FIR filter in the order that they were scanned.
-.SH "IIR FILTERS"
-Versions 3.2.17 and above support IIR digital filters in coefficients format with a non\-zero phase shift.
-IIR coefficients for a single stage must fit in a single blockette.
-.SH "DECIMATION BLOCKETTE"
-Without additional command\-line option \fB\-use\-estimate\-delay\fR \fBevalresp\fR computes a delay introduced by
-an asymmetrical FIR filter as correction_applied (Field 8 of B57) minus calculated delay.
-
-A user can choose to run \fBevalresp\fR with \fB\-use\-estimate\-delay\fR command line option.In this case
-estimated delay (field 7 of B57) will be used as a value of the delay for asymmetrical FIR filter phase computation.
-
-A user is advised to select \fB\-use\-estimate\-delay\fR option only if it is known that correction_applied (Field 8 of B57)
-is not properly set in the RESP file.
-
-For all other filter types \fBevalresp\fR uses delay of 0 while processing decimation blockettes. 
-.SH "NON-LINEAR BLOCKETTE 62"
-In general, we cannot represent Blockette 62 as a Fourier response because it is intrinsically non\-linear.  See, for example, p28 of Bendat & Piersol, where they explicitly say that Fourier analysis is done on the assumption of a linear system (as defined p 26).
-
-But there are two exceptions.
-
-First, the polynomial may be linear (have only two terms, y = a x + b).  In that case, it is (by definition) linear and can be treated as an offset ("a", ignored by the Fourier response) and gain ("b", the slope, independent of frequency).  Note that the amplitude response is always positive (abs(b)); the phase will be zero if the slope of the curve is positive (b>0) and 180 degrees if negative (b<0).
-
-Second, the user may have a signal that uses some part of the (non\-linear) response curve that is sufficiently small (for the accuracy they require) that it can be treated as linear in that region.  In this case we use a tangent (first order Taylor expansion) of the polynomial at the given point (and then treat that as the linear case above).
-
-For a polynomial f(x) = a0 + a1 x + a2 x^2 + ... an x^n the slope at X is f'(X) where f' = a1 + 2 a2 x + 3 a3 x^2 ... n an x^(n\-1).  So the recipe to calculate the gain (b) at a given X is:
-
-   sum(i=1 to n)  i * ai * x^(i\-1)
-
-In \fBevalresp\-3.3.4\fR we require a user to input a particular value x as in the equation above using command line option \fB\-b62_x\fR. This value is assumed to be in digital counts if B62 is the only blockette of the response or in volts if B62 is the part of the cascade.
-
-The results of processing (response amplitude) depends on the valued selected by a user.
-
-For responses without B62 command line option \fB\-b62_x\fR is not needed
-.SH "GENERIC RESPONSE BLOCKETTES"
-Versions 3.2.17 and above support generic response blockette (SEED blockettes 55).
-Generic response blockette is a list of phases and amplitudes computed for the
-preselected set of frequencies. This filter type is supported only if the response input file
-contains blockette(s) 55 as a stage 1 and possibly channel sensitivity blockette as a stage 0.
-If a generic response blockette is recognized in the input, \fIevalresp\fR ignores the user\-defined
-frequency sampling from the command line. The ouput, therefore, contains
-responses for only those frequencies which have been defined in the generic response blockette.
-.SH "FILTER SEQUENCE"
-The program assumes that the response information consists of a series
-of filter stages arranged in a cascade.  It is assumed that the first filter
-in a given stage is one of the following:  (1) A Laplace\-Transform or Analog pole\-
-zero filter, (2) an IIR pole\-zero filter, (3) a FIR filter (either symmetric
-or asymmetric), or (4) a stand\-alone gain blockette that indicates the overall
-sensitivity of the filter sequence (a stage zero filter). Versions
-of \fIevalresp 3.2.17\fR and higher also support (5) IIR digital coefficients filters and (6) provide
-limited support for Generic Response Blockette.    It is further assumed that the filters will be followed by
-a gain blockette (except Generic Response Blockettes).  If the stage is a decimation stage, then a decimation
-blockette will be included. This decimation blockette typically precedes the gain blockette for the stage in a
-SEED response file, although the order of the blockettes within a stage does not matter.
-If the blockettes within a stage are not in the order that
-evalresp expects to find them in, evalresp will rearrange them so that they appear in the "correct" order.
-If the response is a single stage response, \fIevalresp\fR will allow the user to specify an overall (stage 0)
-gain, rather than requiring the user to specify a stage 1 and stage 0 gain blockette (since, in this case,
-the stage 0 and stage 1 gains are identical).
-
-The stage sequence number is checked by \fIevalresp\fR during parsing and any break in the sequence is
-considered to be an error. The result is that filter sequences with out of order stages are rejected as
-invalid responses. In addition, the output units of a stage and the input units of the next stage are
-compared by \fIevalresp\fR. If the output units of a stage do not match the input units of the next stage, the
-filter sequence is considered to be invalid and the response is rejected as an invalid response. The only
-exception to this rule are so called "gain\-only" stages. Since these stages have no units associated with
-them, the \fIevalresp\fR program will skip them in determining the input units of the next stage. If a gain\-only
-filter is found in the sequence, \fIevalresp\fR will scan to the next non\-gain\-only stage and compare the
-output units of the current stage with the input units of that stage. Again, a difference in the units will be
-considered to be an error in the filter sequence and cause that response to be rejected as invalid.
-.SH "UNEXPECTED CASES:"
-.IP \[bu] 2
-Stand alone FIR filters (i.e. those with no sample rate and gain specified) are discarded.
-(Only that stage is discarded, the rest of the filter sequence is kept and used to calculate
-a response).
-.IP \[bu]
-FIR filters which are not normalized to 1 at frequency 0 are normalized.
-.IP \[bu]
-IIR coefficients filter with a stage containing more than a single blockette 54.
-.IP \[bu]
-Mixing generic response stage with the other responses in a single file.
-.fi 
-.SH "HOW THE PROGRAM SEARCHES FOR RESPONSES"
-If the `\fB\-f\fR' option is specified, a determination is made as to whether the filename that follows
-the `\fB\-f\fR' flag is a directory.
-.HP 4
-(1) If it is a directory, then that directory, and only that directory, is searched for files with names
-like RESP.NET.STA.LOC.CHA (or RESP.NET.STA.CHA), where the NET, STA, and CHA match the user supplied
-(or default) network\-code, station names (from the STA_LIST), location\-code, and channel names (from
-the CHA_LIST).
-.HP 4
-(2) If it is not a directory, then a file with that name is used as input to the program. That file, and
-only that file, will be searched for response information that matches the user's request.
-.HP 4
-(3) If the \fB\-f\fR option is not specified, then both the current working directory and the directory pointed
-to by the SEEDRESP environment variable (if it exists) are searched for response information
-that matches the user's request. As in the directory search (above), the filenames are
-constructed automatically. The files are searched starting with the local directory, so if a match
-is found in both the local and SEEDRESP directories, the information from the local file will be
-used.
-.HP 4
-(4) Because it is possible to use wildcards to specify the network\-code, stations and channels that
-are of interest, when the \fB\-f\fR flag is used to pass the name of a directory to search or when the \fB\-f\fR
-option is not given and the local and SEEDRESP directories are searched for matching files, all
-files whose names match the user's requested station, channel, and network code are searched
-for responses that have an effective time that includes the requested date (and time, if
-specified). This is necessary because there may be multiple, unique station\-channel\-network's
-that match a single input station\-channel\-network tuple from the user if wildcards are used. A
-list of all of the files that match is constructed and each is searched in turn. However, only the
-first matching response in each file is calculated.
-.P
-If the \fB\-stdio\fR option is given, the SEED response information is scanned from standard input and
-the resulting response is returned to standard output. In this case, the program will continue to
-search standard input for matching responses as long as it remains open (i.e. until an EOF is
-signaled). This allows the user to place evalresp into a pipeline of commands, or to use I/O
-redirection to read SEED responses from a file containing the response information.
-.SH "NOTES ABOUT USAGE"
-.HP 4
-(1)  First, you must create an ASCII file containing the response information for the SEED volume.
-For \fIevalresp V3.0\fR (and later), \fIrdseed V4.16\fR or later must be used to create these files. To create
-the files, the R option to rdseed can be specified (either on the command line or interactively).
-This places the response information in the SEED volume into ASCII files with names like
-RESP.NET.STA.LOC.CHA. Alternatively, the \fB\-d\fR option can be specified and, by responding "yes" to
-the query of whether you want response files written, these same files will be extracted only for
-the station\-channel\-network tuples for which data is extracted from the SEED volume.
-.HP 4
-(2) If the file argument is a directory, that directory will be searched for RESP files of the form
-RESP.NET.STA.LOC.CHA (or RESP.NET.STA.CHA).
-.HP 4
-(3) If the file argument is a file, that file is assumed to be a concatenated version of the output from
-a call to rdseed with the \fB\-R\fR option. If this is the case, then only this file will be searched for
-matching response information
-.HP 4
-(4) If the file argument is missing, the current directory will be searched for RESP files of the form
-RESP.NET.STA.LOC.CHA or RESP.NET.STA.CHA (see \fI"How the Program Searches for Responses"\fR, above).
-.HP 4
-(5) If the environment variable SEEDRESP exists and is the name of a directory, that directory will
-also be searched for the requested files (if the \fB\-f\fR option is not used, see \fI"How the Program
-Searches for Responses"\fR, above).
-.IP 
-.sp
-i.e. if typed setenv SEEDRESP /foo/resp_dir and no file or directory is specified
-to search on the command line, then the current directory and the directory
-/foo/resp_dir will be searched for matching RESP files from which to calculate
-responses.
-.HP 4
-(6) The units argument is one of the following: DIS (displacement), VEL (velocity), ACC
-(acceleration), DEF (default units), and represents the units for which the output response
-should be calculated (regardless of the units that are used to represent the response in the
-RESP file). If Default Units are chosen, the response is calculated in output units/input units,
-where these units are exactly the input units of the first stage of the response and the output
-units of the last stage of the response. This is a useful alternative if the units for a particular
-type of sensor (e.g. a pressure sensor) are not in units that can be converted to displacement,
-velocity, or acceleration. The default value for this argument is VEL.
-.HP 4
-(7) The time\-of\-day argument is in HH:MM:SS format. This is used only in the case where there is
-more than one response in a given SEED volume for a given day. In that case, this argument can
-be used to choose one response over another according to the effective time of each. If this
-argument is not specified, then the first response that is found in the file that matches the
-requested year and day will be used. The default value for this argument is 00:00:00.0.
-.HP 4
-(8) The type\-of\-spacing argument is either logarithmic or linear ("log" or "lin" respectively). This
-governs whether the frequencies chosen are spaced evenly between the minimum frequency and
-the maximum frequency in a linear or logarithmic sense. This argument defaults to a value of
-"log".
-.HP 4
-(9) The \fB\-v\fR argument indicates that the user would like to receive the verbose ouput from the
-\fIevalresp\fR program. When this flag is included on the command line, diagnostic information will be
-sent to standard output showing summary information of the calculated response for each
-station\-channel\-network tuple that matches the user's request. If this option is not specified,
-only error output will occur in the program.
-.HP 4
-(10) The \fB\-r\fR argument indicates the response type the user desires. Available values are "cs" for
-complex\-spectra output, "ap" for amplitude\-phase output, and "fap" for frequency\-amplitude\-phase output.
-If the "cs" option is chosen, then the result is a set of files like SPECTRA.NET.STA..CHA (SPECTRA.NET.STA..CHA  
-if location ID is present in the input file) that contain the frequency, real response and imaginary response (in that order).
-If the "ap" option is chosen, then a set of files like AMP.NET.STA..CHA (or AMP.NET.STA.LOC.CHA)
-and PHASE.NET.STA..CHA (PHASE.NET.STA.LOC.CHA) are created, containing the amplitude and
-phase response, respectively. If the "fap" option is selected, the program writes out frequency\-amplitude\-phase 
-triplets. The resulting file names are in the form : "FAP.Net.Sta.Loc.Chan". The phase is always unwrapped 
-in this output. Essentially this is just a re\-packaging of the amplitude\-phase output into a single, 
-three\-column file with unwrapped phase.  This argument defaults to a value of "ap".
-.HP 4
-(11) The use of wildcards is allowed in the specification of stations, channels, and networks to
-search for. The first response of each station\-channel\-network that matches the wildcard
-pattern will be calculated and saved. For example, if the user requested response information
-from PFO 'BH?' with a network flag of \fB\-n\fR '*', then the first response that matches the specified
-date for each of the broadband, high\-gain channels will be returned for all of the networks that
-report a response for PFO. The wildcarding scheme used here is a "glob" style rather than
-"regular expression" style of pattern matching. The total length of the patterns used for the
-stations, channels, or networks is restricted to 64 characters by the program, although multiple
-examples can be combined in a comma separated list for the station and channel lists.
-.HP 4
-(12) The \fB\-stage\fR argument can be used to specify a stage number or a range of stage numbers, if both
-a starting and stopping stage number are included, for which to evaluate responses. For example,
-if this argument is included on the command line as \fB\-stage\fR 3, then only the response of stage 3
-will be calculated (ignoring all other stages). If the user wishes to calculate a response for
-stages 1 through 3, then the appropriate usage would be \fB\-stage\fR 1 3. Setting the starting stage to
-a number less than zero will cause the default behavior to occur; evaluation of responses for all
-stages in a RESP file. If the number specified for a "single stage" response is higher than the
-number of stages in the response, no output will occur and an error message will be printed
-indicating why no output occurred. If a range of responses is specified that is outside of the
-range that is given in the RESP file, then no output will occur. Otherwise, the stages with
-numbers within the interval from the starting to the stopping stage will be used to calculate the
-response.
-.HP 4
-(13) The  \fB\-unwrap\fR argument is used to unwrap the output phase if used in combination with \fB\-r ap\fR option
-(see note 10 above). 
-.HP 4
-(14) Note that there is also a configuration option \-\-enable\-phase\-unwrap (which can be
-enabled at as ./configure \-enable\-phase\-unwrap before making stage of evalresp. This option not
-only unwraps the phase but also shifts it to keep the values of phase in the range \-180:180 degree. 
-.HP 4
-(15) The \fB\-ts\fR argument is forcing useage of the stage 0 total sensitivity instead of product of the stage gains.  
-The idea is that this can be utilized in combination with the \-stage option to provide a full scale response, 
-i.e. just stage 1 (the sensor) with a correct system gain (which is exactly what SAC Poles and Zeros do)
-.HP 4
-(16) The \fB\-stdio\fR argument can be used to specify that input should be taken from standard input and
-output should be sent to standard output. In the case where both \fB\-stdio\fR and \fB\-v\fR are specified, the
-response can be separated from the "verbose" output by splitting the standard output (which will
-contain the response) from the standard error (which will contain the verbose output). When this
-flag is defined, standard input is parsed for input responses until an EOF is found, indicating the
-end of the input stream of response information.
-.SH "LIST BLOCKETTE INTERPOLATION"
-The following command\-line parameters are used to enable List\-blockette interploation:
-
-\fB\-il\fR : Specifies that the amplitude/phase values generated from responses containing List
-blockettes (55) are to be interpolated to correspond to the set of frequencies requested
-by the user.  A cubic\-spline interpolation algorithm is used, with a "tension" value
-specified via the \fB\-it\fR parameter (see below).  If any of the user\-requested frequency values
-fall outside of the range of frequencies defined in the List blockette then the out\-of\-range
-frequencies will be "clipped" (ignored), the output will be generated for the in\-range
-frequencies, and a warning message will be sent to the console.  If a response does not
-contain a List blockette or if the complex\-spectra response output type is selected ("\-r cs")
-then this parameter will have no effect.  If this parameter and the \fB\-ii\fR parameter are not
-specified then the output for a response containing a List blockette will be generated only
-for the frequencies defined in the List blockette.
-
-\fB\-ii\fR : Specifies that the amplitude/phase values input from a response containing a List
-blockette (55) are to be interpolated to correspond to the set of frequencies requested
-by the user.  The interpolated values are then processed by the program.  A cubic\-spline
-interpolation algorithm is used, with a "tension" value specified via the \fB\-it\fR parameter
-(see below).  If any of the user\-requested frequency values fall outside of the range of
-frequencies defined in the List blockette then the out\-of\-range frequencies will be
-"clipped" (ignored), the values will be generated for the in\-range frequencies, and a
-warning message will be sent to the console.  If a response does not contain a List
-blockette then this parameter will have no effect.  This parameter (rather than \fB\-il\fR)
-can be useful when the complex\-spectra response output type is selected ("\-r cs").
-If this parameter and the \fB\-il\fR parameter are not specified then the output for a response
-containing a List blockette will be generated only for the frequencies defined in the
-List blockette.
-
-\fB\-it\fR : The "tension" value used by the cubic\-spline interpolation algorithm (see the
-\fB\-il\fR and \fB\-ii\fR parameters).  A relatively high "tension" value is desirable because it
-makes the interpolated values "track" closely to the original values.  This parameter
-may be specified as a floating\-point value, and its default value is 1000.0.
-
-Note:  The \fB\-il\fR ("interpolate List\-blockette output") parameter differs from the
-\fB\-ii\fR ("interpolate List\-blockette input") parameter in that when \fB\-il\fR ("output")
-is specified the interpolation happens after the response data values have been processed
-by the program.  When \fB\-ii\fR ("input") is specified the List\-blockette data values are
-interpolated before they are processed by the program.  The two types of interpolation
-should generate results that are basically identical.
-.SH "EXAMPLE"
-.HP
-evalresp HRV,ANMO `BHN,BHE,LH?' 1992 231 0.001 10 100 \-f /home/RESP/NEW \-t 12:31:04 \-v
-.LP 
-The quotes in this command are required to prevent the shell from expanding
-the `?' character before passing it into \fIevalresp\fR.  If the RESP files
-for HRV and ANMO are contained in the directory `/home/RESP/NEW', then this
-example will output eight files, called AMP.I U.HRV..B HE, PHASE.I U.HRV..B
-HE, AMP.I U.HRV..B HN, PHASE.I U.HRV..B HN and AMP.I U.ANMO..B HE, PHASE.I
-U.ANMO..B HE, AMP.I U.ANMO..B HN, PHASE.I U.ANMO..B HN for the HRV and ANMO
-BHE and BHN channels.
-
-A corresponding set of files would be output for the ANMO broadband channels
-and for all the HRV and ANMO long\-period high\-gain channels in the directory
-`/home/RESP/NEW'.  These files contain the amplitude and phase information,
-respectively.
-
-These can be used as input for any graphing programs capable of reading simple
-columns of data.
+\fIevalresp\fR calculates the complex frequency response of one or more channels
+at a given date and time, for a set of frequencies, and writes the result to
+ASCII files.  The channels are described either by FDSN StationXML, as served
+by the FDSN station web service, or by SEED RESP files, a legacy format
+as written by \fIrdseed\fR.
+.LP
+Run without arguments, \fIevalresp\fR prints a short usage message.
+.SH "ARGUMENTS"
+.TP
+.I STA_LIST
+Station codes or patterns.  Separate several with commas or spaces.
+.TP
+.I CHA_LIST
+Channel codes or patterns.  Separate several with commas or spaces.
+.TP
+.I YYYY
+Year of the evaluation.
+.TP
+.I DAY
+Day of the year, 1 to 366.
+.TP
+.I MIN_FREQ
+Lowest frequency in Hz.  The default is 1.0.
+.TP
+.I MAX_FREQ
+Highest frequency in Hz.  The default is \fIMIN_FREQ\fR.  If it is less than
+\fIMIN_FREQ\fR the two are swapped.
+.TP
+.I NFREQS
+Number of frequencies from \fIMIN_FREQ\fR to \fIMAX_FREQ\fR, inclusive.  The
+default is 1.
+.PP
+The channels evaluated are those that match the stations, channels, network and
+location and whose epoch includes the date and time given.  Options may follow
+the arguments in any order.
+.SH "OPTIONS"
+Most options also have a long form, given in parentheses.  Options are written
+with a single or a double leading hyphen.  Options that take a value read the
+next word.
+.TP
+.BR \-f " " \fIfile\fR " (" \-file )
+Input file, or a directory of RESP files.  See \fBINPUT\fR.
+.TP
+.BR \-u " " \fIunits\fR " (" \-units )
+Units of the response: \fBdis\fR (displacement), \fBvel\fR (velocity),
+\fBacc\fR (acceleration) or \fBdef\fR.  The default is \fBvel\fR.  With
+\fBdef\fR the response is output units over input units, exactly as the first
+stage of the response takes them in and the last stage gives them out.  This is
+the choice for sensors whose units cannot be converted to displacement,
+velocity or acceleration.  Pressure (Pa), temperature (degrees C) and magnetic
+flux density (T) responses are always evaluated in their own units and this
+option has no effect on them.
+.TP
+.BR \-t " " \fIHH:MM:SS\fR " (" \-time )
+Time of day, used to choose between responses that are effective on the same
+day.  The default is 00:00:00.
+.TP
+.BR \-s " " \fBlog\fR | \fBlin\fR " (" \-spacing )
+Spacing of the frequencies between \fIMIN_FREQ\fR and \fIMAX_FREQ\fR.  The
+default is \fBlog\fR, which cannot start at a frequency of zero.
+.TP
+.BR \-r " " \fBap\fR | \fBfap\fR | \fBcs\fR " (" \-response )
+Type of output; see \fBOUTPUT\fR.  The default is \fBap\fR, or \fBfap\fR when
+\fB\-stdio\fR is given.
+.TP
+.BR \-n " " \fInetwork\-id\fR " (" \-network )
+Network code or pattern.  The default is \fB*\fR.
+.TP
+.BR \-l " " \fIlocation\-id\fR " (" \-location )
+Location codes or patterns, separated by commas.  The default is \fB*\fR.
+A blank location, such as \fB\-l "  "\fR, matches only channels with an empty
+location code.
+.TP
+.BR \-stage " " \fIstart\fR " [" \fIstop\fR "]"
+Evaluate only stage \fIstart\fR, or the stages \fIstart\fR through \fIstop\fR,
+and ignore the others.  A \fIstart\fR below zero selects all stages, the
+default.  If the stages requested are not in the response, nothing is written
+and an error message is printed.
+.TP
+.BR \-stdio
+Write to standard output instead of files and, without \fB\-f\fR, read the
+input from standard input.
+.TP
+.BR \-use\-estimated\-delay " (" \-use\-delay )
+Use the estimated delay (field 7 of blockette 57) instead of the correction
+applied (field 8) when computing the phase of an asymmetric FIR filter.  Use
+this only if the correction applied is known to be wrong in the response.
+.TP
+.BR \-unwrap
+Unwrap the phase in \fBap\fR output.  Phase in \fBfap\fR output is always unwrapped.
+.TP
+.BR \-ts
+Use the total sensitivity (stage 0) instead of the product of the stage gains.
+Combined with \fB\-stage\fR this gives, for example, a sensor stage with the
+correct system gain, as SAC poles and zeros do.
+.TP
+.BR \-il ", " \-ii
+Interpolate a List blockette (55) to the requested frequencies; see
+\fBLIST BLOCKETTE\fR.  The two options are the same.
+.TP
+.BR \-b62_x " " \fIvalue\fR
+Value at which a polynomial blockette (62) is linearised; see \fBPOLYNOMIAL BLOCKETTE\fR.
+.TP
+.BR \-x " (" \-xml )
+Expect StationXML.  By default the format is detected.
+.TP
+.BR \-v " (" \-verbose )
+Print a summary of each response evaluated; see \fBMESSAGES\fR.
+.SH "INPUT"
+Two formats are read: FDSN StationXML (preferred) and SEED RESP (legacy).  A
+file is detected as StationXML if it is XML, and as RESP otherwise; \fB\-x\fR
+makes StationXML the only choice, and a file that is not XML then fails to parse.
+StationXML values are used at the precision of the file.
+.LP
+Where the input is read from depends on \fB\-f\fR.
+.TP
+\fB\-f\fR \fIfile\fR, a file
+Only that file is read, in either format.  It may hold any number of channels,
+and for RESP may be a concatenation of RESP files.
+.TP
+\fB\-f\fR \fIdirectory\fR
+Only that directory is searched, for RESP files named \fBRESP.NET.STA.LOC.CHA\fR
+or \fBRESP.NET.STA.CHA\fR, where the parts match the network, station, location
+and channel requested.  StationXML files in the directory are not read.
+.TP
+no \fB\-f\fR
+The current directory and then the directory named by the \fBSEEDRESP\fR
+environment variable are searched for RESP files as above.  When a channel is
+found in both, the file in the current directory is used.
+.PP
+Wildcards allow several files to match one request, so every matching file is
+searched.  A request that matches no channel writes nothing and still exits
+with status 0; an unreadable file or an unmatched directory search prints a
+message to standard error.
+.LP
+With \fB\-stdio\fR and no \fB\-f\fR, the input is read from standard input, in
+either format, and every matching channel is evaluated until the end of input.
+.LP
+To make RESP files from a SEED volume, run \fIrdseed\fR (version 4.16 or later)
+with its \fB\-R\fR option, or with \fB\-d\fR and answering yes when asked
+whether to write response files.
+\fIxml2resp\fR(1) converts StationXML to RESP.
+.SH "CHANNEL SELECTION"
+Stations, channels, networks and locations are matched as whole codes with
+glob patterns, not regular expressions:
+\fB*\fR matches any number of characters, \fB?\fR one character,
+\fB[abc]\fR and \fB[a\-z]\fR one character from a set or range, \fB[!abc]\fR
+one character not in it, and a backslash quotes the next character.
+A pattern is at most 64 characters long.  Quote patterns from the shell, for
+example \fB'BH?'\fR, so that the shell does not expand them.
+.LP
+Every combination of the stations, channels and locations listed is
+requested, and each channel that matches one of them and is effective at the
+date and time given is evaluated.  If more than one entry of a channel is
+effective then, the shortest is used and a warning is printed.
+.LP
+A network of \fB''\fR, \fB'??'\fR or \fB'*'\fR matches a channel that has no
+network code.
+.SH "OUTPUT"
+Each channel evaluated is written to its own files, named from its network,
+station, location and channel codes.  The location part is empty if the channel
+has none, as in \fBAMP.Z.CGV..HYZ\fR.  Frequencies are in Hz and numbers are in
+the form 1.000000E\-03.  Existing files are overwritten.
+.TP
+\fB\-r ap\fR
+\fBAMP.NET.STA.LOC.CHA\fR holds the amplitude and \fBPHASE.NET.STA.LOC.CHA\fR the
+phase in degrees, each as two columns: frequency and value.
+.TP
+\fB\-r fap\fR
+\fBFAP.NET.STA.LOC.CHA\fR holds three columns: frequency, amplitude and
+unwrapped phase.
+.TP
+\fB\-r cs\fR
+\fBSPECTRA.NET.STA.LOC.CHA\fR holds three columns: frequency, and the real and
+imaginary parts of the response.
+.PP
+With \fB\-stdio\fR the same text is written to standard output, each channel
+preceded by a banner line naming it.
+.PP
+The response is that of the whole channel, from the input of the first stage
+to the output of the last, evaluated in the units chosen with \fB\-u\fR.
+.SH "MESSAGES"
+Errors, warnings and, with \fB\-v\fR, summaries of each response are written to
+standard error, each with a date and a level, so they never mix with output on
+standard output.
+.SH "EXIT STATUS"
+0 if the evaluation succeeded, including when no channel matched; otherwise
+non\-zero, with a message on standard error.
+The values are 1 for a memory error, 2 for an input or output error such as an
+unreadable file, 3 for invalid input such as a bad argument, 4 for an internal error,
+5 for a file that cannot be parsed, and 7 for a response that fails validation.
+.SH "ENVIRONMENT"
+.TP
+.B SEEDRESP
+A directory searched for RESP files when \fB\-f\fR is not given.
+.SH "RESPONSE EVALUATION"
+.SS "Filter sequence"
+A response is a cascade of stages.  The first filter of a stage is one of:
+a Laplace or analog pole\-zero filter, an IIR pole\-zero filter, a FIR filter
+(symmetric or asymmetric), an IIR coefficients filter, a List (generic
+response) blockette, or a stand\-alone gain, which gives the sensitivity of the
+whole sequence (stage 0).  A stage is normally followed by a gain, and has a
+decimation blockette if it decimates.  The order of the blockettes within a
+stage does not matter; they are put in the order evalresp expects.
+.LP
+For a single stage response the gain may be given as stage 0 alone, since it is
+the same as the stage 1 gain.  A channel made only of gain stages evaluates to its gain.
+.LP
+The stage numbers must be in sequence, and a break in the sequence makes the
+response invalid.  The output units of a stage must match the input units of
+the next, or the response is rejected.  Stages that are only a gain have no
+units and are skipped in this comparison: the units of the stage before one
+are compared with those of the stage after it.
+.SS "SEED conventions"
+Since July 2007 SEED requires FIR coefficients to be listed in forward order,
+so that a minimum\-phase filter, which is asymmetric, has its largest values at
+the start.  It also requires the estimated delay and correction applied of
+blockette 57 to be positive and nearly equal.  evalresp needs these
+conventions to evaluate a response correctly.  A response that does not follow
+them gives wrong results, which may modify data in subtle ways when applied to
+a time series.
+.SS "FIR filters"
+A FIR filter whose delay correction is null is evaluated with no phase shift,
+even if it is asymmetric.  Several FIR filters in one stage are joined
+into one in the order read: they are the continuation blockettes SEED uses when
+the coefficients, more than 415 of them, do not fit in one blockette.  The
+filter in the second blockette is assumed to have the same input sample interval
+as the first.  FIR filters that are not normalised to 1 at frequency zero are
+normalised.
+.LP
+The delay of an asymmetric FIR filter is the correction applied minus the
+calculated delay, or the estimated delay if \fB\-use\-estimated\-delay\fR is given.
+The delay is zero for all other filters.
+.SS "IIR filters"
+IIR filters given as coefficients, which may have a phase shift, are supported.
+The coefficients of one stage must be in one blockette.
+.SS "LIST BLOCKETTE"
+A List blockette (55) gives amplitude and phase at a set of frequencies and is
+supported only as stage 1, optionally with a stage 0 gain, and not mixed with
+other stages.  By default the frequencies requested are ignored and output is
+given at the frequencies of the blockette.
+.LP
+With \fB\-il\fR or \fB\-ii\fR the blockette is instead interpolated to the
+frequencies requested.  The interpolation is a cubic spline in log10 of the
+frequency and of the amplitude, so that it cannot overshoot or go negative on
+a steep roll\-off; it falls back to linear interpolation, with a warning, if the
+list has a frequency or amplitude that is not positive.  Requested frequencies
+outside the range of the blockette are dropped, with a warning.  This changes
+the output only for responses with a List blockette.
+.SS "POLYNOMIAL BLOCKETTE"
+A polynomial blockette (62) cannot generally be a Fourier response because it
+is non\-linear.  There are two exceptions.  If the polynomial is linear
+(y = a x + b), the offset is ignored and the slope b is a gain independent of
+frequency, with a phase of 0 degrees if b is positive and 180 degrees if it is
+negative.  Otherwise, for a signal that uses only a small part of the curve, the
+tangent at the signal value is used as the linear case.
+.LP
+For f(x) = a0 + a1 x + a2 x^2 + ... + an x^n the slope at X is the sum, for i = 1
+to n, of i * ai * X^(i\-1).  X is given with \fB\-b62_x\fR, in counts if the
+blockette is the only one in the response and in volts if it is part of a cascade.
+The amplitude of the result depends on it.  \fB\-b62_x\fR is not needed for
+responses without a polynomial blockette.
+.SS "Unexpected cases"
+.IP \(bu 2
+Stand\-alone FIR filters, with no sample rate or gain, are discarded.  Only
+that stage is dropped; the rest of the response is evaluated.
+.IP \(bu
+An IIR coefficients filter in a stage with more than one blockette 54 is not
+supported.
+.IP \(bu
+A List stage mixed with other stages in one response is not supported.
+.SH "EXAMPLES"
+To evaluate channel BH1 of station ANMO on day 100 of 2016, at 50 frequencies
+spaced logarithmically from 0.01 to 10 Hz:
+.IP
+evalresp ANMO BH1 2016 100 0.01 10 50 \-f station.xml
+.LP
+If the file holds the channel at locations 00 and 10, this writes
+AMP.IU.ANMO.00.BH1, PHASE.IU.ANMO.00.BH1, AMP.IU.ANMO.10.BH1 and
+PHASE.IU.ANMO.10.BH1.  To evaluate only location 00, in complex spectra:
+.IP
+evalresp ANMO BH1 2016 100 0.01 10 50 \-f station.xml \-l 00 \-r cs
+.LP
+To evaluate all the broadband and long\-period channels of two stations from a
+directory of legacy RESP files, with a summary of each response:
+.IP
+evalresp HRV,ANMO 'BH?,LH?' 1992 231 0.001 10 100 \-f /home/RESP/NEW \-t 12:31:04 \-v
+.LP
+The quotes stop the shell from expanding the question marks.  This writes an
+AMP and a PHASE file for each of the channels found, such as
+AMP.IU.HRV..BHE and PHASE.IU.HRV..BHE.
+.LP
+To write amplitude and phase to a pipe:
+.IP
+evalresp ANMO BHZ 2010 1 0.001 10 100 \-stdio < RESP.IU.ANMO.00.BHZ
+.LP
+The files can be read by any graphing program that reads columns of numbers.
 .SH "SEE ALSO"
-\fIrdseed(dmc)\fR, \fIxml2resp\fR.
+\fIxml2resp\fR(1), \fIrdseed\fR(1)

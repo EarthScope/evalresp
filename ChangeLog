@@ -54,6 +54,8 @@ Unreleased
 
 	* IMPROVED: Build with -O2 by default when CFLAGS is not set, and with /O2 on Windows.
 
+	* IMPROVED: Rewrite the man pages and API introduction to match current behavior.
+
 	* CHANGED: Removed the autotools build (configure.ac, Makefile.am,
 	MKDIST).  The GNU make build (Makefile, Build.config) is now the only
 	Unix build, alongside Makefile.nmake for Windows.  Both systems wrote

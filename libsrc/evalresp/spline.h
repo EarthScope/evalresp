@@ -2,13 +2,8 @@
 #define __EVALRESP_EVR_SPLINE_H__
 #include <evalresp_log/log.h>
 /**
- * @mainpage Introduction
- *
- * @section purpose Purpose
- *
- * Implements a private cubic spline interpolation interface for evalresp.
- *
- * @section history History
+ * @file
+ * @brief Implements a private cubic spline interpolation interface for evalresp.
  *
  * Written by <a href="http://www.isti.com/">Instrumental Software
  * Technologies, Inc.</a> (ISTI) in 2017.

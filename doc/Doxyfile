@@ -19,9 +19,6 @@ SORT_GROUP_NAMES = NO
 SHOW_USED_FILES = NO
 SHOW_FILES = NO
 INPUT = intro_dox.h \
-        ../libsrc/evalresp/public_api.h \
-        ../libsrc/evalresp/public_compat.h \
-        ../libsrc/evalresp/private.h \
         ../src \
         ../libsrc
 FILE_PATTERNS = *.h *.c
@@ -35,7 +32,6 @@ INLINE_SOURCES = NO
 VERBATIM_HEADERS = YES
 
 ALPHABETICAL_INDEX = YES
-COLS_IN_ALPHA_INDEX = 5
 
 GENERATE_HTML = NO
 
@@ -46,7 +42,6 @@ EXTRA_PACKAGES = geometry
 PDF_HYPERLINKS = YES
 USE_PDFLATEX = YES
 LATEX_HIDE_INDICES = NO
-LATEX_SOURCE_CODE = NO
 
 GENERATE_MAN = NO
 
@@ -58,8 +53,8 @@ EXPAND_ONLY_PREDEF = YES
 EXPAND_AS_DEFINED = FC_FUNC
 EXCLUDE_SYMBOLS = FC_FUNC
 
+# Graphs need Graphviz (dot); without it, set HAVE_DOT to NO
 HAVE_DOT = YES
-CLASS_DIAGRAMS = YES
 CLASS_GRAPH = YES
 COLLABORATION_GRAPH = YES
 GROUP_GRAPHS = YES
