@@ -4,6 +4,8 @@ Unreleased
 
 	* FIXED: Parse ResponseListElement entries in StationXML ResponseList stages.
 
+	* FIXED: Leak of the unit strings of StationXML ResponseList stages.
+
 	* FIXED: Leak of the pole node list when parsing StationXML PolesZeros
 	stages.
 

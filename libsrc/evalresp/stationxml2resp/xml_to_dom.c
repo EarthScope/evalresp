@@ -692,6 +692,8 @@ static int parse_response_list(evalresp_logger *log, mxml_node_t *node,
 static int free_response_list(x2r_response_list *response_list, int status) {
     if (response_list) {
         free(response_list->response_list_element);
+        status = free_units(&response_list->input_units, status);
+        status = free_units(&response_list->output_units, status);
     }
     return status;
 }
