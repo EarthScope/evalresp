@@ -2247,7 +2247,7 @@ int
 open_file (evalresp_logger *log, const char *filename, FILE **in)
 {
   int status = EVALRESP_OK;
-  if (!(*in = fopen (filename, "r")))
+  if (!(*in = fopen (filename, "rb")))
   {
     evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot open %s", filename);
     status = EVALRESP_IO;

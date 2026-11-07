@@ -15,6 +15,9 @@ Unreleased
 	* FIXED: Double-free and leak of stage unit strings when parsing RESP
 	channels, and a stack buffer overflow in the test_file_to_char unit test.
 
+	* FIXED: Read response files in binary mode so CRLF input is identical on
+	every platform.
+
 	* FIXED: libmxmlev.a no longer contains the stray main() from
 	mxmldoc.c, and public.h is now installed with the other evalresp
 	headers.
