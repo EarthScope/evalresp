@@ -2130,6 +2130,9 @@ read_channel_data (evalresp_logger *log, evalresp_options const *const options, 
 
   while (!(status = read_line (log, seed, ":", &blkt_no, &first_field, first_line)) && blkt_no != 50)
   {
+    /* unit strings not handed to a stage are still owned by tmp_stage */
+    free (tmp_stage->input_units_str);
+    free (tmp_stage->output_units_str);
     tmp_stage->input_units_str = NULL;
     tmp_stage->output_units_str = NULL;
 
@@ -2232,6 +2235,8 @@ read_channel_data (evalresp_logger *log, evalresp_options const *const options, 
         this_stage->output_units = tmp_stage->output_units;
         this_stage->input_units_str = tmp_stage->input_units_str;
         this_stage->output_units_str = tmp_stage->output_units_str;
+        tmp_stage->input_units_str = NULL;
+        tmp_stage->output_units_str = NULL;
         no_units = 0;
       }
 

@@ -83,12 +83,13 @@ START_TEST (test_file_to_char)
   int i;
   for (i = 0; i < 39; ++i)
     start[i] = seed[i];
-  start[40] = '\0';
+  start[39] = '\0';
   fail_if (strncmp (seed, "#\t\t<< IRIS SEED Reader, Release 4.16 >>", 39),
            "Bad start: '%s'", start);
-  char end[40];
+  char end[41];
   for (i = 0; i < 40; ++i)
     end[i] = seed[i + 192590 - 40];
+  end[40] = '\0';
   fail_if (strncmp (seed + 192590 - 40, "of calibrations:                0\r\n#\t\t\r\n", 40),
            "Bad end: '%s'", end);
 }

@@ -2,6 +2,19 @@ Unreleased
 
 	2026-11-07
 
+	* FIXED: Double-free and leak of stage unit strings when parsing RESP
+	channels, and a stack buffer overflow in the test_file_to_char unit test.
+
+	* FIXED: libmxmlev.a no longer contains the stray main() from
+	mxmldoc.c, and public.h is now installed with the other evalresp
+	headers.
+
+	* FIXED: Swapped sub-/super-diagonal coefficients in spline_cubic_set(),
+	which produced a spline with discontinuous first derivatives on
+	non-uniformly spaced knots, and the right-end not-a-knot boundary
+	condition test, which checked ibcbeg instead of ibcend.  Thanks to
+	@sajnag-web who reported these while porting the code to Go.
+
 	* CHANGED: Removed the autotools build (configure.ac, Makefile.am,
 	MKDIST).  The GNU make build (Makefile, Build.config) is now the only
 	Unix build, alongside Makefile.nmake for Windows.  Both systems wrote
@@ -14,16 +27,6 @@ Unreleased
 	* ADDED: "make -f Makefile check" builds and runs the C unit tests
 	(requires the check library and pkg-config), replacing "make check"
 	from autotools.  "make install" now honors DESTDIR for staged installs.
-
-	* FIXED: libmxmlev.a no longer contains the stray main() from
-	mxmldoc.c, and public.h is now installed with the other evalresp
-	headers.
-
-	* FIXED: Swapped sub-/super-diagonal coefficients in spline_cubic_set(),
-	which produced a spline with discontinuous first derivatives on
-	non-uniformly spaced knots, and the right-end not-a-knot boundary
-	condition test, which checked ibcbeg instead of ibcend.  Thanks to
-	@sajnag-web who reported these while porting the code to Go.
 
 	* IMPROVED: Blockette 55 (List) interpolation (-il, -ii) is now done
 	against log10(frequency), with amplitude interpolated as log10(amplitude).

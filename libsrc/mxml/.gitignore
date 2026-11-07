@@ -1,2 +1,3 @@
 
-!*.in
+# copied from config.h.unix by the Makefile
+config.h
