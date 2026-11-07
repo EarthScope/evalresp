@@ -38,6 +38,9 @@ Unreleased
 	condition test, which checked ibcbeg instead of ibcend.  Thanks to
 	@sajnag-web who reported these while porting the code to Go.
 
+	* FIXED: Read StationXML from standard input with -stdio.  Thanks to
+  @peacocks for reporting.
+
 	* FIXED: Reject RESP reference stages with no responses instead of reading an
   uninitialized blockette, and clear MSVC sign, uninitialized-variable and lib warnings.
 
@@ -80,7 +83,7 @@ Unreleased
 
 	* ADDED: tests/c/check_spline.c unit tests for the above.
 
-  * ADDED: Add GitHub Actions workflow that builds and runs the tests on Linux,
+	* ADDED: Add GitHub Actions workflow that builds and runs the tests on Linux,
 	macOS and Windows.
 
 	* Replace the bundled V8 regex with a reentrant glob matcher and number scanners.
