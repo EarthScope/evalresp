@@ -14,7 +14,7 @@
                        'find_files()' function (changed second "zero" to
                        "one").
     2/25/2010 -- [ET]  Convert 'get_names()' used under non-Windows to use
-                       to use the system glob() to find files instead of 
+                       to use the system glob() to find files instead of
                forking a child to run 'ls' in a sub-process.
     5/30/203 -- [IGD] Modified get_names() a bit more to properly process
                       cases with environmental variable SEEDRESP
@@ -40,7 +40,7 @@
 #ifdef _WIN32
 #include <direct.h> /* define macro used below: */
 #include <io.h>     /* include header files for directory functions */
-#define S_ISDIR(m) ((m)&S_IFDIR)
+#define S_ISDIR(m) ((m) & S_IFDIR)
 #endif
 
 // TODO - change mode to enum
@@ -201,10 +201,10 @@ get_names (char *in_file, struct matched_files *files, evalresp_logger *log)
   char *second_infile = NULL;
 
   /* IGD 05/30/2013: in_file can contain one token (pathname with possible widlcards)
-     * or two tokens pathname + default pathname pointed by SEEDRESP environmental variable.
-     * When ET modified this function SEEDRESP case was forgoten. I am restoring it adding strtok
-     * function
-     */
+   * or two tokens pathname + default pathname pointed by SEEDRESP environmental variable.
+   * When ET modified this function SEEDRESP case was forgoten. I am restoring it adding strtok
+   * function
+   */
 
   first_infile = strtok (in_file, " "); /*IGD 05/30/2013 Assumed to be always present */
 

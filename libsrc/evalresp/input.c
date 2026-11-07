@@ -5,9 +5,9 @@
 #include <string.h>
 #include <time.h>
 
+#include "./globmatch.h"
 #include "./input.h"
 #include "./private.h"
-#include "./globmatch.h"
 #include "evalresp/constants.h"
 #include "evalresp/public_api.h"
 #include "evalresp/stationxml2resp.h"
@@ -472,7 +472,7 @@ parse_units (evalresp_logger *log, evalresp_options const *const options, char *
   {
     *units = UNDEF_UNITS;
     evalresp_log (log, EV_WARN, EV_WARN,
-                  "units found ('%s') cannot be converted to %s", line, evalresp_unit_string(options->unit));
+                  "units found ('%s') cannot be converted to %s", line, evalresp_unit_string (options->unit));
     status = EVALRESP_PAR;
   }
 
@@ -488,14 +488,14 @@ read_units_first_line_known (evalresp_logger *log, evalresp_options const *const
 
   //*input_units = check_units (channel, line, log);
   if (input_units_str && line)
-    *input_units_str = strdup(line);
+    *input_units_str = strdup (line);
   parse_units (log, options, line, channel, input_units);
 
   if (!(status = find_line (log, seed, ":", blkt_read, (*check_fld)++, line)))
   {
     //*output_units = check_units (channel, line, log);
     if (output_units_str && line)
-      *output_units_str = strdup(line);
+      *output_units_str = strdup (line);
     parse_units (log, options, line, channel, output_units);
   }
 
@@ -711,7 +711,7 @@ read_pz (evalresp_logger *log, evalresp_options const *const options, const char
     {
       return status;
     }
-    //curr_seq_no = stage_ptr->sequence_no;
+    // curr_seq_no = stage_ptr->sequence_no;
   }
 
   if ((status = read_units (log, options, seed, blkt_read, &check_fld, channel,
@@ -924,7 +924,7 @@ read_iir_coeff (evalresp_logger *log, evalresp_options const *const options, con
     {
       return status;
     }
-    //curr_seq_no = stage_ptr->sequence_no;
+    // curr_seq_no = stage_ptr->sequence_no;
   }
 
   if ((status = read_units (log, options, seed, blkt_read, &check_fld, channel,
@@ -1062,7 +1062,7 @@ read_coeff (evalresp_logger *log, evalresp_options const *const options, const c
     {
       return status;
     }
-    //curr_seq_no = stage_ptr->sequence_no;
+    // curr_seq_no = stage_ptr->sequence_no;
   }
 
   if ((status = read_units (log, options, seed, blkt_read, &check_fld, channel,
@@ -1170,7 +1170,7 @@ read_list (evalresp_logger *log, evalresp_options const *const options, const ch
     {
       return status;
     }
-    //curr_seq_no = stage_ptr->sequence_no;
+    // curr_seq_no = stage_ptr->sequence_no;
     check_fld++;
     if ((status = find_line (log, seed, ":", blkt_read, check_fld++, line)))
     {
@@ -1355,7 +1355,7 @@ read_generic (evalresp_logger *log, evalresp_options const *const options, const
     {
       return status;
     }
-    //curr_seq_no = stage_ptr->sequence_no;
+    // curr_seq_no = stage_ptr->sequence_no;
     check_fld++;
     if ((status = find_line (log, seed, ":", blkt_read, check_fld++, line)))
     {
@@ -1640,7 +1640,7 @@ read_fir (evalresp_logger *log, evalresp_options const *const options, const cha
     {
       return status;
     }
-    //curr_seq_no = stage_ptr->sequence_no;
+    // curr_seq_no = stage_ptr->sequence_no;
     check_fld += 2;
     if ((status = find_field (log, seed, ":", blkt_read, check_fld++, 0, field)))
     {
@@ -1782,7 +1782,7 @@ read_ref (evalresp_logger *log, evalresp_options const *const options, const cha
     /* set the stage sequence number and the pointer to the first blockette */
 
     this_stage->sequence_no = stage_num;
-    //curr_seq_no = this_stage->sequence_no;
+    // curr_seq_no = this_stage->sequence_no;
 
     /* then the number of responses in this stage */
 
@@ -1957,7 +1957,7 @@ read_polynomial (evalresp_logger *log, evalresp_options const *const options, co
     {
       return status;
     }
-    //curr_seq_no = stage_ptr->sequence_no;
+    // curr_seq_no = stage_ptr->sequence_no;
   }
 
   if ((status = read_units (log, options, seed, blkt_read, &check_fld, channel,
@@ -2426,8 +2426,8 @@ earlier (evalresp_channel *a, evalresp_channel *b)
 {
   int open_a, open_b;
   evalresp_datetime a_time, b_time;
-  open_a = !strncasecmp (a->end_t, NO_ENDING_TIME, (sizeof(NO_ENDING_TIME)-1));
-  open_b = !strncasecmp (b->end_t, NO_ENDING_TIME, (sizeof(NO_ENDING_TIME)-1));
+  open_a = !strncasecmp (a->end_t, NO_ENDING_TIME, (sizeof (NO_ENDING_TIME) - 1));
+  open_b = !strncasecmp (b->end_t, NO_ENDING_TIME, (sizeof (NO_ENDING_TIME) - 1));
 
   if (open_a || open_b)
   {
@@ -2481,7 +2481,7 @@ duration (evalresp_channel *channel)
 {
   evalresp_datetime begin, end;
 
-  if (!strncasecmp (channel->end_t, NO_ENDING_TIME, (sizeof(NO_ENDING_TIME)-1)))
+  if (!strncasecmp (channel->end_t, NO_ENDING_TIME, (sizeof (NO_ENDING_TIME) - 1)))
   {
     return INDEFINITE;
   }
@@ -2499,7 +2499,7 @@ in_epoch (evalresp_datetime *requirement, const char *beg_t, const char *end_t)
   evalresp_datetime start_time, end_time;
 
   parse_datetime (beg_t, &start_time);
-  if (strncasecmp (end_t, NO_ENDING_TIME, (sizeof(NO_ENDING_TIME)-1)))
+  if (strncasecmp (end_t, NO_ENDING_TIME, (sizeof (NO_ENDING_TIME) - 1)))
   {
     parse_datetime (end_t, &end_time);
     return ((timecmp (&start_time, requirement) <= 0 && timecmp (&end_time, requirement) > 0));

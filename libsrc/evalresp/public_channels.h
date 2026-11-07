@@ -154,7 +154,8 @@ typedef struct evalresp_refer_s
 typedef struct evalresp_blkt_s
 {
   int type; /**< Blockette type. */
-  union {
+  union
+  {
     evalresp_pole_zero pole_zero;    /**< Poles and zeros structure. */
     evalresp_coeff coeff;            /**< Coefficients structure. */
     evalresp_fir fir;                /**< FIR structure. */
@@ -242,7 +243,7 @@ typedef struct evalresp_channel_s
  * @public
  * @ingroup evalresp_public_low_level_channel
  * @brief A collection of channel structures.
-*/
+ */
 typedef struct evalresp_channels_s
 {
   int nchannels;

@@ -70,7 +70,8 @@ typedef struct evalresp_logger_s
  * @ingroup evalresp_private_log
  * @brief an enum of the different logging levels to expect in evalresp
  */
-typedef enum log_level_ref_e {
+typedef enum log_level_ref_e
+{
   EV_ERROR = 0, /**< level when reporting an error */
   EV_WARN,      /**< level when a warning occurs */
   EV_INFO,      /**< the level that information should be presented to user */
@@ -81,7 +82,7 @@ typedef enum log_level_ref_e {
  * @private
  * @ingroup evalresp_private_log
  * @brief Array of the log levels in plain text.
- * 
+ *
  * Using the values from log_level_ref will directly correspond to the
  * plaintext. Eg, log_level_strs[ERROR] == "ERROR".
  */
@@ -97,7 +98,7 @@ extern const char *log_level_strs[];
  * This function is used in the evalresp library to allow external developers
  * to pass their own logging function as well as data needed for the function
  * to operate.
- * 
+ *
  * Example use of how to use, note the data is null because the log_func
  * requires data to be null in this case.
 

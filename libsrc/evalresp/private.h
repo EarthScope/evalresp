@@ -127,7 +127,7 @@
  * @author 02/03/01: IGD: new unit pressure added.
  * @author 08/21/06: IGD: new unit TESLA added.
  * @author 10/03/13: IGD: new units CENTIGRADE added.
-*/
+ */
 enum units
 {
   UNDEF_UNITS, /**< Undefined. */
@@ -285,7 +285,7 @@ int is_int (const char *test, evalresp_logger *log);
  * @param[in] log Logging structure.
  * @returns 0 if false.
  * @returns >0 if true.
-*/
+ */
 int is_real (const char *test, evalresp_logger *log);
 
 /* routines used to create a list of files matching the users request */
@@ -759,7 +759,7 @@ int add_null (char *s, int len, char where);
  * @param[in,out] second_blkt Second filter.
  * @param[in] log Logging structure.
  */
-//void merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log);
+// void merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log);
 
 /**
  * @private
@@ -779,7 +779,7 @@ int add_null (char *s, int len, char where);
  * @author 07/07/00: Ilya Dricker IGD (i.dricker@isti.com): Modified from
  *         merge_coeffs() for 3.2.17 of evalresp.
  */
-//void merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log);
+// void merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_log_t *log);
 
 /**
  * @private

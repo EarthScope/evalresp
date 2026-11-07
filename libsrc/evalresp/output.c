@@ -280,7 +280,7 @@ evalresp_channel_to_log (evalresp_logger *log, evalresp_options const *const opt
 
   evalresp_log (log, EV_INFO, 0, "   documented input units: %s", (in_units_str) ? in_units_str : "None");
   evalresp_log (log, EV_INFO, 0, "   documented output units: %s", (out_units_str) ? out_units_str : "None");
-  evalresp_log (log, EV_INFO, 0, "   requested units: %s", evalresp_unit_string(options->unit));
+  evalresp_log (log, EV_INFO, 0, "   requested units: %s", evalresp_unit_string (options->unit));
 
   evalresp_log (log, EV_INFO, 0, "   computed sens=%.5E (reported=%.5E) @ %.5E Hz",
                 channel->calc_sensit, channel->sensit, channel->sensfreq);

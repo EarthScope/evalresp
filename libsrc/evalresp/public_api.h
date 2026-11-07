@@ -407,7 +407,8 @@ void evalresp_free_filter (evalresp_filter **filter);
  * @ingroup evalresp_public_options
  * @brief Enumeration of output formats (FAP, complex, etc - can require multiple files).
  */
-typedef enum {
+typedef enum
+{
   evalresp_ap_output_format,     /**< Two files, AMP and PHASE. */
   evalresp_fap_output_format,    /**< One file, FAP. */
   evalresp_complex_output_format /**< One file, COMPLEX. */
@@ -418,7 +419,8 @@ typedef enum {
  * @ingroup evalresp_public_options
  * @brief Enumeration of response units (acceleration, velocity or displacement).
  */
-typedef enum {
+typedef enum
+{
   evalresp_file_unit,         /**< Use the units in the input file. */
   evalresp_displacement_unit, /**< Displacement units. */
   evalresp_velocity_unit,     /**< Velocity units (the default). */
@@ -668,7 +670,8 @@ int evalresp_channels_to_responses (evalresp_logger *log, evalresp_channels *cha
  * @ingroup evalresp_public_low_level_output
  * @brief Enumeration of output file formats (for a single file).
  */
-typedef enum {
+typedef enum
+{
   evalresp_fap_file_format,       /**< A file containing frequency, amplitude and phase columns. */
   evalresp_amplitude_file_format, /**< A file containing frequency and amplitude columns. */
   evalresp_phase_file_format,     /**< A file containing frequency and phase columns. */

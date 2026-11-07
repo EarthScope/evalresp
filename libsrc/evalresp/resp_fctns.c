@@ -763,7 +763,7 @@ interpolate_list_blockette (double **frequency_ptr,
                   "All requested freqencies out of range\n");
     return EVALRESP_VAL;
   }
-  else if (i > 0)        /* if freq entries were skipped then */
+  else if (i > 0) /* if freq entries were skipped then */
   {
     req_num_freqs -= i; /* subtract # of freqs clipped from beg */
   }

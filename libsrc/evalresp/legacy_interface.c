@@ -69,10 +69,10 @@ int
 use_estimated_delay (int flag)
 {
   /* WE USE THOSE WEIRD magic numbers here because
-     * there is a chance that use_delay_flag is not
-     * defined: in user program which uses evresp()
-     * when use_estimated_delay() is not used before evresp().
-     */
+   * there is a chance that use_delay_flag is not
+   * defined: in user program which uses evresp()
+   * when use_estimated_delay() is not used before evresp().
+   */
   int magic_use_delay = 35443647;
   int magic_dont_use_delay = -90934324;
   static int use_delay_flag = FALSE;
@@ -93,12 +93,14 @@ convert_responses_to_response_chain (evalresp_responses *responses, evalresp_res
   int nresp;
 
   *first_resp = NULL;
-  if(!responses) {
-      return -1;
+  if (!responses)
+  {
+    return -1;
   }
   nresp = responses->nresponses;
-  if(nresp == 0 || !responses->responses) {
-      return -1;
+  if (nresp == 0 || !responses->responses)
+  {
+    return -1;
   }
   for (i = 1; i < nresp; i++)
   {
