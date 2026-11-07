@@ -514,6 +514,7 @@ static int parse_poles_zeros_poles(evalresp_logger *log, mxml_node_t *node,
         }
     }
 
+    free_nodelist(&poles);
     return status;
 }
 

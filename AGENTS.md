@@ -8,7 +8,7 @@ Project instructions for this repo. These override default behavior.
 
 Reading git state (`git status`, `git diff`, `git log`) is always fine.
 
-## After applying a fix, do two things unprompted
+## After applying a fix, do these things unprompted
 
 1. Report a single-line commit message: imperative mood. Say what the change does,
    not how it was arrived at.
@@ -18,6 +18,8 @@ Reading git state (`git status`, `git diff`, `git log`) is always fine.
    If the top section already carries a released version,
    start a new `Unreleased` section above it,
    for today.
+
+3. If this fix can be tested, add a regression test to the test suite.
 
 ## Code comments
 
