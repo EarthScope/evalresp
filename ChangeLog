@@ -1,6 +1,23 @@
 Unreleased
 
-	2026-11-06
+	2026-11-07
+
+	* CHANGED: Removed the autotools build (configure.ac, Makefile.am,
+	MKDIST).  The GNU make build (Makefile, Build.config) is now the only
+	Unix build, alongside Makefile.nmake for Windows.  Both systems wrote
+	to the same Makefile names and produced different libraries; autotools
+	also failed to build with current compilers (-std=gnu23, -Werror).
+	Build and install as before with "make -f Makefile [install]".
+	Shared libraries and "make dist" are no longer provided; use
+	"git archive" for source tarballs.
+
+	* ADDED: "make -f Makefile check" builds and runs the C unit tests
+	(requires the check library and pkg-config), replacing "make check"
+	from autotools.  "make install" now honors DESTDIR for staged installs.
+
+	* FIXED: libmxmlev.a no longer contains the stray main() from
+	mxmldoc.c, and public.h is now installed with the other evalresp
+	headers.
 
 	* FIXED: Swapped sub-/super-diagonal coefficients in spline_cubic_set(),
 	which produced a spline with discontinuous first derivatives on

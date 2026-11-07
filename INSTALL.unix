@@ -6,10 +6,12 @@ steps:
 
    * The standard C development tools
 
-   * To run tests, you also need the check library for C unit tests.
-     Again, this is usually available via a package manager.  You will
-     also need to add --enable-check when running configure (see
-     below).
+   * To run tests, you also need the check library for C unit tests
+     (and pkg-config to locate it).  Both are usually available via a
+     package manager.  Once evalresp is built (see below), run the
+     tests with
+
+       make -f Makefile check
 
 1. Uncompress and untar the distribution file.  
  

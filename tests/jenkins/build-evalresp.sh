@@ -12,14 +12,9 @@ fi
 
 rm -fr install
 
-# autoconf approach
-#rm -fr m4; mkdir m4  # needed by ancient aclocal on jenkins machine
-#autoreconf -fi
-#./configure --prefix `pwd`/install --enable-check
-#make
-#make install
-
-# standalone makefile approach
-sed -i -e 's|^INSTALL_DIR.*|INSTALL_DIR = $(PWD)/install|' Build.config
-make -f Makefile
-make -f Makefile install
+# Pass INSTALL_DIR on the command line (overrides Build.config) rather than
+# editing Build.config with sed -i, which is not portable (leaves
+# Build.config-e on macOS) and dirties a tracked file.
+INSTALL_DIR="$(pwd)/install"
+make -f Makefile INSTALL_DIR="${INSTALL_DIR}"
+make -f Makefile INSTALL_DIR="${INSTALL_DIR}" install

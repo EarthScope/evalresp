@@ -14,14 +14,20 @@ export
 .PHONY: all
 .PHONY: clean
 .PHONY: install
+.PHONY: check
 
 all:
 	$(MAKE) -C $(LIB_SRC_DIR) -f Makefile
 	$(MAKE) -C $(BIN_SRC_DIR) -f Makefile
 
+# unit tests; requires the "check" library (found via pkg-config)
+check: all
+	$(MAKE) -C tests/c -f Makefile check
+
 clean:
 	$(MAKE) -C $(LIB_SRC_DIR) -f Makefile clean
 	$(MAKE) -C $(BIN_SRC_DIR) -f Makefile clean
+	$(MAKE) -C tests/c -f Makefile clean
 
 install:
 	$(MAKE) -C $(LIB_SRC_DIR) -f Makefile install

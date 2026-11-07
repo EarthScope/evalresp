@@ -4,9 +4,6 @@ To build and run these tests outside of Jenkins do something like:
 ```
   git clone https://github.com/earthscope/evalresp.git
   cd evalresp
-  autoreconf -fi
-  touch libtoolT
-  ./configure --enable-check
   ./tests/jenkins/build-evalresp.sh
   ./tests/jenkins/clean-test-dirs.sh
   # uncomment these line for automated tests (large amounts of data)
@@ -33,8 +30,8 @@ will have failed):
 
 This will create zip files in the target directory.
 
-To create an export tarball (assuming `build-evalresp.sh` was run):
+To create an export tarball (replace `X.Y.Z` with the version):
 
 ```
-  make dist
+  git archive --format=tar.gz --prefix=evalresp-X.Y.Z/ -o evalresp-X.Y.Z.tar.gz HEAD
 ```
