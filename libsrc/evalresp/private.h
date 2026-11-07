@@ -80,6 +80,7 @@
 #include <stdio.h>
 
 #include "evalresp/constants.h"
+#include "evalresp/log_context.h"
 #include "evalresp/public_api.h"
 #include "evalresp/public_channels.h"
 #include "evalresp/public_responses.h"

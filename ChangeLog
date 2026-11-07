@@ -2,6 +2,8 @@ Unreleased
 
 	2026-11-07
 
+	* Prefix warnings and errors with the file and channel they concern
+
 	* IMPROVED: Describe -il and -ii in the usage text as synonyms.
 
 	* FIXED: Channels made only of gain stages evaluate to their gain instead of zero.

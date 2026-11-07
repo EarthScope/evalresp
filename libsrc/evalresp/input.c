@@ -2569,7 +2569,10 @@ collect_channels (evalresp_logger *log, const char *seed_or_xml,
       {
         if (!(status = read_channel_header (log, &read_ptr, first_line, channel)))
         {
-          if (!(status = read_channel_data (log, options, &read_ptr, first_line, channel)))
+          evalresp_log_context ctx;
+          evalresp_log_context_init (&ctx, log, "%s.%s.%s.%s", channel->network,
+                                     channel->staname, channel->locid, channel->chaname);
+          if (!(status = read_channel_data (&ctx.logger, options, &read_ptr, first_line, channel)))
           {
             if (!(status = add_channel (log, channel, *channels)))
             {
@@ -2596,12 +2599,30 @@ same_channel (evalresp_channel *a, evalresp_channel *b)
   return !strcmp (a->network, b->network) && !strcmp (a->staname, b->staname) && !strcmp (a->locid, b->locid) && !strcmp (a->chaname, b->chaname);
 }
 
+/* Warn that overlapping entries matched the channel, unless the previous
+ * warning was for the same channel. */
+static void
+warn_shortest_used (evalresp_logger *log, const evalresp_channel *channel, char *last, size_t size)
+{
+  char sncl[NETLEN + STALEN + LOCIDLEN + CHALEN + 4];
+
+  (void)_evalresp_snprintf (sncl, sizeof (sncl), "%s.%s.%s.%s",
+                            channel->network, channel->staname, channel->locid, channel->chaname);
+  if (strncmp (sncl, last, size))
+  {
+    evalresp_log (log, EV_WARN, EV_WARN,
+                  "%s: Two or more entries match the same SNCL and date; the shortest was used", sncl);
+    (void)_evalresp_snprintf (last, size, "%s", sncl);
+  }
+}
+
 /* WARNING - for efficiency this mutates channels_in (deleting channels) */
 int
 filter_channels (evalresp_logger *log, const evalresp_filter *filter,
                  evalresp_channels *channels_in, evalresp_channels **channels_out)
 {
-  int status = EVALRESP_OK, i, j, best_match, warn_user = 0;
+  int status = EVALRESP_OK, i, j, best_match;
+  char last_warned[NETLEN + STALEN + LOCIDLEN + CHALEN + 4] = "";
   evalresp_channel *candidate, *other;
 
   if (!(status = evalresp_alloc_channels (log, channels_out)))
@@ -2640,7 +2661,7 @@ filter_channels (evalresp_logger *log, const evalresp_filter *filter,
                   if (in_epoch (filter->datetime, other->beg_t, other->end_t) &&
                       duration (candidate) >= duration (other))
                   {
-                    warn_user = 1;
+                    warn_shortest_used (log, candidate, last_warned, sizeof (last_warned));
                     best_match = 0;
                   }
                 }
@@ -2655,7 +2676,10 @@ filter_channels (evalresp_logger *log, const evalresp_filter *filter,
           if (best_match) /* candidate won */
           {
             /* only check channels that we will output */
-            if (!(status = check_channel (log, candidate)))
+            evalresp_log_context ctx;
+            evalresp_log_context_init (&ctx, log, "%s.%s.%s.%s", candidate->network,
+                                       candidate->staname, candidate->locid, candidate->chaname);
+            if (!(status = check_channel (&ctx.logger, candidate)))
             {
               if (!(status = add_channel (log, candidate, *channels_out)))
               {
@@ -2670,12 +2694,6 @@ filter_channels (evalresp_logger *log, const evalresp_filter *filter,
         }
       }
     }
-  }
-
-  if (!status && warn_user)
-  {
-    evalresp_log (log, EV_WARN, EV_WARN,
-                  "Two or more entries match the same SNCL and date; the shortest was used");
   }
 
   return status;
@@ -2826,10 +2844,12 @@ evalresp_filename_to_channels (evalresp_logger *log, const char *filename, evalr
 {
   FILE *file = NULL;
   int status = EVALRESP_OK;
+  evalresp_log_context ctx;
 
   if (!(status = open_file (log, filename, &file)))
   {
-    status = evalresp_file_to_channels (log, file, options, filter, channels);
+    evalresp_log_context_init (&ctx, log, "%s", filename);
+    status = evalresp_file_to_channels (&ctx.logger, file, options, filter, channels);
     fclose (file);
   }
   return status;

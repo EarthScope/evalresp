@@ -437,6 +437,11 @@ evalresp_channel_to_response (evalresp_logger *log, evalresp_channel *channel,
 {
   int status = EVALRESP_OK, free_options = 0;
   evalresp_blkt *b55_save = NULL;
+  evalresp_log_context ctx;
+
+  evalresp_log_context_init (&ctx, log, "%s.%s.%s.%s", channel->network,
+                             channel->staname, channel->locid, channel->chaname);
+  log = &ctx.logger;
 
   /* allow NULL options */
   if (!options)

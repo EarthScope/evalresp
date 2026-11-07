@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <string.h>
 
+#include <evalresp/log_context.h>
 #include <evalresp/stationxml2resp.h>
 #include <evalresp/stationxml2resp/xml_to_dom.h>
 #include <evalresp/stationxml2resp/dom_to_seed.h>
@@ -644,6 +645,11 @@ static int print_channel(evalresp_logger *log, FILE *out, const char *net, const
 
     int status = X2R_OK;
     char *start = NULL, *end = NULL;
+    evalresp_log_context ctx;
+
+    evalresp_log_context_init(&ctx, log, "%s.%s.%s.%s", net, stn,
+            channel->location_code, channel->code);
+    log = &ctx.logger;
 
     if (!(status = lines(log, out,
             "#",

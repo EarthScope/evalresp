@@ -1,6 +1,6 @@
 INFO] << EVALRESP RESPONSE OUTPUT VROBOT >>
-WARN] BK.CMB..LKS: Missing gain in stage 1 - using unit gain at 1Hz
-WARN] BK.CMB..LKS: Missing gain in stage 0 - using unit gain at 1Hz
+WARN] station-polynomial.xml: BK.CMB..LKS: Missing gain in stage 1 - using unit gain at 1Hz
+WARN] station-polynomial.xml: BK.CMB..LKS: Missing gain in stage 0 - using unit gain at 1Hz
 INFO]  --------------------------------------------------
 INFO]   station-polynomial.xml
 INFO]  --------------------------------------------------

@@ -164,7 +164,7 @@ merge_coeffs (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_l
 }
 
 static void
-check_symmetry (evalresp_blkt *f, evalresp_channel *chan, evalresp_logger *log)
+check_symmetry (evalresp_blkt *f, evalresp_logger *log)
 {
   int nc, n0, k;
   double sum = 0.0;
@@ -177,8 +177,7 @@ check_symmetry (evalresp_blkt *f, evalresp_channel *chan, evalresp_logger *log)
     sum += f->blkt_info.fir.coeffs[k];
   if (nc && (sum < (1.0 - FIR_NORM_TOL) || sum > (1.0 + FIR_NORM_TOL)))
   {
-    evalresp_log (log, EV_WARN, 0, " WARNING: FIR normalized: sum[coef]=%E; ", sum);
-    evalresp_log (log, EV_WARN, 0, " %s %s %s %s\n", chan->network, chan->staname, chan->locid, chan->chaname);
+    evalresp_log (log, EV_WARN, 0, "FIR normalized: sum[coef]=%E", sum);
     for (k = 0; k < nc; k++)
       f->blkt_info.fir.coeffs[k] /= sum;
   }
@@ -287,8 +286,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
         if (stage_type && stage_type != GAIN_TYPE)
         {
           evalresp_log (log, EV_ERROR, EV_ERROR,
-                        "%s.%s.%s.%s: more than one filter type at stage %d",
-                        chan->network, chan->staname, chan->locid, chan->chaname,
+                        "more than one filter type at stage %d",
                         stage_ptr->sequence_no);
           return EVALRESP_VAL;
         }
@@ -299,8 +297,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
       case FIR_COEFFS: /* AFAICT this type is never even parsed?! */
 
         evalresp_log (log, EV_ERROR, EV_ERROR,
-                      "%s.%s.%s.%s: unsupported filter type (FIR_COEFFS)",
-                      chan->network, chan->staname, chan->locid, chan->chaname);
+                      "unsupported filter type (FIR_COEFFS)");
         return EVALRESP_VAL;
         break;
 
@@ -331,8 +328,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
           if (!stage_ptr->next_stage && 0 != chan->first_stage->next_stage->sequence_no)
           {
             evalresp_log (log, EV_ERROR, EV_ERROR,
-                          "%s.%s.%s.%s: blockette 55 cannot be mixed with other filter blockettes",
-                          chan->network, chan->staname, chan->locid, chan->chaname);
+                          "blockette 55 cannot be mixed with other filter blockettes");
             return EVALRESP_VAL;
           }
         }
@@ -351,8 +347,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
               if (chan->first_stage->next_stage->first_blkt->type != GAIN)
               {
                 evalresp_log (log, EV_ERROR, EV_ERROR,
-                              "%s.%s.%s.%s: blockette 55 cannot be mixed with other filter blockettes",
-                              chan->network, chan->staname, chan->locid, chan->chaname);
+                              "blockette 55 cannot be mixed with other filter blockettes");
                 return EVALRESP_VAL;
               }
             }
@@ -368,8 +363,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
         if (stage_type && stage_type != GAIN_TYPE)
         {
           evalresp_log (log, EV_ERROR, EV_ERROR,
-                        "%s.%s.%s.%s: more than one filter type at stage %d",
-                        chan->network, chan->staname, chan->locid, chan->chaname,
+                        "more than one filter type at stage %d",
                         stage_ptr->sequence_no);
           return EVALRESP_VAL;
         }
@@ -378,15 +372,14 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
         if (next_blkt && next_blkt->type == blkt_ptr->type)
         {
           evalresp_log (log, EV_ERROR, EV_ERROR,
-                        "%s.%s.%s.%s: multiple 55 blockettes in GENERIC stages are not supported",
-                        chan->network, chan->staname, chan->locid, chan->chaname);
+                        "multiple 55 blockettes in GENERIC stages are not supported");
           return EVALRESP_VAL;
         }
         stage_type = GENERIC_TYPE;
         /*    nc = 1; */ /*for calc_delay to be 0 in decimation blockette */
         evalresp_log (log, EV_WARN, EV_WARN,
-                      "%s.%s.%s.%s: GENERIC blockette is detected in stage %d; content is ignored",
-                      chan->network, chan->staname, chan->locid, chan->chaname, stage_ptr->sequence_no);
+                      "GENERIC blockette is detected in stage %d; content is ignored",
+                      stage_ptr->sequence_no);
         filt_blkt = blkt_ptr;
         break;
 
@@ -397,8 +390,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
         if (stage_type && stage_type != GAIN_TYPE)
         {
           evalresp_log (log, EV_ERROR, EV_ERROR,
-                        "%s.%s.%s.%s: more than one filter type at stage %d",
-                        chan->network, chan->staname, chan->locid, chan->chaname,
+                        "more than one filter type at stage %d",
                         stage_ptr->sequence_no);
           return EVALRESP_VAL;
         }
@@ -419,7 +411,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
 
         /* make FIR filters symmetric if possible */
         if (blkt_ptr->type == FIR_ASYM)
-          check_symmetry (blkt_ptr, chan, log);
+          check_symmetry (blkt_ptr, log);
 
         /* increment the channel delay for this stage using the number of coefficients
            and the filter type */
@@ -443,8 +435,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
         if (stage_type && stage_type != GAIN_TYPE)
         {
           evalresp_log (log, EV_ERROR, EV_ERROR,
-                        "%s.%s.%s.%s: more than one filter type at stage %d",
-                        chan->network, chan->staname, chan->locid, chan->chaname,
+                        "more than one filter type at stage %d",
                         stage_ptr->sequence_no);
           return EVALRESP_VAL;
         }
@@ -453,8 +444,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
         if (next_blkt && next_blkt->type == blkt_ptr->type)
         {
           evalresp_log (log, EV_ERROR, EV_ERROR,
-                        "%s.%s.%s.%s: multiple 55 blockettes in IIR stages are not supported",
-                        chan->network, chan->staname, chan->locid, chan->chaname);
+                        "multiple 55 blockettes in IIR stages are not supported");
           return EVALRESP_VAL;
         }
         /* merge_coeffs(blkt_ptr,&next_blkt);  */ /* Leave it alone for now ! */
@@ -497,8 +487,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
         else
         {
           evalresp_log (log, EV_ERROR, EV_ERROR,
-                        "%s.%s.%s.%s: DECIMATION blockette with no associated filter at stage %d",
-                        chan->network, chan->staname, chan->locid, chan->chaname,
+                        "DECIMATION blockette with no associated filter at stage %d",
                         stage_ptr->sequence_no);
           return EVALRESP_VAL;
         }
@@ -515,8 +504,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
       default:
 
         evalresp_log (log, EV_ERROR, EV_ERROR,
-                      "%s.%s.%s.%s: unrecognized blockette type (%d)",
-                      chan->network, chan->staname, chan->locid, chan->chaname,
+                      "unrecognized blockette type (%d)",
                       blkt_ptr->type);
         return EVALRESP_VAL;
       }
@@ -544,16 +532,14 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
       if (stage_ptr->input_units == UNDEF_UNITS || stage_ptr->output_units == UNDEF_UNITS)
       {
         evalresp_log (log, EV_ERROR, EV_ERROR,
-                      "%s.%s.%s.%s: undefined units",
-                      chan->network, chan->staname, chan->locid, chan->chaname);
+                      "undefined units");
         return EVALRESP_VAL;
       }
 
       if (!gain_blkt)
       {
         evalresp_log (log, EV_WARN, EV_WARN,
-                      "%s.%s.%s.%s: Missing gain in stage %d - using unit gain at 1Hz",
-                      chan->network, chan->staname, chan->locid, chan->chaname,
+                      "Missing gain in stage %d - using unit gain at 1Hz",
                       stage_ptr->sequence_no);
         gain_blkt = alloc_gain (log);
         gain_blkt->blkt_info.gain.gain = 1;
@@ -604,8 +590,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
       if (prev_stage && prev_stage->output_units != stage_ptr->input_units)
       {
         evalresp_log (log, EV_ERROR, EV_ERROR,
-                      "%s.%s.%s.%s: units mismatch between stages",
-                      chan->network, chan->staname, chan->locid, chan->chaname);
+                      "units mismatch between stages");
         return EVALRESP_VAL;
       }
     }
@@ -619,8 +604,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
     if ((stage_type == IIR_TYPE || stage_type == FIR_TYPE || stage_type == IIR_COEFFS_TYPE) && !deci_flag)
     {
       evalresp_log (log, EV_ERROR, EV_ERROR,
-                    "%s.%s.%s.%s: required decimation blockette for IIR or FIR filter missing",
-                    chan->network, chan->staname, chan->locid, chan->chaname);
+                    "required decimation blockette for IIR or FIR filter missing");
       return EVALRESP_VAL;
     }
 

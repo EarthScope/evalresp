@@ -6,7 +6,7 @@ override CFLAGS += -I.. -I../mxml
 EVALRESP_SRC= alloc_fctns.c calc_fctns.c file_ops.c\
 			  globmatch.c resp_fctns.c spline.c input.c\
 			  output.c stationxml2resp/wrappers.c\
-			  highlevel.c evaluation.c legacy_interface.c\
+			  highlevel.c evaluation.c legacy_interface.c log_context.c\
 			  stationxml2resp/dom_to_seed.c stationxml2resp/xml_to_dom.c\
 			  stationxml2resp/dom_to_channels.c
 EVALRESP_HEADERS= constants.h public.h public_api.h public_channels.h public_responses.h public_compat.h stationxml2resp.h evresp.h

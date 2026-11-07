@@ -121,10 +121,12 @@ process_file (evalresp_logger *log, evalresp_options *options, evalresp_filter *
 {
   int status = EVALRESP_OK;
   evalresp_channels *channels = NULL;
+  evalresp_log_context ctx;
 
   if (!(status = evalresp_filename_to_channels (log, filename, options, filter, &channels)))
   {
-    status = evalresp_channels_to_responses (log, channels, options, responses);
+    evalresp_log_context_init (&ctx, log, "%s", filename);
+    status = evalresp_channels_to_responses (&ctx.logger, channels, options, responses);
   }
   evalresp_free_channels (&channels);
   return status;

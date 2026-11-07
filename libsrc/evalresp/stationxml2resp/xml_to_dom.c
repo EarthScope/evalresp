@@ -3,6 +3,7 @@
 #include <mxml.h>
 #include <evalresp_log/log.h>
 
+#include <evalresp/log_context.h>
 #include <evalresp/stationxml2resp.h>
 #include <evalresp/stationxml2resp/xml_to_dom.h>
 
@@ -1113,25 +1114,27 @@ static int free_response(x2r_response *response, int status) {
 
 
 /* Read an x2r_channel value from the current node. */
-static int parse_channel(evalresp_logger *log, mxml_node_t *node, x2r_channel *channel) {
+static int parse_channel(evalresp_logger *log, mxml_node_t *node, const char *network,
+        const char *station, x2r_channel *channel) {
 
     int status = X2R_OK;
     mxml_node_t *response;
+    evalresp_log_context ctx;
 
     //evalresp_log(log, EV_DEBUG, 0, "Parsing channel");
 
     if (!(status = char_attribute(log, node, "code", NULL, &channel->code))) {
         if (!(status = char_attribute(log, node, "locationCode", NULL, &channel->location_code))) {
-            if (!(status = datetime_attribute(log, node, "startDate", 0, &channel->start_date))) {
+            evalresp_log_context_init(&ctx, log, "%s.%s.%s.%s", network, station,
+                    channel->location_code, channel->code);
+            if (!(status = datetime_attribute(&ctx.logger, node, "startDate", 0, &channel->start_date))) {
                 // allow missing end date - see issue 69 and corresponding code in dom_to_seed.c
-                status = datetime_attribute(log, node, "endDate", 1, &channel->end_date);
+                if (!(status = datetime_attribute(&ctx.logger, node, "endDate", 1, &channel->end_date))) {
+                    if (!(status = find_child(&ctx.logger, &response, NULL, node, "Response"))) {
+                        status = parse_response(&ctx.logger, response, &channel->response);
+                    }
+                }
             }
-        }
-    }
-
-    if (!status) {
-        if (!(status = find_child(log, &response, NULL, node, "Response"))) {
-            status = parse_response(log, response, &channel->response);
         }
     }
 
@@ -1151,7 +1154,8 @@ static int free_channel(x2r_channel *channel, int status) {
 
 
 /* Read an x2r_station value from the current node. */
-static int parse_station(evalresp_logger *log, mxml_node_t *node, x2r_station *station) {
+static int parse_station(evalresp_logger *log, mxml_node_t *node, const char *network,
+        x2r_station *station) {
 
     int status = X2R_OK, i;
     nodelist *stations = NULL;
@@ -1168,7 +1172,8 @@ static int parse_station(evalresp_logger *log, mxml_node_t *node, x2r_station *s
                 for (i = 0; !status && i < station->n_channels; ++i) {
                     station->channel[i].start_date = unset_time_t;
                     station->channel[i].end_date = unset_time_t;
-                    status = parse_channel(log, stations->node[i], &station->channel[i]);
+                    status = parse_channel(log, stations->node[i], network, station->code,
+                            &station->channel[i]);
                 }
             }
         }
@@ -1209,7 +1214,7 @@ static int parse_network(evalresp_logger *log, mxml_node_t *node, x2r_network *n
         } else {
             if (!(status = char_attribute(log, node, "code", NULL, &network->code))) {
                 for (i = 0; !status && i < network->n_stations; ++i) {
-                    status = parse_station(log, stations->node[i], &network->station[i]);
+                    status = parse_station(log, stations->node[i], network->code, &network->station[i]);
                 }
             }
         }

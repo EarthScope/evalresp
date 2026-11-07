@@ -759,9 +759,7 @@ normalize_response (evalresp_logger *log, evalresp_options const *const options,
     if (percent_diff >= 0.05)
     {
       evalresp_log (log, EV_WARN, 0,
-                    " (norm_resp): computed and reported sensitivities");
-      evalresp_log (log, EV_WARN, 0, " differ by more than 5 percent. \n");
-      evalresp_log (log, EV_WARN, 0, "\t Execution continuing.\n");
+                    "Computed and reported sensitivities differ by more than 5 percent; execution continuing");
     }
   }
   return EVALRESP_OK;

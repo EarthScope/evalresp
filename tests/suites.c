@@ -8,6 +8,7 @@ extern const er_test unit_evaluation_tests[];
 extern const er_test unit_globmatch_tests[];
 extern const er_test unit_input_tests[];
 extern const er_test unit_log_tests[];
+extern const er_test unit_log_context_tests[];
 extern const er_test unit_match_tests[];
 extern const er_test unit_parse_datetime_tests[];
 extern const er_test unit_read_xml_tests[];
@@ -27,6 +28,7 @@ static er_suite suites[] = {
     {"globmatch", unit_globmatch_tests},
     {"input", unit_input_tests},
     {"log", unit_log_tests},
+    {"log_context", unit_log_context_tests},
     {"match", unit_match_tests},
     {"parse_datetime", unit_parse_datetime_tests},
     {"read_xml", unit_read_xml_tests},

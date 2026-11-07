@@ -463,6 +463,7 @@ static int build_channel(evalresp_logger *log, evalresp_options const *options,
 
     int status;
     builder b;
+    evalresp_log_context ctx;
 
     if (!(*channel = calloc(1, sizeof(**channel)))) {
         evalresp_log(log, EV_ERROR, EV_ERROR, "Cannot allocate memory for channel");
@@ -483,6 +484,10 @@ static int build_channel(evalresp_logger *log, evalresp_options const *options,
     b.last_seq_no = 0;
     b.n_blkt = 0;
     b.no_units = 0;
+
+    evalresp_log_context_init(&ctx, log, "%s.%s.%s.%s", (*channel)->network,
+            (*channel)->staname, (*channel)->locid, (*channel)->chaname);
+    log = &ctx.logger;
 
     if (!(status = format_date(log, xc->start_date, (*channel)->beg_t))) {
         if (!(status = format_date(log, xc->end_date, (*channel)->end_t))) {

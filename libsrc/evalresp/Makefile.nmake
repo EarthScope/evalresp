@@ -2,7 +2,7 @@
 OBJ = alloc_fctns.obj calc_fctns.obj file_ops.obj \
 			  globmatch.obj resp_fctns.obj spline.obj input.obj\
 			  output.obj stationxml2resp\wrappers.obj\
-              highlevel.obj evaluation.obj legacy_interface.obj\
+              highlevel.obj evaluation.obj legacy_interface.obj log_context.obj\
 			  stationxml2resp\dom_to_seed.obj stationxml2resp\xml_to_dom.obj stationxml2resp\dom_to_channels.obj
 
 all: evalresp.lib

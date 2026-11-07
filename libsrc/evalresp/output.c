@@ -382,14 +382,14 @@ evalresp_channel_to_log (evalresp_logger *log, evalresp_options const *const opt
         if (this_blkt->blkt_info.decimation.applied_corr < 0)
         {
           evalresp_log (log, EV_WARN, 0,
-                        " WARNING Stage %d: Negative correction_applied=%.5E is likely to be incorrect\n",
+                        "Stage %d: Negative correction_applied=%.5E is likely to be incorrect",
                         this_stage->sequence_no,
                         this_blkt->blkt_info.decimation.applied_corr);
         }
         if (this_blkt->blkt_info.decimation.estim_delay < 0)
         {
           evalresp_log (log, EV_WARN, 0,
-                        " WARNING Stage %d: Negative estimated_delay=%.5E is likely to be incorrect",
+                        "Stage %d: Negative estimated_delay=%.5E is likely to be incorrect",
                         this_stage->sequence_no,
                         this_blkt->blkt_info.decimation.estim_delay);
         }
@@ -442,9 +442,7 @@ evalresp_channel_to_log (evalresp_logger *log, evalresp_options const *const opt
     else
     {
       evalresp_log (log, EV_WARN, 0,
-                    " Response contains a List stage (blockette 55)--the output has");
-      evalresp_log (log, EV_WARN, 0,
-                    " been generated for those %d frequencies defined in the blockette",
+                    "Response contains a List stage (blockette 55); the output has been generated for those %d frequencies defined in the blockette",
                     channel->first_stage->first_blkt->blkt_info.list.nresp);
     }
   }
