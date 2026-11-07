@@ -37,8 +37,8 @@ usage (char *program)
   printf ("    -stdio               (take input from stdin, output to stdout)\n");
   printf ("    -use-estimated-delay (use estimated delay instead of correction applied\n");
   printf ("                          in computation of ASYM FIR response)\n");
-  printf ("    -il                  (interpolate List blockette output)\n");
-  printf ("    -ii                  (interpolate List blockette input)\n");
+  printf ("    -il, -ii             (interpolate List blockette to the requested\n");
+  printf ("                          frequencies; the two are synonyms)\n");
   printf ("    -unwrap              (unwrap phase if the output is AP) \n");
   printf ("    -ts                  (use total sensitivity from stage 0 instead of\n");
   printf ("                          computed)\n");

@@ -2,6 +2,8 @@ Unreleased
 
 	2026-11-07
 
+	* IMPROVED: Describe -il and -ii in the usage text as synonyms.
+
 	* FIXED: Channels made only of gain stages evaluate to their gain instead of zero.
 
 	* FIXED: Station, network, location and channel patterns match the whole code,
