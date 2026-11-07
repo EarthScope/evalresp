@@ -22,12 +22,20 @@
 static int stream2doc(evalresp_logger *log, FILE *in, mxml_node_t **doc) {
 
     int status = X2R_OK;
+    mxml_options_t *options;
 
-    if (!(*doc = mxmlLoadFile(NULL, in, MXML_OPAQUE_CALLBACK))) {
+    if (!(options = mxmlOptionsNew())) {
+        evalresp_log(log, EV_ERROR, 0, "Cannot alloc XML options");
+        return X2R_ERR_MEMORY;
+    }
+    mxmlOptionsSetTypeValue(options, MXML_TYPE_OPAQUE);
+
+    if (!(*doc = mxmlLoadFile(NULL, options, in))) {
         evalresp_log(log, EV_ERROR, 0, "Could not parse input");
         status = X2R_ERR_XML;
     }
 
+    mxmlOptionsDelete(options);
     return status;
 }
 
@@ -62,7 +70,7 @@ static int find_children(evalresp_logger *log, nodelist **result, mxml_node_t *f
         child = mxmlGetFirstChild(from);
         while (!status && child) {
             while (!status && child &&
-                    (mxmlGetType(child) != MXML_ELEMENT || strcmp(mxmlGetElement(child), name))) {
+                    (mxmlGetType(child) != MXML_TYPE_ELEMENT || strcmp(mxmlGetElement(child), name))) {
                 child = mxmlGetNextSibling(child);
             }
             if (!status && child) {
@@ -103,7 +111,7 @@ static int find_child(evalresp_logger *log, mxml_node_t **result, int* found, mx
     } else {
         child = mxmlGetFirstChild(from);
         while (child &&
-                (mxmlGetType(child) != MXML_ELEMENT || strcmp(mxmlGetElement(child), name))) {
+                (mxmlGetType(child) != MXML_TYPE_ELEMENT || strcmp(mxmlGetElement(child), name))) {
             child = mxmlGetNextSibling(child);
         }
         if (child) {
@@ -136,7 +144,7 @@ static int char_element(evalresp_logger *log, mxml_node_t *node, const char *nam
     if (!(status = find_child(log, &element, &found, node, name))) {
         if (found) {
             child = mxmlGetFirstChild(element);
-            while (child && mxmlGetType(child) != MXML_OPAQUE) child = mxmlGetNextSibling(child);
+            while (child && mxmlGetType(child) != MXML_TYPE_OPAQUE) child = mxmlGetNextSibling(child);
             if (!child) {
                 evalresp_log(log, EV_ERROR, 0, "No text for %s", name);
                 status = X2R_ERR_XML;
@@ -1228,7 +1236,7 @@ int x2r_parse_fdsn_station_xml(evalresp_logger *log, mxml_node_t *doc, x2r_fdsn_
         status = X2R_ERR_MEMORY;
     } else {
         // Find FDSNStationXML document node, could be the root or following XML declaration (<?xml ...?>)
-        if (mxmlGetType(doc) == MXML_ELEMENT && !strcmp("FDSNStationXML",  mxmlGetElement(doc))) {
+        if (mxmlGetType(doc) == MXML_TYPE_ELEMENT && !strcmp("FDSNStationXML",  mxmlGetElement(doc))) {
             fdsn = doc;
         } else {
             fdsn = mxmlFindElement(doc, doc, "FDSNStationXML", NULL, NULL, MXML_DESCEND_FIRST);

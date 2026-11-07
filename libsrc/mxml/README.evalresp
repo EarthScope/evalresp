@@ -1,14 +1,9 @@
+This is a copy of mini-xml release 4.0.6 with the following modifications:
 
-This is a direct copy of mini-xml release 2.12 with the following
-modifications:
+ o Add our own Makefile, Makefile.nmake, config.h.ms, config.h.unix,
+   README.evalresp
 
- o Rename Makefile.in => Makefile.in.orig
+ o Remove the 'doc', 'linux', 'vcnet' and 'xcode' directories, the autoconf
+   build files, packaging files and fuzzing inputs
 
- o Rename configure => configure.orig
-
- o Add our own Makefile, Makefile.nmake, Makefile.am, config.h.ms,
-   config.h.unix, README.evalresp
-
- o Remove 'doc' directory to save on volume
-
-Our build target is libmxmlev.a instead of the default libmxml.a.
+Our build target is libmxmlev.a instead of the default libmxml4.a.

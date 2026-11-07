@@ -1,374 +1,630 @@
-/*
- * Node set functions for Mini-XML, a small XML file parsing library.
- *
- * Copyright 2003-2018 by Michael R Sweet.
- *
- * These coded instructions, statements, and computer programs are the
- * property of Michael R Sweet and are protected by Federal copyright
- * law.  Distribution and use rights are outlined in the file "COPYING"
- * which should have been included with this file.  If this file is
- * missing or damaged, see the license at:
- *
- *     https://michaelrsweet.github.io/mxml
- */
+//
+// Node set functions for Mini-XML, a small XML file parsing library.
+//
+// https://www.msweet.org/mxml
+//
+// Copyright © 2003-2024 by Michael R Sweet.
+//
+// Licensed under Apache License v2.0.  See the file "LICENSE" for more
+// information.
+//
 
-/*
- * Include necessary headers...
- */
-
-#include "config.h"
-#include "mxml.h"
+#include "mxml-private.h"
 
 
-/*
- * 'mxmlSetCDATA()' - Set the element name of a CDATA node.
- *
- * The node is not changed if it (or its first child) is not a CDATA element node.
- *
- * @since Mini-XML 2.3@
- */
+//
+// 'mxmlSetCDATA()' - Set the data for a CDATA node.
+//
+// This function sets the value string for a CDATA node.  The node is not
+// changed if it (or its first child) is not a CDATA node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetCDATA(mxml_node_t *node,		/* I - Node to set */
-             const char  *data)		/* I - New data string */
+bool					// O - `true` on success, `false` on failure
+mxmlSetCDATA(mxml_node_t *node,		// I - Node to set
+             const char  *data)		// I - New data string
 {
- /*
-  * Range check input...
-  */
+  char	*s;				// New element name
 
-  if (node && node->type == MXML_ELEMENT &&
-      strncmp(node->value.element.name, "![CDATA[", 8) &&
-      node->child && node->child->type == MXML_ELEMENT &&
-      !strncmp(node->child->value.element.name, "![CDATA[", 8))
+
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_CDATA)
     node = node->child;
 
-  if (!node || node->type != MXML_ELEMENT || !data ||
-      strncmp(node->value.element.name, "![CDATA[", 8))
-    return (-1);
+  if (!node || node->type != MXML_TYPE_CDATA)
+    return (false);
+  else if (!data)
+    return (false);
 
- /*
-  * Free any old element value and set the new value...
-  */
+  if (data == node->value.cdata)
+  {
+    // Don't change the value...
+    return (true);
+  }
 
-  if (node->value.element.name)
-    free(node->value.element.name);
+  // Allocate the new value, free any old element value, and set the new value...
+  if ((s = _mxml_strcopy(data)) == NULL)
+    return (false);
 
-  node->value.element.name = _mxml_strdupf("![CDATA[%s", data);
+  _mxml_strfree(node->value.cdata);
+  node->value.cdata = s;
 
-  return (0);
+  return (true);
 }
 
 
-/*
- * 'mxmlSetCustom()' - Set the data and destructor of a custom data node.
- *
- * The node is not changed if it (or its first child) is not a custom node.
- *
- * @since Mini-XML 2.1@
- */
+//
+// 'mxmlSetCDATAf()' - Set the data for a CDATA to a formatted string.
+//
+// This function sets the formatted string value of a CDATA node.  The node is
+// not changed if it (or its first child) is not a CDATA node.
+//
 
-int					/* O - 0 on success, -1 on failure */
+bool					// O - `true` on success, `false` on failure
+mxmlSetCDATAf(mxml_node_t *node,	// I - Node
+	      const char *format,	// I - `printf`-style format string
+	      ...)			// I - Additional arguments as needed
+{
+  va_list	ap;			// Pointer to arguments
+  char		buffer[16384];		// Format buffer
+  char		*s;			// Temporary string
+
+
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_CDATA)
+    node = node->child;
+
+  if (!node || node->type != MXML_TYPE_CDATA)
+    return (false);
+  else if (!format)
+    return (false);
+
+  // Format the new string, free any old string value, and set the new value...
+  va_start(ap, format);
+  vsnprintf(buffer, sizeof(buffer), format, ap);
+  va_end(ap);
+
+  if ((s = _mxml_strcopy(buffer)) == NULL)
+    return (false);
+
+  _mxml_strfree(node->value.cdata);
+  node->value.cdata = s;
+
+  return (true);
+}
+
+
+//
+// 'mxmlSetComment()' - Set a comment to a literal string.
+//
+// This function sets the string value of a comment node.
+//
+
+bool					// O - `true` on success, `false` on failure
+mxmlSetComment(mxml_node_t *node,	// I - Node
+               const char  *comment)	// I - Literal string
+{
+  char *s;				// New string
+
+
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_COMMENT)
+    node = node->child;
+
+  if (!node || node->type != MXML_TYPE_COMMENT)
+    return (false);
+  else if (!comment)
+    return (false);
+
+  if (comment == node->value.comment)
+    return (true);
+
+  // Free any old string value and set the new value...
+  if ((s = _mxml_strcopy(comment)) == NULL)
+    return (false);
+
+  _mxml_strfree(node->value.comment);
+  node->value.comment = s;
+
+  return (true);
+}
+
+
+//
+// 'mxmlSetCommentf()' - Set a comment to a formatted string.
+//
+// This function sets the formatted string value of a comment node.
+//
+
+bool					// O - `true` on success, `false` on failure
+mxmlSetCommentf(mxml_node_t *node,	// I - Node
+                const char *format,	// I - `printf`-style format string
+		...)			// I - Additional arguments as needed
+{
+  va_list	ap;			// Pointer to arguments
+  char		buffer[16384];		// Format buffer
+  char		*s;			// Temporary string
+
+
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_COMMENT)
+    node = node->child;
+
+  if (!node || node->type != MXML_TYPE_COMMENT)
+    return (false);
+  else if (!format)
+    return (false);
+
+  // Format the new string, free any old string value, and set the new value...
+  va_start(ap, format);
+  vsnprintf(buffer, sizeof(buffer), format, ap);
+  va_end(ap);
+
+  if ((s = _mxml_strcopy(buffer)) == NULL)
+    return (false);
+
+  _mxml_strfree(node->value.comment);
+  node->value.comment = s;
+
+  return (true);
+}
+
+
+//
+// 'mxmlSetCustom()' - Set the data and destructor of a custom data node.
+//
+// This function sets the data pointer `data` and destructor callback
+// `destroy_cb` of a custom data node.  The node is not changed if it (or its
+// first child) is not a custom node.
+//
+
+bool					// O - `true` on success, `false` on failure
 mxmlSetCustom(
-    mxml_node_t              *node,	/* I - Node to set */
-    void                     *data,	/* I - New data pointer */
-    mxml_custom_destroy_cb_t destroy)	/* I - New destructor function */
+    mxml_node_t        *node,		// I - Node to set
+    void               *data,		// I - New data pointer
+    mxml_custfree_cb_t free_cb,		// I - Free callback function
+    void               *free_cbdata)	// I - Free callback data
 {
- /*
-  * Range check input...
-  */
-
-  if (node && node->type == MXML_ELEMENT &&
-      node->child && node->child->type == MXML_CUSTOM)
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_CUSTOM)
     node = node->child;
 
-  if (!node || node->type != MXML_CUSTOM)
-    return (-1);
+  if (!node || node->type != MXML_TYPE_CUSTOM)
+    return (false);
 
- /*
-  * Free any old element value and set the new value...
-  */
+  if (data == node->value.custom.data)
+    goto set_free_callback;
 
-  if (node->value.custom.data && node->value.custom.destroy)
-    (*(node->value.custom.destroy))(node->value.custom.data);
+  // Free any old element value and set the new value...
+  if (node->value.custom.data && node->value.custom.free_cb)
+    (node->value.custom.free_cb)(node->value.custom.free_cbdata, node->value.custom.data);
 
-  node->value.custom.data    = data;
-  node->value.custom.destroy = destroy;
+  node->value.custom.data = data;
 
-  return (0);
+  set_free_callback:
+
+  node->value.custom.free_cb     = free_cb;
+  node->value.custom.free_cbdata = free_cbdata;
+
+  return (true);
 }
 
 
-/*
- * 'mxmlSetElement()' - Set the name of an element node.
- *
- * The node is not changed if it is not an element node.
- */
+//
+// 'mxmlSetDeclaration()' - Set a declaration to a literal string.
+//
+// This function sets the string value of a declaration node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetElement(mxml_node_t *node,	/* I - Node to set */
-               const char  *name)	/* I - New name string */
+bool					// O - `true` on success, `false` on failure
+mxmlSetDeclaration(
+    mxml_node_t *node,			// I - Node
+    const char  *declaration)		// I - Literal string
 {
- /*
-  * Range check input...
-  */
+  char *s;				// New string
 
-  if (!node || node->type != MXML_ELEMENT || !name)
-    return (-1);
 
- /*
-  * Free any old element value and set the new value...
-  */
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_DECLARATION)
+    node = node->child;
 
-  if (node->value.element.name)
-    free(node->value.element.name);
+  if (!node || node->type != MXML_TYPE_DECLARATION)
+    return (false);
+  else if (!declaration)
+    return (false);
 
-  node->value.element.name = strdup(name);
+  if (declaration == node->value.declaration)
+    return (true);
 
-  return (0);
+  // Free any old string value and set the new value...
+  if ((s = _mxml_strcopy(declaration)) == NULL)
+    return (false);
+
+  _mxml_strfree(node->value.declaration);
+  node->value.declaration = s;
+
+  return (true);
 }
 
 
-/*
- * 'mxmlSetInteger()' - Set the value of an integer node.
- *
- * The node is not changed if it (or its first child) is not an integer node.
- */
+//
+// 'mxmlSetDeclarationf()' - Set a declaration to a formatted string.
+//
+// This function sets the formatted string value of a declaration node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetInteger(mxml_node_t *node,	/* I - Node to set */
-               int         integer)	/* I - Integer value */
+bool					// O - `true` on success, `false` on failure
+mxmlSetDeclarationf(mxml_node_t *node,	// I - Node
+                    const char *format,	// I - `printf`-style format string
+		    ...)		// I - Additional arguments as needed
 {
- /*
-  * Range check input...
-  */
+  va_list	ap;			// Pointer to arguments
+  char		buffer[16384];		// Format buffer
+  char		*s;			// Temporary string
 
-  if (node && node->type == MXML_ELEMENT &&
-      node->child && node->child->type == MXML_INTEGER)
+
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_DECLARATION)
     node = node->child;
 
-  if (!node || node->type != MXML_INTEGER)
-    return (-1);
+  if (!node || node->type != MXML_TYPE_DECLARATION)
+    return (false);
+  else if (!format)
+    return (false);
 
- /*
-  * Set the new value and return...
-  */
+  // Format the new string, free any old string value, and set the new value...
+  va_start(ap, format);
+  vsnprintf(buffer, sizeof(buffer), format, ap);
+  va_end(ap);
 
+  if ((s = _mxml_strcopy(buffer)) == NULL)
+    return (false);
+
+  _mxml_strfree(node->value.declaration);
+  node->value.declaration = s;
+
+  return (true);
+}
+
+
+//
+// 'mxmlSetDirective()' - Set a processing instruction to a literal string.
+//
+// This function sets the string value of a processing instruction node.
+//
+
+bool					// O - `true` on success, `false` on failure
+mxmlSetDirective(mxml_node_t *node,	// I - Node
+                 const char  *directive)// I - Literal string
+{
+  char *s;				// New string
+
+
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_DIRECTIVE)
+    node = node->child;
+
+  if (!node || node->type != MXML_TYPE_DIRECTIVE)
+    return (false);
+  else if (!directive)
+    return (false);
+
+  if (directive == node->value.directive)
+    return (true);
+
+  // Free any old string value and set the new value...
+  if ((s = _mxml_strcopy(directive)) == NULL)
+    return (false);
+
+  _mxml_strfree(node->value.directive);
+  node->value.directive = s;
+
+  return (true);
+}
+
+
+//
+// 'mxmlSetDirectivef()' - Set a processing instruction to a formatted string.
+//
+// This function sets the formatted string value of a processing instruction
+// node.
+//
+
+bool					// O - `true` on success, `false` on failure
+mxmlSetDirectivef(mxml_node_t *node,	// I - Node
+                  const char *format,	// I - `printf`-style format string
+		  ...)			// I - Additional arguments as needed
+{
+  va_list	ap;			// Pointer to arguments
+  char		buffer[16384];		// Format buffer
+  char		*s;			// Temporary string
+
+
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_DIRECTIVE)
+    node = node->child;
+
+  if (!node || node->type != MXML_TYPE_DIRECTIVE)
+    return (false);
+  else if (!format)
+    return (false);
+
+  // Format the new string, free any old string value, and set the new value...
+  va_start(ap, format);
+  vsnprintf(buffer, sizeof(buffer), format, ap);
+  va_end(ap);
+
+  if ((s = _mxml_strcopy(buffer)) == NULL)
+    return (false);
+
+  _mxml_strfree(node->value.directive);
+  node->value.directive = s;
+
+  return (true);
+}
+
+
+//
+// 'mxmlSetElement()' - Set the name of an element node.
+//
+// This function sets the name of an element node.  The node is not changed if
+// it is not an element node.
+//
+
+bool					// O - `true` on success, `false` on failure
+mxmlSetElement(mxml_node_t *node,	// I - Node to set
+               const char  *name)	// I - New name string
+{
+  char *s;				// New name string
+
+
+  // Range check input...
+  if (!node || node->type != MXML_TYPE_ELEMENT)
+    return (false);
+  else if (!name)
+    return (false);
+
+  if (name == node->value.element.name)
+    return (true);
+
+  // Free any old element value and set the new value...
+  if ((s = _mxml_strcopy(name)) == NULL)
+    return (false);
+
+  _mxml_strfree(node->value.element.name);
+  node->value.element.name = s;
+
+  return (true);
+}
+
+
+//
+// 'mxmlSetInteger()' - Set the value of an integer node.
+//
+// This function sets the value of an integer node.  The node is not changed if
+// it (or its first child) is not an integer node.
+//
+
+bool					// O - `true` on success, `false` on failure
+mxmlSetInteger(mxml_node_t *node,	// I - Node to set
+               long        integer)	// I - Integer value
+{
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_INTEGER)
+    node = node->child;
+
+  if (!node || node->type != MXML_TYPE_INTEGER)
+    return (false);
+
+  // Set the new value and return...
   node->value.integer = integer;
 
-  return (0);
+  return (true);
 }
 
 
-/*
- * 'mxmlSetOpaque()' - Set the value of an opaque node.
- *
- * The node is not changed if it (or its first child) is not an opaque node.
- */
+//
+// 'mxmlSetOpaque()' - Set the value of an opaque node.
+//
+// This function sets the string value of an opaque node.  The node is not
+// changed if it (or its first child) is not an opaque node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetOpaque(mxml_node_t *node,	/* I - Node to set */
-              const char  *opaque)	/* I - Opaque string */
+bool					// O - `true` on success, `false` on failure
+mxmlSetOpaque(mxml_node_t *node,	// I - Node to set
+              const char  *opaque)	// I - Opaque string
 {
- /*
-  * Range check input...
-  */
+  char *s;				// New opaque string
 
-  if (node && node->type == MXML_ELEMENT &&
-      node->child && node->child->type == MXML_OPAQUE)
+
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_OPAQUE)
     node = node->child;
 
-  if (!node || node->type != MXML_OPAQUE || !opaque)
-    return (-1);
+  if (!node || node->type != MXML_TYPE_OPAQUE)
+    return (false);
+  else if (!opaque)
+    return (false);
 
- /*
-  * Free any old opaque value and set the new value...
-  */
+  if (node->value.opaque == opaque)
+    return (true);
 
-  if (node->value.opaque)
-    free(node->value.opaque);
+  // Free any old opaque value and set the new value...
+  if ((s = _mxml_strcopy(opaque)) == NULL)
+    return (false);
 
-  node->value.opaque = strdup(opaque);
+  _mxml_strfree(node->value.opaque);
+  node->value.opaque = s;
 
-  return (0);
+  return (true);
 }
 
 
-/*
- * 'mxmlSetOpaquef()' - Set the value of an opaque string node to a formatted string.
- *
- * The node is not changed if it (or its first child) is not an opaque node.
- *
- * @since Mini-XML 2.11@
- */
+//
+// 'mxmlSetOpaquef()' - Set the value of an opaque string node to a formatted string.
+//
+// This function sets the formatted string value of an opaque node.  The node is
+// not changed if it (or its first child) is not an opaque node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetOpaquef(mxml_node_t *node,	/* I - Node to set */
-               const char  *format,	/* I - Printf-style format string */
-	       ...)			/* I - Additional arguments as needed */
+bool					// O - `true` on success, `false` on failure
+mxmlSetOpaquef(mxml_node_t *node,	// I - Node to set
+               const char  *format,	// I - Printf-style format string
+	       ...)			// I - Additional arguments as needed
 {
-  va_list	ap;			/* Pointer to arguments */
+  va_list	ap;			// Pointer to arguments
+  char		buffer[16384];		// Format buffer
+  char		*s;			// Temporary string
 
 
- /*
-  * Range check input...
-  */
-
-  if (node && node->type == MXML_ELEMENT &&
-      node->child && node->child->type == MXML_OPAQUE)
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_OPAQUE)
     node = node->child;
 
-  if (!node || node->type != MXML_OPAQUE || !format)
-    return (-1);
+  if (!node || node->type != MXML_TYPE_OPAQUE)
+    return (false);
+  else if (!format)
+    return (false);
 
- /*
-  * Free any old string value and set the new value...
-  */
-
-  if (node->value.opaque)
-    free(node->value.opaque);
-
+  // Format the new string, free any old string value, and set the new value...
   va_start(ap, format);
-
-  node->value.opaque = _mxml_strdupf(format, ap);
-
+  vsnprintf(buffer, sizeof(buffer), format, ap);
   va_end(ap);
 
-  return (0);
+  if ((s = _mxml_strcopy(buffer)) == NULL)
+    return (false);
+
+  _mxml_strfree(node->value.opaque);
+  node->value.opaque = s;
+
+  return (true);
 }
 
 
-/*
- * 'mxmlSetReal()' - Set the value of a real number node.
- *
- * The node is not changed if it (or its first child) is not a real number node.
- */
+//
+// 'mxmlSetReal()' - Set the value of a real value node.
+//
+// This function sets the value of a real value node.  The node is not changed
+// if it (or its first child) is not a real value node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetReal(mxml_node_t *node,		/* I - Node to set */
-            double      real)		/* I - Real number value */
+bool					// O - `true` on success, `false` on failure
+mxmlSetReal(mxml_node_t *node,		// I - Node to set
+            double      real)		// I - Real number value
 {
- /*
-  * Range check input...
-  */
-
-  if (node && node->type == MXML_ELEMENT &&
-      node->child && node->child->type == MXML_REAL)
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_REAL)
     node = node->child;
 
-  if (!node || node->type != MXML_REAL)
-    return (-1);
+  if (!node || node->type != MXML_TYPE_REAL)
+    return (false);
 
- /*
-  * Set the new value and return...
-  */
-
+  // Set the new value and return...
   node->value.real = real;
 
-  return (0);
+  return (true);
 }
 
 
-/*
- * 'mxmlSetText()' - Set the value of a text node.
- *
- * The node is not changed if it (or its first child) is not a text node.
- */
+//
+// 'mxmlSetText()' - Set the value of a text node.
+//
+// This function sets the string and whitespace values of a text node.  The node
+// is not changed if it (or its first child) is not a text node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetText(mxml_node_t *node,		/* I - Node to set */
-            int         whitespace,	/* I - 1 = leading whitespace, 0 = no whitespace */
-	    const char  *string)	/* I - String */
+bool					// O - `true` on success, `false` on failure
+mxmlSetText(mxml_node_t *node,		// I - Node to set
+            bool        whitespace,	// I - `true` = leading whitespace, `false` = no whitespace
+	    const char  *string)	// I - String
 {
- /*
-  * Range check input...
-  */
+  char *s;				// New string
 
-  if (node && node->type == MXML_ELEMENT &&
-      node->child && node->child->type == MXML_TEXT)
+
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_TEXT)
     node = node->child;
 
-  if (!node || node->type != MXML_TEXT || !string)
-    return (-1);
+  if (!node || node->type != MXML_TYPE_TEXT)
+    return (false);
+  else if (!string)
+    return (false);
 
- /*
-  * Free any old string value and set the new value...
-  */
+  if (string == node->value.text.string)
+  {
+    node->value.text.whitespace = whitespace;
+    return (true);
+  }
 
-  if (node->value.text.string)
-    free(node->value.text.string);
+  // Free any old string value and set the new value...
+  if ((s = _mxml_strcopy(string)) == NULL)
+    return (false);
+
+  _mxml_strfree(node->value.text.string);
 
   node->value.text.whitespace = whitespace;
-  node->value.text.string     = strdup(string);
+  node->value.text.string     = s;
 
-  return (0);
+  return (true);
 }
 
 
-/*
- * 'mxmlSetTextf()' - Set the value of a text node to a formatted string.
- *
- * The node is not changed if it (or its first child) is not a text node.
- */
+//
+// 'mxmlSetTextf()' - Set the value of a text node to a formatted string.
+//
+// This function sets the formatted string and whitespace values of a text node.
+// The node is not changed if it (or its first child) is not a text node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetTextf(mxml_node_t *node,		/* I - Node to set */
-             int         whitespace,	/* I - 1 = leading whitespace, 0 = no whitespace */
-             const char  *format,	/* I - Printf-style format string */
-	     ...)			/* I - Additional arguments as needed */
+bool					// O - `true` on success, `false` on failure
+mxmlSetTextf(mxml_node_t *node,		// I - Node to set
+             bool        whitespace,	// I - `true` = leading whitespace, `false` = no whitespace
+             const char  *format,	// I - Printf-style format string
+	     ...)			// I - Additional arguments as needed
 {
-  va_list	ap;			/* Pointer to arguments */
+  va_list	ap;			// Pointer to arguments
+  char		buffer[16384];		// Format buffer
+  char		*s;			// Temporary string
 
 
- /*
-  * Range check input...
-  */
-
-  if (node && node->type == MXML_ELEMENT &&
-      node->child && node->child->type == MXML_TEXT)
+  // Range check input...
+  if (node && node->type == MXML_TYPE_ELEMENT && node->child && node->child->type == MXML_TYPE_TEXT)
     node = node->child;
 
-  if (!node || node->type != MXML_TEXT || !format)
-    return (-1);
+  if (!node || node->type != MXML_TYPE_TEXT)
+    return (false);
+  else if (!format)
+    return (false);
 
- /*
-  * Free any old string value and set the new value...
-  */
-
-  if (node->value.text.string)
-    free(node->value.text.string);
-
+  // Free any old string value and set the new value...
   va_start(ap, format);
-
-  node->value.text.whitespace = whitespace;
-  node->value.text.string     = _mxml_strdupf(format, ap);
-
+  vsnprintf(buffer, sizeof(buffer), format, ap);
   va_end(ap);
 
-  return (0);
+  if ((s = _mxml_strcopy(buffer)) == NULL)
+    return (false);
+
+  _mxml_strfree(node->value.text.string);
+
+  node->value.text.whitespace = whitespace;
+  node->value.text.string     = s;
+
+  return (true);
 }
 
 
-/*
- * 'mxmlSetUserData()' - Set the user data pointer for a node.
- *
- * @since Mini-XML 2.7@
- */
+//
+// 'mxmlSetUserData()' - Set the user data pointer for a node.
+//
 
-int					/* O - 0 on success, -1 on failure */
-mxmlSetUserData(mxml_node_t *node,	/* I - Node to set */
-                void        *data)	/* I - User data pointer */
+bool					// O - `true` on success, `false` on failure
+mxmlSetUserData(mxml_node_t *node,	// I - Node to set
+                void        *data)	// I - User data pointer
 {
- /*
-  * Range check input...
-  */
-
+  // Range check input...
   if (!node)
-    return (-1);
+    return (false);
 
- /*
-  * Set the user data pointer and return...
-  */
-
+  // Set the user data pointer and return...
   node->user_data = data;
-  return (0);
+  return (true);
 }

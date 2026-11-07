@@ -1,7 +1,7 @@
 
-OBJ= mxml-attr.obj mxml-entity.obj mxml-file.obj mxml-get.obj \
-     mxml-index.obj mxml-node.obj mxml-search.obj mxml-set.obj \
-     mxml-private.obj mxml-string.obj
+OBJ= mxml-attr.obj mxml-file.obj mxml-get.obj mxml-index.obj \
+     mxml-node.obj mxml-options.obj mxml-private.obj mxml-search.obj \
+     mxml-set.obj
 
 all: mxmlev.lib
 

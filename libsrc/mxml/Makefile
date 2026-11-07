@@ -3,8 +3,8 @@
 
 CFLAGS += -I.. -I../mxml
 
-MXML_SRC= mxml-attr.c mxml-entity.c mxml-file.c mxml-get.c mxml-index.c\
-	mxml-node.c mxml-private.c mxml-search.c mxml-set.c mxml-string.c
+MXML_SRC= mxml-attr.c mxml-file.c mxml-get.c mxml-index.c mxml-node.c\
+	mxml-options.c mxml-private.c mxml-search.c mxml-set.c
 MXML_HEADERS= mxml-private.h mxml.h
 
 vpath %.c .

@@ -15,6 +15,15 @@ Unreleased
 	condition test, which checked ibcbeg instead of ibcend.  Thanks to
 	@sajnag-web who reported these while porting the code to Go.
 
+	* IMPROVED: Blockette 55 (List) interpolation (-il, -ii) is now done
+	against log10(frequency), with amplitude interpolated as log10(amplitude).
+	Previously the cubic spline was applied in linear space and could
+	overshoot or go negative on steep roll-offs, with negative values
+	replaced by an arbitrary minimum.  Falls back to linear interpolation,
+	with a warning, if the list contains non-positive frequencies or
+	amplitudes.  NOTE: this changes numeric output for responses with a
+	List blockette when the requested frequencies differ from those listed.
+
 	* CHANGED: Removed the autotools build (configure.ac, Makefile.am,
 	MKDIST).  The GNU make build (Makefile, Build.config) is now the only
 	Unix build, alongside Makefile.nmake for Windows.  Both systems wrote
@@ -24,18 +33,11 @@ Unreleased
 	Shared libraries and "make dist" are no longer provided; use
 	"git archive" for source tarballs.
 
+	* CHANGED: Update vendored Mini-XML library to 4.0.6.
+
 	* ADDED: "make -f Makefile check" builds and runs the C unit tests
 	(requires the check library and pkg-config), replacing "make check"
 	from autotools.  "make install" now honors DESTDIR for staged installs.
-
-	* IMPROVED: Blockette 55 (List) interpolation (-il, -ii) is now done
-	against log10(frequency), with amplitude interpolated as log10(amplitude).
-	Previously the cubic spline was applied in linear space and could
-	overshoot or go negative on steep roll-offs, with negative values
-	replaced by an arbitrary minimum.  Falls back to linear interpolation,
-	with a warning, if the list contains non-positive frequencies or
-	amplitudes.  NOTE: this changes numeric output for responses with a
-	List blockette when the requested frequencies differ from those listed.
 
 	* ADDED: tests/c/check_spline.c unit tests for the above.
 

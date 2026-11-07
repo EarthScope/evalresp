@@ -75,6 +75,7 @@ load_mxml_service (evalresp_logger *log, char *xml_in, x2r_fdsn_station_xml **ro
 {
   int status;
   mxml_node_t *doc = NULL;
+  mxml_options_t *options = NULL;
 
   /* check that xml_in is set */
   if (!xml_in)
@@ -83,8 +84,17 @@ load_mxml_service (evalresp_logger *log, char *xml_in, x2r_fdsn_station_xml **ro
     return EVALRESP_IO;
   }
 
+  if (!(options = mxmlOptionsNew ()))
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot alloc XML options");
+    return EVALRESP_MEM;
+  }
+  mxmlOptionsSetTypeValue (options, MXML_TYPE_OPAQUE);
+
   /* load the string into mxml */
-  if (!(doc = mxmlLoadString (NULL, xml_in, MXML_OPAQUE_CALLBACK)))
+  doc = mxmlLoadString (NULL, options, xml_in);
+  mxmlOptionsDelete (options);
+  if (!doc)
   {
     evalresp_log (log, EV_ERROR, EV_ERROR, "Could not parse XML input");
     status = EVALRESP_PAR;
