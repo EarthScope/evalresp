@@ -274,7 +274,7 @@ calc_list (evalresp_blkt *blkt_ptr, int i, evalresp_complex *out)
 static void
 analog_trans (evalresp_blkt *blkt_ptr, double freq, evalresp_complex *out)
 {
-  int nz, np, i;
+  int nz, np, i, nz0 = 0, np0 = 0;
   evalresp_complex *ze, *po, denom, num, omega, temp;
   double h0, mod_squared;
 
@@ -295,6 +295,11 @@ analog_trans (evalresp_blkt *blkt_ptr, double freq, evalresp_complex *out)
     /* num=num*(omega-zero[i]) */
     temp.real = omega.real - ze[i].real;
     temp.imag = omega.imag - ze[i].imag;
+    if (temp.real == 0.0 && temp.imag == 0.0)
+    {
+      nz0++;
+      continue;
+    }
     zmul (&num, &temp);
   }
   for (i = 0; i < np; i++)
@@ -302,7 +307,19 @@ analog_trans (evalresp_blkt *blkt_ptr, double freq, evalresp_complex *out)
     /* denom=denom*(omega-pole[i]) */
     temp.real = omega.real - po[i].real;
     temp.imag = omega.imag - po[i].imag;
+    if (temp.real == 0.0 && temp.imag == 0.0)
+    {
+      np0++;
+      continue;
+    }
     zmul (&denom, &temp);
+  }
+
+  /* zeros and poles at omega cancel pairwise; any excess gives zero */
+  if (nz0 != np0)
+  {
+    out->real = out->imag = 0.0;
+    return;
   }
 
   /* gain*num/denum */

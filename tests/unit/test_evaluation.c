@@ -241,7 +241,109 @@ test_legacy_arbitrary_freqs (void)
   evalresp_free_response (&response);
 }
 
+/* h0 * prod(s - zero) / prod(s - pole) at s = i*w, with the roots on the real axis */
+static void
+pz_real_roots (double h0, const double *zeros, int nz, const double *poles, int np, double w,
+               double *re, double *im)
+{
+  int i;
+  double nr = 1.0, ni = 0.0, dr = 1.0, di = 0.0, t, m;
+
+  for (i = 0; i < nz; ++i)
+  {
+    t = nr * (0.0 - zeros[i]) - ni * w;
+    ni = nr * w + ni * (0.0 - zeros[i]);
+    nr = t;
+  }
+  for (i = 0; i < np; ++i)
+  {
+    t = dr * (0.0 - poles[i]) - di * w;
+    di = dr * w + di * (0.0 - poles[i]);
+    dr = t;
+  }
+  m = dr * dr + di * di;
+  *re = h0 * (nr * dr + ni * di) / m;
+  *im = h0 * (ni * dr - nr * di) / m;
+}
+
+static void
+check_pz_freqs (evalresp_channel *channel, evalresp_options *options, const double *freqs, int nfreqs,
+                double h0, const double *zeros, int nz, const double *poles, int np, double gain)
+{
+  int i;
+  double re, im, tol;
+  evalresp_response *response = NULL;
+
+  ER_CHECK (!evalresp_channel_to_response_freqs (NULL, channel, options, freqs, nfreqs, &response));
+  ER_CHECK_MSG (response->nfreqs == nfreqs, "nfreqs: %d", response->nfreqs);
+  for (i = 0; i < nfreqs; ++i)
+  {
+    pz_real_roots (h0, zeros, nz, poles, np, 2.0 * M_PI * freqs[i], &re, &im);
+    re *= gain;
+    im *= gain;
+    tol = 1e-9 * sqrt (re * re + im * im);
+    ER_CHECK_MSG (fabs (response->rvec[i].real - re) <= tol, "%s %g Hz real: %g vs %g",
+                  channel->chaname, freqs[i], response->rvec[i].real, re);
+    ER_CHECK_MSG (fabs (response->rvec[i].imag - im) <= tol, "%s %g Hz imag: %g vs %g",
+                  channel->chaname, freqs[i], response->rvec[i].imag, im);
+  }
+  evalresp_free_response (&response);
+}
+
+static void
+test_zero_freq_pz (void)
+{
+  /* BDF: two zeros and one pole at zero, so the response vanishes at 0 Hz.
+     BDG: one zero and one pole at zero cancel, leaving a finite response. */
+  const double bdf_zeros[] = {0.0, 0.0, -0.17};
+  const double bdf_poles[] = {0.0, -314.0, -0.188, -0.044};
+  const double bdg_zeros[] = {0.0, -1.0};
+  const double bdg_poles[] = {0.0, -2.0};
+  const double freqs[] = {0.0, 0.1, 1.0, 10.0};
+  const int nfreqs = sizeof (freqs) / sizeof (freqs[0]);
+  int i;
+  evalresp_channels *channels = NULL;
+  evalresp_response *response = NULL;
+  evalresp_options *options = NULL;
+
+  ER_CHECK (!evalresp_new_options (NULL, &options));
+  options->station_xml = 1;
+  ER_CHECK (!evalresp_filename_to_channels (NULL, er_data_path ("station-pz-zero-freq.xml"), options, NULL,
+                                            &channels));
+  ER_CHECK (channels && channels->nchannels == 2);
+  for (i = 0; i < channels->nchannels; ++i)
+  {
+    evalresp_channel *channel = channels->channels[i];
+
+    if (!strcmp (channel->chaname, "BDF"))
+    {
+      ER_CHECK (!evalresp_channel_to_response_freqs (NULL, channel, options, freqs, 1, &response));
+      ER_CHECK_MSG (response->rvec[0].real == 0.0 && response->rvec[0].imag == 0.0,
+                    "BDF 0 Hz: %g %g", response->rvec[0].real, response->rvec[0].imag);
+      evalresp_free_response (&response);
+      check_pz_freqs (channel, options, freqs + 1, nfreqs - 1, 314.1, bdf_zeros, 3, bdf_poles, 4,
+                      0.4 * 611621.0);
+    }
+    else if (!strcmp (channel->chaname, "BDG"))
+    {
+      ER_CHECK (!evalresp_channel_to_response_freqs (NULL, channel, options, freqs, 1, &response));
+      ER_CHECK_MSG (response->rvec[0].real == 0.5 && response->rvec[0].imag == 0.0,
+                    "BDG 0 Hz: %g %g", response->rvec[0].real, response->rvec[0].imag);
+      evalresp_free_response (&response);
+      check_pz_freqs (channel, options, freqs + 1, nfreqs - 1, 1.0, bdg_zeros, 2, bdg_poles, 2, 1.0);
+    }
+    else
+    {
+      ER_CHECK_MSG (0, "unexpected channel %s", channel->chaname);
+    }
+  }
+
+  evalresp_free_channels (&channels);
+  evalresp_free_options (&options);
+}
+
 const er_test unit_evaluation_tests[] = {
+    {"zero_freq_pz", test_zero_freq_pz, NULL},
     {"arbitrary_freqs", test_arbitrary_freqs, NULL},
     {"legacy_arbitrary_freqs", test_legacy_arbitrary_freqs, NULL},
     {"no_options", test_no_options, NULL},

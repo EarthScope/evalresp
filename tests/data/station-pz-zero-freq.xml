@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd">
+ <Source>TEST</Source>
+ <Sender>TEST</Sender>
+ <Module>TEST</Module>
+ <Created>2018-07-02T15:18:04</Created>
+ <Network code="IM" startDate="1965-01-01T00:00:00" endDate="2500-12-31T23:59:59">
+  <Description>Analog pole-zero stages with roots at zero frequency</Description>
+  <TotalNumberStations>1</TotalNumberStations>
+  <SelectedNumberStations>1</SelectedNumberStations>
+  <Station code="I53H1" startDate="2002-06-24T00:00:00" endDate="2999-12-31T23:59:59">
+   <Latitude>64.875</Latitude>
+   <Longitude>-147.86114</Longitude>
+   <Elevation>200.3</Elevation>
+   <Site>
+    <Name>Infrasound array element</Name>
+   </Site>
+   <CreationDate>2002-06-24T00:00:00</CreationDate>
+   <TotalNumberChannels>2</TotalNumberChannels>
+   <SelectedNumberChannels>2</SelectedNumberChannels>
+   <Channel code="BDF" endDate="2999-12-31T23:59:59" locationCode="" startDate="2017-02-14T00:00:00">
+    <Latitude>64.875</Latitude>
+    <Longitude>-147.861145</Longitude>
+    <Elevation>200.3</Elevation>
+    <Depth>0</Depth>
+    <Azimuth>0</Azimuth>
+    <Dip>0</Dip>
+    <Type>CONTINUOUS</Type>
+    <SampleRate>2E01</SampleRate>
+    <ClockDrift>0E00</ClockDrift>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>2.44648E5</Value>
+      <Frequency>1E0</Frequency>
+      <InputUnits>
+       <Name>PA</Name>
+       <Description>No Abbreviation Referenced</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>COUNTS</Name>
+       <Description>Digital Counts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+     <Stage number="1">
+      <PolesZeros>
+       <InputUnits>
+        <Name>PA</Name>
+        <Description>No Abbreviation Referenced</Description>
+       </InputUnits>
+       <OutputUnits>
+        <Name>V</Name>
+        <Description>Volts</Description>
+       </OutputUnits>
+       <PzTransferFunctionType>LAPLACE (RADIANS/SECOND)</PzTransferFunctionType>
+       <NormalizationFactor>314.1</NormalizationFactor>
+       <NormalizationFrequency>1.00000</NormalizationFrequency>
+       <Zero number="0">
+        <Real>0.00000</Real>
+        <Imaginary>0.00000</Imaginary>
+       </Zero>
+       <Zero number="1">
+        <Real>0.00000</Real>
+        <Imaginary>0.00000</Imaginary>
+       </Zero>
+       <Zero number="2">
+        <Real>-0.170000</Real>
+        <Imaginary>0.00000</Imaginary>
+       </Zero>
+       <Pole number="0">
+        <Real>0.00000</Real>
+        <Imaginary>0.00000</Imaginary>
+       </Pole>
+       <Pole number="1">
+        <Real>-314.000</Real>
+        <Imaginary>0.00000</Imaginary>
+       </Pole>
+       <Pole number="2">
+        <Real>-0.188000</Real>
+        <Imaginary>0.00000</Imaginary>
+       </Pole>
+       <Pole number="3">
+        <Real>-0.0440000</Real>
+        <Imaginary>0.00000</Imaginary>
+       </Pole>
+      </PolesZeros>
+      <StageGain>
+       <Value>0.4</Value>
+       <Frequency>1.0</Frequency>
+      </StageGain>
+     </Stage>
+     <Stage number="2">
+      <StageGain>
+       <Value>1.0</Value>
+       <Frequency>1.0</Frequency>
+      </StageGain>
+     </Stage>
+     <Stage number="3">
+      <Coefficients>
+       <InputUnits>
+        <Name>V</Name>
+        <Description>Volts</Description>
+       </InputUnits>
+       <OutputUnits>
+        <Name>COUNTS</Name>
+        <Description>Digital Counts</Description>
+       </OutputUnits>
+       <CfTransferFunctionType>DIGITAL</CfTransferFunctionType>
+       <Numerator>1.00000</Numerator>
+      </Coefficients>
+      <Decimation>
+       <InputSampleRate>20.0</InputSampleRate>
+       <Factor>1</Factor>
+       <Offset>0</Offset>
+       <Delay>0.0</Delay>
+       <Correction>0.0</Correction>
+      </Decimation>
+      <StageGain>
+       <Value>611621.0</Value>
+       <Frequency>1.0</Frequency>
+      </StageGain>
+     </Stage>
+    </Response>
+   </Channel>
+   <Channel code="BDG" endDate="2999-12-31T23:59:59" locationCode="" startDate="2017-02-14T00:00:00">
+    <Latitude>64.875</Latitude>
+    <Longitude>-147.861145</Longitude>
+    <Elevation>200.3</Elevation>
+    <Depth>0</Depth>
+    <Azimuth>0</Azimuth>
+    <Dip>0</Dip>
+    <Type>CONTINUOUS</Type>
+    <SampleRate>2E01</SampleRate>
+    <ClockDrift>0E00</ClockDrift>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>1.0</Value>
+      <Frequency>1E0</Frequency>
+      <InputUnits>
+       <Name>PA</Name>
+       <Description>No Abbreviation Referenced</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>V</Name>
+       <Description>Volts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+     <Stage number="1">
+      <PolesZeros>
+       <InputUnits>
+        <Name>PA</Name>
+        <Description>No Abbreviation Referenced</Description>
+       </InputUnits>
+       <OutputUnits>
+        <Name>V</Name>
+        <Description>Volts</Description>
+       </OutputUnits>
+       <PzTransferFunctionType>LAPLACE (RADIANS/SECOND)</PzTransferFunctionType>
+       <NormalizationFactor>1.0</NormalizationFactor>
+       <NormalizationFrequency>1.00000</NormalizationFrequency>
+       <Zero number="0">
+        <Real>0.00000</Real>
+        <Imaginary>0.00000</Imaginary>
+       </Zero>
+       <Zero number="1">
+        <Real>-1.00000</Real>
+        <Imaginary>0.00000</Imaginary>
+       </Zero>
+       <Pole number="0">
+        <Real>0.00000</Real>
+        <Imaginary>0.00000</Imaginary>
+       </Pole>
+       <Pole number="1">
+        <Real>-2.00000</Real>
+        <Imaginary>0.00000</Imaginary>
+       </Pole>
+      </PolesZeros>
+      <StageGain>
+       <Value>1.0</Value>
+       <Frequency>1.0</Frequency>
+      </StageGain>
+     </Stage>
+    </Response>
+   </Channel>
+  </Station>
+ </Network>
+</FDSNStationXML>

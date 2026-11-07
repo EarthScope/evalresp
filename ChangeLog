@@ -2,6 +2,9 @@ Unreleased
 
 	2026-11-07
 
+	* FIXED: Cancel analog poles and zeros that coincide with the evaluation frequency
+	instead of dividing by zero
+
 	* Evaluate responses at the caller's frequency list in evresp() and the new
   evalresp_channel_to_response_freqs()
 
