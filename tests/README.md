@@ -36,8 +36,6 @@ whatever it wrote is left there for inspection.  `make clean` removes it.
     harness/        test runner, assertions, file comparison, OS-specific code
     suites.c        the list of suites
     unit/           tests that call the library directly
-    unit/legacy/    the original file-based RESP parser, kept so that
-                    unit/test_legacy.c can check the current parser against it
     cli/test_cli.c  runs evalresp and xml2resp and checks their output
     data/           input files (RESP, StationXML, reference output)
     expected/cli/   what each command-line case must produce

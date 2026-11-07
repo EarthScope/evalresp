@@ -5,8 +5,8 @@ extern const er_test unit_compare_tests[];
 extern const er_test unit_convert_tests[];
 extern const er_test unit_count_tests[];
 extern const er_test unit_evaluation_tests[];
+extern const er_test unit_globmatch_tests[];
 extern const er_test unit_input_tests[];
-extern const er_test unit_legacy_tests[];
 extern const er_test unit_log_tests[];
 extern const er_test unit_match_tests[];
 extern const er_test unit_parse_datetime_tests[];
@@ -23,8 +23,8 @@ static er_suite suites[] = {
     {"convert", unit_convert_tests},
     {"count", unit_count_tests},
     {"evaluation", unit_evaluation_tests},
+    {"globmatch", unit_globmatch_tests},
     {"input", unit_input_tests},
-    {"legacy", unit_legacy_tests},
     {"log", unit_log_tests},
     {"match", unit_match_tests},
     {"parse_datetime", unit_parse_datetime_tests},

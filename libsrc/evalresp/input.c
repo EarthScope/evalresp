@@ -6,7 +6,7 @@
 
 #include "./input.h"
 #include "./private.h"
-#include "./regexp.h" // TODO - should all private imports be relative like this?
+#include "./globmatch.h"
 #include "evalresp/constants.h"
 #include "evalresp/public_api.h"
 #include "evalresp/stationxml2resp/dom_to_seed.h"
@@ -353,57 +353,13 @@ parse_int_field (evalresp_logger *log, char *line, int fld_wanted, int *value)
   return status;
 }
 
+/* Match line against a glob pattern, optionally after one leading
+ * C, N or M prefix character. */
 static int
-reg_string_match (evalresp_logger *log, const char *string, char *expr, char *type_flag)
+units_match (const char *line, const char *pattern)
 {
-  char lcl_string[MAXLINELEN], regexp_pattern[MAXLINELEN];
-  int i = 0, glob_type, test;
-  register regexp *prog;
-  register char *lcl_ptr;
-
-  memset (lcl_string, 0, sizeof (lcl_string));
-  memset (regexp_pattern, 0, sizeof (regexp_pattern));
-  strncpy (lcl_string, string, strlen (string));
-  lcl_ptr = expr;
-  if (!strcmp (type_flag, "-r"))
-    glob_type = 0;
-  else if (!strcmp (type_flag, "-g"))
-    glob_type = 1;
-  else
-  {
-    evalresp_log (log, EV_ERROR, 0, " string_match; improper pattern type (%s)\n",
-                  type_flag);
-    return 0; /*TODO error improper pattern type */
-  }
-  while (*lcl_ptr && i < (MAXLINELEN - 1))
-  {
-    if (glob_type && *lcl_ptr == '?')
-    {
-      regexp_pattern[i++] = '.';
-      lcl_ptr++;
-    }
-    else if (glob_type && *lcl_ptr == '*')
-    {
-      regexp_pattern[i++] = '.';
-      regexp_pattern[i++] = '*';
-      lcl_ptr++;
-    }
-    else
-      regexp_pattern[i++] = *(lcl_ptr++);
-  }
-  regexp_pattern[i] = '\0';
-
-  if ((prog = evr_regcomp (regexp_pattern, log)) == NULL)
-  {
-    evalresp_log (log, EV_ERROR, 0,
-                  "string_match; pattern '%s' didn't compile", regexp_pattern);
-    return 0; /*TODO RE_COMP_FAILED*/
-  }
-  lcl_ptr = lcl_string;
-  test = evr_regexec (prog, lcl_ptr, log);
-
-  free (prog);
-  return (test);
+  return evr_globmatch (line, pattern) ||
+         ((*line == 'C' || *line == 'N' || *line == 'M') && evr_globmatch (line + 1, pattern));
 }
 
 /* Parse unit strings.
@@ -447,10 +403,7 @@ parse_units (evalresp_logger *log, evalresp_options const *const options, char *
     line[i] = toupper (line[i]);
   }
 
-  /* IGD 02/03/01 a restricted case of pressure data is added
-     * We will play with string_match ater if more requests show
-     * up for pressure data.
-     ********************************************/
+  /* IGD 02/03/01 a restricted case of pressure data is added */
   if (strncasecmp (line, "PA", 2) == 0)
   {
     *units = PRESSURE;
@@ -475,7 +428,7 @@ parse_units (evalresp_logger *log, evalresp_options const *const options, char *
   {
     *units = CENTIGRADE;
   }
-  else if (reg_string_match (log, line, "^[CNM]?M/S\\*\\*2|^[CNM]?M/SEC\\*\\*2", "-r"))
+  else if (units_match (line, "M/S\\*\\*2*") || units_match (line, "M/SEC\\*\\*2*"))
   {
     if (first_flag && !strncmp ("NM", line, (size_t)2))
       channel->unit_scale_fact = 1.0e9;
@@ -485,7 +438,7 @@ parse_units (evalresp_logger *log, evalresp_options const *const options, char *
       channel->unit_scale_fact = 1.0e2;
     *units = ACC;
   }
-  else if (reg_string_match (log, line, "^[CNM]?M/S|^[CNM]?M/SEC", "-r"))
+  else if (units_match (line, "M/S*"))
   {
     if (first_flag && !strncmp (line, "NM", 2))
       channel->unit_scale_fact = 1.0e9;
@@ -495,7 +448,7 @@ parse_units (evalresp_logger *log, evalresp_options const *const options, char *
       channel->unit_scale_fact = 1.0e2;
     *units = VEL;
   }
-  else if (reg_string_match (log, line, "^[CNM]?M[^A-Z/]?", "-r"))
+  else if (units_match (line, "M*"))
   {
     if (first_flag && !strncmp (line, "NM", 2))
       channel->unit_scale_fact = 1.0e9;
@@ -505,11 +458,11 @@ parse_units (evalresp_logger *log, evalresp_options const *const options, char *
       channel->unit_scale_fact = 1.0e2;
     *units = DIS;
   }
-  else if (reg_string_match (log, line, "^COUNTS?[^A-Z]?", "-r") || reg_string_match (log, line, "^DIGITAL[^A-Z]?", "-r"))
+  else if (evr_globmatch (line, "COUNT*") || evr_globmatch (line, "DIGITAL*"))
   {
     *units = COUNTS;
   }
-  else if (reg_string_match (log, line, "^V[^A-Z]?", "-r") || reg_string_match (log, line, "^VOLTS[^A-Z]?", "-r"))
+  else if (evr_globmatch (line, "V*"))
   {
     *units = VOLTS;
   }
@@ -2550,7 +2503,7 @@ in_epoch (evalresp_datetime *requirement, const char *beg_t, const char *end_t)
 }
 
 static int
-channel_matches (evalresp_logger *log, const evalresp_filter *filter, evalresp_channel *channel)
+channel_matches (const evalresp_filter *filter, evalresp_channel *channel)
 {
   int i;
   if (filter->datetime && filter->datetime->year)
@@ -2565,11 +2518,11 @@ channel_matches (evalresp_logger *log, const evalresp_filter *filter, evalresp_c
     for (i = 0; i < filter->sncls->nscn; ++i)
     {
       evalresp_sncl *sncl = filter->sncls->scn_vec[i];
-      if (reg_string_match (log, channel->staname, sncl->station, "-g") &&
+      if (evr_globmatch (channel->staname, sncl->station) &&
           ((!strlen (sncl->network) && !strlen (channel->network)) ||
-           reg_string_match (log, channel->network, sncl->network, "-g")) &&
-          reg_string_match (log, channel->locid, sncl->locid, "-g") &&
-          reg_string_match (log, channel->chaname, sncl->channel, "-g"))
+           evr_globmatch (channel->network, sncl->network)) &&
+          evr_globmatch (channel->locid, sncl->locid) &&
+          evr_globmatch (channel->chaname, sncl->channel))
       {
         sncl->found++;
         return 1;
@@ -2650,7 +2603,7 @@ filter_channels (evalresp_logger *log, const evalresp_filter *filter,
       if ((candidate = channels_in->channels[i])) /* this may be null */
       {
         /* basic functionality: only ever consider candidates that match the filter */
-        if (!filter || channel_matches (log, filter, candidate))
+        if (!filter || channel_matches (filter, candidate))
         {
           /* run through remaining channels removing any that this "beats".
              if it "loses" then stop, but delete this. */
@@ -3199,25 +3152,57 @@ parse_double (evalresp_logger *log, const char *name, const char *str, double *v
   return status;
 }
 
+/* Advance past a run of ASCII digits and return the number skipped. */
+static size_t
+skip_digits (const char **pp)
+{
+  const char *p = *pp;
+  while (*p >= '0' && *p <= '9')
+    ++p;
+  {
+    size_t n = (size_t)(p - *pp);
+    *pp = p;
+    return n;
+  }
+}
+
+/* Matches [-+]?[0-9]+ */
 int
 is_int (const char *test, evalresp_logger *log)
 {
-  char ipattern[MAXLINELEN];
+  const char *p = test;
+  (void)log;
 
-  /* first check to see if is an integer prefixed by a plus or minus.  If not
-     then check to see if is simply an integer */
-
-  strncpy (ipattern, "^[-+]?[0-9]+$", MAXLINELEN);
-  return (reg_string_match (log, test, ipattern, "-r"));
+  if (*p == '-' || *p == '+')
+    ++p;
+  return skip_digits (&p) > 0 && *p == '\0';
 }
 
+/* Matches [-+]?([0-9]+\.?[0-9]*|\.[0-9]+)([Ee][-+]?[0-9]+)? */
 int
 is_real (const char *test, evalresp_logger *log)
 {
-  char fpattern[MAXLINELEN];
-  strncpy (fpattern, "^[-+]?[0-9]+\\.?[0-9]*[Ee][-+]?[0-9]+$", MAXLINELEN);
-  strcat (fpattern, "|^[-+]?[0-9]*\\.[0-9]+[Ee][-+]?[0-9]+$");
-  strcat (fpattern, "|^[-+]?[0-9]+\\.?[0-9]*$");
-  strcat (fpattern, "|^[-+]?[0-9]*\\.[0-9]+$");
-  return (reg_string_match (log, test, fpattern, "-r"));
+  const char *p = test;
+  size_t ndigits;
+  (void)log;
+
+  if (*p == '-' || *p == '+')
+    ++p;
+  ndigits = skip_digits (&p);
+  if (*p == '.')
+  {
+    ++p;
+    ndigits += skip_digits (&p);
+  }
+  if (!ndigits)
+    return 0;
+  if (*p == 'E' || *p == 'e')
+  {
+    ++p;
+    if (*p == '-' || *p == '+')
+      ++p;
+    if (!skip_digits (&p))
+      return 0;
+  }
+  return *p == '\0';
 }

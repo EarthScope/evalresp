@@ -19,12 +19,11 @@ LDLIBS = $(LIBFILES) -lm
 override CFLAGS += -I. -I$(LIBSRC) -I$(LIBSRC)/mxml
 
 HARNESS = harness/harness.c harness/compare.c harness/platform.c
-UNIT = $(addprefix unit/test_,$(addsuffix .c,auto compare convert count evaluation input legacy log match \
+UNIT = $(addprefix unit/test_,$(addsuffix .c,auto compare convert count evaluation globmatch input log match \
         parse_datetime read_xml response response_char spline xml_to_char))
-LEGACY = unit/legacy/old_parse_fctns.c unit/legacy/old_string_fctns.c
 CLI = cli/test_cli.c
 
-SRCS = $(HARNESS) suites.c $(UNIT) $(LEGACY) $(CLI)
+SRCS = $(HARNESS) suites.c $(UNIT) $(CLI)
 OBJS = $(SRCS:.c=.o)
 
 .PHONY: all check clean

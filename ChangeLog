@@ -2,6 +2,9 @@ Unreleased
 
 	2026-11-07
 
+	* FIXED: Station, network, location and channel patterns match the whole code,
+	and a blank location matches only an empty location code.
+
 	* FIXED: Parse ResponseListElement entries in StationXML ResponseList stages.
 
 	* FIXED: Leak of the unit strings of StationXML ResponseList stages.
@@ -50,6 +53,8 @@ Unreleased
 
   * ADDED: Add GitHub Actions workflow that builds and runs the tests on Linux,
 	macOS and Windows.
+
+	* Replace the bundled V8 regex with a reentrant glob matcher and number scanners.
 
 	* Replace the Check and Robot Framework tests with a single portable C
 	test suite.

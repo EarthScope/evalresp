@@ -271,7 +271,7 @@ const char *evalresp_unit_string (const evalresp_unit unit);
  * @private
  * @ingroup evalresp_private_string
  * @brief A function that tests whether a string can be converted into an
- *        integer using string_match().
+ *        integer: an optional sign followed by one or more digits.
  * @param[in] test String to test.
  * @param[in] log Logging structure.
  * @returns 0 if false.
@@ -283,7 +283,8 @@ int is_int (const char *test, evalresp_logger *log);
  * @private
  * @ingroup evalresp_private_string
  * @brief A function that tests whether a string can be converted into an
- *        double using string_match().
+ *        double: an optional sign, digits with an optional decimal point and
+ *        an optional exponent.
  * @param[in] test String to test.
  * @param[in] log Logging structure.
  * @returns 0 if false.
@@ -854,8 +855,7 @@ int normalize_response (evalresp_logger *log, evalresp_options const *const opti
 /**
  * @private
  * @ingroup evalresp_private_string
- * @brief A function that tests whether a string looks like a time string
- *        using string_match().
+ * @brief A function that tests whether a string looks like a time string.
  * @details Time strings must be in the format 'hh:mm:ss[.#####]', so more
  *          than 14 characters is an error (too many digits).
  * @param[in] test String to test.

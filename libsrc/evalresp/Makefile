@@ -4,7 +4,7 @@
 CFLAGS += -I.. -I../mxml
 
 EVALRESP_SRC= alloc_fctns.c calc_fctns.c file_ops.c\
-			  regexp.c regsub.c resp_fctns.c spline.c input.c\
+			  globmatch.c resp_fctns.c spline.c input.c\
 			  output.c stationxml2resp/wrappers.c\
 			  highlevel.c evaluation.c legacy_interface.c\
 			  stationxml2resp/dom_to_seed.c stationxml2resp/xml_to_dom.c
