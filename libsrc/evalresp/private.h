@@ -968,12 +968,15 @@ calloc_doubles (evalresp_logger *log, const char *name, int n, double **array);
  * @param[in] log logging structure
  * @param[in] options object to control the flow of the conversion to responses
  * @param[in] filter object on how to filter the inputed files
+ * @param[in] freqs frequencies to evaluate, or NULL to use the grid described by options
+ * @param[in] nfreqs number of values in freqs
  * @param[out] responses object pointer containing responses
  * @brief take information from file and converthem into responses
  * @retval EVALRESP_OK on success
  */
 int process_cwd (evalresp_logger *log, evalresp_options *options,
-                 evalresp_filter *filter, evalresp_responses **responses);
+                 evalresp_filter *filter, const double *freqs, int nfreqs,
+                 evalresp_responses **responses);
 
 /**
  * @private
@@ -981,12 +984,31 @@ int process_cwd (evalresp_logger *log, evalresp_options *options,
  * @param[in] log logging structure
  * @param[in] options object to control the flow of the conversion to responses
  * @param[in] filter object on how to filter the inputed files
+ * @param[in] freqs frequencies to evaluate, or NULL to use the grid described by options
+ * @param[in] nfreqs number of values in freqs
  * @param[out] responses object pointer containing responses
  * @brief take information form stdin and convert them to responses
  * @retval EVALRESP_OK on success
  */
 int process_stdio (evalresp_logger *log, evalresp_options *options,
-                   evalresp_filter *filter, evalresp_responses **responses);
+                   evalresp_filter *filter, const double *freqs, int nfreqs,
+                   evalresp_responses **responses);
+
+/**
+ * @private
+ * @ingroup evalresp_private
+ * @param[in] log logging structure
+ * @param[in] channels channels to be converted into responses
+ * @param[in] options options control how responses are evaluated
+ * @param[in] freqs frequencies to evaluate, or NULL to use the grid described by options
+ * @param[in] nfreqs number of values in freqs
+ * @param[in,out] responses collection to which the responses are added; allocated if *responses == NULL
+ * @brief Evaluate all channels at the same frequencies and add the responses to the collection.
+ * @retval EVALRESP_OK on success
+ */
+int channels_to_responses (evalresp_logger *log, evalresp_channels *channels,
+                           evalresp_options *options, const double *freqs, int nfreqs,
+                           evalresp_responses **responses);
 
 /**
  * @private

@@ -653,6 +653,28 @@ int evalresp_channel_to_response (evalresp_logger *log, evalresp_channel *channe
  * @public
  * @ingroup evalresp_public_low_level_evaluation
  * @param[in] log logging structure
+ * @param[in] channel channel object to be converted into a response
+ * @param[in] options options control how responses are evaluated; the frequency
+ * members (`min_freq`, `max_freq`, `nfreq`, `lin_freq`) are ignored
+ * @param[in] freqs frequencies at which to evaluate the channel; need not be evenly spaced
+ * @param[in] nfreqs number of values in @p freqs
+ * @param[out] response an allocated response created from channel
+ * @brief Evaluate a channel (@ref evalresp_public_low_level_channel) to a response
+ * (@ref evalresp_public_low_level_response) at an arbitrary list of frequencies.
+ * @details The frequencies are copied to the `freqs` member of the response.  They must
+ * be non-negative.  For a blockette 55 (list) channel the frequencies must be in
+ * ascending order if `options->b55_interpolate` is set; otherwise they are replaced
+ * by the frequencies of the blockette.
+ * @retval EVALRESP_OK on success
+ */
+int evalresp_channel_to_response_freqs (evalresp_logger *log, evalresp_channel *channel,
+                                        evalresp_options *options, const double *freqs,
+                                        int nfreqs, evalresp_response **response);
+
+/**
+ * @public
+ * @ingroup evalresp_public_low_level_evaluation
+ * @param[in] log logging structure
  * @param[in] channels channels to be converted into responses
  * @param[in] options options control how responses are evaluated
  * @param[in,out] responses a pointer to an @ref evalresp_responses object (a collection of responses);

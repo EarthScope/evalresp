@@ -285,7 +285,7 @@ calculate_default_freqs (evalresp_logger *log, evalresp_options *options,
 }
 
 static int
-save_doubles (evalresp_logger *log, const char *name, int n, double **dest, double *src)
+save_doubles (evalresp_logger *log, const char *name, int n, double **dest, const double *src)
 {
   int status = EVALRESP_OK, i;
   if (!(status = calloc_doubles (log, name, n, dest)))
@@ -295,6 +295,39 @@ save_doubles (evalresp_logger *log, const char *name, int n, double **dest, doub
       (*dest)[i] = src[i];
     }
   }
+  return status;
+}
+
+/* Use the caller's frequencies, which must be non-negative. */
+static int
+copy_requested_freqs (evalresp_logger *log, const double *freqs, int nfreqs,
+                      evalresp_response *response)
+{
+  int status = EVALRESP_OK, i;
+
+  if (nfreqs < 1)
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot have fewer than one frequency");
+    status = EVALRESP_INP;
+  }
+  for (i = 0; !status && i < nfreqs; ++i)
+  {
+    if (!(freqs[i] >= 0))
+    {
+      evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot have a negative frequency");
+      status = EVALRESP_INP;
+    }
+  }
+  if (!status && !(status = save_doubles (log, "frequencies", nfreqs, &response->freqs, freqs)))
+  {
+    response->nfreqs = nfreqs;
+    if (!(response->rvec = calloc (response->nfreqs, sizeof (*response->rvec))))
+    {
+      evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate complex result");
+      status = EVALRESP_MEM;
+    }
+  }
+
   return status;
 }
 
@@ -431,9 +464,11 @@ restore_b55 (evalresp_channel *channel, evalresp_blkt *b55_save)
   list->phase = list_save->phase;
 }
 
-int
-evalresp_channel_to_response (evalresp_logger *log, evalresp_channel *channel,
-                              evalresp_options *options, evalresp_response **response)
+/* A NULL freqs selects the grid described by options. */
+static int
+channel_to_response (evalresp_logger *log, evalresp_channel *channel,
+                     evalresp_options *options, const double *freqs, int nfreqs,
+                     evalresp_response **response)
 {
   int status = EVALRESP_OK, free_options = 0;
   evalresp_blkt *b55_save = NULL;
@@ -452,7 +487,8 @@ evalresp_channel_to_response (evalresp_logger *log, evalresp_channel *channel,
 
   if (!(status = local_alloc_response (log, response)))
   {
-    if (!(status = calculate_default_freqs (log, options, *response)))
+    if (!(status = freqs ? copy_requested_freqs (log, freqs, nfreqs, *response)
+                         : calculate_default_freqs (log, options, *response)))
     {
       if (is_block_55 (channel))
       {
@@ -511,8 +547,36 @@ evalresp_channel_to_response (evalresp_logger *log, evalresp_channel *channel,
 }
 
 int
+evalresp_channel_to_response (evalresp_logger *log, evalresp_channel *channel,
+                              evalresp_options *options, evalresp_response **response)
+{
+  return channel_to_response (log, channel, options, NULL, 0, response);
+}
+
+int
+evalresp_channel_to_response_freqs (evalresp_logger *log, evalresp_channel *channel,
+                                    evalresp_options *options, const double *freqs,
+                                    int nfreqs, evalresp_response **response)
+{
+  if (!freqs)
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "No frequencies given");
+    return EVALRESP_INP;
+  }
+  return channel_to_response (log, channel, options, freqs, nfreqs, response);
+}
+
+int
 evalresp_channels_to_responses (evalresp_logger *log, evalresp_channels *channels,
                                 evalresp_options *options, evalresp_responses **responses)
+{
+  return channels_to_responses (log, channels, options, NULL, 0, responses);
+}
+
+int
+channels_to_responses (evalresp_logger *log, evalresp_channels *channels,
+                       evalresp_options *options, const double *freqs, int nfreqs,
+                       evalresp_responses **responses)
 {
   int status = EVALRESP_OK, i;
   if (!*responses && !(*responses = calloc (1, sizeof (**responses))))
@@ -525,7 +589,7 @@ evalresp_channels_to_responses (evalresp_logger *log, evalresp_channels *channel
     for (i = 0; !status && i < channels->nchannels; ++i)
     {
       evalresp_response *response = NULL;
-      if (!(status = evalresp_channel_to_response (log, channels->channels[i], options, &response)))
+      if (!(status = channel_to_response (log, channels->channels[i], options, freqs, nfreqs, &response)))
       {
         (*responses)->nresponses++;
         if (!((*responses)->responses = realloc ((*responses)->responses, (*responses)->nresponses * sizeof (*(*responses)->responses))))

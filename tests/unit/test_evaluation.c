@@ -5,6 +5,7 @@
 
 #include "evalresp/constants.h"
 #include "evalresp/public_api.h"
+#include "evalresp/public_compat.h"
 #include "evalresp_log/examples/to_file.h"
 #include "harness/harness.h"
 
@@ -178,7 +179,71 @@ test_log_no_filename (void)
   fclose (fd);
 }
 
+static void
+test_arbitrary_freqs (void)
+{
+  const double freqs[] = {0.77, 0.013, 5.0, 0.1, 2.5};
+  const int nfreqs = sizeof (freqs) / sizeof (freqs[0]);
+  int i;
+  evalresp_channels *channels = NULL;
+  evalresp_response *response = NULL, *single = NULL;
+  evalresp_options *options = NULL;
+  char freq[32];
+
+  ER_CHECK (!evalresp_new_options (NULL, &options));
+  ER_CHECK (!evalresp_filename_to_channels (NULL, er_data_path ("RESP.IU.ANMO..BHZ"), options, NULL,
+                                            &channels));
+  ER_CHECK (!evalresp_channel_to_response_freqs (NULL, channels->channels[0], options, freqs, nfreqs, &response));
+  ER_CHECK_MSG (response->nfreqs == nfreqs, "nfreqs: %d", response->nfreqs);
+  for (i = 0; i < nfreqs; ++i)
+  {
+    ER_CHECK_MSG (response->freqs[i] == freqs[i], "Freq %d: %f", i, response->freqs[i]);
+    /* a single-frequency evaluation through the options must agree */
+    snprintf (freq, sizeof (freq), "%.17g", freqs[i]);
+    ER_CHECK (!evalresp_set_frequency (NULL, options, freq, freq, "1"));
+    ER_CHECK (!evalresp_channel_to_response (NULL, channels->channels[0], options, &single));
+    ER_CHECK_MSG (fabs (response->rvec[i].real - single->rvec[0].real) <= 1e-9 * fabs (single->rvec[0].real),
+                  "Real %d: %f vs %f", i, response->rvec[i].real, single->rvec[0].real);
+    ER_CHECK_MSG (fabs (response->rvec[i].imag - single->rvec[0].imag) <= 1e-9 * fabs (single->rvec[0].imag),
+                  "Imag %d: %f vs %f", i, response->rvec[i].imag, single->rvec[0].imag);
+    evalresp_free_response (&single);
+  }
+  evalresp_free_response (&response);
+
+  /* invalid requests are rejected */
+  ER_CHECK (evalresp_channel_to_response_freqs (NULL, channels->channels[0], options, freqs, 0, &response));
+  ER_CHECK (evalresp_channel_to_response_freqs (NULL, channels->channels[0], options, NULL, nfreqs, &response));
+  {
+    const double negative[] = {1.0, -2.0};
+    ER_CHECK (evalresp_channel_to_response_freqs (NULL, channels->channels[0], options, negative, 2, &response));
+  }
+
+  evalresp_free_channels (&channels);
+  evalresp_free_options (&options);
+}
+
+static void
+test_legacy_arbitrary_freqs (void)
+{
+  double freqs[] = {0.77, 0.013, 5.0, 0.1, 2.5};
+  const int nfreqs = sizeof (freqs) / sizeof (freqs[0]);
+  int i;
+  evalresp_response *response = NULL;
+
+  ER_CHECK (NULL != (response = evresp ("ANMO", "BH1", "IU", "00", "2015,1,00:00:00", "VEL",
+                                        (char *)er_data_path ("station-1.xml"), freqs, nfreqs,
+                                        "AP", "", 0, 99, 0, 0, 0.1, 1)));
+  ER_CHECK_MSG (response->nfreqs == nfreqs, "nfreqs: %d", response->nfreqs);
+  for (i = 0; i < nfreqs; ++i)
+  {
+    ER_CHECK_MSG (response->freqs[i] == freqs[i], "Freq %d: %f", i, response->freqs[i]);
+  }
+  evalresp_free_response (&response);
+}
+
 const er_test unit_evaluation_tests[] = {
+    {"arbitrary_freqs", test_arbitrary_freqs, NULL},
+    {"legacy_arbitrary_freqs", test_legacy_arbitrary_freqs, NULL},
     {"no_options", test_no_options, NULL},
     {"start", test_start, NULL},
     {"freqs", test_freqs, NULL},

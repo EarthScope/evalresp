@@ -1,0 +1,3 @@
+WARN] station-polynomial-zero.xml: IU.MAJO.30.LDO: Missing gain in stage 0 - using unit gain at 1Hz
+WARN] station-polynomial-zero.xml: IU.MAJO.31.LDO: Missing gain in stage 0 - using unit gain at 1Hz
+ERROR] station-polynomial-zero.xml: IU.MAJO.30.LDO: Cannot compute B62 response for negative or zero input: 0.000000

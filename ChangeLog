@@ -2,6 +2,9 @@ Unreleased
 
 	2026-11-07
 
+	* Evaluate responses at the caller's frequency list in evresp() and the new
+  evalresp_channel_to_response_freqs()
+
 	* FIXED: Free the unit gain substituted for a missing stage gain when it is not linked into the stage
 
 	* IMPROVED: Warn when a digital stage is normalized above its Nyquist frequency

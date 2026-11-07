@@ -97,7 +97,8 @@ responses_to_cwd (evalresp_logger *log, const evalresp_responses *responses,
 }
 
 int
-process_stdio (evalresp_logger *log, evalresp_options *options, evalresp_filter *filter, evalresp_responses **responses)
+process_stdio (evalresp_logger *log, evalresp_options *options, evalresp_filter *filter,
+               const double *freqs, int nfreqs, evalresp_responses **responses)
 {
   int status = EVALRESP_OK;
   evalresp_channels *channels;
@@ -108,7 +109,7 @@ process_stdio (evalresp_logger *log, evalresp_options *options, evalresp_filter 
   }
   if (!(status = evalresp_file_to_channels (log, stdin, options, filter, &channels)))
   {
-    status = evalresp_channels_to_responses (log, channels, options, responses);
+    status = channels_to_responses (log, channels, options, freqs, nfreqs, responses);
   }
   evalresp_free_channels (&channels);
 
@@ -117,7 +118,8 @@ process_stdio (evalresp_logger *log, evalresp_options *options, evalresp_filter 
 
 // process a single named file
 static int
-process_file (evalresp_logger *log, evalresp_options *options, evalresp_filter *filter, const char *filename, evalresp_responses **responses)
+process_file (evalresp_logger *log, evalresp_options *options, evalresp_filter *filter, const char *filename,
+              const double *freqs, int nfreqs, evalresp_responses **responses)
 {
   int status = EVALRESP_OK;
   evalresp_channels *channels = NULL;
@@ -126,7 +128,7 @@ process_file (evalresp_logger *log, evalresp_options *options, evalresp_filter *
   if (!(status = evalresp_filename_to_channels (log, filename, options, filter, &channels)))
   {
     evalresp_log_context_init (&ctx, log, "%s", filename);
-    status = evalresp_channels_to_responses (&ctx.logger, channels, options, responses);
+    status = channels_to_responses (&ctx.logger, channels, options, freqs, nfreqs, responses);
   }
   evalresp_free_channels (&channels);
   return status;
@@ -139,7 +141,8 @@ add_sncl (evalresp_logger *log, evalresp_filter *filter, evalresp_sncl *sncl)
 }
 
 static int
-process_cwd_files (evalresp_logger *log, evalresp_options *options, evalresp_filter *filter, struct matched_files *files, evalresp_responses **responses)
+process_cwd_files (evalresp_logger *log, evalresp_options *options, evalresp_filter *filter, struct matched_files *files,
+                   const double *freqs, int nfreqs, evalresp_responses **responses)
 {
   int status = EVALRESP_OK, i;
   struct matched_files *files_for_sncls;
@@ -161,7 +164,7 @@ process_cwd_files (evalresp_logger *log, evalresp_options *options, evalresp_fil
         file = files->first_list;
         while (!status && file)
         {
-          status = process_file (log, options, filter, file->name, responses);
+          status = process_file (log, options, filter, file->name, freqs, nfreqs, responses);
           file = file->next_file;
         }
       }
@@ -174,7 +177,8 @@ process_cwd_files (evalresp_logger *log, evalresp_options *options, evalresp_fil
 
 int
 process_cwd (evalresp_logger *log, evalresp_options *options,
-             evalresp_filter *filter, evalresp_responses **responses)
+             evalresp_filter *filter, const double *freqs, int nfreqs,
+             evalresp_responses **responses)
 {
   int status = EVALRESP_OK, mode;
   struct matched_files *files = NULL;
@@ -183,11 +187,11 @@ process_cwd (evalresp_logger *log, evalresp_options *options,
   switch (mode)
   {
   case 0:
-    status = process_file (log, options, filter, options->filename, responses);
+    status = process_file (log, options, filter, options->filename, freqs, nfreqs, responses);
     break;
   default:
     // TODO - do we need to handle other modes?
-    status = process_cwd_files (log, options, filter, files, responses);
+    status = process_cwd_files (log, options, filter, files, freqs, nfreqs, responses);
     break;
   }
   free_matched_files (files);
@@ -239,11 +243,11 @@ evalresp_cwd_to_cwd (evalresp_logger *log, evalresp_options *options, evalresp_f
   }
   if (options->use_stdio)
   {
-    status = process_stdio (log, options, filter, &responses);
+    status = process_stdio (log, options, filter, NULL, 0, &responses);
   }
   else
   {
-    status = process_cwd (log, options, filter, &responses);
+    status = process_cwd (log, options, filter, NULL, 0, &responses);
   }
 
   if (!status)

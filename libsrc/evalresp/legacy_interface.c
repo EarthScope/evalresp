@@ -114,9 +114,15 @@ convert_responses_to_response_chain (evalresp_responses *responses, evalresp_res
 static int
 determine_log_or_lin (int num_freq, double *freqs)
 {
-  double dt1 = freqs[1] - freqs[0];
-  double dt2 = freqs[2] - freqs[1];
-  double diff = dt1 - dt2;
+  double dt1, dt2, diff;
+
+  if (num_freq < 3)
+  {
+    return 1; /*too few to distinguish, so linear */
+  }
+  dt1 = freqs[1] - freqs[0];
+  dt2 = freqs[2] - freqs[1];
+  diff = dt1 - dt2;
 
   if (diff < 1e-8 && diff > -1e-8)
   {
@@ -228,11 +234,11 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   /*Call to new evresp */
   if (options->use_stdio)
   {
-    process_stdio (log, options, filter, &responses);
+    process_stdio (log, options, filter, freqs, nfreqs, &responses);
   }
   else
   {
-    process_cwd (log, options, filter, &responses);
+    process_cwd (log, options, filter, freqs, nfreqs, &responses);
   }
 
   if (responses)
