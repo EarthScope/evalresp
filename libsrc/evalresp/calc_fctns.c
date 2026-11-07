@@ -471,6 +471,33 @@ calc_time_shift (double delta, double w, evalresp_complex *out)
   out->imag = sin (w * delta);
 }
 
+/*==================================================================
+ *      warn if a digital stage is normalized above its Nyquist
+ *      frequency, where its response repeats that of a lower frequency
+ *=================================================================*/
+static void
+warn_above_nyquist (evalresp_logger *log, evalresp_stage *stage_ptr, double freq)
+{
+  evalresp_blkt *blkt_ptr;
+  double sint, nyquist;
+
+  for (blkt_ptr = stage_ptr->first_blkt; blkt_ptr; blkt_ptr = blkt_ptr->next_blkt)
+  {
+    if (blkt_ptr->type != DECIMATION)
+      continue;
+    sint = blkt_ptr->blkt_info.decimation.sample_int;
+    if (sint > 0.0)
+    {
+      nyquist = 0.5 / sint;
+      if (freq > nyquist)
+        evalresp_log (log, EV_WARN, 0,
+                      "Stage %d is normalized at %g Hz, above its Nyquist frequency of %g Hz",
+                      stage_ptr->sequence_no, freq, nyquist);
+    }
+    return;
+  }
+}
+
 /*=================================================================
  *                   Normalize response
  *=================================================================*/
@@ -679,6 +706,7 @@ normalize_response (evalresp_logger *log, evalresp_options const *const options,
             }
             else if (main_type == IIR_PZ)
             {
+              warn_above_nyquist (log, stage_ptr, fil->blkt_info.gain.gain_freq);
               main_filt->blkt_info.pole_zero.a0 = 1.0;
               iir_pz_trans (main_filt,
                             2 * M_PI * fil->blkt_info.gain.gain_freq, &df);
@@ -686,6 +714,7 @@ normalize_response (evalresp_logger *log, evalresp_options const *const options,
             }
             else if ((main_type == FIR_SYM_1 || main_type == FIR_SYM_2) && main_filt->blkt_info.fir.ncoeffs)
             {
+              warn_above_nyquist (log, stage_ptr, fil->blkt_info.gain.gain_freq);
               main_filt->blkt_info.fir.h0 = 1.0;
               fir_sym_trans (main_filt,
                              2 * M_PI * fil->blkt_info.gain.gain_freq, &df);
@@ -693,6 +722,7 @@ normalize_response (evalresp_logger *log, evalresp_options const *const options,
             }
             else if (main_type == FIR_ASYM && main_filt->blkt_info.fir.ncoeffs)
             {
+              warn_above_nyquist (log, stage_ptr, fil->blkt_info.gain.gain_freq);
               main_filt->blkt_info.fir.h0 = 1.0;
               fir_asym_trans (main_filt,
                               2 * M_PI * fil->blkt_info.gain.gain_freq, &df);
@@ -700,6 +730,7 @@ normalize_response (evalresp_logger *log, evalresp_options const *const options,
             }
             else if (main_type == IIR_COEFFS)
             { /*IGD - new case for 3.2.17 */
+              warn_above_nyquist (log, stage_ptr, fil->blkt_info.gain.gain_freq);
               main_filt->blkt_info.coeff.h0 = 1.0;
               iir_trans (main_filt,
                          2 * M_PI * fil->blkt_info.gain.gain_freq, &df);

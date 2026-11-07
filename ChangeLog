@@ -2,6 +2,8 @@ Unreleased
 
 	2026-11-07
 
+	* Warn when a digital stage is normalized above its Nyquist frequency
+
 	* FIXED: Accept empty optional StationXML elements such as <Description></Description>.
 
 	* Prefix warnings and errors with the file and channel they concern
