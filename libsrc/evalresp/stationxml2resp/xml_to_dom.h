@@ -302,6 +302,15 @@ typedef struct {
  */
 int x2r_parse_iso_datetime(evalresp_logger *log, const char *datetime, time_t *epoch);
 
+struct _mxml_options_s;
+
+/**
+ * @private
+ * @ingroup evalresp_private_x2r_xml
+ * @brief Route the XML parser's error messages to the given logger.
+ */
+void x2r_log_xml_errors(struct _mxml_options_s *options, evalresp_logger *log);
+
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml

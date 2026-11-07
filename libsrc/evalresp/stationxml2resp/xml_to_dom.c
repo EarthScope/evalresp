@@ -18,6 +18,14 @@
 #define timegm _mkgmtime
 #endif
 
+static void xml_error_cb(void *log, const char *message) {
+    evalresp_log((evalresp_logger *)log, EV_ERROR, 0, "XML: %s", message);
+}
+
+void x2r_log_xml_errors(mxml_options_t *options, evalresp_logger *log) {
+    mxmlOptionsSetErrorCallback(options, xml_error_cb, log);
+}
+
 /* Read an XML file from the given stream and create an in-memory model. */
 static int stream2doc(evalresp_logger *log, FILE *in, mxml_node_t **doc) {
 
@@ -29,6 +37,7 @@ static int stream2doc(evalresp_logger *log, FILE *in, mxml_node_t **doc) {
         return X2R_ERR_MEMORY;
     }
     mxmlOptionsSetTypeValue(options, MXML_TYPE_OPAQUE);
+    x2r_log_xml_errors(options, log);
 
     if (!(*doc = mxmlLoadFile(NULL, options, in))) {
         evalresp_log(log, EV_ERROR, 0, "Could not parse input");
@@ -1312,6 +1321,7 @@ int x2r_station_service_load_string(evalresp_logger *log, const char *xml, x2r_f
         return X2R_ERR_MEMORY;
     }
     mxmlOptionsSetTypeValue(options, MXML_TYPE_OPAQUE);
+    x2r_log_xml_errors(options, log);
 
     if (!(doc = mxmlLoadString(NULL, options, xml))) {
         evalresp_log(log, EV_ERROR, 0, "Could not parse input");

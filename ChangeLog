@@ -39,7 +39,7 @@ Unreleased
 	@sajnag-web who reported these while porting the code to Go.
 
 	* FIXED: Read StationXML from standard input with -stdio.  Thanks to
-  @peacocks for reporting.
+	@peacocks for reporting.
 
 	* FIXED: Reject RESP reference stages with no responses instead of reading an
   uninitialized blockette, and clear MSVC sign, uninitialized-variable and lib warnings.
@@ -65,6 +65,9 @@ Unreleased
 	* IMPROVED: Build with -O2 by default when CFLAGS is not set, and with /O2 on Windows.
 
 	* IMPROVED: Rewrite the man pages and API introduction to match current behavior.
+
+	* IMPROVED: Warn when no response matches the request, explain forced-StationXML
+	parse failures, and report stages by sequence number.
 
 	* CHANGED: Removed the autotools build (configure.ac, Makefile.am,
 	MKDIST).  The GNU make build (Makefile, Build.config) is now the only

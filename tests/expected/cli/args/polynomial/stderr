@@ -1,0 +1,22 @@
+INFO] << EVALRESP RESPONSE OUTPUT VROBOT >>
+WARN] BK.CMB..LKS: Missing gain in stage 1 - using unit gain at 1Hz
+WARN] BK.CMB..LKS: Missing gain in stage 0 - using unit gain at 1Hz
+INFO]  --------------------------------------------------
+INFO]   station-polynomial.xml
+INFO]  --------------------------------------------------
+INFO]   BK CMB ?? LKS 
+INFO]   2004,167,00:00:00 2010,351,00:00:00
+INFO]    documented input units: DEGC - degree Celsius
+INFO]    documented output units: COUNTS - Digital Counts
+INFO]    requested units: Documented response unit
+INFO]    computed sens=4.23160E+05 (reported=0.00000E+00) @ 0.00000E+00 Hz
+INFO]    calc_del=1.58233E+01  corr_app=1.59062E+01  est_delay=1.58110E+01  final_sint=1(sec/sample)
+INFO]       stage  1: POLYNOMIAL     MacLaurin Coeffs= 10
+INFO]       stage  2: FIR_SYM_2   H0=1.000000E+00 Ncoeff=  0 SamInt=1.953125E-04 Sd=4.137690E+05
+INFO]       stage  3: FIR_SYM_2   H0=1.000000E+00 Ncoeff= 64 SamInt=1.953125E-04 Sd=1.014770E+00
+INFO]       stage  4: FIR_SYM_2   H0=1.000000E+00 Ncoeff= 72 SamInt=3.125000E-03 Sd=9.781120E-01
+INFO]       stage  5: FIR_SYM_2   H0=1.000000E+00 Ncoeff= 64 SamInt=1.250000E-02 Sd=1.011130E+00
+INFO]       stage  6: FIR_SYM_2   H0=1.000000E+00 Ncoeff= 64 SamInt=2.500000E-02 Sd=1.011130E+00
+INFO]       stage  7: FIR_SYM_2   H0=1.000000E+00 Ncoeff= 64 SamInt=5.000000E-02 Sd=1.011130E+00
+INFO]       stage  8: FIR_SYM_2   H0=1.000000E+00 Ncoeff=260 SamInt=1.000000E-01 Sd=9.967120E-01
+INFO] --------------------------------------------------

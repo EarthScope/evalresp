@@ -192,6 +192,32 @@ process_cwd (evalresp_logger *log, evalresp_options *options,
   return status;
 }
 
+/* Warn about each requested SNCL that matched no channel. */
+static void
+warn_unmatched_sncls (evalresp_logger *log, const evalresp_filter *filter)
+{
+  int i;
+  const evalresp_datetime *dt = filter->datetime;
+  char when[64] = "";
+
+  if (!filter->sncls)
+    return;
+  if (dt && dt->year)
+    (void)_evalresp_snprintf (when, sizeof (when), " at %d,%03d,%02d:%02d:%02d",
+                              dt->year, dt->jday, dt->hour, dt->min, (int)dt->sec);
+
+  for (i = 0; i < filter->sncls->nscn; ++i)
+  {
+    const evalresp_sncl *sncl = filter->sncls->scn_vec[i];
+    if (!sncl->found)
+    {
+      evalresp_log (log, EV_WARN, EV_WARN,
+                    "No response found for station '%s', channel '%s', network '%s', location '%s'%s",
+                    sncl->station, sncl->channel, sncl->network, sncl->locid, when);
+    }
+  }
+}
+
 int
 evalresp_cwd_to_cwd (evalresp_logger *log, evalresp_options *options, evalresp_filter *filter)
 {
@@ -220,6 +246,7 @@ evalresp_cwd_to_cwd (evalresp_logger *log, evalresp_options *options, evalresp_f
 
   if (!status)
   {
+    warn_unmatched_sncls (log, filter);
     /* Traditionally, FAP is always unwrapped. */
     status = responses_to_cwd (log, responses,
                                options->unwrap_phase || options->format == evalresp_fap_output_format,

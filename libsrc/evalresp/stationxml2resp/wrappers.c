@@ -90,6 +90,7 @@ load_mxml_service (evalresp_logger *log, char *xml_in, x2r_fdsn_station_xml **ro
     return EVALRESP_MEM;
   }
   mxmlOptionsSetTypeValue (options, MXML_TYPE_OPAQUE);
+  x2r_log_xml_errors (options, log);
 
   /* load the string into mxml */
   doc = mxmlLoadString (NULL, options, xml_in);

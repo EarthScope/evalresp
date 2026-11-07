@@ -289,7 +289,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
           evalresp_log (log, EV_ERROR, EV_ERROR,
                         "%s.%s.%s.%s: more than one filter type at stage %d",
                         chan->network, chan->staname, chan->locid, chan->chaname,
-                        i_stage + 1);
+                        stage_ptr->sequence_no);
           return EVALRESP_VAL;
         }
         stage_type = blkt_ptr->type == IIR_PZ ? IIR_TYPE : PZ_TYPE;
@@ -370,7 +370,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
           evalresp_log (log, EV_ERROR, EV_ERROR,
                         "%s.%s.%s.%s: more than one filter type at stage %d",
                         chan->network, chan->staname, chan->locid, chan->chaname,
-                        i_stage + 1);
+                        stage_ptr->sequence_no);
           return EVALRESP_VAL;
         }
         /* check to see if next blockette(s) is(are) a continuation of this one.
@@ -386,7 +386,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
         /*    nc = 1; */ /*for calc_delay to be 0 in decimation blockette */
         evalresp_log (log, EV_WARN, EV_WARN,
                       "%s.%s.%s.%s: GENERIC blockette is detected in stage %d; content is ignored",
-                      chan->network, chan->staname, chan->locid, chan->chaname, i_stage + 1);
+                      chan->network, chan->staname, chan->locid, chan->chaname, stage_ptr->sequence_no);
         filt_blkt = blkt_ptr;
         break;
 
@@ -399,7 +399,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
           evalresp_log (log, EV_ERROR, EV_ERROR,
                         "%s.%s.%s.%s: more than one filter type at stage %d",
                         chan->network, chan->staname, chan->locid, chan->chaname,
-                        i_stage + 1);
+                        stage_ptr->sequence_no);
           return EVALRESP_VAL;
         }
 
@@ -445,7 +445,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
           evalresp_log (log, EV_ERROR, EV_ERROR,
                         "%s.%s.%s.%s: more than one filter type at stage %d",
                         chan->network, chan->staname, chan->locid, chan->chaname,
-                        i_stage + 1);
+                        stage_ptr->sequence_no);
           return EVALRESP_VAL;
         }
         /* check to see if next blockette(s) is(are) a continuation of this one.
@@ -499,7 +499,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
           evalresp_log (log, EV_ERROR, EV_ERROR,
                         "%s.%s.%s.%s: DECIMATION blockette with no associated filter at stage %d",
                         chan->network, chan->staname, chan->locid, chan->chaname,
-                        i_stage + 1);
+                        stage_ptr->sequence_no);
           return EVALRESP_VAL;
         }
         deci_blkt = blkt_ptr;
@@ -554,7 +554,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
         evalresp_log (log, EV_WARN, EV_WARN,
                       "%s.%s.%s.%s: Missing gain in stage %d - using unit gain at 1Hz",
                       chan->network, chan->staname, chan->locid, chan->chaname,
-                      i_stage + 1);
+                      stage_ptr->sequence_no);
         gain_blkt = alloc_gain (log);
         gain_blkt->blkt_info.gain.gain = 1;
         gain_blkt->blkt_info.gain.gain_freq = 1;

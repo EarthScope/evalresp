@@ -2698,6 +2698,27 @@ is_stationxml (const char *text, evalresp_options const *const options)
   return strstr (head, "<FDSNStationXML") != NULL;
 }
 
+/* Forced StationXML input must start with '<' after any whitespace. */
+static int
+check_forced_stationxml (evalresp_logger *log, const char *text)
+{
+  const char *p = text;
+
+  while (*p == ' ' || *p == '\t' || *p == '\r' || *p == '\n')
+    p++;
+  /* skip a UTF-8 byte order mark */
+  if ((unsigned char)p[0] == 0xEF && (unsigned char)p[1] == 0xBB && (unsigned char)p[2] == 0xBF)
+    p += 3;
+  if (*p == '<')
+    return EVALRESP_OK;
+
+  evalresp_log (log, EV_ERROR, EV_ERROR,
+                "Input is not XML (first character is '%c') but StationXML was forced (-x); "
+                "omit -x to autodetect RESP or StationXML",
+                *p ? *p : ' ');
+  return EVALRESP_PAR;
+}
+
 static int
 stationxml_to_channels (evalresp_logger *log, const char *xml,
                         evalresp_options const *const options, evalresp_channels **channels)
@@ -2706,6 +2727,8 @@ stationxml_to_channels (evalresp_logger *log, const char *xml,
   x2r_fdsn_station_xml *root = NULL;
 
   *channels = NULL;
+  if (options && options->station_xml && (status = check_forced_stationxml (log, xml)))
+    return status;
   switch (x2r_station_service_load_string (log, xml, &root))
   {
   case X2R_OK:

@@ -1,0 +1,1 @@
+ERROR] Input is not XML (first character is '#') but StationXML was forced (-x); omit -x to autodetect RESP or StationXML
