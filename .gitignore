@@ -1,45 +1,29 @@
 
-Makefile
-!tests/c/Makefile
-tests/c/check_*
-!tests/c/check_*.c
-tests/c/*.xml
-tests/c/*.txt
-.deps
-.libs
-*.in
-*.m4
-*.cache
+# build products
 *.o
-*.lo
-*.la
-*~
-*.log
-*.sw[op]
-*.pdf
 *.obj
+*.a
 *.lib
 *.so
 *.so.*
-*.a
 *.dSYM/
 
-configure
-config.*
-libtool
-stamp*
-build-aux
-doc/latex
-.autotools
+# editor and IDE files
+*~
+*.sw[op]
 .cproject
 .project
 .settings
-
 .vs/
 
+# logs and documentation output
+*.log
+*.pdf
+doc/latex
+
+# local development and test output
 env
 install
-
 log.html
 output.xml
 report.html
