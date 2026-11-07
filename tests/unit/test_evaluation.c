@@ -111,10 +111,46 @@ test_b55_limits (void)
   evalresp_free_options (&options);
 }
 
+static void
+check_gain_only (const char *file, int station_xml)
+{
+  int i;
+  evalresp_channels *channels = NULL;
+  evalresp_response *response = NULL;
+  evalresp_options *options = NULL;
+
+  ER_CHECK (!evalresp_new_options (NULL, &options));
+  options->station_xml = station_xml;
+  ER_CHECK (!evalresp_filename_to_channels (NULL, er_data_path (file), options, NULL, &channels));
+  ER_CHECK (channels && channels->nchannels == 1);
+  ER_CHECK (!evalresp_set_frequency (NULL, options, "0.1", "10", "5"));
+  ER_CHECK (!evalresp_channel_to_response (NULL, channels->channels[0], options, &response));
+  ER_CHECK_MSG (response->nfreqs == 5, "nfreqs: %d", response->nfreqs);
+  for (i = 0; i < response->nfreqs; ++i)
+  {
+    ER_CHECK_MSG (fabs (response->rvec[i].real - 1.0) < 1e-12, "%s real[%d]: %g", file, i,
+                  response->rvec[i].real);
+    ER_CHECK_MSG (fabs (response->rvec[i].imag) < 1e-12, "%s imag[%d]: %g", file, i,
+                  response->rvec[i].imag);
+  }
+
+  evalresp_free_response (&response);
+  evalresp_free_channels (&channels);
+  evalresp_free_options (&options);
+}
+
+static void
+test_gain_only (void)
+{
+  check_gain_only ("station-gain-only.xml", 1);
+  check_gain_only ("RESP.UW.LON9.T1.HAX", 0);
+}
+
 const er_test unit_evaluation_tests[] = {
     {"no_options", test_no_options, NULL},
     {"start", test_start, NULL},
     {"freqs", test_freqs, NULL},
     {"b55_limits", test_b55_limits, NULL},
+    {"gain_only", test_gain_only, NULL},
     {NULL, NULL, NULL},
 };

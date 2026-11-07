@@ -2,6 +2,8 @@ Unreleased
 
 	2026-11-07
 
+	* FIXED: Channels made only of gain stages evaluate to their gain instead of zero.
+
 	* FIXED: Station, network, location and channel patterns match the whole code,
 	and a blank location matches only an empty location code.
 

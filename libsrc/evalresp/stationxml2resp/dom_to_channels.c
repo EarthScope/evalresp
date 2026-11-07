@@ -475,6 +475,7 @@ static int build_channel(evalresp_logger *log, evalresp_options const *options,
     copy_text((*channel)->locid, LOCIDLEN, blank(xc->location_code) ? "" : xc->location_code);
     copy_text((*channel)->chaname, CHALEN, xc->code);
 
+    (*channel)->unit_scale_fact = 1.0;
     (*channel)->first_stage = b.stage;
     (*channel)->nstages = 1;
     b.channel = *channel;

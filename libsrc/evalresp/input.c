@@ -543,6 +543,7 @@ read_channel_header (evalresp_logger *log, const char **seed, char *first_line,
   chan->estim_delay = 0.0;
   chan->applied_corr = 0.0;
   chan->sint = 0.0;
+  chan->unit_scale_fact = 1.0;
 
   if (!strlen (first_line))
   {
