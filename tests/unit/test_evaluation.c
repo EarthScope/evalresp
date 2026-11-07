@@ -5,6 +5,7 @@
 
 #include "evalresp/constants.h"
 #include "evalresp/public_api.h"
+#include "evalresp_log/examples/to_file.h"
 #include "harness/harness.h"
 
 static void
@@ -146,11 +147,43 @@ test_gain_only (void)
   check_gain_only ("RESP.UW.LON9.T1.HAX", 0);
 }
 
+static void
+test_log_no_filename (void)
+{
+  char text[8192], name[64];
+  size_t n;
+  FILE *fd;
+  evalresp_logger *log;
+  evalresp_channels *channels = NULL;
+  evalresp_options *options = NULL;
+
+  ER_CHECK (NULL != (fd = fopen ("channel.log", "w+")));
+  ER_CHECK (NULL != (log = evalresp_logger_alloc (evalresp_log_to_file, (void *)fd)));
+  ER_CHECK (!evalresp_new_options (NULL, &options));
+  ER_CHECK (!evalresp_filename_to_channels (NULL, er_data_path ("RESP.IU.ANMO..BHZ"), options, NULL, &channels));
+  ER_CHECK (!evalresp_channel_to_log (log, options, channels->channels[0]));
+  fflush (fd);
+  rewind (fd);
+  n = fread (text, 1, sizeof (text) - 1, fd);
+  text[n] = '\0';
+
+  snprintf (name, sizeof (name), "RESP.%s.%s.%s.%s", channels->channels[0]->network,
+            channels->channels[0]->staname, channels->channels[0]->locid, channels->channels[0]->chaname);
+  ER_CHECK_MSG (strstr (text, name), "%s missing from log: %s", name, text);
+  ER_CHECK_MSG (!strstr (text, "(null)"), "null filename in log: %s", text);
+
+  evalresp_free_channels (&channels);
+  evalresp_free_options (&options);
+  evalresp_logger_free (log);
+  fclose (fd);
+}
+
 const er_test unit_evaluation_tests[] = {
     {"no_options", test_no_options, NULL},
     {"start", test_start, NULL},
     {"freqs", test_freqs, NULL},
     {"b55_limits", test_b55_limits, NULL},
     {"gain_only", test_gain_only, NULL},
+    {"log_no_filename", test_log_no_filename, NULL},
     {NULL, NULL, NULL},
 };

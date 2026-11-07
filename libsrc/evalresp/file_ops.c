@@ -131,9 +131,9 @@ find_files (char *file, evalresp_sncls *scn_lst,
         /* if the current directory is not the same as the SEEDRESP
                  directory (and the SEEDRESP directory exists) add it to the
                  search path */
-        stat (basedir, &buf);
-        (void)getcwd (testdir, MAXLINELEN);
-        if (S_ISDIR (buf.st_mode) && strcmp (testdir, basedir))
+        if (!getcwd (testdir, MAXLINELEN))
+          testdir[0] = '\0';
+        if (!stat (basedir, &buf) && S_ISDIR (buf.st_mode) && strcmp (testdir, basedir))
         {
           memset (new_name, 0, MAXLINELEN);
           sprintf (new_name, " %s/RESP.%s.%s.%s.%s", basedir,
@@ -155,9 +155,9 @@ find_files (char *file, evalresp_sncls *scn_lst,
                  scn_ptr->station, scn_ptr->channel);
         if (basedir != NULL)
         {
-          stat (basedir, &buf);
-          (void)getcwd (testdir, MAXLINELEN);
-          if (S_ISDIR (buf.st_mode) && strcmp (testdir, basedir))
+          if (!getcwd (testdir, MAXLINELEN))
+            testdir[0] = '\0';
+          if (!stat (basedir, &buf) && S_ISDIR (buf.st_mode) && strcmp (testdir, basedir))
           {
             memset (new_name, 0, MAXLINELEN);
             sprintf (new_name, " %s/RESP.%s.%s.%s", basedir,

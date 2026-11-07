@@ -858,7 +858,7 @@ is_iir_coeffs (const char **seed)
   /* Tt returns 0  in case of the error, so use it with a caution!          */
   /* IGD I.Dricker ISTI i.dricker@isti.com 07/00 for evalresp 3.2.17        */
   /* IGD I.Dricker ISTI i.dricker@isti.com 07/17: Fully rewritten           */
-  char *substr = NULL;
+  const char *substr = NULL;
   char words[5][MAXLINELEN];
   int denoms = 0;
 

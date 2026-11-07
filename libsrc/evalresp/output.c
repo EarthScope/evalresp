@@ -254,21 +254,22 @@ evalresp_channel_to_log (evalresp_logger *log, evalresp_options const *const opt
   /* inform the user of which file has been evaluated */
 
   evalresp_log (log, EV_INFO, 0, " --------------------------------------------------");
-  if (!options->use_stdio)
+  if (!options->use_stdio && options->filename)
   {
     evalresp_log (log, EV_INFO, 0, "  %s", options->filename);
   }
   else
   {
+    const char *source = options->use_stdio ? " (from stdin)" : "";
     if (strlen (channel->network))
     {
-      evalresp_log (log, EV_INFO, 0, "  RESP.%s.%s.%s.%s (from stdin)",
-                    channel->network, channel->staname, channel->locid, channel->chaname);
+      evalresp_log (log, EV_INFO, 0, "  RESP.%s.%s.%s.%s%s",
+                    channel->network, channel->staname, channel->locid, channel->chaname, source);
     }
     else
     {
-      evalresp_log (log, EV_INFO, 0, "  RESP..%s.%s.%s (from stdin)",
-                    channel->staname, channel->locid, channel->chaname);
+      evalresp_log (log, EV_INFO, 0, "  RESP..%s.%s.%s%s",
+                    channel->staname, channel->locid, channel->chaname, source);
     }
   }
   evalresp_log (log, EV_INFO, 0, " --------------------------------------------------");

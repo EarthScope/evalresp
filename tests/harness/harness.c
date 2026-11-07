@@ -173,8 +173,13 @@ main (int argc, char **argv)
       }
 
       ++ran;
-      snprintf (test_dir, sizeof (test_dir), "%s/%s/%s", work_dir, suite->name, t->name);
       fail_msg[0] = '\0';
+      if ((size_t)snprintf (test_dir, sizeof (test_dir), "%s/%s/%s", work_dir, suite->name, t->name) >= sizeof (test_dir))
+      {
+        printf ("FAIL %s: work path too long\n", full);
+        ++failed;
+        continue;
+      }
       if (er_mkdir_p (test_dir) || er_remove_contents (test_dir) || er_chdir (test_dir))
       {
         printf ("FAIL %s: cannot prepare %s\n", full, test_dir);

@@ -245,9 +245,8 @@ er_list_files (const char *dir, char ***names)
   for (i = 0; i < n; ++i)
   {
     char path[ER_PATH_MAX];
-    if (strlen (dir) + strlen (all[i]) + 2 <= sizeof (path))
+    if ((size_t)snprintf (path, sizeof (path), "%s/%s", dir, all[i]) < sizeof (path))
     {
-      sprintf (path, "%s/%s", dir, all[i]);
       if (er_is_file (path))
         all[m++] = all[i];
       else
@@ -270,12 +269,11 @@ er_remove_contents (const char *dir)
   for (i = 0; i < n; ++i)
   {
     char path[ER_PATH_MAX];
-    if (strlen (dir) + strlen (all[i]) + 2 > sizeof (path))
+    if ((size_t)snprintf (path, sizeof (path), "%s/%s", dir, all[i]) >= sizeof (path))
     {
       rc = -1;
       continue;
     }
-    sprintf (path, "%s/%s", dir, all[i]);
     if (er_is_dir (path))
     {
       if (er_remove_contents (path) || RMDIR (path))

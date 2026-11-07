@@ -264,7 +264,8 @@ check_outputs (const cli_case *c)
     ER_CHECK_MSG (in_names (produced, n_produced, expected[i]), "missing output file %s", expected[i]);
     o = options_for (c, expected[i]);
     snprintf (result, sizeof (result), "%s", expected[i]);
-    snprintf (dir, sizeof (dir), "%s/%s", target, expected[i]);
+    ER_CHECK_MSG ((size_t)snprintf (dir, sizeof (dir), "%s/%s", target, expected[i]) < sizeof (dir),
+                  "expected path too long: %s", expected[i]);
     er_assert_files_match (result, dir, &o);
   }
   er_free_names (produced, n_produced);

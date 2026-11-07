@@ -38,6 +38,10 @@ Unreleased
 	condition test, which checked ibcbeg instead of ibcend.  Thanks to
 	@sajnag-web who reported these while porting the code to Go.
 
+	* FIXED: Log the channel's RESP name when no input filename is set instead of a null string.
+
+	* FIXED: Handle getcwd and stat failures when searching SEEDRESP and fix GCC format and const warnings.
+
 	* FIXED: Build the test harness on Linux, where strict POSIX mode hides S_IFMT.
 
 	* IMPROVED: Blockette 55 (List) interpolation (-il, -ii) is now done
