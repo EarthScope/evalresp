@@ -80,9 +80,41 @@ test_freqs (void)
   evalresp_free_options (&options);
 }
 
+static void
+test_b55_limits (void)
+{
+  evalresp_channels *channels = NULL;
+  evalresp_response *response = NULL;
+  evalresp_options *options = NULL;
+
+  ER_CHECK (!evalresp_new_options (NULL, &options));
+  options->b55_interpolate = 1;
+  ER_CHECK (!evalresp_filename_to_channels (NULL, er_data_path ("RESP.IM.ATTU..BHE"), options, NULL,
+                                            &channels));
+
+  /* 10 Hz is the last frequency of the blockette */
+  ER_CHECK (!evalresp_set_frequency (NULL, options, "0.001", "10", "100"));
+  ER_CHECK (!evalresp_channel_to_response (NULL, channels->channels[0], options, &response));
+  ER_CHECK_MSG (response->nfreqs == 75, "nfreqs: %d", response->nfreqs);
+  ER_CHECK_MSG (fabs (response->freqs[response->nfreqs - 1] - 10) < 1e-6, "last: %f",
+                response->freqs[response->nfreqs - 1]);
+  evalresp_free_response (&response);
+
+  /* rounding error above the limit does not drop the value */
+  options->lin_freq = 1;
+  ER_CHECK (!evalresp_set_frequency (NULL, options, "9", "10.000000000000002", "2"));
+  ER_CHECK (!evalresp_channel_to_response (NULL, channels->channels[0], options, &response));
+  ER_CHECK_MSG (response->nfreqs == 2, "nfreqs: %d", response->nfreqs);
+  evalresp_free_response (&response);
+
+  evalresp_free_channels (&channels);
+  evalresp_free_options (&options);
+}
+
 const er_test unit_evaluation_tests[] = {
     {"no_options", test_no_options, NULL},
     {"start", test_start, NULL},
     {"freqs", test_freqs, NULL},
+    {"b55_limits", test_b55_limits, NULL},
     {NULL, NULL, NULL},
 };

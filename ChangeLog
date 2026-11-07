@@ -20,6 +20,9 @@ Unreleased
 
 	* FIXED: Windows file matching: 64-bit find handle and directory-qualified results.
 
+	* FIXED: Keep requested frequencies that equal the blockette 55 range limits
+	within rounding error.
+
 	* FIXED: libmxmlev.a no longer contains the stray main() from
 	mxmldoc.c, and public.h is now installed with the other evalresp
 	headers.

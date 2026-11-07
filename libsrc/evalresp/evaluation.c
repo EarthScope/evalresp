@@ -334,6 +334,9 @@ static int
 restrict_frequency_range (evalresp_logger *log, double lo, double hi, int *nfreqs, double *freqs)
 {
   int status = EVALRESP_OK, nbefore = 0, nafter = 0, i;
+  /* values within rounding error of a limit are inside the range */
+  lo -= 1e-9 * fabs (lo);
+  hi += 1e-9 * fabs (hi);
   while (*nfreqs && freqs[0] < lo)
   {
     for (i = 1; i < *nfreqs; ++i)
