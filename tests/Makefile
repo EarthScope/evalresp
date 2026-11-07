@@ -20,7 +20,7 @@ override CFLAGS += -I. -I$(LIBSRC) -I$(LIBSRC)/mxml
 
 HARNESS = harness/harness.c harness/compare.c harness/platform.c
 UNIT = $(addprefix unit/test_,$(addsuffix .c,auto compare convert count evaluation globmatch input log match \
-        parse_datetime read_xml response response_char spline xml_to_char))
+        parse_datetime read_xml response response_char spline xml_channels xml_to_char))
 CLI = cli/test_cli.c
 
 SRCS = $(HARNESS) suites.c $(UNIT) $(CLI)

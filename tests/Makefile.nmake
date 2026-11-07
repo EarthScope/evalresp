@@ -12,7 +12,7 @@ UNIT = unit\test_auto.obj unit\test_compare.obj unit\test_convert.obj unit\test_
        unit\test_log.obj unit\test_match.obj unit\test_parse_datetime.obj \
        unit\test_read_xml.obj unit\test_response.obj \
        unit\test_response_char.obj unit\test_spline.obj \
-       unit\test_xml_to_char.obj
+       unit\test_xml_channels.obj unit\test_xml_to_char.obj
 
 CLI = cli\test_cli.obj
 

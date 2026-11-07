@@ -14,6 +14,7 @@ extern const er_test unit_read_xml_tests[];
 extern const er_test unit_response_tests[];
 extern const er_test unit_response_char_tests[];
 extern const er_test unit_spline_tests[];
+extern const er_test unit_xml_channels_tests[];
 extern const er_test unit_xml_to_char_tests[];
 extern const er_test *cli_tests (void);
 
@@ -32,6 +33,7 @@ static er_suite suites[] = {
     {"response", unit_response_tests},
     {"response_char", unit_response_char_tests},
     {"spline", unit_spline_tests},
+    {"xml_channels", unit_xml_channels_tests},
     {"xml_to_char", unit_xml_to_char_tests},
     {"cli", NULL},
     {NULL, NULL},

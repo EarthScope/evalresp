@@ -47,6 +47,9 @@ Unreleased
 	amplitudes.  NOTE: this changes numeric output for responses with a
 	List blockette when the requested frequencies differ from those listed.
 
+	* IMPROVED: Read StationXML directly into channels at full precision instead
+	of through rounded RESP text.
+
 	* CHANGED: Removed the autotools build (configure.ac, Makefile.am,
 	MKDIST).  The GNU make build (Makefile, Build.config) is now the only
 	Unix build, alongside Makefile.nmake for Windows.  Both systems wrote

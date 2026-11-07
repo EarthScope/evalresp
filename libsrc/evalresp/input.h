@@ -29,4 +29,17 @@ file_to_char (evalresp_logger *log, FILE *in, char **seed);
 time_t
 to_epoch (evalresp_datetime *datetime);
 
+// private functions shared with the StationXML reader
+
+int
+parse_units (evalresp_logger *log, evalresp_options const *const options, char *line,
+             evalresp_channel *channel, int *units);
+
+int
+add_channel (evalresp_logger *log, evalresp_channel *channel, evalresp_channels *channels);
+
+int
+filter_channels (evalresp_logger *log, const evalresp_filter *filter,
+                 evalresp_channels *channels_in, evalresp_channels **channels_out);
+
 #endif

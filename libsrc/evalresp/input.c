@@ -1,4 +1,5 @@
 
+#include <errno.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,8 +10,9 @@
 #include "./globmatch.h"
 #include "evalresp/constants.h"
 #include "evalresp/public_api.h"
-#include "evalresp/stationxml2resp/dom_to_seed.h"
-#include "evalresp/stationxml2resp/wrappers.h"
+#include "evalresp/stationxml2resp.h"
+#include "evalresp/stationxml2resp/dom_to_channels.h"
+#include "evalresp/stationxml2resp/xml_to_dom.h"
 #include "evalresp_log/log.h"
 
 #ifdef _WIN32
@@ -376,7 +378,7 @@ units_match (const char *line, const char *pattern)
  *
  * previously named 'check_units'
  * */
-static int
+int
 parse_units (evalresp_logger *log, evalresp_options const *const options, char *line, evalresp_channel *channel, int *units)
 {
   int i, first_flag = 0, status = EVALRESP_OK;
@@ -2314,7 +2316,7 @@ file_to_char (evalresp_logger *log, FILE *in, char **seed)
   return status;
 }
 
-static int
+int
 add_channel (evalresp_logger *log, evalresp_channel *channel, evalresp_channels *channels)
 {
   int status = EVALRESP_OK;
@@ -2673,6 +2675,48 @@ filter_channels (evalresp_logger *log, const evalresp_filter *filter,
   return status;
 }
 
+/* Detection of FDSN StationXML: forced by the options, otherwise by
+ * "<FDSNStationXML" in the first 255 bytes of the text. */
+static int
+is_stationxml (const char *text, evalresp_options const *const options)
+{
+  char head[255];
+
+  if (options == NULL)
+    return 0;
+  if (options->station_xml)
+    return 1;
+
+  strncpy (head, text, sizeof (head) - 1);
+  head[sizeof (head) - 1] = '\0';
+  return strstr (head, "<FDSNStationXML") != NULL;
+}
+
+static int
+stationxml_to_channels (evalresp_logger *log, const char *xml,
+                        evalresp_options const *const options, evalresp_channels **channels)
+{
+  int status;
+  x2r_fdsn_station_xml *root = NULL;
+
+  *channels = NULL;
+  switch (x2r_station_service_load_string (log, xml, &root))
+  {
+  case X2R_OK:
+    status = x2r_to_channels (log, root, options, channels);
+    break;
+  case X2R_ERR_MEMORY:
+    status = EVALRESP_MEM;
+    break;
+  default:
+    status = EVALRESP_PAR;
+    break;
+  }
+  x2r_free_fdsn_station_xml (root, X2R_OK);
+
+  return status;
+}
+
 int
 evalresp_char_to_channels (evalresp_logger *log, const char *seed_or_xml,
                            evalresp_options const *const options,
@@ -2682,7 +2726,15 @@ evalresp_char_to_channels (evalresp_logger *log, const char *seed_or_xml,
   evalresp_channels *all_channels = NULL;
 
   *channels = NULL;
-  if (!(status = collect_channels (log, seed_or_xml, options, &all_channels)))
+  if (is_stationxml (seed_or_xml, options))
+  {
+    status = stationxml_to_channels (log, seed_or_xml, options, &all_channels);
+  }
+  else
+  {
+    status = collect_channels (log, seed_or_xml, options, &all_channels);
+  }
+  if (!status)
   {
     status = filter_channels (log, filter, all_channels, channels);
   }
@@ -2745,41 +2797,10 @@ evalresp_filename_to_channels (evalresp_logger *log, const char *filename, evalr
 {
   FILE *file = NULL;
   int status = EVALRESP_OK;
-  int station_xml = options != NULL ? options->station_xml : 0;
 
   if (!(status = open_file (log, filename, &file)))
   {
-    FILE *temp_file = NULL;
-
-    /* Attempt to detect StationXML if not forced */
-    if (options != NULL && options->station_xml == 0)
-    {
-      station_xml = evalresp_file_detect_stationxml (log, file);
-
-      /* Assume RESP on detection error */
-      if (station_xml == -1)
-        station_xml = 0;
-    }
-
-    if (options != NULL && station_xml)
-    {
-      if (EVALRESP_OK == (status = evalresp_xml_stream_to_resp_file (log, 1, file, NULL, &temp_file)))
-      {
-        if (temp_file != NULL)
-        {
-          fclose (file);
-          file = temp_file;
-          temp_file = NULL;
-        }
-      }
-    }
-    if (EVALRESP_OK == status)
-    {
-      status = evalresp_file_to_channels (log, file, options, filter, channels);
-    }
-  }
-  if (file)
-  {
+    status = evalresp_file_to_channels (log, file, options, filter, channels);
     fclose (file);
   }
   return status;

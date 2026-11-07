@@ -1298,3 +1298,29 @@ int x2r_station_service_load(evalresp_logger *log, FILE *in, x2r_fdsn_station_xm
     mxmlDelete(doc);
     return status;
 }
+
+
+/* As x2r_station_service_load, reading from a NUL-terminated string. */
+int x2r_station_service_load_string(evalresp_logger *log, const char *xml, x2r_fdsn_station_xml **root) {
+
+    int status = X2R_OK;
+    mxml_node_t *doc = NULL;
+    mxml_options_t *options;
+
+    if (!(options = mxmlOptionsNew())) {
+        evalresp_log(log, EV_ERROR, 0, "Cannot alloc XML options");
+        return X2R_ERR_MEMORY;
+    }
+    mxmlOptionsSetTypeValue(options, MXML_TYPE_OPAQUE);
+
+    if (!(doc = mxmlLoadString(NULL, options, xml))) {
+        evalresp_log(log, EV_ERROR, 0, "Could not parse input");
+        status = X2R_ERR_XML;
+    } else {
+        status = x2r_parse_fdsn_station_xml(log, doc, root);
+    }
+
+    mxmlOptionsDelete(options);
+    mxmlDelete(doc);
+    return status;
+}

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0">
+ <Source>TEST</Source>
+ <Created>2026-11-07T00:00:00</Created>
+ <Network code="XX" startDate="2013-01-01T00:00:00" restrictedStatus="open">
+  <Station code="PREC" startDate="2013-11-07T00:00:00" restrictedStatus="open">
+   <Latitude>29.2576</Latitude>
+   <Longitude>-82.0562</Longitude>
+   <Elevation>20.0</Elevation>
+   <Site>
+    <Name>Full precision test</Name>
+   </Site>
+   <CreationDate>2013-11-07T00:00:00</CreationDate>
+   <Channel locationCode="" startDate="2013-11-07T17:00:00" restrictedStatus="open" code="BHZ">
+    <Latitude>29.2576</Latitude>
+    <Longitude>-82.0562</Longitude>
+    <Elevation>20.0</Elevation>
+    <Depth>0.0</Depth>
+    <Azimuth>0.0</Azimuth>
+    <Dip>-90.0</Dip>
+    <SampleRate>3.0</SampleRate>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>2500.12345678901</Value>
+      <Frequency>0.123456789012345</Frequency>
+      <InputUnits>
+       <Name>M/S</Name>
+       <Description>velocity in meters per second</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>V</Name>
+       <Description>emf in volts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+     <Stage number="1">
+      <PolesZeros>
+       <InputUnits>
+        <Name>M/S</Name>
+        <Description>velocity in meters per second</Description>
+       </InputUnits>
+       <OutputUnits>
+        <Name>V</Name>
+        <Description>emf in volts</Description>
+       </OutputUnits>
+       <PzTransferFunctionType>LAPLACE (RADIANS/SECOND)</PzTransferFunctionType>
+       <NormalizationFactor>1.23456789012345</NormalizationFactor>
+       <NormalizationFrequency>0.123456789012345</NormalizationFrequency>
+       <Zero number="0">
+        <Real>-0.00123456789012345</Real>
+        <Imaginary>0.0</Imaginary>
+       </Zero>
+       <Pole number="0">
+        <Real>-0.0370239123456789</Real>
+        <Imaginary>0.0370239123456789</Imaginary>
+       </Pole>
+       <Pole number="1">
+        <Real>-0.0370239123456789</Real>
+        <Imaginary>-0.0370239123456789</Imaginary>
+       </Pole>
+      </PolesZeros>
+      <StageGain>
+       <Value>1500.12345678901</Value>
+       <Frequency>0.123456789012345</Frequency>
+      </StageGain>
+     </Stage>
+     <Stage number="2">
+      <FIR>
+       <InputUnits>
+        <Name>V</Name>
+        <Description>emf in volts</Description>
+       </InputUnits>
+       <OutputUnits>
+        <Name>V</Name>
+        <Description>emf in volts</Description>
+       </OutputUnits>
+       <Symmetry>NONE</Symmetry>
+       <NumeratorCoefficient>0.123456789012345</NumeratorCoefficient>
+       <NumeratorCoefficient>0.376543210987655</NumeratorCoefficient>
+       <NumeratorCoefficient>0.25</NumeratorCoefficient>
+       <NumeratorCoefficient>0.25</NumeratorCoefficient>
+      </FIR>
+      <Decimation>
+       <InputSampleRate>0.333333333333333</InputSampleRate>
+       <Factor>1</Factor>
+       <Offset>0</Offset>
+       <Delay>0.0123456789012345</Delay>
+       <Correction>0.0234567890123456</Correction>
+      </Decimation>
+      <StageGain>
+       <Value>1.0</Value>
+       <Frequency>0.123456789012345</Frequency>
+      </StageGain>
+     </Stage>
+    </Response>
+   </Channel>
+  </Station>
+ </Network>
+</FDSNStationXML>

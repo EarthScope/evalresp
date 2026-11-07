@@ -45,12 +45,13 @@ the options.
 .SH "WHAT IS NEW"
 See ChangeLog file from evalresp distribution.
 .SH "STATION.XML FORMAT INPUT"
-From version 4.0.0, input files in the station.xml for are converted 
-to RESP format before processing if the -x flag is given.
+From version 4.0.0, input files in the station.xml format are read if the -x
+flag is given, or if the file is detected as station.xml.
 
-The conversion is intended to be identical to that produced with the 
-IRIS-WS package, and can be checked using the \fIxml2resp\fR program
-(installed alongside evalresp).
+Values are used at the precision given in the station.xml file.  The
+\fIxml2resp\fR program (installed alongside evalresp) writes the equivalent
+RESP format, as produced with the IRIS-WS package, which carries fewer
+significant digits.
 .SH "SUPPORT OF PRESSURE, MAGNETIC DATA AND TEMPERATURE"
 \fIEvalresp\fR is able to process responses of
 pressure instruments (in Pascals), temperature (in C) and magnetic flux density (in Tesla). Note that the default units 

@@ -1,12 +1,8 @@
 
 This README file is a part the evalresp distribution.
 
-- The evalresp repositary location:
+- The evalresp repository location:
    * https://github.com/earthscope/evalresp
-
-- Additional information about this project can be found in the
-  github wiki:
-   * https://github.com/earthscope/evalresp/wiki
 
 - Please read ChangeLog for modifications of evalresp
 
@@ -15,7 +11,7 @@ This README file is a part the evalresp distribution.
 
 - To build evalresp on Unix platform:
    * Follow instructions in INSTALL.unix
-     
+
 - To build evalresp on Windows platform:
    * Follow instructions in INSTALL.win
 

@@ -319,6 +319,13 @@ int x2r_station_service_load(evalresp_logger *log, FILE *in, x2r_fdsn_station_xm
 /**
  * @private
  * @ingroup evalresp_private_x2r_xml
+ * @brief As x2r_station_service_load(), reading from a NUL-terminated string.
+ */
+int x2r_station_service_load_string(evalresp_logger *log, const char *xml, x2r_fdsn_station_xml **root);
+
+/**
+ * @private
+ * @ingroup evalresp_private_x2r_xml
  * @brief Free an x2r_fdsn_station_xml value.
  */
 int x2r_free_fdsn_station_xml(x2r_fdsn_station_xml *root, int status);
