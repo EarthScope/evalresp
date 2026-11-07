@@ -20,12 +20,12 @@ jobs:
           - os: macos-latest
             cc: clang
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build and test
         run: make check CC=${{ matrix.cc }}
       - name: Upload test output
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-work-${{ matrix.os }}-${{ matrix.cc }}
           path: tests/work
@@ -34,8 +34,8 @@ jobs:
     name: windows-latest msvc
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: ilammy/msvc-dev-cmd@v1
+      - uses: actions/checkout@v7
+      - uses: TheMrMilchmann/setup-msvc-dev@v4
         with:
           arch: x64
       - name: Build and test
@@ -43,7 +43,7 @@ jobs:
         run: nmake /F Makefile.nmake check
       - name: Upload test output
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-work-windows-msvc
           path: tests/work
