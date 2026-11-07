@@ -11,7 +11,7 @@ all: evalresp.lib
 	$(CC) /O2 /Zi /c $*.c /I ..\ /I ..\mxml\ /Wall /DWIN32 /Fo$@
 
 evalresp.lib: $(OBJ)
-    link /lib $(OBJ) /debug /OUT:evalresp.lib
+    link /lib $(OBJ) /OUT:evalresp.lib
 
 clean:
     del evalresp.lib

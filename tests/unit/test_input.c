@@ -193,6 +193,25 @@ test_julian_day (void)
   evalresp_free_filter (&filter);
 }
 
+static void
+test_reference_without_responses (void)
+{
+  const char *resp =
+      "B050F03     Station:     ANMO\n"
+      "B050F16     Network:     IU\n"
+      "B052F03     Location:    00\n"
+      "B052F04     Channel:     BHZ\n"
+      "B052F22     Start date:  1998,299,20\n"
+      "B052F23     End date:    2000,293,16\n"
+      "B060F03     Number of stages:     1\n"
+      "B060F04     Stage sequence number: 1\n"
+      "B060F05     Number of responses:   0\n";
+  evalresp_channels *channels = NULL;
+  int status = evalresp_char_to_channels (NULL, resp, NULL, NULL, &channels);
+  ER_CHECK_MSG (status == EVALRESP_PAR, "Unexpected status: %d", status);
+  evalresp_free_channels (&channels);
+}
+
 const er_test unit_input_tests[] = {
     {"slurp_line", test_slurp_line, NULL},
     {"slurp_line_buffer", test_slurp_line_buffer, NULL},
@@ -203,5 +222,6 @@ const er_test unit_input_tests[] = {
     {"splits", test_splits, NULL},
     {"filter", test_filter, NULL},
     {"julian_day", test_julian_day, NULL},
+    {"reference_without_responses", test_reference_without_responses, NULL},
     {NULL, NULL, NULL},
 };

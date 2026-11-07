@@ -15,7 +15,7 @@ evalresp_response_to_char (evalresp_logger *log, const evalresp_response *respon
 {
   int status = EVALRESP_OK;
   int num_of_points = 0;
-  int i, length, offset;
+  int i, length = 0, offset;
   double added_value = 0, prev_phase = 0;
   double *amp_arr = NULL;
   double *pha_arr = NULL;
@@ -164,7 +164,7 @@ evalresp_response_to_stream (evalresp_logger *log, const evalresp_response *resp
     {
       /* print to the FILE * */
       len = fprintf (file, "%s", resp_string);
-      if (len != strlen (resp_string))
+      if (len < 0 || (size_t)len != strlen (resp_string))
       {
         evalresp_log (log, EV_ERROR, EV_ERROR, "Failed to write to file");
         status = EVALRESP_IO;

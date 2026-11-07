@@ -91,8 +91,8 @@ end_of_string (const char **seed)
 static int
 blank_line (char *line)
 {
-  int i;
-  for (i = 0; i < strlen (line); ++i)
+  size_t i, n = strlen (line);
+  for (i = 0; i < n; ++i)
   {
     if (!isspace (line[i]))
       return 0;
@@ -118,8 +118,8 @@ drop_comments_and_blank_lines (const char **seed)
 static void
 remove_tabs_and_crlf (char *line)
 {
-  int i;
-  for (i = 0; i < strlen (line); ++i)
+  size_t i, n = strlen (line);
+  for (i = 0; i < n; ++i)
   {
     if (line[i] == '\t')
     {
@@ -1731,7 +1731,7 @@ read_ref (evalresp_logger *log, evalresp_options const *const options, const cha
   int status = EVALRESP_OK, this_blkt_no = 60, blkt_no, fld_no, i, j, prev_blkt_no = 60;
   int nstages, stage_num, nresps, lcl_nstages;
   char field[MAXFLDLEN];
-  evalresp_blkt *last_blkt;
+  evalresp_blkt *last_blkt = NULL;
   evalresp_stage *last_stage, *this_stage;
 
   blkt_ptr->type = REFERENCE;
@@ -1798,6 +1798,11 @@ read_ref (evalresp_logger *log, evalresp_options const *const options, const cha
     }
     nresps = atoi (field);
     blkt_ptr->blkt_info.reference.num_responses = nresps;
+    if (nresps < 1)
+    {
+      evalresp_log (log, EV_ERROR, EV_ERROR, "parse_ref; stage %d has no responses", stage_num);
+      return EVALRESP_PAR;
+    }
 
     /* then, for each of the responses in this stage, get the first line of the next
          response to determine the type of response to read */
@@ -2340,7 +2345,7 @@ static void
 parse_datetime (const char *str, evalresp_datetime *datetime)
 {
   char *start_pos, temp_str[DATIMLEN];
-  int len;
+  size_t len;
 
   // TODO - this could probably be rewritten better (like, error handling, what's that?)
   datetime->hour = datetime->min = 0;

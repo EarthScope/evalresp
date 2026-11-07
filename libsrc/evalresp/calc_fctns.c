@@ -482,7 +482,7 @@ normalize_response (evalresp_logger *log, evalresp_options const *const options,
   int i, main_type, reset_gain, skipped_stages = 0;
   double w, f;
   double percent_diff;
-  evalresp_complex of, df;
+  evalresp_complex of = {0.0, 0.0}, df = {0.0, 0.0};
   int curr_seq_no;
 
   /* -------- TEST 1 -------- */
@@ -887,9 +887,9 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
         case FIR_SYM_1:
         case FIR_SYM_2:
           if (blkt_ptr->type == FIR_SYM_1)
-            nc = (double)blkt_ptr->blkt_info.fir.ncoeffs * 2 - 1;
+            nc = blkt_ptr->blkt_info.fir.ncoeffs * 2 - 1;
           else if (blkt_ptr->type == FIR_SYM_2)
-            nc = (double)blkt_ptr->blkt_info.fir.ncoeffs * 2;
+            nc = blkt_ptr->blkt_info.fir.ncoeffs * 2;
           if (blkt_ptr->blkt_info.fir.ncoeffs)
           {
             fir_sym_trans (blkt_ptr, w, &of);
@@ -898,7 +898,7 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
           }
           break;
         case FIR_ASYM:
-          nc = (double)blkt_ptr->blkt_info.fir.ncoeffs;
+          nc = blkt_ptr->blkt_info.fir.ncoeffs;
           if (blkt_ptr->blkt_info.fir.ncoeffs)
           {
             fir_asym_trans (blkt_ptr, w, &of);

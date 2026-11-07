@@ -78,12 +78,12 @@ parse_option (evalresp_logger *log, const char *name, int noptions, option_pair 
               const char *str, int *value)
 {
   int status = EVALRESP_OK, i, found = 0;
-  ;
+  size_t k;
   char *copy;
   copy = strdup (str);
-  for (i = 0; i < strlen (copy); ++i)
+  for (k = 0; k < strlen (copy); ++k)
   {
-    copy[i] = toupper (copy[i]);
+    copy[k] = toupper (copy[k]);
   }
   for (i = 0; i < noptions; ++i)
   {

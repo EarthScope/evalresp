@@ -425,15 +425,15 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
            and the filter type */
         if (blkt_ptr->type == FIR_SYM_1)
         {
-          nc = (double)blkt_ptr->blkt_info.fir.ncoeffs * 2 - 1;
+          nc = blkt_ptr->blkt_info.fir.ncoeffs * 2 - 1;
         }
         else if (blkt_ptr->type == FIR_SYM_2)
         {
-          nc = (double)blkt_ptr->blkt_info.fir.ncoeffs * 2;
+          nc = blkt_ptr->blkt_info.fir.ncoeffs * 2;
         }
         else if (blkt_ptr->type == FIR_ASYM)
         {
-          nc = (double)blkt_ptr->blkt_info.fir.ncoeffs;
+          nc = blkt_ptr->blkt_info.fir.ncoeffs;
         }
         filt_blkt = blkt_ptr;
         break;

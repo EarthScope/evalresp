@@ -137,7 +137,8 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   evalresp_filter *filter = NULL;
   evalresp_responses *responses = NULL;
   evalresp_response *first_resp = NULL;
-  int i, year, jday;
+  int year, jday;
+  size_t k;
   char time[100];
 
   if (EVALRESP_OK != evalresp_new_options (log, &options))
@@ -182,9 +183,9 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 
   if (verbose)
   {
-    for (i = 0; i < strlen (verbose); i++)
+    for (k = 0; k < strlen (verbose); k++)
     {
-      if (toupper (verbose[i]) == 'V')
+      if (toupper (verbose[k]) == 'V')
       {
         options->verbose++;
       }
