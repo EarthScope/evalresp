@@ -16,6 +16,8 @@ Makefile
 *.lib
 *.so
 *.so.*
+*.a
+*.dSYM/
 
 configure
 config.*

@@ -1,3 +1,24 @@
+Unreleased
+
+	2026-11-06
+
+	* FIXED: Swapped sub-/super-diagonal coefficients in spline_cubic_set(),
+	which produced a spline with discontinuous first derivatives on
+	non-uniformly spaced knots, and the right-end not-a-knot boundary
+	condition test, which checked ibcbeg instead of ibcend.  Thanks to
+	@sajnag-web who reported these while porting the code to Go.
+
+	* IMPROVED: Blockette 55 (List) interpolation (-il, -ii) is now done
+	against log10(frequency), with amplitude interpolated as log10(amplitude).
+	Previously the cubic spline was applied in linear space and could
+	overshoot or go negative on steep roll-offs, with negative values
+	replaced by an arbitrary minimum.  Falls back to linear interpolation,
+	with a warning, if the list contains non-positive frequencies or
+	amplitudes.  NOTE: this changes numeric output for responses with a
+	List blockette when the requested frequencies differ from those listed.
+
+	* ADDED: tests/c/check_spline.c unit tests for the above.
+
 Version 5.0.1
 
 	2022-03-27 Chad Trabant

@@ -638,6 +638,61 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
   return EVALRESP_OK;
 }
 
+/*
+ * Spline interpolation of list blockette data, performed against log10(frequency)
+ * and, optionally, log10(value).  List data are normally spaced roughly
+ * logarithmically in frequency and amplitudes span many orders of magnitude, so a
+ * cubic spline in linear space overshoots (and can go negative) on steep
+ * roll-offs.  Interpolating log10(amplitude) also guarantees positive results.
+ *
+ * All source frequencies, requested frequencies and (if log_values) values must
+ * be positive; the caller is responsible for checking this.
+ */
+static int
+spline_interpolate_log (int num_points, double *freqs, double *values,
+                        double *req_freqs, int num_req, int log_values,
+                        double **p_retvals_arr, int *p_num_retvals,
+                        evalresp_logger *log)
+{
+  int i, status = EVALRESP_OK;
+  double *lfreqs = NULL, *lvalues = NULL, *lreq = NULL;
+
+  *p_retvals_arr = NULL;
+  *p_num_retvals = 0;
+
+  lfreqs = (double *)calloc (num_points, sizeof (double));
+  lvalues = (double *)calloc (num_points, sizeof (double));
+  lreq = (double *)calloc (num_req, sizeof (double));
+  if (!lfreqs || !lvalues || !lreq)
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Failed to allocate log-space interpolation arrays");
+    status = EVALRESP_MEM;
+  }
+  else
+  {
+    for (i = 0; i < num_points; ++i)
+    {
+      lfreqs[i] = log10 (freqs[i]);
+      lvalues[i] = log_values ? log10 (values[i]) : values[i];
+    }
+    for (i = 0; i < num_req; ++i)
+      lreq[i] = log10 (req_freqs[i]);
+
+    if (!(status = spline_interpolate (num_points, lfreqs, lvalues, lreq, num_req,
+                                       p_retvals_arr, p_num_retvals, log)) &&
+        log_values)
+    {
+      for (i = 0; i < *p_num_retvals; ++i)
+        (*p_retvals_arr)[i] = pow (10.0, (*p_retvals_arr)[i]);
+    }
+  }
+
+  free (lfreqs);
+  free (lvalues);
+  free (lreq);
+  return status;
+}
+
 int
 interpolate_list_blockette (double **frequency_ptr,
                             double **amplitude_ptr, double **phase_ptr,
@@ -647,6 +702,7 @@ interpolate_list_blockette (double **frequency_ptr,
   int i, num, status = EVALRESP_OK;
   double first_freq, last_freq, val, min_ampval;
   int fix_first_flag, fix_last_flag, unwrapped_flag;
+  int use_log;
   double *used_req_freq_arr;
   int used_req_num_freqs;
   double *retvals_arr, *retamps_arr;
@@ -738,11 +794,41 @@ interpolate_list_blockette (double **frequency_ptr,
   if (fix_last_flag)
     req_freq_arr[req_num_freqs - 1] = last_freq;
 
-  /* interpolate amplitude values */
-  if ((status = spline_interpolate (*p_number_points, *frequency_ptr, *amplitude_ptr,
-                                    req_freq_arr, req_num_freqs,
-                                    &retvals_arr, &num_retvals, log)))
+  /* Interpolate in log10(frequency) (and log10(amplitude)) when all values are
+     positive, which is the normal case.  Otherwise fall back to linear space. */
+  use_log = 1;
+  for (i = 0; i < *p_number_points; ++i)
   {
+    if (!((*frequency_ptr)[i] > 0.0 && (*amplitude_ptr)[i] > 0.0))
+    {
+      use_log = 0;
+      break;
+    }
+  }
+  for (i = 0; use_log && i < req_num_freqs; ++i)
+  {
+    if (!(req_freq_arr[i] > 0.0))
+      use_log = 0;
+  }
+  if (!use_log)
+  {
+    evalresp_log (log, EV_WARN, 0,
+                  "List blockette contains non-positive frequency or amplitude values, "
+                  "interpolating in linear space (results may be inaccurate)");
+  }
+
+  /* interpolate amplitude values */
+  if (use_log)
+    status = spline_interpolate_log (*p_number_points, *frequency_ptr, *amplitude_ptr,
+                                     req_freq_arr, req_num_freqs, 1,
+                                     &retvals_arr, &num_retvals, log);
+  else
+    status = spline_interpolate (*p_number_points, *frequency_ptr, *amplitude_ptr,
+                                 req_freq_arr, req_num_freqs,
+                                 &retvals_arr, &num_retvals, log);
+  if (status)
+  {
+    free (used_req_freq_arr);
     return status;
   }
   if (num_retvals != req_num_freqs)
@@ -761,7 +847,7 @@ interpolate_list_blockette (double **frequency_ptr,
     if ((val = (*amplitude_ptr)[i]) < min_ampval)
       min_ampval = val; /* if new mininum then save value */
   }
-  if (min_ampval > 0.0)
+  if (!use_log && min_ampval > 0.0)
   {                     /* all "source" amplitude values are positive */
     min_ampval /= 10.0; /* bring minimum a bit closer to zero */
     /* substitude minimum for any non-positive values */
@@ -791,12 +877,19 @@ interpolate_list_blockette (double **frequency_ptr,
   }
 
   /* interpolate phase values */
-  status = spline_interpolate (*p_number_points, *frequency_ptr, local_pha_arr,
-                               req_freq_arr, req_num_freqs,
-                               &retvals_arr, &num_retvals, log);
+  if (use_log)
+    status = spline_interpolate_log (*p_number_points, *frequency_ptr, local_pha_arr,
+                                     req_freq_arr, req_num_freqs, 0,
+                                     &retvals_arr, &num_retvals, log);
+  else
+    status = spline_interpolate (*p_number_points, *frequency_ptr, local_pha_arr,
+                                 req_freq_arr, req_num_freqs,
+                                 &retvals_arr, &num_retvals, log);
   free (local_pha_arr);
   if (status)
   {
+    free (retamps_arr);
+    free (used_req_freq_arr);
     return status;
   }
   else if (num_retvals != req_num_freqs)

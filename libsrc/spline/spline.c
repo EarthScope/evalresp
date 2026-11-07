@@ -4899,7 +4899,7 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
   else
   {
     evalresp_log(log, EV_ERROR, 0, "SPLINE_CUBIC_SET - Fatal error!" );
-    evalresp_log(log, EV_ERROR, 0, "  IBCBEG must be 0, 1 or 2." );
+    evalresp_log(log, EV_ERROR, 0, "  IBCBEG must be 0, 1, 2 or 3." );
     evalresp_log(log, EV_ERROR, 0, "  The input value is %d.", ibcbeg );
     exit ( 1 ); /* TODO imho this should not exit */
   }
@@ -4910,9 +4910,9 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
   {
     b[i] = ( y[i+1] - y[i] ) / ( t[i+1] - t[i] )
       - ( y[i] - y[i-1] ) / ( t[i] - t[i-1] );
-    a2[i] = ( t[i+1] - t[i]   ) / 6.0;
+    a2[i] = ( t[i]   - t[i-1] ) / 6.0;
     a3[i] = ( t[i+1] - t[i-1] ) / 3.0;
-    a4[i] = ( t[i]   - t[i-1] ) / 6.0;
+    a4[i] = ( t[i+1] - t[i]   ) / 6.0;
   }
 /*
   Set up the last equation.
@@ -4935,7 +4935,7 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
     a2[n-1] = 0.0;
     a3[n-1] = 1.0;
   }
-  else if ( ibcbeg == 3 )
+  else if ( ibcend == 3 )
   {
     b[n-1] = 0.0;
     a1[n-1] = - ( t[n-1] - t[n-2] );
@@ -4945,7 +4945,7 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
   else
   {
     evalresp_log(log, EV_ERROR, 0, "SPLINE_CUBIC_SET - Fatal error!" );
-    evalresp_log(log, EV_ERROR, 0, "  IBCEND must be 0, 1 or 2." );
+    evalresp_log(log, EV_ERROR, 0, "  IBCEND must be 0, 1, 2 or 3." );
     evalresp_log(log, EV_ERROR, 0, "  The input value is %d.", ibcend );
     exit ( 1 ); /* TODO imho this should not exit */
   }

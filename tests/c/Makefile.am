@@ -11,13 +11,13 @@ if USE_CHECK
 TESTS = check_read_xml check_convert check_parse_datetime check_response \
 	check_count check_auto check_match check_log check_input \
 	check_response_char check_evaluation check_xml_to_char\
-	check_legacy 
+	check_legacy check_spline
 #TESTS = check_input
 
 check_PROGRAMS = check_read_xml check_convert check_parse_datetime check_response \
 	check_count check_auto check_match check_log check_input \
 	check_response_char check_evaluation check_xml_to_char\
-	check_legacy
+	check_legacy check_spline
 
 check_read_xml_SOURCES = check_read_xml.c
 check_read_xml_CFLAGS = @CHECK_CFLAGS@ -I../../src/ $(AM_CFLAGS)
@@ -70,6 +70,9 @@ check_evaluation_LDADD = @CHECK_LIBS@ $(AM_LDFLAGS)
 check_legacy_SOURCES = check_legacy.c old_parse_fctns.c old_string_fctns.c
 check_legacy_CFLAGS = @CHECK_CFLAGS@ -I../../src/ $(AM_CFLAGS)
 check_legacy_LDADD = @CHECK_LIBS@ $(AM_LDFLAGS)
+check_spline_SOURCES = check_spline.c
+check_spline_CFLAGS = @CHECK_CFLAGS@ -I../../src/ $(AM_CFLAGS)
+check_spline_LDADD = @CHECK_LIBS@ $(AM_LDFLAGS)
 endif
 
 clean-local:
