@@ -1,0 +1,15 @@
+INFO] << EVALRESP RESPONSE OUTPUT VROBOT >>
+WARN] RESP.XX.NYQ.00.ZZZ: XX.NYQ.00.ZZZ: Stage 1 is normalized at 10 Hz, above its Nyquist frequency of 0.5 Hz
+WARN] RESP.XX.NYQ.00.ZZZ: XX.NYQ.00.ZZZ: Computed and reported sensitivities differ by more than 5 percent; execution continuing
+INFO]  --------------------------------------------------
+INFO]   RESP.XX.NYQ.00.ZZZ
+INFO]  --------------------------------------------------
+INFO]   XX NYQ 00 ZZZ 
+INFO]   1970,001,00:00:00 No Ending Time
+INFO]    documented input units: count - Digital Counts
+INFO]    documented output units: count - Digital Counts
+INFO]    requested units: Documented response unit
+INFO]    computed sens=2.53879E+12 (reported=1.00000E+00) @ 2.50000E-01 Hz
+INFO]    calc_del=0.00000E+00  corr_app=0.00000E+00  est_delay=0.00000E+00  final_sint=1(sec/sample)
+INFO]       stage  1: IIR_PZ      A0=9.969053E-01 NZeros=  1 NPoles=  1 SamInt=1.000000E+00 Sd=2.538791E+12
+INFO] --------------------------------------------------
