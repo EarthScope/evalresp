@@ -404,3 +404,13 @@ er_run (const char *const *argv, const char *in, const char *out, const char *er
   return WEXITSTATUS (status);
 #endif
 }
+
+int
+er_setenv (const char *name, const char *value)
+{
+#ifdef _WIN32
+  return _putenv_s (name, value ? value : "");
+#else
+  return value ? setenv (name, value, 1) : unsetenv (name);
+#endif
+}

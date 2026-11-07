@@ -264,11 +264,11 @@ get_names (char *in_file, struct matched_files *files, evalresp_logger *log)
 
 #else /* if Windows compiler then use new 'get_names()' */
 
-/* get_names:  uses 'findfirst()' and 'findnext()' to get filenames
+/* find_names:  uses 'findfirst()' and 'findnext()' to get filenames
  matching the expression in 'in_file'. */
 
-int
-get_names (char *in_file, struct matched_files *files, evalresp_logger *log)
+static int
+find_names (const char *in_file, struct matched_files *files, evalresp_logger *log)
 {
   struct file_list *lst_ptr, *tmp_ptr;
   struct _finddata_t fblk; /* define block for 'findfirst()' fn */
@@ -321,6 +321,25 @@ get_names (char *in_file, struct matched_files *files, evalresp_logger *log)
   }
 
   return (files->nfiles);
+}
+
+/* in_file may hold a second, space-separated pattern, tried only when the
+   first matches nothing */
+
+int
+get_names (char *in_file, struct matched_files *files, evalresp_logger *log)
+{
+  char *second = strchr (in_file, ' ');
+  int n;
+
+  if (second)
+    *second++ = '\0';
+
+  n = find_names (in_file, files, log);
+  if (!n && second)
+    n = find_names (second, files, log);
+
+  return n;
 }
 
 #endif

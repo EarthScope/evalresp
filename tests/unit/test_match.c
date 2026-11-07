@@ -135,8 +135,31 @@ test_match_subdir (void)
   evalresp_free_response (&response);
 }
 
+static void
+test_match_seedresp (void)
+{
+  char tmpdir[ER_PATH_MAX], seeddir[ER_PATH_MAX];
+  double freqs[1] = {1.0};
+  evalresp_response *response = NULL;
+
+  /* nothing matches in the current directory, so the SEEDRESP directory is searched */
+  ER_CHECK (er_getcwd (tmpdir, sizeof (tmpdir)));
+  ER_CHECK (strlen (tmpdir) + 9 < sizeof (seeddir));
+  sprintf (seeddir, "%s/seedresp", tmpdir);
+  ER_CHECK (!er_mkdir_p (seeddir));
+  cp_file (er_data_dir (), seeddir, "RESP.IU.ANMO.00.BHZ");
+  ER_CHECK (!er_setenv ("SEEDRESP", seeddir));
+
+  response = evresp_itp ("ANMO", "BHZ", "IU", "00", "2015,1,00:00:00", "VEL",
+                         NULL, freqs, 1, "AP", "-v", 0, 99, 0, 0, 0, 0, 0, 0.1, 0);
+  er_setenv ("SEEDRESP", NULL);
+  ER_CHECK (NULL != response);
+  evalresp_free_response (&response);
+}
+
 const er_test unit_match_tests[] = {
     {"match", test_match, NULL},
     {"match_subdir", test_match_subdir, NULL},
+    {"match_seedresp", test_match_seedresp, NULL},
     {NULL, NULL, NULL},
 };

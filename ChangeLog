@@ -20,6 +20,9 @@ Unreleased
 
 	* FIXED: Windows file matching: 64-bit find handle and directory-qualified results.
 
+	* FIXED: Search the SEEDRESP directory on Windows when no file matches in the
+	current directory.
+
 	* FIXED: Keep requested frequencies that equal the blockette 55 range limits
 	within rounding error.
 

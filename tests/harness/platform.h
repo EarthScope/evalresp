@@ -13,6 +13,10 @@
 int er_mkdir_p (const char *path);
 int er_chdir (const char *path);
 char *er_getcwd (char *buf, size_t size);
+
+/* set an environment variable; a NULL value unsets it */
+int er_setenv (const char *name, const char *value);
+
 int er_is_file (const char *path);
 int er_is_dir (const char *path);
 
