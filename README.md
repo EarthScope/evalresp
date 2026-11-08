@@ -173,5 +173,7 @@ ones.
 
 - Changes in each release: [ChangeLog](ChangeLog)
 - Source, issues and pull requests: <https://github.com/EarthScope/evalresp>
+- Citing: each release is archived on Zenodo with a DOI; the citation
+  metadata is in [CITATION.cff](CITATION.cff).
 - evalresp is distributed under the GNU Lesser General Public License,
   version 3: see [LICENSE](LICENSE).

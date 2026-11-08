@@ -1,6 +1,6 @@
 Version 5.1.0
 
-	2026-11-07
+	2026-11-08
 
 	* CHANGED: Report an error recommending -u def for a response whose input units
 	are not ground motion when displacement, velocity or acceleration is requested,
@@ -146,6 +146,9 @@ Version 5.1.0
 
 	* CHANGED: Replace the Check and Robot Framework tests with a single
 	portable C test suite.
+
+	* ADDED: Archive each published GitHub release on Zenodo with a DOI, with citation
+	metadata in CITATION.cff, and draft releases from version tags.
 
 Version 5.0.1
 

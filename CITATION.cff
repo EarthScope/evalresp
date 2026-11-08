@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using these metadata."
+type: software
+title: evalresp
+abstract: >-
+  evalresp calculates the frequency response of seismic, pressure, temperature
+  and magnetic channels from FDSN StationXML or legacy SEED RESP files, as
+  amplitude and phase, frequency/amplitude/phase, or complex spectra.  It is
+  a command-line program, a set of libraries and a C API.
+authors:
+  - name: "EarthScope Consortium"
+    website: "https://www.earthscope.org"
+version: 5.1.0
+date-released: 2026-11-08
+license: LGPL-3.0-only
+repository-code: "https://github.com/EarthScope/evalresp"
+keywords:
+  - seismology
+  - instrument response
+  - StationXML
+  - SEED
+  - RESP
