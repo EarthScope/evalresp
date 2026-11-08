@@ -9,6 +9,10 @@
 #include "evalresp_log/examples/to_file.h"
 #include "harness/harness.h"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 static void
 test_no_options (void)
 {
