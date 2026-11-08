@@ -84,7 +84,11 @@ Version 5.1.0
 
 	* FIXED: Check stat() before testing whether -f names a directory.
 
-	* FIXED: Handle getcwd and stat failures when searching SEEDRESP and fix GCC format and const warnings.
+	* FIXED: Handle getcwd and stat failures when searching SEEDRESP and fix GCC
+	format and const warnings.
+
+	* FIXED: Reject a channel whose response has only a stage-0 sensitivity as
+	having no response stages
 
 	* FIXED: Free the unit gain substituted for a missing stage gain when it is
 	not linked into the stage.

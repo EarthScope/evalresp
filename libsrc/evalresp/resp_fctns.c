@@ -252,7 +252,18 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
             number of FIR coefficients of filter or IIR filters with a non-zero
             number of poles or zeros */
 
-  if (!chan->first_stage || !chan->first_stage->first_blkt)
+  /* a response needs at least one blockette other than a stage 0 gain */
+  for (stage_ptr = chan->first_stage; stage_ptr; stage_ptr = stage_ptr->next_stage)
+  {
+    for (blkt_ptr = stage_ptr->first_blkt; blkt_ptr; blkt_ptr = blkt_ptr->next_blkt)
+    {
+      if (stage_ptr->sequence_no || blkt_ptr->type != GAIN)
+        break;
+    }
+    if (blkt_ptr)
+      break;
+  }
+  if (!stage_ptr)
   {
     evalresp_log (log, EV_ERROR, EV_ERROR, "no response stages");
     return EVALRESP_PAR;
