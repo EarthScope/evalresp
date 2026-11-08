@@ -863,6 +863,31 @@ wrap_phase (double phase, double range, double *added_value)
   return phase;
 }
 
+int
+stage_is_selected (const evalresp_options *options, const evalresp_stage *stage)
+{
+  if (options->start_stage < 0)
+    return 1;
+  if (options->stop_stage)
+    return stage->sequence_no >= options->start_stage && stage->sequence_no <= options->stop_stage;
+  return stage->sequence_no == options->start_stage;
+}
+
+int
+list_matches_freqs (const evalresp_list *list, const double *freqs, int nfreqs)
+{
+  int i;
+
+  if (list->nresp != nfreqs)
+    return 0;
+  for (i = 0; i < nfreqs; i++)
+  {
+    if (fabs (list->freq[i] - freqs[i]) > 1e-6 * fabs (freqs[i]))
+      return 0;
+  }
+  return 1;
+}
+
 /* Input units of the first stage that has any; gain-only stages have none. */
 static int
 channel_input_units (const evalresp_channel *chan)
@@ -906,6 +931,23 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
                   chan->first_units, evalresp_unit_string (options->unit));
   }
 
+  /* a list is read row by row, so it must be sampled at the output frequencies */
+  for (stage_ptr = chan->first_stage; stage_ptr; stage_ptr = stage_ptr->next_stage)
+  {
+    if (!stage_is_selected (options, stage_ptr))
+      continue;
+    for (blkt_ptr = stage_ptr->first_blkt; blkt_ptr; blkt_ptr = blkt_ptr->next_blkt)
+    {
+      if (blkt_ptr->type == LIST && !list_matches_freqs (&blkt_ptr->blkt_info.list, freq, nfreqs))
+      {
+        evalresp_log (log, EV_ERROR, EV_ERROR,
+                      "Stage %d is a response list that is not sampled at the output frequencies",
+                      stage_ptr->sequence_no);
+        return EVALRESP_VAL;
+      }
+    }
+  }
+
   /* for each frequency */
 
   for (i = 0; i < nfreqs; i++)
@@ -926,12 +968,7 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
       sym_fir = 0;
       if (!stage_ptr->sequence_no)
         has_stage0 = 1;
-      if (options->start_stage >= 0 && options->stop_stage && (stage_ptr->sequence_no < options->start_stage || stage_ptr->sequence_no > options->stop_stage))
-      {
-        stage_ptr = stage_ptr->next_stage;
-        continue;
-      }
-      else if (options->start_stage >= 0 && !options->stop_stage && stage_ptr->sequence_no != options->start_stage)
+      if (!stage_is_selected (options, stage_ptr))
       {
         stage_ptr = stage_ptr->next_stage;
         continue;

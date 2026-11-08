@@ -205,10 +205,45 @@ local_alloc_response (evalresp_logger *log, evalresp_response **response)
   return status;
 }
 
+/* The list blockettes of the stages that are evaluated.  *lists is NULL when there are none. */
 static int
-is_block_55 (const evalresp_channel *channel)
+selected_lists (evalresp_logger *log, const evalresp_options *options,
+                evalresp_channel *channel, evalresp_blkt ***lists, int *nlists)
 {
-  return channel && channel->first_stage && channel->first_stage->first_blkt && channel->first_stage->first_blkt->type == LIST;
+  evalresp_stage *stage;
+  evalresp_blkt *blkt;
+  int n = 0;
+
+  *lists = NULL;
+  *nlists = 0;
+  for (stage = channel->first_stage; stage; stage = stage->next_stage)
+  {
+    if (!stage_is_selected (options, stage))
+      continue;
+    for (blkt = stage->first_blkt; blkt; blkt = blkt->next_blkt)
+    {
+      if (blkt->type == LIST)
+        n++;
+    }
+  }
+  if (!n)
+    return EVALRESP_OK;
+  if (!(*lists = calloc (n, sizeof (**lists))))
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate list of blockettes 55");
+    return EVALRESP_MEM;
+  }
+  for (stage = channel->first_stage; stage; stage = stage->next_stage)
+  {
+    if (!stage_is_selected (options, stage))
+      continue;
+    for (blkt = stage->first_blkt; blkt; blkt = blkt->next_blkt)
+    {
+      if (blkt->type == LIST)
+        (*lists)[(*nlists)++] = blkt;
+    }
+  }
+  return EVALRESP_OK;
 }
 
 static int
@@ -331,12 +366,22 @@ copy_requested_freqs (evalresp_logger *log, const double *freqs, int nfreqs,
   return status;
 }
 
+static void
+discard_b55 (evalresp_blkt *b55_save)
+{
+  if (b55_save)
+  {
+    free (b55_save->blkt_info.list.freq);
+    free (b55_save->blkt_info.list.amp);
+    free (b55_save->blkt_info.list.phase);
+    free (b55_save);
+  }
+}
+
 static int
-save_b55 (evalresp_logger *log, evalresp_channel *channel,
-          evalresp_blkt **b55_save)
+save_b55 (evalresp_logger *log, evalresp_blkt *b55, evalresp_blkt **b55_save)
 {
   int status = EVALRESP_OK;
-  evalresp_blkt *b55 = channel->first_stage->first_blkt;
   evalresp_list *list = &b55->blkt_info.list;
   if (!(*b55_save = calloc (1, sizeof (**b55_save))))
   {
@@ -346,9 +391,12 @@ save_b55 (evalresp_logger *log, evalresp_channel *channel,
   else
   {
     memcpy (*b55_save, b55, sizeof (*b55));
-    /* interpolation will free the freq, phase and amp arrays, so we must
-     * allocate further copies
+    /* interpolation will free the freq, phase and amp arrays, so the copy
+     * owns further copies
      */
+    (*b55_save)->blkt_info.list.freq = NULL;
+    (*b55_save)->blkt_info.list.amp = NULL;
+    (*b55_save)->blkt_info.list.phase = NULL;
     if (!(status = save_doubles (log, "b55 frequencies", list->nresp,
                                  &(*b55_save)->blkt_info.list.freq, list->freq)))
     {
@@ -358,6 +406,32 @@ save_b55 (evalresp_logger *log, evalresp_channel *channel,
         status = save_doubles (log, "b55 phases", list->nresp,
                                &(*b55_save)->blkt_info.list.phase, list->phase);
       }
+    }
+    if (status)
+    {
+      discard_b55 (*b55_save);
+      *b55_save = NULL;
+    }
+  }
+  return status;
+}
+
+/* Saves every list or none. */
+static int
+save_lists (evalresp_logger *log, evalresp_blkt **lists, int nlists,
+            evalresp_blkt **b55_save)
+{
+  int status = EVALRESP_OK, i;
+  for (i = 0; !status && i < nlists; ++i)
+  {
+    status = save_b55 (log, lists[i], &b55_save[i]);
+  }
+  if (status)
+  {
+    for (i = 0; i < nlists; ++i)
+    {
+      discard_b55 (b55_save[i]);
+      b55_save[i] = NULL;
     }
   }
   return status;
@@ -405,13 +479,12 @@ restrict_frequency_range (evalresp_logger *log, double lo, double hi, int *nfreq
   return status;
 }
 
+/* The frequencies are restricted to the range common to all the lists. */
 static int
-interpolate_b55 (evalresp_logger *log, evalresp_channel *channel,
+interpolate_b55 (evalresp_logger *log, evalresp_blkt **lists, int nlists,
                  evalresp_response *response, evalresp_blkt **b55_save)
 {
   int status = EVALRESP_OK, i;
-  evalresp_blkt *b55 = channel->first_stage->first_blkt;
-  evalresp_list *list = &b55->blkt_info.list;
 
   for (i = 1; i < response->nfreqs; ++i)
   {
@@ -422,11 +495,17 @@ interpolate_b55 (evalresp_logger *log, evalresp_channel *channel,
       return EVALRESP_INP;
     }
   }
-  if (!(status = save_b55 (log, channel, b55_save)))
+  if (!(status = save_lists (log, lists, nlists, b55_save)))
   {
-    if (!(status = restrict_frequency_range (log, list->freq[0], list->freq[list->nresp - 1],
-                                             &response->nfreqs, response->freqs)))
+    for (i = 0; !status && i < nlists; ++i)
     {
+      evalresp_list *list = &lists[i]->blkt_info.list;
+      status = restrict_frequency_range (log, list->freq[0], list->freq[list->nresp - 1],
+                                         &response->nfreqs, response->freqs);
+    }
+    for (i = 0; !status && i < nlists; ++i)
+    {
+      evalresp_list *list = &lists[i]->blkt_info.list;
       status = interpolate_list_blockette (&list->freq, &list->amp, &list->phase, &list->nresp,
                                            response->freqs, response->nfreqs, log);
     }
@@ -434,13 +513,42 @@ interpolate_b55 (evalresp_logger *log, evalresp_channel *channel,
   return status;
 }
 
+/* Sequence number of the stage holding the blockette. */
 static int
-use_b55_freqs (evalresp_logger *log, evalresp_channel *channel,
-               evalresp_response *response)
+stage_of_blkt (const evalresp_channel *channel, const evalresp_blkt *blkt)
 {
-  int status = EVALRESP_OK;
-  evalresp_blkt *b55 = channel->first_stage->first_blkt;
-  evalresp_list *list = &b55->blkt_info.list;
+  const evalresp_stage *stage;
+  const evalresp_blkt *b;
+
+  for (stage = channel->first_stage; stage; stage = stage->next_stage)
+  {
+    for (b = stage->first_blkt; b; b = b->next_blkt)
+    {
+      if (b == blkt)
+        return stage->sequence_no;
+    }
+  }
+  return -1;
+}
+
+/* All the lists must be sampled at the same frequencies. */
+static int
+use_b55_freqs (evalresp_logger *log, const evalresp_channel *channel,
+               evalresp_blkt **lists, int nlists, evalresp_response *response)
+{
+  int status = EVALRESP_OK, i;
+  evalresp_list *list = &lists[0]->blkt_info.list;
+
+  for (i = 1; i < nlists; ++i)
+  {
+    if (!list_matches_freqs (&lists[i]->blkt_info.list, list->freq, list->nresp))
+    {
+      evalresp_log (log, EV_ERROR, EV_ERROR,
+                    "Response list stages %d and %d have different frequencies, so they can only be combined by interpolating",
+                    stage_of_blkt (channel, lists[0]), stage_of_blkt (channel, lists[i]));
+      return EVALRESP_INP;
+    }
+  }
   free (response->freqs);
   if (!(status = calloc_doubles (log, "frequency array", list->nresp, &response->freqs)))
   {
@@ -460,9 +568,8 @@ use_b55_freqs (evalresp_logger *log, evalresp_channel *channel,
 }
 
 static void
-restore_b55 (evalresp_channel *channel, evalresp_blkt *b55_save)
+restore_b55 (evalresp_blkt *b55, evalresp_blkt *b55_save)
 {
-  evalresp_blkt *b55 = channel->first_stage->first_blkt;
   evalresp_list *list = &b55->blkt_info.list;
   evalresp_list *list_save = &b55_save->blkt_info.list;
   list->nresp = list_save->nresp;
@@ -480,8 +587,8 @@ channel_to_response (evalresp_logger *log, evalresp_channel *channel,
                      evalresp_options *options, const double *freqs, int nfreqs,
                      evalresp_response **response)
 {
-  int status = EVALRESP_OK, free_options = 0;
-  evalresp_blkt *b55_save = NULL;
+  int status = EVALRESP_OK, free_options = 0, nlists = 0, i;
+  evalresp_blkt **lists = NULL, **b55_save = NULL;
   evalresp_log_context ctx;
 
   evalresp_log_context_init (&ctx, log, "%s.%s.%s.%s", channel->network,
@@ -500,21 +607,28 @@ channel_to_response (evalresp_logger *log, evalresp_channel *channel,
     if (!(status = freqs ? copy_requested_freqs (log, freqs, nfreqs, *response)
                          : calculate_default_freqs (log, options, *response)))
     {
-      if (is_block_55 (channel))
+      if (!(status = selected_lists (log, options, channel, &lists, &nlists)) && nlists)
       {
-        /* if it's a b55 block then calc_resp is just going to copy its data
-         * to the response.  so we need to make sure that frequencies agree
-         * beforehand.  either by interpolating the blockette data (in which
-         * case we keep a backup and restore it below) or by changing the
-         * output frequencies to match.
+        /* a b55 block is copied to the response row by row, so the
+         * frequencies must agree beforehand: either by interpolating the
+         * blockette data (in which case we keep a backup and restore it
+         * below) or by changing the output frequencies to match.
          */
         if (options->b55_interpolate)
         {
-          status = interpolate_b55 (log, channel, *response, &b55_save);
+          if (!(b55_save = calloc (nlists, sizeof (*b55_save))))
+          {
+            evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate blockette 55 backups");
+            status = EVALRESP_MEM;
+          }
+          else
+          {
+            status = interpolate_b55 (log, lists, nlists, *response, b55_save);
+          }
         }
         else
         {
-          status = use_b55_freqs (log, channel, *response);
+          status = use_b55_freqs (log, channel, lists, nlists, *response);
         }
       }
     }
@@ -538,15 +652,20 @@ channel_to_response (evalresp_logger *log, evalresp_channel *channel,
     }
   }
 
-  if (b55_save)
+  for (i = 0; b55_save && i < nlists; ++i)
   {
-    restore_b55 (channel, b55_save);
+    if (b55_save[i])
+    {
+      restore_b55 (lists[i], b55_save[i]);
+      free (b55_save[i]);
+    }
   }
   if (free_options)
   {
     evalresp_free_options (&options);
   }
   free (b55_save);
+  free (lists);
 
   if (status && *response)
   {

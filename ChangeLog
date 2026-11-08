@@ -11,14 +11,8 @@ Version 5.1.0
 	amplitudes.  NOTE: this changes numeric output for responses with a
 	List blockette when the requested frequencies differ from those listed.
 
-	* CHANGED: Removed the autotools build (configure.ac, Makefile.am,
-	MKDIST).  The GNU make build (Makefile, Build.config) is now the only
-	Unix build, alongside Makefile.nmake for Windows.  Both systems wrote
-	to the same Makefile names and produced different libraries; autotools
-	also failed to build with current compilers (-std=gnu23, -Werror).
-	Build and install as before with "make -f Makefile [install]".
-	Shared libraries and "make dist" are no longer provided; use
-	"git archive" for source tarballs.
+	* FIXED: Evaluate a response list in any stage at its listed or
+	interpolated frequencies instead of by row index.
 
 	* FIXED: Swapped sub-/super-diagonal coefficients in spline_cubic_set(),
 	which produced a spline with discontinuous first derivatives on
@@ -132,6 +126,15 @@ Version 5.1.0
 
 	* CHANGED: Replace the bundled V8 regex with a reentrant glob matcher and
 	number scanners.
+
+	* CHANGED: Removed the autotools build (configure.ac, Makefile.am,
+	MKDIST).  The GNU make build (Makefile, Build.config) is now the only
+	Unix build, alongside Makefile.nmake for Windows.  Both systems wrote
+	to the same Makefile names and produced different libraries; autotools
+	also failed to build with current compilers (-std=gnu23, -Werror).
+	Build and install as before with "make -f Makefile [install]".
+	Shared libraries and "make dist" are no longer provided; use
+	"git archive" for source tarballs.
 
 	* CHANGED: Update vendored Mini-XML library to 4.0.6.
 

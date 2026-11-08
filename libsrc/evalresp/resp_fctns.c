@@ -320,17 +320,7 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
 
       case LIST:
 
-        /* We are going to support this blockette starting with version 3.2.17 IGD */
-
-        /* Nevertheless, this support is limited . Clearly, if we allow to mix the
-         * blockette 55 with only selected number of known frequencies with the other
-         * blockettes with arbitrary frequency sampling, there will be a mess.
-         * In this version of evalresp (2.3.17), we allow to get a response for
-         * the blockette 55 if it is the only one filter blockette in the response file.
-         * To simplify , we allow the program to process the LIST response if and only
-         * if the blkt_ptr->next_blkt == NULL; */
-
-        /* First we merge blocketes if the list spans for more than a single blockette */
+        /* merge continuation blockettes into one list */
 
         while (next_blkt && next_blkt->type == blkt_ptr->type)
         {
@@ -338,36 +328,6 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
           if (status)
           {
             return status;
-          }
-        }
-        if (stage_ptr->next_stage || prev_stage)
-        {
-          if (!stage_ptr->next_stage && 0 != chan->first_stage->next_stage->sequence_no)
-          {
-            evalresp_log (log, EV_ERROR, EV_ERROR,
-                          "blockette 55 cannot be mixed with other filter blockettes");
-            return EVALRESP_VAL;
-          }
-        }
-        else
-        {
-          /* There are still situations which we want to avoid */
-          /* In particular, the next stage can be hidden in */
-          /* chan->first_stage->next_stage->first_blkt->type */
-          /* If it is GAIN, we will continue. If it is not gain, we generate error */
-
-          if (chan->first_stage->next_stage)
-          {
-            if (chan->first_stage->next_stage->first_blkt)
-            {
-              /* If the next stage is overall sesitivity, it's OK */
-              if (chan->first_stage->next_stage->first_blkt->type != GAIN)
-              {
-                evalresp_log (log, EV_ERROR, EV_ERROR,
-                              "blockette 55 cannot be mixed with other filter blockettes");
-                return EVALRESP_VAL;
-              }
-            }
           }
         }
         stage_type = LIST_TYPE;

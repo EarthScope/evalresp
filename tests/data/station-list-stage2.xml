@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0">
+ <Source>TEST</Source>
+ <Created>2015-07-17T13:30:11</Created>
+ <Network code="XX" startDate="2013-01-01T00:00:00" endDate="2014-12-31T23:59:59" restrictedStatus="open">
+  <Station code="LISTS" startDate="2013-11-07T00:00:00" endDate="2014-03-10T23:59:59" restrictedStatus="open">
+   <Latitude>29.2576</Latitude>
+   <Longitude>-82.0562</Longitude>
+   <Elevation>20.0</Elevation>
+   <Site>
+    <Name>Response lists after the first stage</Name>
+   </Site>
+   <CreationDate>2013-11-07T00:00:00</CreationDate>
+   <Channel locationCode="" startDate="2013-11-07T17:00:00" restrictedStatus="open" endDate="2014-03-10T23:59:59" code="BDH">
+    <Latitude>29.2576</Latitude>
+    <Longitude>-82.0562</Longitude>
+    <Elevation>20.0</Elevation>
+    <Depth>0.0</Depth>
+    <SampleRate>100.0</SampleRate>
+    <Response>
+     <InstrumentSensitivity>
+      <Value>2.0</Value>
+      <Frequency>1.0</Frequency>
+      <InputUnits>
+       <Name>PA</Name>
+       <Description>Pascal</Description>
+      </InputUnits>
+      <OutputUnits>
+       <Name>V</Name>
+       <Description>Volts</Description>
+      </OutputUnits>
+     </InstrumentSensitivity>
+     <Stage number="1">
+      <PolesZeros>
+       <InputUnits>
+        <Name>PA</Name>
+        <Description>Pascal</Description>
+       </InputUnits>
+       <OutputUnits>
+        <Name>V</Name>
+        <Description>Volts</Description>
+       </OutputUnits>
+       <PzTransferFunctionType>LAPLACE (RADIANS/SECOND)</PzTransferFunctionType>
+       <NormalizationFactor>1.0</NormalizationFactor>
+       <NormalizationFrequency>1.0</NormalizationFrequency>
+      </PolesZeros>
+      <StageGain>
+       <Value>2.0</Value>
+       <Frequency>1.0</Frequency>
+      </StageGain>
+     </Stage>
+     <Stage number="2">
+      <ResponseList>
+       <InputUnits>
+        <Name>V</Name>
+        <Description>Volts</Description>
+       </InputUnits>
+       <OutputUnits>
+        <Name>V</Name>
+        <Description>Volts</Description>
+       </OutputUnits>
+       <ResponseListElement>
+        <Frequency>0.1</Frequency>
+        <Amplitude>1.0</Amplitude>
+        <Phase>0.0</Phase>
+       </ResponseListElement>
+       <ResponseListElement>
+        <Frequency>0.5</Frequency>
+        <Amplitude>2.0</Amplitude>
+        <Phase>10.0</Phase>
+       </ResponseListElement>
+       <ResponseListElement>
+        <Frequency>1.0</Frequency>
+        <Amplitude>4.0</Amplitude>
+        <Phase>20.0</Phase>
+       </ResponseListElement>
+       <ResponseListElement>
+        <Frequency>2.0</Frequency>
+        <Amplitude>3.0</Amplitude>
+        <Phase>30.0</Phase>
+       </ResponseListElement>
+       <ResponseListElement>
+        <Frequency>10.0</Frequency>
+        <Amplitude>0.5</Amplitude>
+        <Phase>40.0</Phase>
+       </ResponseListElement>
+      </ResponseList>
+      <StageGain>
+       <Value>1.0</Value>
+       <Frequency>1.0</Frequency>
+      </StageGain>
+     </Stage>
+     <Stage number="3">
+      <ResponseList>
+       <InputUnits>
+        <Name>V</Name>
+        <Description>Volts</Description>
+       </InputUnits>
+       <OutputUnits>
+        <Name>V</Name>
+        <Description>Volts</Description>
+       </OutputUnits>
+       <ResponseListElement>
+        <Frequency>0.2</Frequency>
+        <Amplitude>1.0</Amplitude>
+        <Phase>5.0</Phase>
+       </ResponseListElement>
+       <ResponseListElement>
+        <Frequency>1.0</Frequency>
+        <Amplitude>1.5</Amplitude>
+        <Phase>15.0</Phase>
+       </ResponseListElement>
+       <ResponseListElement>
+        <Frequency>5.0</Frequency>
+        <Amplitude>2.0</Amplitude>
+        <Phase>25.0</Phase>
+       </ResponseListElement>
+       <ResponseListElement>
+        <Frequency>20.0</Frequency>
+        <Amplitude>0.5</Amplitude>
+        <Phase>35.0</Phase>
+       </ResponseListElement>
+      </ResponseList>
+      <StageGain>
+       <Value>1.0</Value>
+       <Frequency>1.0</Frequency>
+      </StageGain>
+     </Stage>
+    </Response>
+   </Channel>
+  </Station>
+ </Network>
+</FDSNStationXML>

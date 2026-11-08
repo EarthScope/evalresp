@@ -421,29 +421,29 @@ evalresp_channel_to_log (evalresp_logger *log, evalresp_options const *const opt
   evalresp_log (log, EV_INFO, 0, "--------------------------------------------------");
   /* IGD : here we print a notice about blockette 55: evalresp v. 2.3.17+*/
   /* ET:  Notice modified, with different notice if freqs interpolated */
-  if (channel->first_stage->first_blkt->type == LIST)
+  for (this_stage = channel->first_stage; this_stage; this_stage = this_stage->next_stage)
   {
-    if (options->b55_interpolate)
+    if (!stage_is_selected (options, this_stage))
+      continue;
+    for (this_blkt = this_stage->first_blkt; this_blkt; this_blkt = this_blkt->next_blkt)
     {
-      evalresp_log (log, EV_INFO, 0,
-                    " Note:  The input has been interpolated from the response List stage");
-      evalresp_log (log, EV_INFO, 0,
-                    " (blockette 55) to generate output for the %d frequencies requested",
-                    channel->first_stage->first_blkt->blkt_info.list.nresp);
-    }
-    else if (options->b55_interpolate)
-    {
-      evalresp_log (log, EV_INFO, 0,
-                    " Note:  The output has been interpolated from the %d frequencies",
-                    channel->first_stage->first_blkt->blkt_info.list.nresp);
-      evalresp_log (log, EV_INFO, 0,
-                    " defined in the response List stage (blockette 55)");
-    }
-    else
-    {
-      evalresp_log (log, EV_WARN, 0,
-                    "Response contains a List stage (blockette 55); the output has been generated for those %d frequencies defined in the blockette",
-                    channel->first_stage->first_blkt->blkt_info.list.nresp);
+      if (this_blkt->type != LIST)
+        continue;
+      if (options->b55_interpolate)
+      {
+        evalresp_log (log, EV_INFO, 0,
+                      " Note:  Stage %d, a response List (blockette 55), has been interpolated",
+                      this_stage->sequence_no);
+        evalresp_log (log, EV_INFO, 0,
+                      " to generate output for the %d frequencies evaluated",
+                      this_blkt->blkt_info.list.nresp);
+      }
+      else
+      {
+        evalresp_log (log, EV_WARN, 0,
+                      "Stage %d is a response List (blockette 55); the output has been generated for those %d frequencies defined in the blockette",
+                      this_stage->sequence_no, this_blkt->blkt_info.list.nresp);
+      }
     }
   }
 

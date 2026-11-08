@@ -841,6 +841,27 @@ int calculate_response (evalresp_logger *log, evalresp_options *options, evalres
 /**
  * @private
  * @ingroup evalresp_private_calc
+ * @brief Test whether a stage is evaluated under the start and stop stage options.
+ * @param[in] options Options holding the start and stop stages.
+ * @param[in] stage Stage to test.
+ * @returns 1 if the stage is evaluated, otherwise 0.
+ */
+int stage_is_selected (const evalresp_options *options, const evalresp_stage *stage);
+
+/**
+ * @private
+ * @ingroup evalresp_private_calc
+ * @brief Test whether a response list is sampled at the given frequencies.
+ * @param[in] list List to test.
+ * @param[in] freqs Frequency array.
+ * @param[in] nfreqs Number of values in @p freqs.
+ * @returns 1 if the list has @p nfreqs rows at @p freqs, otherwise 0.
+ */
+int list_matches_freqs (const evalresp_list *list, const double *freqs, int nfreqs);
+
+/**
+ * @private
+ * @ingroup evalresp_private_calc
  * @brief Normalize response.
  * @param[in] log Logging structure.
  * @param[in] options object to control the flow of the conversion to responses

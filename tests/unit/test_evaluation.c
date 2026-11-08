@@ -375,6 +375,228 @@ test_b55_freqs_order (void)
 }
 
 static void
+load_list_stages (int interpolate, int start, int stop, evalresp_options **options,
+                  evalresp_channels **channels)
+{
+  ER_CHECK (!evalresp_new_options (NULL, options));
+  (*options)->station_xml = 1;
+  (*options)->b55_interpolate = interpolate;
+  (*options)->start_stage = start;
+  (*options)->stop_stage = stop;
+  ER_CHECK (!evalresp_filename_to_channels (NULL, er_data_path ("station-list-stage2.xml"), *options, NULL,
+                                            channels));
+  ER_CHECK (*channels && (*channels)->nchannels == 1);
+}
+
+static void
+check_list_row (const evalresp_response *response, int i, double freq, double amp, double phase)
+{
+  double a = sqrt (response->rvec[i].real * response->rvec[i].real + response->rvec[i].imag * response->rvec[i].imag);
+  double p = atan2 (response->rvec[i].imag, response->rvec[i].real) * 180.0 / M_PI;
+
+  ER_CHECK_MSG (fabs (response->freqs[i] - freq) <= 1e-6 * freq, "freq %d: %g, expected %g", i, response->freqs[i], freq);
+  ER_CHECK_MSG (fabs (a - amp) <= 1e-6 * amp, "amplitude %d: %g, expected %g", i, a, amp);
+  ER_CHECK_MSG (fabs (p - phase) <= 1e-4, "phase %d: %g, expected %g", i, p, phase);
+}
+
+static void
+test_list_stage_listed_freqs (void)
+{
+  const double freqs[] = {0.1, 0.5, 1.0, 2.0, 10.0};
+  const double amps[] = {2.0, 4.0, 8.0, 6.0, 1.0};
+  const double phases[] = {0.0, 10.0, 20.0, 30.0, 40.0};
+  int i;
+  evalresp_channels *channels = NULL;
+  evalresp_response *response = NULL;
+  evalresp_options *options = NULL;
+
+  load_list_stages (0, 1, 2, &options, &channels);
+  ER_CHECK (!evalresp_channel_to_response (NULL, channels->channels[0], options, &response));
+  ER_CHECK_MSG (response->nfreqs == 5, "nfreqs: %d", response->nfreqs);
+  for (i = 0; i < response->nfreqs && i < 5; ++i)
+  {
+    check_list_row (response, i, freqs[i], amps[i], phases[i]);
+  }
+  evalresp_free_response (&response);
+
+  /* the list stage is the only one evaluated */
+  options->start_stage = 2;
+  ER_CHECK (!evalresp_channel_to_response (NULL, channels->channels[0], options, &response));
+  ER_CHECK_MSG (response->nfreqs == 5, "nfreqs: %d", response->nfreqs);
+  for (i = 0; i < response->nfreqs && i < 5; ++i)
+  {
+    check_list_row (response, i, freqs[i], amps[i] / 2, phases[i]);
+  }
+  evalresp_free_response (&response);
+
+  evalresp_free_channels (&channels);
+  evalresp_free_options (&options);
+}
+
+static void
+test_list_stage_interpolated (void)
+{
+  /* more frequencies than the list has rows; 0.1, 0.5, 1, 2 and 10 are rows */
+  const double freqs[] = {0.1, 0.5, 1.0, 1.5, 2.0, 5.0, 10.0};
+  const int nfreqs = sizeof (freqs) / sizeof (freqs[0]);
+  int i, pass;
+  evalresp_channels *channels = NULL;
+  evalresp_response *response = NULL;
+  evalresp_options *options = NULL;
+
+  load_list_stages (1, 1, 2, &options, &channels);
+  /* the list is intact for the second pass */
+  for (pass = 0; pass < 2; ++pass)
+  {
+    ER_CHECK (!evalresp_channel_to_response_freqs (NULL, channels->channels[0], options, freqs, nfreqs, &response));
+    ER_CHECK_MSG (response->nfreqs == nfreqs, "nfreqs: %d", response->nfreqs);
+    check_list_row (response, 0, 0.1, 2.0, 0.0);
+    check_list_row (response, 1, 0.5, 4.0, 10.0);
+    check_list_row (response, 2, 1.0, 8.0, 20.0);
+    check_list_row (response, 4, 2.0, 6.0, 30.0);
+    check_list_row (response, 6, 10.0, 1.0, 40.0);
+    for (i = 0; i < response->nfreqs && i < nfreqs; ++i)
+    {
+      ER_CHECK_MSG (isfinite (response->rvec[i].real) && isfinite (response->rvec[i].imag) &&
+                        (response->rvec[i].real != 0.0 || response->rvec[i].imag != 0.0),
+                    "value %d: %g %g", i, response->rvec[i].real, response->rvec[i].imag);
+    }
+    evalresp_free_response (&response);
+  }
+
+  evalresp_free_channels (&channels);
+  evalresp_free_options (&options);
+}
+
+static void
+test_list_stages_combined (void)
+{
+  const double freqs[] = {0.1, 0.2, 1.0, 5.0, 10.0, 20.0};
+  char text[4096];
+  size_t n;
+  FILE *fd;
+  evalresp_logger *log;
+  evalresp_channels *channels = NULL;
+  evalresp_response *response = NULL;
+  evalresp_options *options = NULL;
+
+  /* the lists have different frequencies, and the error names their stages */
+  load_list_stages (0, 2, 3, &options, &channels);
+  ER_CHECK (NULL != (fd = fopen ("combined.log", "w+")));
+  ER_CHECK (NULL != (log = evalresp_logger_alloc (evalresp_log_to_file, (void *)fd)));
+  ER_CHECK (evalresp_channel_to_response_freqs (log, channels->channels[0], options, freqs, 6, &response) ==
+            EVALRESP_INP);
+  ER_CHECK (!response);
+  fflush (fd);
+  rewind (fd);
+  n = fread (text, 1, sizeof (text) - 1, fd);
+  text[n] = '\0';
+  ER_CHECK_MSG (strstr (text, "stages 2 and 3 have different frequencies"), "unexpected log: %s", text);
+  evalresp_logger_free (log);
+  fclose (fd);
+
+  /* only the range common to both lists is evaluated; both have a row at 1 Hz */
+  options->b55_interpolate = 1;
+  ER_CHECK (!evalresp_channel_to_response_freqs (NULL, channels->channels[0], options, freqs, 6, &response));
+  ER_CHECK_MSG (response->nfreqs == 4, "nfreqs: %d", response->nfreqs);
+  ER_CHECK_MSG (fabs (response->freqs[0] - 0.2) <= 1e-6 * 0.2, "first: %g", response->freqs[0]);
+  check_list_row (response, 1, 1.0, 6.0, 35.0);
+  ER_CHECK_MSG (fabs (response->freqs[3] - 10.0) <= 1e-6 * 10.0, "last: %g", response->freqs[3]);
+  evalresp_free_response (&response);
+
+  evalresp_free_channels (&channels);
+  evalresp_free_options (&options);
+}
+
+static void
+test_list_stage_not_evaluated (void)
+{
+  /* only stage 1 is evaluated, so the lists do not limit the frequencies */
+  const double freqs[] = {0.01, 30.0};
+  int interpolate;
+  evalresp_channels *channels = NULL;
+  evalresp_response *response = NULL;
+  evalresp_options *options = NULL;
+
+  for (interpolate = 0; interpolate < 2; ++interpolate)
+  {
+    load_list_stages (interpolate, 1, 1, &options, &channels);
+    ER_CHECK (!evalresp_channel_to_response_freqs (NULL, channels->channels[0], options, freqs, 2, &response));
+    ER_CHECK_MSG (response->nfreqs == 2, "nfreqs: %d", response->nfreqs);
+    check_list_row (response, 0, 0.01, 2.0, 0.0);
+    check_list_row (response, 1, 30.0, 2.0, 0.0);
+    evalresp_free_response (&response);
+    evalresp_free_channels (&channels);
+    evalresp_free_options (&options);
+  }
+}
+
+static void
+check_list_note (int interpolate, int start, int stop, const char *expect2, const char *expect3)
+{
+  char text[16384];
+  size_t n;
+  FILE *fd;
+  evalresp_logger *log;
+  evalresp_channels *channels = NULL;
+  evalresp_options *options = NULL;
+
+  ER_CHECK (NULL != (fd = fopen ("list.log", "w+")));
+  ER_CHECK (NULL != (log = evalresp_logger_alloc (evalresp_log_to_file, (void *)fd)));
+  load_list_stages (interpolate, start, stop, &options, &channels);
+  ER_CHECK (!evalresp_channel_to_log (log, options, channels->channels[0]));
+  fflush (fd);
+  rewind (fd);
+  n = fread (text, 1, sizeof (text) - 1, fd);
+  text[n] = '\0';
+
+  ER_CHECK_MSG (!expect2 == !strstr (text, "Stage 2"), "stage 2 note, expected %s: %s", expect2 ? expect2 : "none", text);
+  ER_CHECK_MSG (!expect3 == !strstr (text, "Stage 3"), "stage 3 note, expected %s: %s", expect3 ? expect3 : "none", text);
+  ER_CHECK_MSG (!expect2 || strstr (text, expect2), "%s missing from log: %s", expect2, text);
+  ER_CHECK_MSG (!expect3 || strstr (text, expect3), "%s missing from log: %s", expect3, text);
+
+  evalresp_free_channels (&channels);
+  evalresp_free_options (&options);
+  evalresp_logger_free (log);
+  fclose (fd);
+}
+
+static void
+test_list_stage_note (void)
+{
+  /* the note names each evaluated list stage, whatever its position */
+  check_list_note (0, -1, 0, "Stage 2 is a response List", "Stage 3 is a response List");
+  check_list_note (1, -1, 0, "Stage 2, a response List", "Stage 3, a response List");
+  check_list_note (0, 3, 3, NULL, "Stage 3 is a response List");
+  check_list_note (0, 1, 1, NULL, NULL);
+}
+
+static void
+test_legacy_list_stage_freqs (void)
+{
+  /* the list has 5 rows */
+  double freqs[] = {0.3, 1.0, 3.0};
+  evalresp_complex output[3];
+  int i;
+  evalresp_channels *channels = NULL;
+  evalresp_options *options = NULL;
+
+  load_list_stages (0, 2, 2, &options, &channels);
+  for (i = 0; i < 3; ++i)
+  {
+    output[i].real = output[i].imag = -999.0;
+  }
+  calc_resp (channels->channels[0], freqs, 3, output, NULL, 2, 2, 0, 0.0);
+  for (i = 0; i < 3; ++i)
+  {
+    ER_CHECK_MSG (output[i].real == -999.0 && output[i].imag == -999.0, "output %d: %g %g", i, output[i].real,
+                  output[i].imag);
+  }
+  evalresp_free_channels (&channels);
+  evalresp_free_options (&options);
+}
+
+static void
 test_polynomial_negative (void)
 {
   /* the derivative of the polynomial is -0.1: magnitude 0.1 at 180 degrees */
@@ -543,6 +765,12 @@ const er_test unit_evaluation_tests[] = {
     {"excess_pole_freq", test_excess_pole_freq, NULL},
     {"polynomial_negative", test_polynomial_negative, NULL},
     {"b55_freqs_order", test_b55_freqs_order, NULL},
+    {"list_stage_listed_freqs", test_list_stage_listed_freqs, NULL},
+    {"list_stage_interpolated", test_list_stage_interpolated, NULL},
+    {"list_stages_combined", test_list_stages_combined, NULL},
+    {"list_stage_not_evaluated", test_list_stage_not_evaluated, NULL},
+    {"list_stage_note", test_list_stage_note, NULL},
+    {"legacy_list_stage_freqs", test_legacy_list_stage_freqs, NULL},
     {"non_motion_units_not_converted", test_non_motion_units_not_converted, NULL},
     {"arbitrary_freqs", test_arbitrary_freqs, NULL},
     {"legacy_arbitrary_freqs", test_legacy_arbitrary_freqs, NULL},
