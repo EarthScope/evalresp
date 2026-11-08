@@ -53,6 +53,8 @@ Version 5.1.0
 
 	* FIXED: Reject descending frequencies for interpolated blockette 55 responses.
 
+	* FIXED: Do not crash when -f names a directory with no matching files.
+
 	* FIXED: Station, network, location and channel patterns match the whole code,
 	and a blank location matches only an empty location code.
 

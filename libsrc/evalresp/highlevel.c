@@ -74,7 +74,7 @@ responses_to_cwd (evalresp_logger *log, const evalresp_responses *responses,
 {
   int status = EVALRESP_OK, i;
 
-  for (i = 0; !status && i < responses->nresponses; ++i)
+  for (i = 0; !status && responses && i < responses->nresponses; ++i)
   {
     switch (format)
     {

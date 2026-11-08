@@ -277,7 +277,24 @@ test_seedresp_with_space (void)
   check_cgv_output ();
 }
 
-static er_test table[N_CASES + 3];
+/* A directory with no matching file writes nothing and succeeds. */
+static void
+test_dir_no_match (void)
+{
+  const char *argv[] = {NULL, "FRB", "BHZ", "1994", "31", "0.001", "10", "100", "-f", "resp dir", NULL};
+  int rc;
+
+  ER_CHECK (!er_mkdir_p ("resp dir"));
+  ER_CHECK (!er_copy_file (er_data_path (CGV_FILE), "resp dir/" CGV_FILE));
+  ER_CHECK (!er_setenv ("SEEDRESP", NULL));
+  argv[0] = er_bin_path ("evalresp");
+  rc = er_run (argv, NULL, NULL, NULL);
+  ER_CHECK_MSG (rc == 0, "evalresp exited with status %d, expected 0", rc);
+  ER_CHECK_MSG (!er_is_file ("AMP.Z.CGV..HYZ"), "unexpected output file AMP.Z.CGV..HYZ");
+  ER_CHECK_MSG (!er_is_file ("PHASE.Z.CGV..HYZ"), "unexpected output file PHASE.Z.CGV..HYZ");
+}
+
+static er_test table[N_CASES + 4];
 
 static int
 in_list (const char *list, const char *name)
@@ -403,5 +420,7 @@ cli_tests (void)
   table[N_CASES].fn = test_dir_with_space;
   table[N_CASES + 1].name = "seedresp_with_space";
   table[N_CASES + 1].fn = test_seedresp_with_space;
+  table[N_CASES + 2].name = "dir_no_match";
+  table[N_CASES + 2].fn = test_dir_no_match;
   return table;
 }
