@@ -1,0 +1,3 @@
+WARN] station-polynomial-zero.xml: IU.MAJO.30.LDO: Missing gain in stage 0 - using unit gain at 1Hz
+WARN] station-polynomial-zero.xml: IU.MAJO.31.LDO: Missing gain in stage 0 - using unit gain at 1Hz
+ERROR] station-polynomial-zero.xml: IU.MAJO.30.LDO: input units ('Pa - Pressure in Pascals') are not ground motion and cannot be converted to Velocity (m/s), request file units (-u def) to evaluate without conversion
