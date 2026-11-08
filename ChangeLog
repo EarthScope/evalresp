@@ -1,6 +1,6 @@
-Unreleased
+Version 5.1.0
 
-	2026-11-07
+	2026-11-07 Chad Trabant
 
 	* IMPROVED: Blockette 55 (List) interpolation (-il, -ii) is now done
 	against log10(frequency), with amplitude interpolated as log10(amplitude).
