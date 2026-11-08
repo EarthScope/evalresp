@@ -2,6 +2,8 @@ Unreleased
 
 	2026-11-07
 
+	* Set the version only in REVNUM in public.h and remove set-version.
+
 	* FIXED: Do not follow symlinks when clearing test work directories.
 
 	* FIXED: Reject descending frequencies for interpolated blockette 55 responses.
