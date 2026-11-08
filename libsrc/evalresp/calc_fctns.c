@@ -91,10 +91,6 @@ convert_to_units (int inp, const evalresp_unit units, evalresp_complex *data, do
     return EVALRESP_ERR; /* BAD_OUT_UNITS */
   }
 
-  /* only ground motion is converted */
-  if (inp != DIS && inp != VEL && inp != ACC)
-    return EVALRESP_OK;
-
   if (inp == DIS)
   {
     if (out == DIS)
@@ -938,12 +934,19 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
 
   input_units = channel_input_units (chan);
 
-  if ((options->unit == evalresp_displacement_unit || options->unit == evalresp_acceleration_unit) &&
+  /* only ground motion converts to displacement, velocity or acceleration */
+  if (options->unit != evalresp_file_unit &&
       input_units != DIS && input_units != VEL && input_units != ACC)
   {
-    evalresp_log (log, EV_WARN, EV_WARN,
-                  "input units ('%s') are not ground motion, response is not converted to %s",
-                  chan->first_units, evalresp_unit_string (options->unit));
+    if (strlen (chan->first_units))
+      evalresp_log (log, EV_ERROR, EV_ERROR,
+                    "input units ('%s') are not ground motion and cannot be converted to %s, request file units (-u def) to evaluate without conversion",
+                    chan->first_units, evalresp_unit_string (options->unit));
+    else
+      evalresp_log (log, EV_ERROR, EV_ERROR,
+                    "input units are undefined and cannot be converted to %s, request file units (-u def) to evaluate without conversion",
+                    evalresp_unit_string (options->unit));
+    return EVALRESP_VAL;
   }
 
   /* a list is read row by row, so it must be sampled at the output frequencies */

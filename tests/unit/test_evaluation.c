@@ -130,6 +130,10 @@ check_gain_only (const char *file, int station_xml)
   ER_CHECK (!evalresp_filename_to_channels (NULL, er_data_path (file), options, NULL, &channels));
   ER_CHECK (channels && channels->nchannels == 1);
   ER_CHECK (!evalresp_set_frequency (NULL, options, "0.1", "10", "5"));
+  /* gain-only channels have no units to convert */
+  ER_CHECK (evalresp_channel_to_response (NULL, channels->channels[0], options, &response));
+  evalresp_free_response (&response);
+  ER_CHECK (!evalresp_set_unit (NULL, options, "def"));
   ER_CHECK (!evalresp_channel_to_response (NULL, channels->channels[0], options, &response));
   ER_CHECK_MSG (response->nfreqs == 5, "nfreqs: %d", response->nfreqs);
   for (i = 0; i < response->nfreqs; ++i)
@@ -311,6 +315,8 @@ test_zero_freq_pz (void)
   evalresp_options *options = NULL;
 
   ER_CHECK (!evalresp_new_options (NULL, &options));
+
+  ER_CHECK (!evalresp_set_unit (NULL, options, "def"));
   options->station_xml = 1;
   ER_CHECK (!evalresp_filename_to_channels (NULL, er_data_path ("station-pz-zero-freq.xml"), options, NULL,
                                             &channels));
@@ -379,6 +385,7 @@ load_list_stages (int interpolate, int start, int stop, evalresp_options **optio
                   evalresp_channels **channels)
 {
   ER_CHECK (!evalresp_new_options (NULL, options));
+  ER_CHECK (!evalresp_set_unit (NULL, *options, "def"));
   (*options)->station_xml = 1;
   (*options)->b55_interpolate = interpolate;
   (*options)->start_stage = start;
@@ -606,6 +613,8 @@ test_polynomial_negative (void)
   evalresp_options *options = NULL;
 
   ER_CHECK (!evalresp_new_options (NULL, &options));
+
+  ER_CHECK (!evalresp_set_unit (NULL, options, "def"));
   options->station_xml = 1;
   ER_CHECK (!evalresp_filename_to_channels (NULL, er_data_path ("station-polynomial-negative.xml"), options, NULL,
                                             &channels));
@@ -637,6 +646,7 @@ test_excess_pole_freq (void)
   ER_CHECK (NULL != (fd = fopen ("pole.log", "w+")));
   ER_CHECK (NULL != (log = evalresp_logger_alloc (evalresp_log_to_file, (void *)fd)));
   ER_CHECK (!evalresp_new_options (NULL, &options));
+  ER_CHECK (!evalresp_set_unit (NULL, options, "def"));
   options->station_xml = 1;
   ER_CHECK (!evalresp_filename_to_channels (NULL, er_data_path ("station-pz-excess-pole.xml"), options, NULL,
                                             &channels));
@@ -664,20 +674,25 @@ test_excess_pole_freq (void)
 }
 
 static void
-test_non_motion_units_not_converted (void)
+test_non_motion_units_rejected (void)
 {
-  /* pressure input: displacement and acceleration requests leave the response as in file units */
+  /* pressure input: dis, vel and acc requests fail and recommend file units, def evaluates */
   const double freqs[] = {0.1, 1.0, 10.0};
   const int nfreqs = sizeof (freqs) / sizeof (freqs[0]);
-  const char *units[] = {"def", "dis", "acc"};
-  evalresp_response *responses[3][2] = {{NULL}};
-  int u, i, k;
+  const char *units[] = {"def", "dis", "vel", "acc"};
+  int u, i;
 
-  for (u = 0; u < 3; ++u)
+  for (u = 0; u < 4; ++u)
   {
+    char text[8192];
+    size_t n;
+    FILE *fd;
+    evalresp_logger *log;
     evalresp_channels *channels = NULL;
     evalresp_options *options = NULL;
 
+    ER_CHECK (NULL != (fd = fopen ("units.log", "w+")));
+    ER_CHECK (NULL != (log = evalresp_logger_alloc (evalresp_log_to_file, (void *)fd)));
     ER_CHECK (!evalresp_new_options (NULL, &options));
     ER_CHECK (!evalresp_set_unit (NULL, options, units[u]));
     options->station_xml = 1;
@@ -686,32 +701,38 @@ test_non_motion_units_not_converted (void)
     ER_CHECK (channels && channels->nchannels == 2);
     for (i = 0; i < channels->nchannels; ++i)
     {
-      ER_CHECK (!evalresp_channel_to_response_freqs (NULL, channels->channels[i], options, freqs, nfreqs,
-                                                     &responses[u][i]));
+      evalresp_response *response = NULL;
+      int status = evalresp_channel_to_response_freqs (log, channels->channels[i], options, freqs, nfreqs,
+                                                       &response);
+
+      if (u == 0)
+      {
+        ER_CHECK_MSG (!status, "-u def channel %d: status %d", i, status);
+      }
+      else
+      {
+        ER_CHECK_MSG (status, "-u %s channel %d evaluated", units[u], i);
+      }
+      evalresp_free_response (&response);
+    }
+    fflush (fd);
+    rewind (fd);
+    n = fread (text, 1, sizeof (text) - 1, fd);
+    text[n] = '\0';
+    if (u == 0)
+    {
+      ER_CHECK_MSG (!strstr (text, "-u def"), "-u def logged: %s", text);
+    }
+    else
+    {
+      ER_CHECK_MSG (strstr (text, "not ground motion") && strstr (text, "-u def"),
+                    "-u %s: missing recommendation in log: %s", units[u], text);
     }
     evalresp_free_channels (&channels);
     evalresp_free_options (&options);
+    evalresp_logger_free (log);
+    fclose (fd);
   }
-
-  for (u = 1; u < 3; ++u)
-  {
-    for (i = 0; i < 2; ++i)
-    {
-      for (k = 0; k < nfreqs; ++k)
-      {
-        const evalresp_complex *a = &responses[0][i]->rvec[k], *b = &responses[u][i]->rvec[k];
-        const double tol = 1e-9 * (fabs (a->real) + fabs (a->imag));
-
-        ER_CHECK_MSG (fabs (a->real - b->real) <= tol && fabs (a->imag - b->imag) <= tol,
-                      "-u %s channel %d %g Hz: %g %g vs %g %g", units[u], i, freqs[k],
-                      b->real, b->imag, a->real, a->imag);
-      }
-    }
-  }
-
-  for (u = 0; u < 3; ++u)
-    for (i = 0; i < 2; ++i)
-      evalresp_free_response (&responses[u][i]);
 }
 
 static void
@@ -771,7 +792,7 @@ const er_test unit_evaluation_tests[] = {
     {"list_stage_not_evaluated", test_list_stage_not_evaluated, NULL},
     {"list_stage_note", test_list_stage_note, NULL},
     {"legacy_list_stage_freqs", test_legacy_list_stage_freqs, NULL},
-    {"non_motion_units_not_converted", test_non_motion_units_not_converted, NULL},
+    {"non_motion_units_rejected", test_non_motion_units_rejected, NULL},
     {"arbitrary_freqs", test_arbitrary_freqs, NULL},
     {"legacy_arbitrary_freqs", test_legacy_arbitrary_freqs, NULL},
     {"no_options", test_no_options, NULL},

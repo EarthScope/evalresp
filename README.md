@@ -90,7 +90,7 @@ files.
 | Option | Meaning |
 | --- | --- |
 | `-f file` | Input file, or a directory of legacy `RESP.NET.STA.LOC.CHA` files |
-| `-u dis\|vel\|acc\|def` | Units of the response (default `vel`) |
+| `-u dis\|vel\|acc\|def` | Units of the response (default `vel`); `def` is required for responses that are not ground motion |
 | `-r ap\|fap\|cs` | Output: amplitude/phase, frequency/amplitude/phase, or complex spectra |
 | `-s log\|lin` | Frequency spacing (default `log`) |
 | `-t HH:MM:SS` | Time of day, to choose between responses effective on the same day |

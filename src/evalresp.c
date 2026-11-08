@@ -26,7 +26,7 @@ usage (char *program)
   printf (" MAXFREQ NFREQ [options]\n\n");
   printf ("  OPTIONS:\n\n");
   printf ("    -f file              (directory-name|filename)\n");
-  printf ("    -u units             ('dis'|'vel'|'acc'|'def')\n");
+  printf ("    -u units             ('dis'|'vel'|'acc'|'def'), 'def' for non-ground-motion\n");
   printf ("    -t time-of-day       (HH:MM:SS)\n");
   printf ("    -s type-of-spacing   (log|lin)\n");
   printf ("    -n netid             ('II'|'IU'|'G'|'*'...)\n");

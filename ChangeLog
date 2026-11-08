@@ -2,6 +2,10 @@ Version 5.1.0
 
 	2026-11-07
 
+	* CHANGED: Report an error recommending -u def for a response whose input units
+	are not ground motion when displacement, velocity or acceleration is requested,
+	instead of returning it in its own units.
+
 	* IMPROVED: Blockette 55 (List) interpolation (-il, -ii) is now done
 	against log10(frequency), with amplitude interpolated as log10(amplitude).
 	Previously the cubic spline was applied in linear space and could
@@ -24,10 +28,6 @@ Version 5.1.0
 	list in evresp() and the new evalresp_channel_to_response_freqs().
 
 	* FIXED: Parse ResponseListElement entries in StationXML ResponseList stages.
-
-	* IMPROVED: Leave responses with non-ground-motion input units unconverted,
-	regardless of the requested output units.  The eases use with the default
-	conversion to velocity and responses that cannot be converted.
 
 	* FIXED: Read StationXML from standard input with -stdio.  Thanks to
 	@peacocks for reporting.

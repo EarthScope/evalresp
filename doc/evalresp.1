@@ -71,9 +71,9 @@ Units of the response: \fBdis\fR (displacement), \fBvel\fR (velocity),
 \fBdef\fR the response is output units over input units, exactly as the first
 stage of the response takes them in and the last stage gives them out.  This is
 the choice for sensors whose units cannot be converted to displacement,
-velocity or acceleration.  Pressure (Pa), temperature (degrees C) and magnetic
-flux density (T) responses are always evaluated in their own units and this
-option has no effect on them.
+velocity or acceleration.  A response whose input units are not ground motion
+(pressure, temperature, magnetic flux density, tilt, volts, counts or none) is
+an error unless \fBdef\fR is given.
 .TP
 .BR \-t " " \fIHH:MM:SS\fR " (" \-time )
 Time of day, used to choose between responses that are effective on the same
