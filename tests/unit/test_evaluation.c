@@ -249,6 +249,37 @@ test_legacy_arbitrary_freqs (void)
   evalresp_free_response (&response);
 }
 
+/* evresp() honours the total sensitivity flag exactly as evresp_itp() does */
+static void
+test_legacy_total_sensitivity (void)
+{
+  double freqs[] = {0.01, 0.1, 1.0, 5.0};
+  const int nfreqs = sizeof (freqs) / sizeof (freqs[0]);
+  int i, differs = 0;
+  evalresp_response *calc = NULL, *total = NULL, *total_itp = NULL;
+  char *file = (char *)er_data_path ("station-1.xml");
+
+  ER_CHECK (NULL != (calc = evresp ("ANMO", "BH1", "IU", "00", "2015,1,00:00:00", "VEL",
+                                    file, freqs, nfreqs, "AP", "", 0, 99, 0, 0, 0.0, 1)));
+  ER_CHECK (NULL != (total = evresp ("ANMO", "BH1", "IU", "00", "2015,1,00:00:00", "VEL",
+                                     file, freqs, nfreqs, "AP", "", 0, 99, 0, 1, 0.0, 1)));
+  ER_CHECK (NULL != (total_itp = evresp_itp ("ANMO", "BH1", "IU", "00", "2015,1,00:00:00", "VEL",
+                                             file, freqs, nfreqs, "AP", "", 0, 99, 0, 0, 0, 0.0, 1, 0.0, 1)));
+  for (i = 0; i < nfreqs; ++i)
+  {
+    ER_CHECK_MSG (total->rvec[i].real == total_itp->rvec[i].real, "Real %d: %g != %g",
+                  i, total->rvec[i].real, total_itp->rvec[i].real);
+    ER_CHECK_MSG (total->rvec[i].imag == total_itp->rvec[i].imag, "Imag %d: %g != %g",
+                  i, total->rvec[i].imag, total_itp->rvec[i].imag);
+    if (total->rvec[i].real != calc->rvec[i].real || total->rvec[i].imag != calc->rvec[i].imag)
+      differs = 1;
+  }
+  ER_CHECK_MSG (differs, "total sensitivity flag had no effect");
+  evalresp_free_response (&calc);
+  evalresp_free_response (&total);
+  evalresp_free_response (&total_itp);
+}
+
 /* h0 * prod(s - zero) / prod(s - pole) at s = i*w, with the roots on the real axis */
 static void
 pz_real_roots (double h0, const double *zeros, int nz, const double *poles, int np, double w,
@@ -795,6 +826,7 @@ const er_test unit_evaluation_tests[] = {
     {"non_motion_units_rejected", test_non_motion_units_rejected, NULL},
     {"arbitrary_freqs", test_arbitrary_freqs, NULL},
     {"legacy_arbitrary_freqs", test_legacy_arbitrary_freqs, NULL},
+    {"legacy_total_sensitivity", test_legacy_total_sensitivity, NULL},
     {"no_options", test_no_options, NULL},
     {"start", test_start, NULL},
     {"freqs", test_freqs, NULL},

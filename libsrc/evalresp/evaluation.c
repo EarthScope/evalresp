@@ -48,7 +48,15 @@ evalresp_free_options (evalresp_options **options)
 int
 evalresp_set_filename (evalresp_logger *log, evalresp_options *options, const char *filename)
 {
-  options->filename = strdup (filename);
+  char *copy = strdup (filename);
+
+  if (!copy)
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate filename");
+    return EVALRESP_MEM;
+  }
+  free (options->filename);
+  options->filename = copy;
   return EVALRESP_OK;
 }
 

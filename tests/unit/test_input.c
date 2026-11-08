@@ -285,7 +285,28 @@ test_parse_motion_units (void)
   }
 }
 
+static void
+test_parse_units_long_line (void)
+{
+  evalresp_channel channel;
+  char line[MAXLINELEN + 44];
+  int units = -1;
+
+  memset (&channel, 0, sizeof (channel));
+  memset (line, 'X', sizeof (line) - 1);
+  line[sizeof (line) - 1] = '\0';
+  parse_units (NULL, NULL, line, &channel, &units);
+  ER_CHECK_MSG (strlen (channel.first_units) == MAXLINELEN - 1, "first_units length %d",
+                (int)strlen (channel.first_units));
+
+  memset (line, 'X', sizeof (line) - 1);
+  parse_units (NULL, NULL, line, &channel, &units);
+  ER_CHECK_MSG (strlen (channel.last_units) == MAXLINELEN - 1, "last_units length %d",
+                (int)strlen (channel.last_units));
+}
+
 const er_test unit_input_tests[] = {
+    {"parse_units_long_line", test_parse_units_long_line, NULL},
     {"parse_motion_units", test_parse_motion_units, NULL},
     {"unrecognized_units_null_options", test_unrecognized_units_null_options, NULL},
     {"slurp_line", test_slurp_line, NULL},

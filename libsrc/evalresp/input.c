@@ -255,7 +255,7 @@ next_token (const char *p, size_t *len)
 }
 
 static int
-number_of_fields (evalresp_logger *log, char *line, int *count)
+number_of_fields (char *line, int *count)
 {
   const char *lcl_ptr = line, *tok;
   size_t len;
@@ -278,7 +278,7 @@ get_field_to_parse (evalresp_logger *log, char *line, int fld_no, char *return_f
   size_t len = 0;
   int nfields, i;
 
-  number_of_fields (log, line, &nfields);
+  number_of_fields (line, &nfields);
   if (fld_no < 0 || fld_no >= nfields)
   {
     if (nfields > 0)
@@ -486,12 +486,14 @@ parse_units (evalresp_logger *log, evalresp_options const *const options, char *
   if (!strlen (channel->first_units))
   {
     first_flag = 1;
-    strncpy (channel->first_units, line, MAXLINELEN);
+    strncpy (channel->first_units, line, MAXLINELEN - 1);
+    channel->first_units[MAXLINELEN - 1] = '\0';
     channel->unit_scale_fact = 1.0;
   }
   else
   {
-    strncpy (channel->last_units, line, MAXLINELEN);
+    strncpy (channel->last_units, line, MAXLINELEN - 1);
+    channel->last_units[MAXLINELEN - 1] = '\0';
   }
 
   if (options && options->unit == evalresp_file_unit)
@@ -1288,7 +1290,8 @@ read_list (evalresp_logger *log, evalresp_options const *const options, const ch
   }
   else
   {
-    strncpy (line, first_line, MAXLINELEN);
+    strncpy (line, first_line, MAXLINELEN - 1);
+    line[MAXLINELEN - 1] = '\0';
     check_fld++;
   }
 
@@ -1332,7 +1335,7 @@ read_list (evalresp_logger *log, evalresp_options const *const options, const ch
     {
       return status;
     }
-    number_of_fields (log, line, &format);
+    number_of_fields (line, &format);
     format -= 5;
 
     /*format == 0 if no number of responses in the file */
@@ -1480,7 +1483,8 @@ read_generic (evalresp_logger *log, evalresp_options const *const options, const
   }
   else
   {
-    strncpy (line, first_line, MAXLINELEN);
+    strncpy (line, first_line, MAXLINELEN - 1);
+    line[MAXLINELEN - 1] = '\0';
     check_fld++;
   }
 
@@ -3221,7 +3225,7 @@ append_string (struct string_array *array, char *string, int len)
 }
 
 static int
-split_on (evalresp_logger *log, char *string, char *delim, struct string_array **array)
+split_on (char *string, char *delim, struct string_array **array)
 {
   int status = EVALRESP_OK;
   char *start = string, *end;
@@ -3255,7 +3259,7 @@ split_on (evalresp_logger *log, char *string, char *delim, struct string_array *
 }
 
 static int
-split_on_space (evalresp_logger *log, const char *name, const char *str, struct string_array **array)
+split_on_space (const char *str, struct string_array **array)
 {
   int status = EVALRESP_OK;
   char *trimmed = NULL;
@@ -3264,7 +3268,7 @@ split_on_space (evalresp_logger *log, const char *name, const char *str, struct 
   {
     replace_comma_with_space (trimmed);
     coallesce_spaces (trimmed);
-    status = split_on (log, trimmed, " ", array);
+    status = split_on (trimmed, " ", array);
   }
 
   free (trimmed);
@@ -3272,14 +3276,14 @@ split_on_space (evalresp_logger *log, const char *name, const char *str, struct 
 }
 
 static int
-split_on_comma (evalresp_logger *log, const char *name, const char *str, struct string_array **array)
+split_on_comma (const char *str, struct string_array **array)
 {
   int status = EVALRESP_OK;
   char *trimmed = NULL;
 
   if (!(status = copy_and_trim_string (str, &trimmed)))
   {
-    status = split_on (log, trimmed, ",", array);
+    status = split_on (trimmed, ",", array);
   }
 
   free (trimmed);
@@ -3293,11 +3297,11 @@ evalresp_add_sncl_all (evalresp_logger *log, evalresp_filter *filter,
   int status = EVALRESP_OK, i, j, k;
   struct string_array *stations = NULL, *channels = NULL, *locations = NULL;
 
-  if (!(status = split_on_space (log, "stations", sta, &stations)))
+  if (!(status = split_on_space (sta, &stations)))
   {
-    if (!(status = split_on_space (log, "channels", chan, &channels)))
+    if (!(status = split_on_space (chan, &channels)))
     {
-      if (!(status = split_on_comma (log, "locations", locid, &locations)))
+      if (!(status = split_on_comma (locid, &locations)))
       {
         for (i = 0; !status && i < stations->nstrings; i++)
         {

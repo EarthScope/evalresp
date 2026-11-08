@@ -83,6 +83,7 @@ parse_opts (int argc, char *argv[], evalresp_logger **log, FILE **in, FILE **out
     }
     longoptind = -1;
   }
+  (void)level; /* verbosity is not applied to the logger */
   if (X2R_OK != status || 1 < argc - optind)
   {
     if (output)

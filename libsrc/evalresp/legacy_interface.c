@@ -169,6 +169,8 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   size_t k;
   char time[100];
 
+  (void)listinterp_tension; /* obsolete */
+
   if (!date_time || !freqs || nfreqs < 1)
   {
     evalresp_log (log, EV_ERROR, EV_ERROR, "Improper date time or frequencies passed");
@@ -293,7 +295,7 @@ evresp (char *stalst, char *chalst, char *net_code,
 {
   return evresp_itp (stalst, chalst, net_code, locidlst, date_time, units,
                      file, freqs, nfreqs, rtype, verbose, start_stage, stop_stage,
-                     stdio_flag, 0, 0, 0.0, 0, x_for_b62, xml_flag);
+                     stdio_flag, 0, 0, 0.0, useTotalSensitivityFlag, x_for_b62, xml_flag);
 }
 
 void
