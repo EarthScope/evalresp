@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.1">
+  <Source>EarthScope</Source>
+  <Created>2026-11-07T00:00:00.0000</Created>
+  <Network code="XX" startDate="1993-01-01T00:00:00.0000">
+   <Station code="SENSONLY" startDate="1993-01-01T00:00:00.0000">
+    <Latitude>50.0</Latitude>
+    <Longitude>5.0</Longitude>
+    <Elevation>135.0</Elevation>
+    <Site><Name>SENSONLY</Name></Site>
+    <Channel code="EHZ" locationCode="00" startDate="2014-10-29T00:00:00.0000">
+     <Latitude>50.0</Latitude>
+     <Longitude>5.0</Longitude>
+     <Elevation>135</Elevation>
+     <Depth>0</Depth>
+     <Azimuth>0</Azimuth>
+     <Dip>-90</Dip>
+     <SampleRate>1E02</SampleRate>
+     <Response>
+      <InstrumentSensitivity>
+       <Value>1.8346E9</Value>
+       <Frequency>25.0</Frequency>
+       <InputUnits>
+        <Name>M/S</Name>
+       </InputUnits>
+       <OutputUnits>
+        <Name>COUNTS</Name>
+       </OutputUnits>
+      </InstrumentSensitivity>
+     </Response>
+    </Channel>
+   </Station>
+  </Network>
+</FDSNStationXML>
