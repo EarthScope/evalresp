@@ -219,6 +219,11 @@ static int append_coefficients(evalresp_logger *log, evalresp_options const *opt
         return EVALRESP_PAR;
     }
 
+    if (cf->n_denominators && !cf->n_numerators) {
+        evalresp_log(log, EV_ERROR, EV_ERROR, "Coefficients of stage %d have denominators but no numerators", seq_no);
+        return EVALRESP_PAR;
+    }
+
     if (cf->n_denominators) {
         evalresp_coeff *out;
         if ((status = append_filter(log, options, b, alloc_coeff, IIR_COEFFS, seq_no,
@@ -253,6 +258,11 @@ static int append_response_list(evalresp_logger *log, evalresp_options const *op
     int status, i;
     evalresp_blkt *blkt;
     evalresp_list *out;
+
+    if (list->n_response_list_elements < 1) {
+        evalresp_log(log, EV_ERROR, EV_ERROR, "ResponseList of stage %d has no elements", seq_no);
+        return EVALRESP_PAR;
+    }
 
     if ((status = append_filter(log, options, b, alloc_list, LIST, seq_no,
             &list->input_units, &list->output_units, &blkt))) return status;

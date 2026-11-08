@@ -240,34 +240,46 @@ find_line (evalresp_logger *log, const char **seed, char *sep, int blkt_no, int 
   return EVALRESP_EOF;
 }
 
+/* Start of the next whitespace-delimited token at or after p, or NULL; *len is its length. */
+static const char *
+next_token (const char *p, size_t *len)
+{
+  while (*p && isspace ((unsigned char)*p))
+    p++;
+  if (!*p)
+    return NULL;
+  *len = 0;
+  while (p[*len] && !isspace ((unsigned char)p[*len]))
+    (*len)++;
+  return p;
+}
+
 static int
 number_of_fields (evalresp_logger *log, char *line, int *count)
 {
-  char *lcl_ptr, *new_ptr;
-  char lcl_field[50];
-  int nfields = 0, test;
+  const char *lcl_ptr = line, *tok;
+  size_t len;
+  int nfields = 0;
 
-  lcl_ptr = line;
-  /* added test of 'strstr()' result -- 10/21/2005 -- [ET] */
-  while (*lcl_ptr && (test = sscanf (lcl_ptr, "%s", lcl_field)) != 0 && (new_ptr = strstr (lcl_ptr, lcl_field)) != NULL)
+  while ((tok = next_token (lcl_ptr, &len)))
   {
-    lcl_ptr = new_ptr + strlen (lcl_field);
+    lcl_ptr = tok + len;
     nfields++;
   }
   *count = nfields;
   return EVALRESP_OK;
 }
 
-/* was parse_field */
+/* was parse_field; return_field must hold MAXFLDLEN characters */
 static int
 get_field_to_parse (evalresp_logger *log, char *line, int fld_no, char *return_field)
 {
-  char *lcl_ptr, *new_ptr;
-  char lcl_field[MAXFLDLEN];
+  const char *lcl_ptr = line, *tok = NULL;
+  size_t len = 0;
   int nfields, i;
 
   number_of_fields (log, line, &nfields);
-  if (fld_no >= nfields)
+  if (fld_no < 0 || fld_no >= nfields)
   {
     if (nfields > 0)
     {
@@ -283,17 +295,19 @@ get_field_to_parse (evalresp_logger *log, char *line, int fld_no, char *return_f
     return EVALRESP_PAR;
   }
 
-  lcl_ptr = line;
-  /* added test of 'strstr()' result -- 10/21/2005 -- [ET] */
-  for (i = 0; i < fld_no; i++)
+  for (i = 0; i <= fld_no; i++)
   {
-    sscanf (lcl_ptr, "%s", lcl_field);
-    if ((new_ptr = strstr (lcl_ptr, lcl_field)) == NULL)
-      break;
-    lcl_ptr = new_ptr + strlen (lcl_field);
+    tok = next_token (lcl_ptr, &len);
+    lcl_ptr = tok + len;
   }
-
-  sscanf (lcl_ptr, "%s", return_field);
+  if (len >= MAXFLDLEN)
+  {
+    evalresp_log (log, EV_ERROR, 0, "parse_field; field %d is longer than %d characters",
+                  fld_no, MAXFLDLEN - 1);
+    return EVALRESP_PAR;
+  }
+  memcpy (return_field, tok, len);
+  return_field[len] = '\0';
   return EVALRESP_OK;
 }
 
@@ -338,6 +352,23 @@ find_double_field (evalresp_logger *log, const char **seed, char *sep,
   if (!(status = find_field (log, seed, sep, blkt_no, fld_no, fld_wanted, field)))
   {
     status = read_double (log, field, value);
+  }
+  return status;
+}
+
+/* A count of items to read, which must be sane before it sizes an allocation. */
+static int
+find_count_field (evalresp_logger *log, const char **seed, char *sep,
+                  int blkt_no, int fld_no, int *value)
+{
+  int status;
+
+  if (!(status = find_int_field (log, seed, sep, blkt_no, fld_no, 0, value)) &&
+      (*value < 0 || *value > MAX_RESP_COUNT))
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "B%3.3dF%2.2d; count %d is not between 0 and %d",
+                  blkt_no, fld_no, *value, MAX_RESP_COUNT);
+    status = EVALRESP_PAR;
   }
   return status;
 }
@@ -566,12 +597,26 @@ read_units (evalresp_logger *log, evalresp_options const *const options, const c
   return status;
 }
 
+/* Copy a date into a DATIMLEN buffer, dropping trailing whitespace; always terminated. */
+static void
+copy_date (char *dest, const char *line)
+{
+  size_t n = strlen (line);
+
+  if (n > DATIMLEN - 1)
+    n = DATIMLEN - 1;
+  while (n && isspace ((unsigned char)line[n - 1]))
+    n--;
+  memcpy (dest, line, n);
+  dest[n] = '\0';
+}
+
 // this was "read_channel"
 static int
 read_channel_header (evalresp_logger *log, const char **seed, char *first_line,
                      evalresp_channel *chan)
 {
-  int blkt_no, fld_no, status = EVALRESP_OK;
+  int blkt_no = 0, fld_no = 0, status = EVALRESP_OK;
   char field[MAXFLDLEN], line[MAXLINELEN];
 
   /* check to make sure a non-comment field exists and it is the sta/chan/date info.
@@ -681,14 +726,14 @@ read_channel_header (evalresp_logger *log, const char **seed, char *first_line,
   {
     return status;
   }
-  strncpy (chan->beg_t, line, DATIMLEN);
+  copy_date (chan->beg_t, line);
 
   /* get the End Date */
   if ((status = find_line (log, seed, ":", 52, 23, line)))
   {
     return status;
   }
-  strncpy (chan->end_t, line, DATIMLEN);
+  copy_date (chan->end_t, line);
 
   return status;
 }
@@ -785,15 +830,16 @@ read_pz (evalresp_logger *log, evalresp_options const *const options, const char
 
   /* the number of zeros */
 
-  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld, 0, &nzeros)))
+  if ((status = find_count_field (log, seed, ":", blkt_read, check_fld, &nzeros)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.pole_zero.nzeros = nzeros;
 
   /* remember to allocate enough space for the number of zeros to follow */
 
-  blkt_ptr->blkt_info.pole_zero.zeros = alloc_complex (nzeros, log);
+  if (nzeros && !(blkt_ptr->blkt_info.pole_zero.zeros = alloc_complex (nzeros, log)))
+    return EVALRESP_MEM;
+  blkt_ptr->blkt_info.pole_zero.nzeros = nzeros;
 
   /* set the expected field to the current value (9 or 10 for [53] or [43])
      to the current value + 5 (14 or 15 for [53] or [43] respectively) */
@@ -802,15 +848,16 @@ read_pz (evalresp_logger *log, evalresp_options const *const options, const char
 
   /* the number of poles */
 
-  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld, 0, &npoles)))
+  if ((status = find_count_field (log, seed, ":", blkt_read, check_fld, &npoles)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.pole_zero.npoles = npoles;
 
   /* remember to allocate enough space for the number of poles to follow */
 
-  blkt_ptr->blkt_info.pole_zero.poles = alloc_complex (npoles, log);
+  if (npoles && !(blkt_ptr->blkt_info.pole_zero.poles = alloc_complex (npoles, log)))
+    return EVALRESP_MEM;
+  blkt_ptr->blkt_info.pole_zero.npoles = npoles;
 
   /* set the expected field to the current value (14 or 15 for [53] or [43])
      to the current value - 4 (10 or 11 for [53] or [43] respectively) */
@@ -904,17 +951,25 @@ is_iir_coeffs (const char **seed)
   /* Tt returns 0  in case of the error, so use it with a caution!          */
   /* IGD I.Dricker ISTI i.dricker@isti.com 07/00 for evalresp 3.2.17        */
   /* IGD I.Dricker ISTI i.dricker@isti.com 07/17: Fully rewritten           */
-  const char *substr = NULL;
-  char words[5][MAXLINELEN];
-  int denoms = 0;
+  const char *line = *seed, *colon;
+  size_t len;
+  long denoms = 0;
 
-  substr = strstr (*seed, "B054F10");
-  if (substr)
+  /* B054F10     Number of denominators:                0 */
+  while (*line)
   {
-
-    /* Parsing (B054F10     Number of denominators:                0) */
-    sscanf (substr, "%s %s %s %s %s", words[0], words[1], words[2], words[3], words[4]);
-    denoms = atoi (words[4]);
+    len = strcspn (line, "\n");
+    if (!strncmp (line, "B054F10", 7))
+    {
+      colon = memchr (line, ':', len);
+      if (colon)
+        denoms = strtol (colon + 1, NULL, 10);
+      break;
+    }
+    /* the blockette ends at the first line of another blockette */
+    if (*line == 'B' && strncmp (line, "B054", 4))
+      break;
+    line += len + (line[len] ? 1 : 0);
   }
   if (0 == denoms)
     return 0;
@@ -982,21 +1037,27 @@ read_iir_coeff (evalresp_logger *log, evalresp_options const *const options, con
 
   /* the number of coefficients */
 
-  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0, &ncoeffs)))
+  if ((status = find_count_field (log, seed, ":", blkt_read, check_fld++, &ncoeffs)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.coeff.nnumer = ncoeffs;
+  if (!ncoeffs)
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "parse_coeff; IIR filter has no numerators");
+    return EVALRESP_PAR;
+  }
 
   /* remember to allocate enough space for the number of coefficients to follow */
-  blkt_ptr->blkt_info.coeff.numer = alloc_double (ncoeffs, log);
+  if (!(blkt_ptr->blkt_info.coeff.numer = alloc_double (ncoeffs, log)))
+    return EVALRESP_MEM;
+  blkt_ptr->blkt_info.coeff.nnumer = ncoeffs;
 
   /* set the expected field to the current value (8 or 9 for [54] or [44])
      to the current value + 2 (10 or 11 for [54] or [44] respectively) */
   check_fld += 2;
 
   /* the number of denominators */
-  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld, 0, &ndenom)))
+  if ((status = find_count_field (log, seed, ":", blkt_read, check_fld, &ndenom)))
   {
     return status;
   }
@@ -1011,11 +1072,12 @@ read_iir_coeff (evalresp_logger *log, evalresp_options const *const options, con
                   "\tshould be represented as blockette [53] filters");
     return EVALRESP_PAR;
   }
-  blkt_ptr->blkt_info.coeff.ndenom = ndenom;
 
   /* remember to allocate enough space for the number of coefficients to follow */
 
-  blkt_ptr->blkt_info.coeff.denom = alloc_double (ndenom, log);
+  if (!(blkt_ptr->blkt_info.coeff.denom = alloc_double (ndenom, log)))
+    return EVALRESP_MEM;
+  blkt_ptr->blkt_info.coeff.ndenom = ndenom;
 
   /* set the expected field to the current value (10 or 11 for [54] or [44])
      to the current value - 2 (8 or 9 for [54] or [44] respectively) */
@@ -1120,15 +1182,16 @@ read_coeff (evalresp_logger *log, evalresp_options const *const options, const c
 
   /* the number of coefficients */
 
-  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0, &ncoeffs)))
+  if ((status = find_count_field (log, seed, ":", blkt_read, check_fld++, &ncoeffs)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.fir.ncoeffs = ncoeffs;
 
   /* remember to allocate enough space for the number of coefficients to follow */
 
-  blkt_ptr->blkt_info.fir.coeffs = alloc_double (ncoeffs, log);
+  if (ncoeffs && !(blkt_ptr->blkt_info.fir.coeffs = alloc_double (ncoeffs, log)))
+    return EVALRESP_MEM;
+  blkt_ptr->blkt_info.fir.ncoeffs = ncoeffs;
 
   /* set the expected field to the current value (8 or 9 for [54] or [44])
      to the current value + 2 (10 or 11 for [54] or [44] respectively) */
@@ -1137,7 +1200,7 @@ read_coeff (evalresp_logger *log, evalresp_options const *const options, const c
 
   /* the number of denominators */
 
-  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld, 0, &ndenom)))
+  if ((status = find_count_field (log, seed, ":", blkt_read, check_fld, &ndenom)))
   {
     return status;
   }
@@ -1239,17 +1302,24 @@ read_list (evalresp_logger *log, evalresp_options const *const options, const ch
 
   /* the number of responses */
 
-  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0, &nresp)))
+  if ((status = find_count_field (log, seed, ":", blkt_read, check_fld++, &nresp)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.list.nresp = nresp;
+  if (!nresp)
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "parse_list; response list is empty");
+    return EVALRESP_PAR;
+  }
 
   /* remember to allocate enough space for the number frequency, amplitude, phase tuples
      that follow */
   blkt_ptr->blkt_info.list.freq = alloc_double (nresp, log);
   blkt_ptr->blkt_info.list.amp = alloc_double (nresp, log);
   blkt_ptr->blkt_info.list.phase = alloc_double (nresp, log);
+  if (!blkt_ptr->blkt_info.list.freq || !blkt_ptr->blkt_info.list.amp || !blkt_ptr->blkt_info.list.phase)
+    return EVALRESP_MEM;
+  blkt_ptr->blkt_info.list.nresp = nresp;
 
   /* then get the response information */
 
@@ -1424,17 +1494,19 @@ read_generic (evalresp_logger *log, evalresp_options const *const options, const
 
   /* the number of responses */
 
-  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0, &ncorners)))
+  if ((status = find_count_field (log, seed, ":", blkt_read, check_fld++, &ncorners)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.generic.ncorners = ncorners;
 
   /* remember to allocate enough space for the number corner_frequency, corner_slope pairs
      that follow */
 
   blkt_ptr->blkt_info.generic.corner_freq = alloc_double (ncorners, log);
   blkt_ptr->blkt_info.generic.corner_slope = alloc_double (ncorners, log);
+  if (ncorners && (!blkt_ptr->blkt_info.generic.corner_freq || !blkt_ptr->blkt_info.generic.corner_slope))
+    return EVALRESP_MEM;
+  blkt_ptr->blkt_info.generic.ncorners = ncorners;
 
   /* then get the response information */
 
@@ -1739,15 +1811,16 @@ read_fir (evalresp_logger *log, evalresp_options const *const options, const cha
 
   /* the number of coefficients */
 
-  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld++, 0, &ncoeffs)))
+  if ((status = find_count_field (log, seed, ":", blkt_read, check_fld++, &ncoeffs)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.fir.ncoeffs = ncoeffs;
 
   /* remember to allocate enough space for the number of coefficients to follow */
 
-  blkt_ptr->blkt_info.fir.coeffs = alloc_double (ncoeffs, log);
+  if (ncoeffs && !(blkt_ptr->blkt_info.fir.coeffs = alloc_double (ncoeffs, log)))
+    return EVALRESP_MEM;
+  blkt_ptr->blkt_info.fir.ncoeffs = ncoeffs;
 
   /* the coefficients */
 
@@ -2064,16 +2137,18 @@ read_polynomial (evalresp_logger *log, evalresp_options const *const options, co
 
   /* the number of coefficients */
 
-  if ((status = find_int_field (log, seed, ":", blkt_read, check_fld, 0, &ncoeffs)))
+  if ((status = find_count_field (log, seed, ":", blkt_read, check_fld, &ncoeffs)))
   {
     return status;
   }
-  blkt_ptr->blkt_info.polynomial.ncoeffs = ncoeffs;
 
   /* remember to allocate enough space for the number of coeffs */
 
   blkt_ptr->blkt_info.polynomial.coeffs = calloc (ncoeffs, sizeof (double));
   blkt_ptr->blkt_info.polynomial.coeffs_err = calloc (ncoeffs, sizeof (double));
+  if (ncoeffs && (!blkt_ptr->blkt_info.polynomial.coeffs || !blkt_ptr->blkt_info.polynomial.coeffs_err))
+    return EVALRESP_MEM;
+  blkt_ptr->blkt_info.polynomial.ncoeffs = ncoeffs;
 
   check_fld += 1;
 
@@ -2112,6 +2187,19 @@ read_polynomial (evalresp_logger *log, evalresp_options const *const options, co
   return status;
 }
 
+/* Free a blockette that is not linked into a stage. */
+static void
+discard_blkt (evalresp_logger *log, evalresp_blkt *blkt_ptr)
+{
+  evalresp_stage *holder;
+
+  if (blkt_ptr && (holder = alloc_stage (log)))
+  {
+    holder->first_blkt = blkt_ptr;
+    free_stages (holder);
+  }
+}
+
 // this was "parse_channel"
 static int
 read_channel_data (evalresp_logger *log, evalresp_options const *const options, const char **seed, char *first_line,
@@ -2122,7 +2210,7 @@ read_channel_data (evalresp_logger *log, evalresp_options const *const options, 
   int curr_seq_no, last_seq_no;
   evalresp_blkt *blkt_ptr, *last_blkt = NULL;
   evalresp_stage *this_stage, *last_stage, *tmp_stage, *tmp_stage2 = NULL;
-  int first_field;
+  int first_field = 1;
 
   /* initialize the channel's sequence of stages */
 
@@ -2206,8 +2294,19 @@ read_channel_data (evalresp_logger *log, evalresp_options const *const options, 
       continue;
     }
 
-    if (status && status != EVALRESP_EOF)
+    if (status)
     {
+      /* the input ended inside the blockette */
+      if (status == EVALRESP_EOF)
+      {
+        evalresp_log (log, EV_ERROR, EV_ERROR, "unexpected end of input in blockette %d", blkt_no);
+        status = EVALRESP_PAR;
+      }
+      if (blkt_no == 60)
+        free_stages (tmp_stage2);
+      else
+        discard_blkt (log, blkt_ptr);
+      free_stages (tmp_stage);
       return status;
     }
 
@@ -2272,6 +2371,10 @@ read_channel_data (evalresp_logger *log, evalresp_options const *const options, 
         {
           this_stage->next_stage = tmp_stage2->next_stage;
         }
+        /* its blockettes and following stages now belong to this stage */
+        tmp_stage2->first_blkt = NULL;
+        tmp_stage2->next_stage = NULL;
+        free_stages (tmp_stage2);
       }
 
       while (this_stage->next_stage != (evalresp_stage *)NULL)
@@ -2387,43 +2490,33 @@ add_channel (evalresp_logger *log, evalresp_channel *channel, evalresp_channels 
 }
 
 // was part of in_epoch
+static const char *
+after_delimiter (const char *str, char delimiter)
+{
+  const char *p = str ? strchr (str, delimiter) : NULL;
+  return p ? p + 1 : NULL;
+}
+
 static void
 parse_datetime (const char *str, evalresp_datetime *datetime)
 {
-  char *start_pos, temp_str[DATIMLEN];
-  size_t len;
-
-  // TODO - this could probably be rewritten better (like, error handling, what's that?)
-  datetime->hour = datetime->min = 0;
+  datetime->year = datetime->jday = datetime->hour = datetime->min = 0;
   datetime->sec = 0.0;
-  strncpy (temp_str, str, DATIMLEN);
-  start_pos = temp_str;
-  len = strcspn (start_pos, ",");
-  *(start_pos + len) = '\0';
-  datetime->year = atoi (start_pos);
-  start_pos += (strlen (start_pos) + 1);
-  len = strcspn (start_pos, ",");
-  *(start_pos + len) = '\0';
-  datetime->jday = atoi (start_pos);
-  start_pos += (strlen (start_pos) + 1);
-  if (strlen (start_pos))
-  {
-    len = strcspn (start_pos, ":");
-    *(start_pos + len) = '\0';
-    datetime->hour = atoi (start_pos);
-    start_pos += (strlen (start_pos) + 1);
-    if (strlen (start_pos))
-    {
-      len = strcspn (start_pos, ":");
-      *(start_pos + len) = '\0';
-      datetime->min = atoi (start_pos);
-      start_pos += (strlen (start_pos) + 1);
-      if (strlen (start_pos))
-      {
-        datetime->sec = atof (start_pos);
-      }
-    }
-  }
+  if (!str)
+    return;
+  datetime->year = atoi (str);
+  if (!(str = after_delimiter (str, ',')))
+    return;
+  datetime->jday = atoi (str);
+  if (!(str = after_delimiter (str, ',')))
+    return;
+  datetime->hour = atoi (str);
+  if (!(str = after_delimiter (str, ':')))
+    return;
+  datetime->min = atoi (str);
+  if (!(str = after_delimiter (str, ':')))
+    return;
+  datetime->sec = atof (str);
 }
 
 // non-static only for tests

@@ -20,45 +20,52 @@ Version 5.1.0
 	condition test, which checked ibcbeg instead of ibcend.  Thanks to
 	@sajnag-web who reported these while porting the code to Go.
 
-	* FIXED: Evaluate responses at the caller's frequency list in evresp() and the
-	new evalresp_channel_to_response_freqs().
+	* FIXED: Evaluate responses programmatically at the caller's frequency
+	list in evresp() and the new evalresp_channel_to_response_freqs().
 
-	* FIXED: Keep the sign of negative B62 polynomial derivatives.
+	* FIXED: Parse ResponseListElement entries in StationXML ResponseList stages.
 
-	* FIXED: Evaluate B62 polynomial responses at any -b62_x value, including the
-	default 0.
+	* IMPROVED: Leave responses with non-ground-motion input units unconverted,
+	regardless of the requested output units.  The eases use with the default
+	conversion to velocity and responses that cannot be converted.
 
-	* FIXED: Convert units using the first stage with defined input units,
-	skipping gain-only stages.
-
-	* FIXED: Leave responses with non-ground-motion input units unconverted when
-	displacement or acceleration is requested.
+	* FIXED: Read StationXML from standard input with -stdio.  Thanks to
+	@peacocks for reporting.
 
 	* FIXED: Channels made only of gain stages evaluate to their gain instead of zero.
 
-	* FIXED: Cancel analog poles and zeros that coincide with the evaluation
-	frequency instead of dividing by zero.
+	* FIXED: Convert units using the first stage with defined input units,
+	skipping gain-only stages when determining units.
 
-	* FIXED: Warn on and return HUGE_VAL for analog poles at the evaluation
-	frequency without a matching zero.
+	* FIXED: Classify motion units by the whole unit symbol, so M/S/S is acceleration
+	and MM/HOUR or MBAR are unrecognized.
 
 	* FIXED: Keep requested frequencies that equal the blockette 55 range limits
 	within rounding error.
 
 	* FIXED: Reject descending frequencies for interpolated blockette 55 responses.
 
-	* FIXED: Classify motion units by the whole unit symbol, so M/S/S is acceleration
-	and MM/HOUR or MBAR are unrecognized.
+	* FIXED: Keep the sign of negative B62 polynomial derivatives.
+
+	* FIXED: Evaluate B62 polynomial responses at any -b62_x value, including the
+	default 0.
 
 	* FIXED: Do not crash when -f names a directory with no matching files.
+
+	* FIXED: Read the files of every requested station, network, location and
+	channel code instead of only those of the first.
+
+	* CHANGED: evresp_1() returns 2 when a response list sets frequencies other
+	than those requested, instead of reading past the end of the response.
 
 	* FIXED: Station, network, location and channel patterns match the whole code,
 	and a blank location matches only an empty location code.
 
-	* FIXED: Parse ResponseListElement entries in StationXML ResponseList stages.
+	* FIXED: Cancel analog poles and zeros that coincide with the evaluation
+	frequency instead of dividing by zero.
 
-	* FIXED: Read StationXML from standard input with -stdio.  Thanks to
-	@peacocks for reporting.
+	* FIXED: Warn on and return HUGE_VAL for analog poles at the evaluation
+	frequency without a matching zero.
 
 	* FIXED: Accept empty optional StationXML elements such as <Description></Description>.
 
@@ -67,30 +74,15 @@ Version 5.1.0
 	* FIXED: Read response files in binary mode so CRLF input is identical on
 	every platform.
 
-	* FIXED: Avoid dereferencing NULL options when reporting unrecognized units.
-
-	* FIXED: Double-free and leak of stage unit strings when parsing RESP
-	channels, and a stack buffer overflow in the test_file_to_char unit test.
-
 	* FIXED: Reject RESP reference stages with no responses instead of reading an
 	uninitialized blockette, and clear MSVC sign, uninitialized-variable and
 	lib warnings.
 
-	* FIXED: Check stat() before testing whether -f names a directory.
-
 	* FIXED: Handle getcwd and stat failures when searching SEEDRESP and fix GCC
 	format and const warnings.
 
-	* FIXED: Reject a channel whose response has only a stage-0 sensitivity as
-	having no response stages
-
-	* FIXED: Free the unit gain substituted for a missing stage gain when it is
-	not linked into the stage.
-
-	* FIXED: Leak of the unit strings of StationXML ResponseList stages.
-
-	* FIXED: Leak of the pole node list when parsing StationXML PolesZeros
-	stages.
+	* FIXED: Reject a channel whose response has only a total (stage-0) sensitivity
+	as having no response stages
 
 	* FIXED: Windows file matching: 64-bit find handle and directory-qualified results.
 
@@ -115,26 +107,29 @@ Version 5.1.0
 
 	* FIXED: Log the channel's RESP name when no input filename is set instead of a null string.
 
-	* IMPROVED: Describe -il and -ii in the usage text as synonyms.
-
 	* ADDED: evalresp_log_error(), evalresp_log_warn(), evalresp_log_info() and
 	evalresp_log_debug() to log at a level with matching verbosity.
 
 	* IMPROVED: Build with -O2 by default when CFLAGS is not set, and with /O2 on Windows.
 
-	* IMPROVED: Rewrite the man pages and API introduction to match current behavior.
+	* IMPROVED: Describe -il and -ii in the usage text as synonyms.
 
 	* CHANGED: Replace the bundled V8 regex with a reentrant glob matcher and
 	number scanners.
 
+	* FIXED: Memory leaks, double-frees, buffer overflows, crashes and process
+	exits, including a stack buffer overflow in the test_file_to_char unit test.
+	Harden RESP and StationXML parsing, file search and the legacy API
+	against malformed input, overlong names and missing option arguments:
+	reject truncated blockettes, invalid counts and numbers, and lists that
+	cannot be interpolated.  Free the stage unit strings of RESP channels and
+	StationXML ResponseList stages, the pole node list of StationXML PolesZeros
+	stages, and the unit gain substituted for a missing stage gain.
+
 	* CHANGED: Removed the autotools build (configure.ac, Makefile.am,
 	MKDIST).  The GNU make build (Makefile, Build.config) is now the only
-	Unix build, alongside Makefile.nmake for Windows.  Both systems wrote
-	to the same Makefile names and produced different libraries; autotools
-	also failed to build with current compilers (-std=gnu23, -Werror).
-	Build and install as before with "make -f Makefile [install]".
-	Shared libraries and "make dist" are no longer provided; use
-	"git archive" for source tarballs.
+	Unix build, alongside Makefile.nmake for Windows.	Shared libraries and
+	"make dist" are no longer provided; use "git archive" for source tarballs.
 
 	* CHANGED: Update vendored Mini-XML library to 4.0.6.
 
@@ -142,13 +137,7 @@ Version 5.1.0
 	command-line tests, which need only a C compiler, replacing "make check"
 	from autotools.  "make install" now honors DESTDIR for staged installs.
 
-	* Set the version only in REVNUM in public.h and remove set-version.
-
-	* FIXED: Do not follow symlinks when clearing test work directories.
-
-	* FIXED: Build the test harness on Linux, where strict POSIX mode hides S_IFMT.
-
-	* ADDED: Unit tests for spline_cubic_set() in tests/unit/test_spline.c.
+	* IMPROVE: Set the version only in REVNUM in public.h and remove set-version.
 
 	* ADDED: Add GitHub Actions workflow that builds and runs the tests on Linux,
 	macOS and Windows.
@@ -938,4 +927,3 @@ Version 3.0 to version 3.2
 	useful for looking at the effect of individual response stages on
 	the overall response (and for checking for problems with a stage
 	that is under construction).
-

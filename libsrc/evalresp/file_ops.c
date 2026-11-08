@@ -43,6 +43,26 @@
 #define S_ISDIR(m) ((m) & S_IFDIR)
 #endif
 
+#define SEARCH_NAME_LEN 4096
+
+/* Format a search pattern; an empty result (after logging an error) if it does not fit. */
+static void
+format_name (evalresp_logger *log, char *dest, const char *fmt, ...)
+{
+  va_list args;
+  int n;
+
+  va_start (args, fmt);
+  n = vsnprintf (dest, SEARCH_NAME_LEN, fmt, args);
+  va_end (args);
+  if (n < 0 || n >= SEARCH_NAME_LEN)
+  {
+    dest[0] = '\0';
+    evalresp_log (log, EV_ERROR, EV_ERROR, "file name pattern is longer than %d characters",
+                  SEARCH_NAME_LEN - 1);
+  }
+}
+
 /* Files matching name, or else those matching alt (if not empty). */
 static int
 get_names_in (char *name, char *alt, struct matched_files *files, evalresp_logger *log)
@@ -68,8 +88,8 @@ struct matched_files *
 find_files (char *file, evalresp_sncls *scn_lst,
             int *mode, evalresp_logger *log)
 {
-  char *basedir, testdir[MAXLINELEN];
-  char comp_name[MAXLINELEN], new_name[MAXLINELEN];
+  char *basedir, testdir[SEARCH_NAME_LEN];
+  char comp_name[SEARCH_NAME_LEN], new_name[SEARCH_NAME_LEN];
   int i, nscn, nfiles, loc_wild;
   struct matched_files *flst_head, *flst_ptr, *tmp_ptr;
   evalresp_sncl *scn_ptr;
@@ -103,11 +123,11 @@ find_files (char *file, evalresp_sncls *scn_lst,
       {
         scn_ptr = scn_lst->scn_vec[i];
         loc_wild = !strcmp (scn_ptr->locid, "*") || !strcmp (scn_ptr->locid, "??");
-        memset (comp_name, 0, MAXLINELEN);
-        sprintf (comp_name, "%s/RESP.%s.%s.%s.%s", file,
-                 scn_ptr->network, scn_ptr->station,
-                 loc_wild ? "*" : scn_ptr->locid,
-                 scn_ptr->channel);
+        comp_name[0] = '\0';
+        format_name (log, comp_name, "%s/RESP.%s.%s.%s.%s", file,
+                     scn_ptr->network, scn_ptr->station,
+                     loc_wild ? "*" : scn_ptr->locid,
+                     scn_ptr->channel);
         nfiles = get_names (comp_name, flst_ptr, log);
         if (!nfiles && !loc_wild)
         {
@@ -115,10 +135,10 @@ find_files (char *file, evalresp_sncls *scn_lst,
         }
         else if (!nfiles && loc_wild)
         {
-          memset (comp_name, 0, MAXLINELEN);
-          sprintf (comp_name, "%s/RESP.%s.%s.%s", file,
-                   scn_ptr->network, scn_ptr->station,
-                   scn_ptr->channel);
+          comp_name[0] = '\0';
+          format_name (log, comp_name, "%s/RESP.%s.%s.%s", file,
+                       scn_ptr->network, scn_ptr->station,
+                       scn_ptr->channel);
           nfiles = get_names (comp_name, flst_ptr, log);
           if (!nfiles)
           {
@@ -139,22 +159,22 @@ find_files (char *file, evalresp_sncls *scn_lst,
     for (i = 0; i < nscn; i++)
     { /* for each station-channel-net in list */
       scn_ptr = scn_lst->scn_vec[i];
-      memset (comp_name, 0, MAXLINELEN);
-      sprintf (comp_name, "./RESP.%s.%s.%s.%s", scn_ptr->network,
-               scn_ptr->station, scn_ptr->locid, scn_ptr->channel);
+      comp_name[0] = '\0';
+      format_name (log, comp_name, "./RESP.%s.%s.%s.%s", scn_ptr->network,
+                   scn_ptr->station, scn_ptr->locid, scn_ptr->channel);
       new_name[0] = '\0';
       if ((basedir = (char *)getenv ("SEEDRESP")) != NULL)
       {
         /* if the current directory is not the same as the SEEDRESP
                  directory (and the SEEDRESP directory exists) add it to the
                  search path */
-        if (!getcwd (testdir, MAXLINELEN))
+        if (!getcwd (testdir, SEARCH_NAME_LEN))
           testdir[0] = '\0';
         if (!stat (basedir, &buf) && S_ISDIR (buf.st_mode) && strcmp (testdir, basedir))
         {
-          sprintf (new_name, "%s/RESP.%s.%s.%s.%s", basedir,
-                   scn_ptr->network, scn_ptr->station, scn_ptr->locid,
-                   scn_ptr->channel);
+          format_name (log, new_name, "%s/RESP.%s.%s.%s.%s", basedir,
+                       scn_ptr->network, scn_ptr->station, scn_ptr->locid,
+                       scn_ptr->channel);
         }
       }
       nfiles = get_names_in (comp_name, new_name, flst_ptr, log);
@@ -164,19 +184,19 @@ find_files (char *file, evalresp_sncls *scn_lst,
       }
       else if (!nfiles && !strcmp (scn_ptr->locid, "*"))
       {
-        memset (comp_name, 0, MAXLINELEN);
-        sprintf (comp_name, "./RESP.%s.%s.%s", scn_ptr->network,
-                 scn_ptr->station, scn_ptr->channel);
+        comp_name[0] = '\0';
+        format_name (log, comp_name, "./RESP.%s.%s.%s", scn_ptr->network,
+                     scn_ptr->station, scn_ptr->channel);
         new_name[0] = '\0';
         if (basedir != NULL)
         {
-          if (!getcwd (testdir, MAXLINELEN))
+          if (!getcwd (testdir, SEARCH_NAME_LEN))
             testdir[0] = '\0';
           if (!stat (basedir, &buf) && S_ISDIR (buf.st_mode) && strcmp (testdir, basedir))
           {
-            sprintf (new_name, "%s/RESP.%s.%s.%s", basedir,
-                     scn_ptr->network, scn_ptr->station,
-                     scn_ptr->channel);
+            format_name (log, new_name, "%s/RESP.%s.%s.%s", basedir,
+                         scn_ptr->network, scn_ptr->station,
+                         scn_ptr->channel);
           }
         }
         nfiles = get_names_in (comp_name, new_name, flst_ptr, log);

@@ -4839,7 +4839,7 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
     evalresp_log(log, EV_ERROR, 0, "SPLINE_CUBIC_SET - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  The number of data points N must be at least 2." );
     evalresp_log(log, EV_ERROR, 0, "  The input value is %d.\n", n );
-    exit ( 1 ); /* TODO imho this should not exit */
+    return NULL;
   }
 
   for ( i = 0; i < n - 1; i++ )
@@ -4850,7 +4850,7 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
       evalresp_log(log, EV_ERROR, 0, "  The knots must be strictly increasing, but" );
       evalresp_log(log, EV_ERROR, 0, "  T(%d) = %g", i, t[i] );
       evalresp_log(log, EV_ERROR, 0, "  T(%d) = %g", i+1, t[i+1] );
-      exit ( 1 ); /* TODO imho this should not exit */
+      return NULL;
     }
   }
   a1 = ( double * ) malloc ( n * sizeof ( double ) );
@@ -4901,7 +4901,13 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
     evalresp_log(log, EV_ERROR, 0, "SPLINE_CUBIC_SET - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  IBCBEG must be 0, 1, 2 or 3." );
     evalresp_log(log, EV_ERROR, 0, "  The input value is %d.", ibcbeg );
-    exit ( 1 ); /* TODO imho this should not exit */
+    free ( a1 );
+    free ( a2 );
+    free ( a3 );
+    free ( a4 );
+    free ( a5 );
+    free ( b );
+    return NULL;
   }
 /*
   Set up the intermediate equations.
@@ -4947,7 +4953,13 @@ double *spline_cubic_set ( int n, double t[], double y[], int ibcbeg,
     evalresp_log(log, EV_ERROR, 0, "SPLINE_CUBIC_SET - Fatal error!" );
     evalresp_log(log, EV_ERROR, 0, "  IBCEND must be 0, 1, 2 or 3." );
     evalresp_log(log, EV_ERROR, 0, "  The input value is %d.", ibcend );
-    exit ( 1 ); /* TODO imho this should not exit */
+    free ( a1 );
+    free ( a2 );
+    free ( a3 );
+    free ( a4 );
+    free ( a5 );
+    free ( b );
+    return NULL;
   }
 /*
   Solve the linear system.

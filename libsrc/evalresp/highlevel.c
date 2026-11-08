@@ -101,7 +101,7 @@ process_stdio (evalresp_logger *log, evalresp_options *options, evalresp_filter 
                const double *freqs, int nfreqs, evalresp_responses **responses)
 {
   int status = EVALRESP_OK;
-  evalresp_channels *channels;
+  evalresp_channels *channels = NULL;
 
   if (options->filename && strlen (options->filename))
   {
@@ -161,13 +161,15 @@ process_cwd_files (evalresp_logger *log, evalresp_options *options, evalresp_fil
       sncl_filter->datetime = filter->datetime; // shared
       if (!(status = add_sncl (log, sncl_filter, sncl)))
       {
-        file = files->first_list;
+        file = files_for_sncls->first_list;
         while (!status && file)
         {
-          status = process_file (log, options, filter, file->name, freqs, nfreqs, responses);
+          status = process_file (log, options, sncl_filter, file->name, freqs, nfreqs, responses);
           file = file->next_file;
         }
       }
+      if (sncl_filter->sncls && sncl_filter->sncls->nscn)
+        sncl->found += sncl_filter->sncls->scn_vec[0]->found;
       sncl_filter->datetime = NULL; // don't free this as shared
       evalresp_free_filter (&sncl_filter);
     }

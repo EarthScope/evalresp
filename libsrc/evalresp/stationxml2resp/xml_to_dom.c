@@ -1,4 +1,8 @@
 
+#include <ctype.h>
+#include <errno.h>
+#include <limits.h>
+#include <math.h>
 #include <string.h>
 #include <mxml.h>
 #include <evalresp_log/log.h>
@@ -187,20 +191,55 @@ static int char_element(evalresp_logger *log, mxml_node_t *node, const char *nam
 }
 
 
+/* Convert all of text (apart from surrounding space) to an int; no empty, partial or out of range values. */
+static int text_to_int(evalresp_logger *log, const char *text, int *value) {
+
+    char *end;
+    long v;
+    int converted;
+
+    errno = 0;
+    v = strtol(text, &end, 10);
+    converted = end != text;
+    while (isspace((unsigned char)*end)) end++;
+    if (!converted || *end || errno == ERANGE || v < INT_MIN || v > INT_MAX) {
+        evalresp_log(log, EV_ERROR, 0, "'%s' is not an integer", text);
+        return X2R_ERR_XML;
+    }
+    *value = (int)v;
+    return X2R_OK;
+}
+
+
+/* Convert all of text (apart from surrounding space) to a finite double. */
+static int text_to_double(evalresp_logger *log, const char *text, double *value) {
+
+    char *end;
+    double v;
+    int converted;
+
+    errno = 0;
+    v = strtod(text, &end);
+    converted = end != text;
+    while (isspace((unsigned char)*end)) end++;
+    if (!converted || *end || !isfinite(v)) {
+        evalresp_log(log, EV_ERROR, 0, "'%s' is not a finite number", text);
+        return X2R_ERR_XML;
+    }
+    *value = v;
+    return X2R_OK;
+}
+
+
 /* Read the text contents of an element as an int. */
 static int int_element(evalresp_logger *log, mxml_node_t *node, const char *name,
         const char *deflt, int *value) {
 
     int status = X2R_OK;
-    char *text = NULL, *end;
+    char *text = NULL;
 
     if (!(status = char_element(log, node, name, deflt, &text))) {
-        *value = strtol(text, &end, 10);
-        while (isspace(*end)) end++;
-        if (*end) {  // should point to end of string
-            evalresp_log(log, EV_ERROR, 0, "Did not parse all of %s", text);
-            status = X2R_ERR_XML;
-        }
+        status = text_to_int(log, text, value);
     }
 
     free(text);
@@ -213,15 +252,10 @@ static int double_element(evalresp_logger *log, mxml_node_t *node, const char *n
         const char *deflt, double *value) {
 
     int status = X2R_OK;
-    char *text = NULL, *end;
+    char *text = NULL;
 
     if (!(status = char_element(log, node, name, deflt, &text))) {
-        *value = strtod(text, &end);
-        while (isspace(*end)) end++;
-        if (*end) {  // should point to end of string
-            evalresp_log(log, EV_ERROR, 0, "Did not parse all of %s", text);
-            status = X2R_ERR_XML;
-        }
+        status = text_to_double(log, text, value);
     }
 
     free(text);
@@ -310,14 +344,10 @@ static int int_attribute(evalresp_logger *log, mxml_node_t *node, const char *na
         const char *deflt, int *value) {
 
     int status = X2R_OK;
-    char *text = NULL, *end;
+    char *text = NULL;
 
     if (!(status = char_attribute(log, node, name, deflt, &text))) {
-        *value = strtol(text, &end, 10);
-        if (*end) {  // should point to end of string
-            evalresp_log(log, EV_ERROR, 0, "Did not parse all of %s", text);
-            status = X2R_ERR_XML;
-        }
+        status = text_to_int(log, text, value);
     }
 
     free(text);
@@ -330,14 +360,10 @@ static int double_attribute(evalresp_logger *log, mxml_node_t *node, const char 
 		const char *deflt, double *value) {
 
     int status = X2R_OK;
-    char *text = NULL, *end;
+    char *text = NULL;
 
     if (!(status = char_attribute(log, node, name, deflt, &text))) {
-        *value = strtod(text, &end);
-        if (*end) {  // should point to end of string
-            evalresp_log(log, EV_ERROR, 0, "Did not parse all of %s", text);
-            status = X2R_ERR_XML;
-        }
+        status = text_to_double(log, text, value);
     }
 
     free(text);
@@ -770,6 +796,8 @@ static int free_fir(x2r_fir *fir, int status) {
     if (fir) {
         free(fir->symmetry);
         free(fir->name);
+        status = free_units(&fir->input_units, status);
+        status = free_units(&fir->output_units, status);
         free(fir->numerator_coefficient);
     }
     return status;
@@ -1042,9 +1070,9 @@ static int free_stage(x2r_stage *stage, int status) {
             break;
         }
         free(stage->u.poles_zeros);  // any
-        free(stage->decimation);
-        free(stage->stage_gain);
     }
+    free(stage->decimation);
+    free(stage->stage_gain);
     return status;
 }
 

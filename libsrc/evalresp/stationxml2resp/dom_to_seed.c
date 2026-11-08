@@ -83,14 +83,9 @@ static int format_date(evalresp_logger *log, const time_t epoch, int n, char *te
 			}
 		}
     } else {
-    	if (!(*date = calloc(1+strlen(OPEN), sizeof(**date)))) {
-    		evalresp_log(log, EV_ERROR, 0, "Cannot alloc open date");
+    	if (!(*date = strdup(OPEN))) {
+    		evalresp_log(log, EV_ERROR, 0, "Cannot copy open date");
     		status = X2R_ERR_MEMORY;
-    	} else {
-    		if (!(*date = strdup(OPEN))) {
-    			evalresp_log(log, EV_ERROR, 0, "Cannot copy open date");
-				status = X2R_ERR_MEMORY;
-    		}
     	}
     }
 

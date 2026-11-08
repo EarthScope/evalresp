@@ -687,10 +687,12 @@ void
 free_stages (evalresp_stage *stage_ptr)
 {
   evalresp_blkt *this_blkt, *next_blkt;
+  evalresp_stage *next_stage;
 
-  if (stage_ptr != (evalresp_stage *)NULL)
+  /* iterative: a response can have very many stages */
+  while (stage_ptr != (evalresp_stage *)NULL)
   {
-    free_stages (stage_ptr->next_stage);
+    next_stage = stage_ptr->next_stage;
     this_blkt = stage_ptr->first_blkt;
     while (this_blkt != (evalresp_blkt *)NULL)
     {
@@ -708,6 +710,7 @@ free_stages (evalresp_stage *stage_ptr)
         free_fir (this_blkt);
         break;
       case FIR_COEFFS:
+      case IIR_COEFFS:
         free_coeff (this_blkt);
         break;
       case LIST:
@@ -729,6 +732,7 @@ free_stages (evalresp_stage *stage_ptr)
         free_polynomial (this_blkt);
         break;
       default:
+        free (this_blkt);
         break;
       }
       this_blkt = next_blkt;
@@ -740,7 +744,7 @@ free_stages (evalresp_stage *stage_ptr)
       free (stage_ptr->input_units_str);
 
     free (stage_ptr);
-    stage_ptr = NULL;
+    stage_ptr = next_stage;
   }
 }
 

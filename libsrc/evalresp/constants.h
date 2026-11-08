@@ -130,6 +130,15 @@
 #define MAXLINELEN 256
 #endif
 
+/**
+ * @private
+ * @ingroup evalresp_private
+ * @brief Largest number of coefficients, poles, zeros or list rows accepted in a blockette.
+ */
+#ifndef MAX_RESP_COUNT
+#define MAX_RESP_COUNT 1000000
+#endif
+
 #ifndef DATIMESIZE
 #define DATIMESIZE 32
 #endif

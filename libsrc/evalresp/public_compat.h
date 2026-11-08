@@ -102,6 +102,9 @@ evalresp_response *evresp (char *stalst, char *chalst, char *net_code,
  * @param[in] useTotalSensitivityFlag Use or not total sensitivity.
  * @param[in] x_for_b62 Frequency value for Polynomial.
  * @param[in] xml_flag Use XML or not.
+ * @returns 0 on success, 1 if no response was found, -1 if more than one response matched,
+ *          2 if the response is not at the requested frequencies (a response list stage
+ *          determines its own frequencies).
  * @remark Fortran interface.
  */
 int evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,

@@ -177,6 +177,14 @@ iir_trans (evalresp_blkt *blkt_ptr, double wint, evalresp_complex *out)
   /* Calculate radial freq. time sample interval */
   w = wint * t;
 
+  /* a filter without numerators or denominators has no response to evaluate */
+  if (nn < 1 || nd < 1 || !cn || !cd)
+  {
+    out->real = 0.0;
+    out->imag = 0.0;
+    return;
+  }
+
   /* Handle numerator */
   xre = cn[0];
   xim = 0.0;
@@ -759,6 +767,13 @@ normalize_response (evalresp_logger *log, evalresp_options const *const options,
 
             if (reset_gain)
             {
+              if ((df.real == 0.0 && df.imag == 0.0) || (of.real == 0.0 && of.imag == 0.0))
+              {
+                evalresp_log (log, EV_ERROR, 0,
+                              "norm_resp: Stage %d has a zero response at its gain or sensitivity frequency",
+                              curr_seq_no);
+                return EVALRESP_VAL;
+              }
               fil->blkt_info.gain.gain /= sqrt (
                   df.real * df.real + df.imag * df.imag);
               fil->blkt_info.gain.gain *= sqrt (
@@ -1113,7 +1128,8 @@ calculate_response (evalresp_logger *log, evalresp_options *options,
       output[i].imag = val.imag * chan->sensit * chan->unit_scale_fact;
     }
 
-    if ((status = convert_to_units (units_code, options->unit, &output[i], w, log)))
+    /* units cannot be converted for an infinite value */
+    if (!infinite && (status = convert_to_units (units_code, options->unit, &output[i], w, log)))
     {
       return status;
     }

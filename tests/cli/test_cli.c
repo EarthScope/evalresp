@@ -294,7 +294,61 @@ test_dir_no_match (void)
   ER_CHECK_MSG (!er_is_file ("PHASE.Z.CGV..HYZ"), "unexpected output file PHASE.Z.CGV..HYZ");
 }
 
-static er_test table[N_CASES + 4];
+/* Every requested station and channel is searched for, not only the first. */
+static void
+test_dir_several_sncls (void)
+{
+  const char *argv[] = {NULL, "CGV,ANMO", "HYZ,BHZ", "2010", "1", "0.001", "10", "100", "-f", "resp dir", NULL};
+  int rc;
+
+  ER_CHECK (!er_mkdir_p ("resp dir"));
+  ER_CHECK (!er_copy_file (er_data_path (CGV_FILE), "resp dir/" CGV_FILE));
+  ER_CHECK (!er_copy_file (er_data_path (ANMO_FILE), "resp dir/" ANMO_FILE));
+  ER_CHECK (!er_setenv ("SEEDRESP", NULL));
+  argv[0] = er_bin_path ("evalresp");
+  rc = er_run (argv, NULL, NULL, NULL);
+  ER_CHECK_MSG (rc == 0, "evalresp exited with status %d, expected 0", rc);
+  ER_CHECK_MSG (er_is_file ("AMP.IU.ANMO.00.BHZ"), "missing output file AMP.IU.ANMO.00.BHZ");
+  ER_CHECK_MSG (er_is_file ("PHASE.IU.ANMO.00.BHZ"), "missing output file PHASE.IU.ANMO.00.BHZ");
+  check_cgv_output ();
+}
+
+/* An option without its argument is an error, even as the last argument. */
+static void
+test_option_missing_argument (void)
+{
+  const char *last[] = {"-f", "-u", "-t", "-n", "-l", "-s", "-r", "-b62_x"};
+  const char *argv[] = {NULL, "CGV", "HYZ", "2010", "1", "0.001", "10", "100", NULL, NULL};
+  size_t i;
+  int rc;
+
+  argv[0] = er_bin_path ("evalresp");
+  for (i = 0; i < sizeof (last) / sizeof (last[0]); ++i)
+  {
+    argv[8] = last[i];
+    rc = er_run (argv, NULL, NULL, NULL);
+    ER_CHECK_MSG (rc > 0 && rc < 128, "evalresp %s exited with status %d, expected an error", last[i], rc);
+  }
+}
+
+/* Names longer than any file name buffer are not found, not overrun. */
+static void
+test_long_names (void)
+{
+  char station[400];
+  const char *argv[] = {NULL, NULL, "HYZ", "2010", "1", "0.001", "10", "100", NULL};
+  int rc;
+
+  memset (station, 'A', sizeof (station) - 1);
+  station[sizeof (station) - 1] = '\0';
+  argv[0] = er_bin_path ("evalresp");
+  argv[1] = station;
+  ER_CHECK (!er_setenv ("SEEDRESP", NULL));
+  rc = er_run (argv, NULL, NULL, NULL);
+  ER_CHECK_MSG (rc == 0, "evalresp exited with status %d, expected 0", rc);
+}
+
+static er_test table[N_CASES + 7];
 
 static int
 in_list (const char *list, const char *name)
@@ -422,5 +476,11 @@ cli_tests (void)
   table[N_CASES + 1].fn = test_seedresp_with_space;
   table[N_CASES + 2].name = "dir_no_match";
   table[N_CASES + 2].fn = test_dir_no_match;
+  table[N_CASES + 3].name = "dir_several_sncls";
+  table[N_CASES + 3].fn = test_dir_several_sncls;
+  table[N_CASES + 4].name = "option_missing_argument";
+  table[N_CASES + 4].fn = test_option_missing_argument;
+  table[N_CASES + 5].name = "long_names";
+  table[N_CASES + 5].fn = test_long_names;
   return table;
 }

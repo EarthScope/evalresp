@@ -312,6 +312,7 @@ evalresp_channel_to_log (evalresp_logger *log, evalresp_options const *const opt
       continue;
     }
     this_blkt = this_stage->first_blkt;
+    out_str[0] = '\0';
     if (this_stage->sequence_no)
     {
       strncpy (tmp_str, "", TMPSTRLEN);

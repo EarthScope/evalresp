@@ -147,7 +147,7 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
     flags_argc = argc - first_switch + 1;
     flags_argv = argv + first_switch - 1;
 
-    while (!status && -1 != (option = getopt_long_only (flags_argc, flags_argv, ":f:u:t:s:n:l:r:S:Ub:vx", cmdline_flags, &index)))
+    while (!status && (index = -1, -1 != (option = getopt_long_only (flags_argc, flags_argv, ":f:u:t:s:n:l:r:S:Ub:vx", cmdline_flags, &index))))
     {
       switch (option)
       {
@@ -209,7 +209,7 @@ parse_args (int argc, char *argv[], evalresp_options *options, evalresp_filter *
         break;
 
       case ':': /* invalid argument for flag */
-        if (cmdline_flags[index].name)
+        if (index >= 0 && cmdline_flags[index].name)
         {
           evalresp_log (*log, EV_ERROR, EV_ERROR, "Missing argument for option '%s'", cmdline_flags[index].name);
         }

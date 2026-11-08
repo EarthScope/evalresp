@@ -479,9 +479,56 @@ restrict_frequency_range (evalresp_logger *log, double lo, double hi, int *nfreq
   return status;
 }
 
+/* Sequence number of the stage holding the blockette. */
+static int
+stage_of_blkt (const evalresp_channel *channel, const evalresp_blkt *blkt)
+{
+  const evalresp_stage *stage;
+  const evalresp_blkt *b;
+
+  for (stage = channel->first_stage; stage; stage = stage->next_stage)
+  {
+    for (b = stage->first_blkt; b; b = b->next_blkt)
+    {
+      if (b == blkt)
+        return stage->sequence_no;
+    }
+  }
+  return -1;
+}
+
+/* Interpolation needs at least two rows at strictly increasing frequencies. */
+static int
+check_list_for_interpolation (evalresp_logger *log, const evalresp_channel *channel,
+                              const evalresp_blkt *blkt)
+{
+  const evalresp_list *list = &blkt->blkt_info.list;
+  int i;
+
+  if (list->nresp < 2 || !list->freq || !list->amp || !list->phase)
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR,
+                  "Stage %d is a response list with fewer than two rows, so it cannot be interpolated",
+                  stage_of_blkt (channel, blkt));
+    return EVALRESP_INP;
+  }
+  for (i = 1; i < list->nresp; ++i)
+  {
+    if (!(list->freq[i] > list->freq[i - 1]))
+    {
+      evalresp_log (log, EV_ERROR, EV_ERROR,
+                    "Stage %d is a response list whose frequencies do not strictly increase, so it cannot be interpolated",
+                    stage_of_blkt (channel, blkt));
+      return EVALRESP_INP;
+    }
+  }
+  return EVALRESP_OK;
+}
+
 /* The frequencies are restricted to the range common to all the lists. */
 static int
-interpolate_b55 (evalresp_logger *log, evalresp_blkt **lists, int nlists,
+interpolate_b55 (evalresp_logger *log, const evalresp_channel *channel,
+                 evalresp_blkt **lists, int nlists,
                  evalresp_response *response, evalresp_blkt **b55_save)
 {
   int status = EVALRESP_OK, i;
@@ -494,6 +541,11 @@ interpolate_b55 (evalresp_logger *log, evalresp_blkt **lists, int nlists,
                     "Frequencies must be in ascending order to interpolate blockette 55");
       return EVALRESP_INP;
     }
+  }
+  for (i = 0; i < nlists; ++i)
+  {
+    if ((status = check_list_for_interpolation (log, channel, lists[i])))
+      return status;
   }
   if (!(status = save_lists (log, lists, nlists, b55_save)))
   {
@@ -511,24 +563,6 @@ interpolate_b55 (evalresp_logger *log, evalresp_blkt **lists, int nlists,
     }
   }
   return status;
-}
-
-/* Sequence number of the stage holding the blockette. */
-static int
-stage_of_blkt (const evalresp_channel *channel, const evalresp_blkt *blkt)
-{
-  const evalresp_stage *stage;
-  const evalresp_blkt *b;
-
-  for (stage = channel->first_stage; stage; stage = stage->next_stage)
-  {
-    for (b = stage->first_blkt; b; b = b->next_blkt)
-    {
-      if (b == blkt)
-        return stage->sequence_no;
-    }
-  }
-  return -1;
 }
 
 /* All the lists must be sampled at the same frequencies. */
@@ -623,7 +657,7 @@ channel_to_response (evalresp_logger *log, evalresp_channel *channel,
           }
           else
           {
-            status = interpolate_b55 (log, lists, nlists, *response, b55_save);
+            status = interpolate_b55 (log, channel, lists, nlists, *response, b55_save);
           }
         }
         else

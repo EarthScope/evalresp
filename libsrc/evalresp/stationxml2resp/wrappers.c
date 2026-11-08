@@ -194,6 +194,7 @@ evalresp_xml_stream_to_resp_file(evalresp_logger *log, int xml_flag, FILE *xml_f
             rewind(*resp_fd);
         }
     }
+    status = x2r_free_fdsn_station_xml(root, status);
     /* if erro we want output *resp_fd to be empty */
     if (EVALRESP_OK != status && *resp_fd)
     {

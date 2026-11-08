@@ -53,28 +53,32 @@ merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_lo
 
   new_ncoeffs = ncoeffs1 + ncoeffs2;
 
-  /* attempt to reallocate space for the new (combined) coefficients vector */
+  /* attempt to reallocate space for the new (combined) coefficients vector;
+     each array is stored as soon as it moves so a failure leaves valid pointers */
 
-  if ((amp1 = (double *)realloc (amp1, new_ncoeffs * sizeof (double))) == (double *)NULL)
+  if (!(amp1 = (double *)realloc (first_blkt->blkt_info.list.amp, new_ncoeffs * sizeof (double))))
   {
     evalresp_log (log, EV_ERROR, 0,
                   "merge_lists; insufficient memory for combined amplitudes");
     return EVALRESP_MEM; /* OUT_OF_MEMORY */
   }
+  first_blkt->blkt_info.list.amp = amp1;
 
-  if ((phase1 = (double *)realloc (phase1, new_ncoeffs * sizeof (double))) == (double *)NULL)
+  if (!(phase1 = (double *)realloc (first_blkt->blkt_info.list.phase, new_ncoeffs * sizeof (double))))
   {
     evalresp_log (log, EV_ERROR, 0,
                   "merge_lists; insufficient memory for combined phases");
     return EVALRESP_MEM; /* OUT_OF_MEMORY */
   }
+  first_blkt->blkt_info.list.phase = phase1;
 
-  if ((freq1 = (double *)realloc (freq1, new_ncoeffs * sizeof (double))) == (double *)NULL)
+  if (!(freq1 = (double *)realloc (first_blkt->blkt_info.list.freq, new_ncoeffs * sizeof (double))))
   {
     evalresp_log (log, EV_ERROR, 0,
                   "merge_lists; insufficient memory for combined frequencies");
     return EVALRESP_MEM; /* OUT_OF_MEMORY */
-  };
+  }
+  first_blkt->blkt_info.list.freq = freq1;
 
   /* copy the coeff values to the new space */
 
@@ -93,7 +97,7 @@ merge_lists (evalresp_blkt *first_blkt, evalresp_blkt **second_blkt, evalresp_lo
   first_blkt->blkt_info.list.freq = freq1;
   first_blkt->blkt_info.list.phase = phase1;
   first_blkt->next_blkt = tmp_blkt->next_blkt;
-  free_fir (tmp_blkt);
+  free_list (tmp_blkt);
   *second_blkt = first_blkt->next_blkt;
 
   return EVALRESP_OK;
@@ -175,7 +179,11 @@ check_symmetry (evalresp_blkt *f, evalresp_logger *log)
 
   for (k = 0; k < nc; k++)
     sum += f->blkt_info.fir.coeffs[k];
-  if (nc && (sum < (1.0 - FIR_NORM_TOL) || sum > (1.0 + FIR_NORM_TOL)))
+  if (nc && fabs (sum) < 1e-12)
+  {
+    evalresp_log (log, EV_WARN, 0, "FIR not normalized: sum[coef]=%E is zero", sum);
+  }
+  else if (nc && (sum < (1.0 - FIR_NORM_TOL) || sum > (1.0 + FIR_NORM_TOL)))
   {
     evalresp_log (log, EV_WARN, 0, "FIR normalized: sum[coef]=%E", sum);
     for (k = 0; k < nc; k++)
@@ -291,7 +299,13 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
 
       case POLYNOMIAL:
 
-        /* FIXME: Add checks for the stage */
+        if (stage_type && stage_type != GAIN_TYPE)
+        {
+          evalresp_log (log, EV_ERROR, EV_ERROR,
+                        "more than one filter type at stage %d",
+                        stage_ptr->sequence_no);
+          return EVALRESP_VAL;
+        }
         stage_type = POLYNOMIAL_TYPE;
         filt_blkt = blkt_ptr;
         break;
@@ -319,6 +333,14 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
         break;
 
       case LIST:
+
+        if (stage_type && stage_type != GAIN_TYPE)
+        {
+          evalresp_log (log, EV_ERROR, EV_ERROR,
+                        "more than one filter type at stage %d",
+                        stage_ptr->sequence_no);
+          return EVALRESP_VAL;
+        }
 
         /* merge continuation blockettes into one list */
 
@@ -751,7 +773,11 @@ interpolate_list_blockette (double **frequency_ptr,
   }
 
   /* allocate new array for requested frequency values */
-  used_req_freq_arr = (double *)calloc (req_num_freqs, sizeof (double));
+  if (!(used_req_freq_arr = (double *)calloc (req_num_freqs, sizeof (double))))
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate interpolation frequencies");
+    return EVALRESP_MEM;
+  }
   /* copy over freq values (excluding out-of-bounds values) */
   memcpy (used_req_freq_arr, &req_freq_arr[i], req_num_freqs * sizeof (double));
   req_freq_arr = used_req_freq_arr; /* setup to use new array */
@@ -801,6 +827,8 @@ interpolate_list_blockette (double **frequency_ptr,
   { /* # of generated values != # requested (shouldn't happen) */
     evalresp_log (log, EV_ERROR, 0, "Error interpolating amplitudes:  %s",
                   "Bad # of values");
+    free (retvals_arr);
+    free (used_req_freq_arr);
     return EVALRESP_VAL;
   }
   retamps_arr = retvals_arr; /* save ptr to interpolated amplitudes */
@@ -825,7 +853,13 @@ interpolate_list_blockette (double **frequency_ptr,
   }
 
   /* unwrap phase values into local array */
-  local_pha_arr = (double *)(calloc ((*p_number_points), sizeof (double)));
+  if (!(local_pha_arr = (double *)(calloc ((*p_number_points), sizeof (double)))))
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Cannot allocate phase interpolation array");
+    free (retamps_arr);
+    free (used_req_freq_arr);
+    return EVALRESP_MEM;
+  }
   added_value = prev_phase = 0.0;
   unwrapped_flag = 0;
   for (i = 0; i < (*p_number_points); i++)
@@ -862,8 +896,10 @@ interpolate_list_blockette (double **frequency_ptr,
   { /* # of generated values != # requested (shouldn't happen) */
     evalresp_log (log, EV_ERROR, 0, "Error interpolating phases:  %s",
                   "Bad # of values");
-    status = EVALRESP_ERR;
-    return status;
+    free (retvals_arr);
+    free (retamps_arr);
+    free (used_req_freq_arr);
+    return EVALRESP_ERR;
   }
 
   if (unwrapped_flag)

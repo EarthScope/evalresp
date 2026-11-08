@@ -45,6 +45,26 @@ evresp_1 (char *sta, char *cha, char *net, char *locid, char *datime,
     return (-1);
   }
 
+  /* a response list can change the frequencies, so they must be those requested */
+
+  if (first->nfreqs != nfreqs)
+  {
+    evalresp_log (NULL, EV_ERROR, EV_ERROR, "Response has %d frequencies instead of the %d requested",
+                  first->nfreqs, nfreqs);
+    evalresp_free_response (&first);
+    return (2);
+  }
+  for (i = 0; i < nfreqs; i++)
+  {
+    if (fabs (first->freqs[i] - freqs[i]) > 1e-6 * fabs (freqs[i]))
+    {
+      evalresp_log (NULL, EV_ERROR, EV_ERROR, "Response frequency %g is not the requested %g",
+                    first->freqs[i], freqs[i]);
+      evalresp_free_response (&first);
+      return (2);
+    }
+  }
+
   /* if only one response found, convert from complex output vector into multiplexed
      real output for FORTRAN (real1, imag1, real2, imag2, ..., realN, imagN) */
 
@@ -149,6 +169,12 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
   size_t k;
   char time[100];
 
+  if (!date_time || !freqs || nfreqs < 1)
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "Improper date time or frequencies passed");
+    return NULL;
+  }
+
   if (EVALRESP_OK != evalresp_new_options (log, &options))
   {
     return NULL;
@@ -207,7 +233,7 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
     return NULL;
   }
 
-  if (3 > sscanf (date_time, "%d,%d,%s", &year, &jday, time))
+  if (3 > sscanf (date_time, "%d,%d,%99s", &year, &jday, time))
   {
     evalresp_log (log, EV_ERROR, EV_ERROR, "Improper date time passed");
     evalresp_free_options (&options);
@@ -248,7 +274,12 @@ evresp_itp (char *stalst, char *chalst, char *net_code,
 
   evalresp_free_options (&options);
   evalresp_free_filter (&filter);
-  free (responses); /* we want to keep the allocated responses but not the wrapper struct */
+  if (responses)
+  {
+    /* we want to keep the allocated responses but not the wrapper or its array */
+    free (responses->responses);
+    free (responses);
+  }
   return first_resp;
 }
 
@@ -276,7 +307,7 @@ print_chan (evalresp_channel *chan, int start_stage, int stop_stage,
   {
     return;
   }
-  options->filename = strdup (curr_file); /*TODO this needs to be no longer global */
+  options->filename = curr_file ? strdup (curr_file) : NULL; /*TODO this needs to be no longer global */
   options->start_stage = start_stage;
   options->stop_stage = stop_stage;
   options->use_estimated_delay = use_estimated_delay (QUERY_DELAY) == TRUE ? 1 : 0;
@@ -300,6 +331,10 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
   evalresp_options *options = NULL;
   int i;
 
+  if (!freqs || nfreqs < 1)
+  {
+    return;
+  }
   if (EVALRESP_OK != evalresp_new_options (log, &options))
   {
     return;
@@ -323,6 +358,11 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
     ;
 
   responses->responses = (evalresp_response **)calloc (responses->nresponses, sizeof (evalresp_response *));
+  if (!responses->responses)
+  {
+    evalresp_free_options (&options);
+    return;
+  }
   for (i = 0, ptr = first; ptr != NULL; i++, ptr = ptr->next)
   {
     responses->responses[i] = ptr;
@@ -330,6 +370,7 @@ print_resp_itp (double *freqs, int nfreqs, evalresp_response *first,
 
   responses_to_cwd (log, responses, options->unwrap_phase, options->format, stdio_flag);
   free (responses->responses);
+  evalresp_free_options (&options);
 }
 
 void
@@ -346,6 +387,10 @@ calc_resp (evalresp_channel *chan, double *freq, int nfreqs,
 {
   evalresp_logger *log = NULL;
   evalresp_options *options = NULL;
+  if (!freq || nfreqs < 1 || !output)
+  {
+    return;
+  }
   if (EVALRESP_OK != evalresp_new_options (log, &options))
   {
     return;
