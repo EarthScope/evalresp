@@ -20,6 +20,7 @@
 *.log
 *.pdf
 doc/latex
+doc/html
 
 # local development and test output
 install

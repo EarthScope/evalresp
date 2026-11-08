@@ -157,6 +157,7 @@ The complete API reference is built from the source with Doxygen and LaTeX:
 
     cd doc
     make docs        # writes doc/evalresp.pdf
+    make html        # writes doc/html/index.html (needs only Doxygen)
 
 ## Testing
 

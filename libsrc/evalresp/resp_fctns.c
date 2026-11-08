@@ -252,6 +252,12 @@ check_channel (evalresp_logger *log, evalresp_channel *chan)
             number of FIR coefficients of filter or IIR filters with a non-zero
             number of poles or zeros */
 
+  if (!chan->first_stage || !chan->first_stage->first_blkt)
+  {
+    evalresp_log (log, EV_ERROR, EV_ERROR, "no response stages");
+    return EVALRESP_PAR;
+  }
+
   stage_ptr = chan->first_stage;
   prev_stage = NULL;
 

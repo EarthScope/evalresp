@@ -360,6 +360,20 @@ test_forced_xml_rejects_resp (void)
   evalresp_free_options (&options);
 }
 
+/* a channel with an empty Response is rejected as having no stages */
+static void
+test_empty_response (void)
+{
+  evalresp_options *options = NULL;
+  evalresp_channels *channels = NULL;
+
+  ER_CHECK (EVALRESP_OK == evalresp_new_options (NULL, &options));
+  ER_CHECK (EVALRESP_PAR == evalresp_filename_to_channels (NULL, er_data_path ("station-empty-response.xml"), options, NULL, &channels));
+  ER_CHECK (NULL == channels);
+
+  evalresp_free_options (&options);
+}
+
 const er_test unit_xml_channels_tests[] = {
     {"same_as_resp_1", test_same_as_resp_1, NULL},
     {"same_as_resp_2", test_same_as_resp_2, NULL},
@@ -368,5 +382,6 @@ const er_test unit_xml_channels_tests[] = {
     {"full_precision", test_full_precision, NULL},
     {"char_detected", test_char_detected, NULL},
     {"forced_xml_rejects_resp", test_forced_xml_rejects_resp, NULL},
+    {"empty_response", test_empty_response, NULL},
     {NULL, NULL, NULL},
 };
