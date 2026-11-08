@@ -1,8 +1,8 @@
 
 # This Makefile requires GNU make, sometimes available as gmake.
 
-LDFLAGS += -L ../libsrc/evalresp_log/$(BUILD_DIR)/ -levalresp_log\
-		 -L ../libsrc/evalresp/$(BUILD_DIR)/ -levalresp\
+LDFLAGS += -L ../libsrc/evalresp/$(BUILD_DIR)/ -levalresp\
+		 -L ../libsrc/evalresp_log/$(BUILD_DIR)/ -levalresp_log\
 		 -L ../libsrc/spline/$(BUILD_DIR)/ -lspline\
 		 -L ../libsrc/mxml/ -lmxmlev\
 		 -lm

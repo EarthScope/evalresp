@@ -2,103 +2,6 @@ Unreleased
 
 	2026-11-07
 
-	* Set the version only in REVNUM in public.h and remove set-version.
-
-	* FIXED: Do not follow symlinks when clearing test work directories.
-
-	* FIXED: Reject descending frequencies for interpolated blockette 55 responses.
-
-	* FIXED: Avoid dereferencing NULL options when reporting unrecognized units.
-
-	* FIXED: Check stat() before testing whether -f names a directory.
-
-	* FIXED: Keep the sign of negative B62 polynomial derivatives.
-
-	* FIXED: Warn on and return HUGE_VAL for analog poles at the evaluation
-	frequency without a matching zero.
-
-	* FIXED: Search one file pattern at a time so paths containing spaces match.
-
-	* FIXED: Convert units using the first stage with defined input units,
-	skipping gain-only stages.
-
-	* FIXED: Evaluate B62 polynomial responses at any -b62_x value, including the
-	default 0.
-
-	* FIXED: Leave responses with non-ground-motion input units unconverted when
-	displacement or acceleration is requested.
-
-	* IMPROVED: Suggest file units (-u def) in the undefined-units error.
-
-	* ADDED: evalresp_log_error(), evalresp_log_warn(), evalresp_log_info() and
-	evalresp_log_debug() to log at a level with matching verbosity.
-
-	* FIXED: Cancel analog poles and zeros that coincide with the evaluation
-	frequency instead of dividing by zero.
-
-	* FIXED: Evaluate responses at the caller's frequency list in evresp() and the
-	new evalresp_channel_to_response_freqs().
-
-	* FIXED: Free the unit gain substituted for a missing stage gain when it is
-	not linked into the stage.
-
-	* IMPROVED: Warn when a digital stage is normalized above its Nyquist frequency.
-
-	* FIXED: Accept empty optional StationXML elements such as <Description></Description>.
-
-	* IMPROVED: Prefix warnings and errors with the file and channel they concern.
-
-	* IMPROVED: Describe -il and -ii in the usage text as synonyms.
-
-	* FIXED: Channels made only of gain stages evaluate to their gain instead of zero.
-
-	* FIXED: Station, network, location and channel patterns match the whole code,
-	and a blank location matches only an empty location code.
-
-	* FIXED: Parse ResponseListElement entries in StationXML ResponseList stages.
-
-	* FIXED: Leak of the unit strings of StationXML ResponseList stages.
-
-	* FIXED: Leak of the pole node list when parsing StationXML PolesZeros
-	stages.
-
-	* FIXED: Double-free and leak of stage unit strings when parsing RESP
-	channels, and a stack buffer overflow in the test_file_to_char unit test.
-
-	* FIXED: Read response files in binary mode so CRLF input is identical on
-	every platform.
-
-	* FIXED: Windows file matching: 64-bit find handle and directory-qualified results.
-
-	* FIXED: Search the SEEDRESP directory on Windows when no file matches in the
-	current directory.
-
-	* FIXED: Keep requested frequencies that equal the blockette 55 range limits
-	within rounding error.
-
-	* FIXED: libmxmlev.a no longer contains the stray main() from
-	mxmldoc.c, and public.h is now installed with the other evalresp
-	headers.
-
-	* FIXED: Swapped sub-/super-diagonal coefficients in spline_cubic_set(),
-	which produced a spline with discontinuous first derivatives on
-	non-uniformly spaced knots, and the right-end not-a-knot boundary
-	condition test, which checked ibcbeg instead of ibcend.  Thanks to
-	@sajnag-web who reported these while porting the code to Go.
-
-	* FIXED: Read StationXML from standard input with -stdio.  Thanks to
-	@peacocks for reporting.
-
-	* FIXED: Reject RESP reference stages with no responses instead of reading an
-	uninitialized blockette, and clear MSVC sign, uninitialized-variable and
-	lib warnings.
-
-	* FIXED: Log the channel's RESP name when no input filename is set instead of a null string.
-
-	* FIXED: Handle getcwd and stat failures when searching SEEDRESP and fix GCC format and const warnings.
-
-	* FIXED: Build the test harness on Linux, where strict POSIX mode hides S_IFMT.
-
 	* IMPROVED: Blockette 55 (List) interpolation (-il, -ii) is now done
 	against log10(frequency), with amplitude interpolated as log10(amplitude).
 	Previously the cubic spline was applied in linear space and could
@@ -107,16 +10,6 @@ Unreleased
 	with a warning, if the list contains non-positive frequencies or
 	amplitudes.  NOTE: this changes numeric output for responses with a
 	List blockette when the requested frequencies differ from those listed.
-
-	* IMPROVED: Read StationXML directly into channels at full precision instead
-	of through rounded RESP text.
-
-	* IMPROVED: Build with -O2 by default when CFLAGS is not set, and with /O2 on Windows.
-
-	* IMPROVED: Rewrite the man pages and API introduction to match current behavior.
-
-	* IMPROVED: Warn when no response matches the request, explain forced-StationXML
-	parse failures, and report stages by sequence number.
 
 	* CHANGED: Removed the autotools build (configure.ac, Makefile.am,
 	MKDIST).  The GNU make build (Makefile, Build.config) is now the only
@@ -127,19 +20,126 @@ Unreleased
 	Shared libraries and "make dist" are no longer provided; use
 	"git archive" for source tarballs.
 
+	* FIXED: Swapped sub-/super-diagonal coefficients in spline_cubic_set(),
+	which produced a spline with discontinuous first derivatives on
+	non-uniformly spaced knots, and the right-end not-a-knot boundary
+	condition test, which checked ibcbeg instead of ibcend.  Thanks to
+	@sajnag-web who reported these while porting the code to Go.
+
+	* FIXED: Evaluate responses at the caller's frequency list in evresp() and the
+	new evalresp_channel_to_response_freqs().
+
+	* FIXED: Keep the sign of negative B62 polynomial derivatives.
+
+	* FIXED: Evaluate B62 polynomial responses at any -b62_x value, including the
+	default 0.
+
+	* FIXED: Convert units using the first stage with defined input units,
+	skipping gain-only stages.
+
+	* FIXED: Leave responses with non-ground-motion input units unconverted when
+	displacement or acceleration is requested.
+
+	* FIXED: Channels made only of gain stages evaluate to their gain instead of zero.
+
+	* FIXED: Cancel analog poles and zeros that coincide with the evaluation
+	frequency instead of dividing by zero.
+
+	* FIXED: Warn on and return HUGE_VAL for analog poles at the evaluation
+	frequency without a matching zero.
+
+	* FIXED: Keep requested frequencies that equal the blockette 55 range limits
+	within rounding error.
+
+	* FIXED: Reject descending frequencies for interpolated blockette 55 responses.
+
+	* FIXED: Station, network, location and channel patterns match the whole code,
+	and a blank location matches only an empty location code.
+
+	* FIXED: Parse ResponseListElement entries in StationXML ResponseList stages.
+
+	* FIXED: Read StationXML from standard input with -stdio.  Thanks to
+	@peacocks for reporting.
+
+	* FIXED: Accept empty optional StationXML elements such as <Description></Description>.
+
+	* FIXED: Search one file pattern at a time so paths containing spaces match.
+
+	* FIXED: Read response files in binary mode so CRLF input is identical on
+	every platform.
+
+	* FIXED: Avoid dereferencing NULL options when reporting unrecognized units.
+
+	* FIXED: Double-free and leak of stage unit strings when parsing RESP
+	channels, and a stack buffer overflow in the test_file_to_char unit test.
+
+	* FIXED: Reject RESP reference stages with no responses instead of reading an
+	uninitialized blockette, and clear MSVC sign, uninitialized-variable and
+	lib warnings.
+
+	* FIXED: Check stat() before testing whether -f names a directory.
+
+	* FIXED: Handle getcwd and stat failures when searching SEEDRESP and fix GCC format and const warnings.
+
+	* FIXED: Free the unit gain substituted for a missing stage gain when it is
+	not linked into the stage.
+
+	* FIXED: Leak of the unit strings of StationXML ResponseList stages.
+
+	* FIXED: Leak of the pole node list when parsing StationXML PolesZeros
+	stages.
+
+	* FIXED: Windows file matching: 64-bit find handle and directory-qualified results.
+
+	* FIXED: Search the SEEDRESP directory on Windows when no file matches in the
+	current directory.
+
+	* FIXED: libmxmlev.a no longer contains the stray main() from
+	mxmldoc.c, and public.h is now installed with the other evalresp
+	headers.
+
+	* IMPROVED: Read StationXML directly into channels at full precision instead
+	of through rounded RESP text.
+
+	* IMPROVED: Warn when no response matches the request, explain forced-StationXML
+	parse failures, and report stages by sequence number.
+
+	* IMPROVED: Prefix warnings and errors with the file and channel they concern.
+
+	* IMPROVED: Warn when a digital stage is normalized above its Nyquist frequency.
+
+	* IMPROVED: Suggest file units (-u def) in the undefined-units error.
+
+	* FIXED: Log the channel's RESP name when no input filename is set instead of a null string.
+
+	* IMPROVED: Describe -il and -ii in the usage text as synonyms.
+
+	* ADDED: evalresp_log_error(), evalresp_log_warn(), evalresp_log_info() and
+	evalresp_log_debug() to log at a level with matching verbosity.
+
+	* IMPROVED: Build with -O2 by default when CFLAGS is not set, and with /O2 on Windows.
+
+	* IMPROVED: Rewrite the man pages and API introduction to match current behavior.
+
+	* CHANGED: Replace the bundled V8 regex with a reentrant glob matcher and
+	number scanners.
+
 	* CHANGED: Update vendored Mini-XML library to 4.0.6.
 
 	* ADDED: "make -f Makefile check" builds and runs the C unit and
 	command-line tests, which need only a C compiler, replacing "make check"
 	from autotools.  "make install" now honors DESTDIR for staged installs.
 
+	* Set the version only in REVNUM in public.h and remove set-version.
+
+	* FIXED: Do not follow symlinks when clearing test work directories.
+
+	* FIXED: Build the test harness on Linux, where strict POSIX mode hides S_IFMT.
+
 	* ADDED: Unit tests for spline_cubic_set() in tests/unit/test_spline.c.
 
 	* ADDED: Add GitHub Actions workflow that builds and runs the tests on Linux,
 	macOS and Windows.
-
-	* CHANGED: Replace the bundled V8 regex with a reentrant glob matcher and
-	number scanners.
 
 	* CHANGED: Replace the Check and Robot Framework tests with a single
 	portable C test suite.
