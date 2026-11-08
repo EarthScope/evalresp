@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/EarthScope/evalresp/actions/workflows/ci.yml/badge.svg)](https://github.com/EarthScope/evalresp/actions/workflows/ci.yml)
 
+[![DOI](https://zenodo.org/badge/84248894.svg)](https://doi.org/10.5281/zenodo.24062696)
+
 evalresp calculates the frequency response of seismic, pressure, temperature
 and magnetic channels.  Given a station, channel, network and location, a date
 and time, and a range of frequencies, it evaluates the channel's instrument
