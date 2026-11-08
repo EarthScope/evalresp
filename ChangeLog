@@ -53,6 +53,9 @@ Version 5.1.0
 
 	* FIXED: Reject descending frequencies for interpolated blockette 55 responses.
 
+	* FIXED: Classify motion units by the whole unit symbol, so M/S/S is acceleration
+	and MM/HOUR or MBAR are unrecognized.
+
 	* FIXED: Do not crash when -f names a directory with no matching files.
 
 	* FIXED: Station, network, location and channel patterns match the whole code,

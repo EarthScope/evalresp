@@ -355,13 +355,81 @@ parse_int_field (evalresp_logger *log, char *line, int fld_wanted, int *value)
   return status;
 }
 
-/* Match line against a glob pattern, optionally after one leading
- * C, N or M prefix character. */
+/* Classify the unit symbol (text before the first space, hyphen, comma,
+ * semicolon or parenthesis) as a length, optionally prefixed by N, M or C,
+ * per second or per second squared.  Returns DIS, VEL or ACC, or UNDEF_UNITS
+ * if the symbol is not one of these.  *scale converts the prefixed length to
+ * meters. */
 static int
-units_match (const char *line, const char *pattern)
+motion_units (const char *line, double *scale)
 {
-  return evr_globmatch (line, pattern) ||
-         ((*line == 'C' || *line == 'N' || *line == 'M') && evr_globmatch (line + 1, pattern));
+  static const struct
+  {
+    const char *suffix;
+    int units;
+  } forms[] = {
+      {"", DIS},
+      {"/S", VEL},
+      {"/SEC", VEL},
+      {"/S**2", ACC},
+      {"/S^2", ACC},
+      {"/S2", ACC},
+      {"/S/S", ACC},
+      {"/SEC**2", ACC},
+      {"/SEC^2", ACC},
+      {"/SEC2", ACC},
+      {"/SEC/SEC", ACC}};
+  const char *p = line;
+  size_t len, i;
+
+  *scale = 1.0;
+
+  while (*p == ' ' || *p == '\t')
+  {
+    p++;
+  }
+  len = strcspn (p, " \t-,;(");
+
+  if (len > 1 && p[1] == 'M')
+  {
+    if (p[0] == 'N')
+    {
+      *scale = 1.0e9;
+    }
+    else if (p[0] == 'M')
+    {
+      *scale = 1.0e3;
+    }
+    else if (p[0] == 'C')
+    {
+      *scale = 1.0e2;
+    }
+
+    if (*scale != 1.0)
+    {
+      p++;
+      len--;
+    }
+  }
+
+  if (len == 0 || *p != 'M')
+  {
+    *scale = 1.0;
+    return UNDEF_UNITS;
+  }
+  p++;
+  len--;
+
+  for (i = 0; i < sizeof (forms) / sizeof (forms[0]); i++)
+  {
+    if (strlen (forms[i].suffix) == len && !strncmp (p, forms[i].suffix, len))
+    {
+      return forms[i].units;
+    }
+  }
+
+  *scale = 1.0;
+  return UNDEF_UNITS;
 }
 
 /* Parse unit strings.
@@ -381,7 +449,8 @@ units_match (const char *line, const char *pattern)
 int
 parse_units (evalresp_logger *log, evalresp_options const *const options, char *line, evalresp_channel *channel, int *units)
 {
-  int i, first_flag = 0, status = EVALRESP_OK;
+  int i, motion, first_flag = 0, status = EVALRESP_OK;
+  double scale;
 
   if (!strlen (channel->first_units))
   {
@@ -430,35 +499,11 @@ parse_units (evalresp_logger *log, evalresp_options const *const options, char *
   {
     *units = CENTIGRADE;
   }
-  else if (units_match (line, "M/S\\*\\*2*") || units_match (line, "M/SEC\\*\\*2*"))
+  else if ((motion = motion_units (line, &scale)) != UNDEF_UNITS)
   {
-    if (first_flag && !strncmp ("NM", line, (size_t)2))
-      channel->unit_scale_fact = 1.0e9;
-    else if (first_flag && !strncmp ("MM", line, (size_t)2))
-      channel->unit_scale_fact = 1.0e3;
-    else if (first_flag && !strncmp ("CM", line, (size_t)2))
-      channel->unit_scale_fact = 1.0e2;
-    *units = ACC;
-  }
-  else if (units_match (line, "M/S*"))
-  {
-    if (first_flag && !strncmp (line, "NM", 2))
-      channel->unit_scale_fact = 1.0e9;
-    else if (first_flag && !strncmp (line, "MM", 2))
-      channel->unit_scale_fact = 1.0e3;
-    else if (first_flag && !strncmp (line, "CM", 2))
-      channel->unit_scale_fact = 1.0e2;
-    *units = VEL;
-  }
-  else if (units_match (line, "M*"))
-  {
-    if (first_flag && !strncmp (line, "NM", 2))
-      channel->unit_scale_fact = 1.0e9;
-    else if (first_flag && !strncmp (line, "MM", 2))
-      channel->unit_scale_fact = 1.0e3;
-    else if (first_flag && !strncmp (line, "CM", 2))
-      channel->unit_scale_fact = 1.0e2;
-    *units = DIS;
+    if (first_flag)
+      channel->unit_scale_fact = scale;
+    *units = motion;
   }
   else if (evr_globmatch (line, "COUNT*") || evr_globmatch (line, "DIGITAL*"))
   {

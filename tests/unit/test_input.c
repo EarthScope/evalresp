@@ -244,7 +244,49 @@ test_unrecognized_units_null_options (void)
   evalresp_free_channels (&channels);
 }
 
+static void
+test_parse_motion_units (void)
+{
+  static const struct
+  {
+    const char *text;
+    int units;
+    double scale;
+  } cases[] = {
+      {"M/S - Velocity in Meters Per Second", VEL, 1.0},
+      {"m", DIS, 1.0},
+      {"nm/s", VEL, 1.0e9},
+      {"CM/S**2", ACC, 1.0e2},
+      {"MM/SEC", VEL, 1.0e3},
+      {"M/S/S - Acceleration", ACC, 1.0},
+      {"M/S2", ACC, 1.0},
+      {"NM/SEC/SEC", ACC, 1.0e9},
+      {"mm/hour - Rain intensity", UNDEF_UNITS, 1.0},
+      {"MM/HR", UNDEF_UNITS, 1.0},
+      {"MBAR - millibar", UNDEF_UNITS, 1.0},
+      {"MICROVOLTS", UNDEF_UNITS, 1.0},
+      {"METERS/SEC", UNDEF_UNITS, 1.0},
+      {"COUNTS - Digital Counts", COUNTS, 1.0},
+      {"V - Volts", VOLTS, 1.0}};
+  size_t i;
+
+  for (i = 0; i < sizeof (cases) / sizeof (cases[0]); i++)
+  {
+    evalresp_channel channel;
+    char line[MAXLINELEN];
+    int units = -1;
+
+    memset (&channel, 0, sizeof (channel));
+    snprintf (line, sizeof (line), "%s", cases[i].text);
+    parse_units (NULL, NULL, line, &channel, &units);
+    ER_CHECK_MSG (units == cases[i].units, "'%s': units %d, expected %d", cases[i].text, units, cases[i].units);
+    ER_CHECK_MSG (channel.unit_scale_fact == cases[i].scale, "'%s': scale %g, expected %g",
+                  cases[i].text, channel.unit_scale_fact, cases[i].scale);
+  }
+}
+
 const er_test unit_input_tests[] = {
+    {"parse_motion_units", test_parse_motion_units, NULL},
     {"unrecognized_units_null_options", test_unrecognized_units_null_options, NULL},
     {"slurp_line", test_slurp_line, NULL},
     {"slurp_line_buffer", test_slurp_line_buffer, NULL},
