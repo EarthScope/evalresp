@@ -8,7 +8,7 @@ ifeq "$(BUILD_DIR)" ""
 BUILD_DIR := .
 endif
 TOPDIR=$(dir $(realpath $(firstword $(MAKEFILE_LIST))))
-ARFLAGS=crv
+ARFLAGS=cr
 CFLAGS ?= -O2
 
 export
